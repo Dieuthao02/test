@@ -60,4 +60,61 @@
 
         .close-btn {
             position: absolute; top: 15px; right: 20px;
-            font-size: 25px; cursor:
+            font-size: 25px; cursor: pointer; color: #999;
+        }
+
+        #modal-img { font-size: 80px; margin-bottom: 20px; }
+        #modal-title { margin: 10px 0; color: #333; }
+        #modal-desc { color: #666; line-height: 1.5; }
+    </style>
+</head>
+<body>
+
+    <h2>🍓 Bấm vào để xem bí mật!</h2>
+
+    <div class="fruit-container">
+        <div class="fruit-card" onclick="showDetail('Dâu Tây', '🍓', 'Dâu tây chứa nhiều vitamin C và chất chống oxy hóa, rất tốt cho da và tim mạch.')">
+            <span>🍓</span><br><b>Dâu Tây</b>
+        </div>
+
+        <div class="fruit-card" onclick="showDetail('Xoài', '🥭', 'Xoài được mệnh danh là vua trái cây, chứa nhiều vitamin A giúp sáng mắt.')">
+            <span>🥭</span><br><b>Xoài</b>
+        </div>
+
+        <div class="fruit-card" onclick="showDetail('Nho', '🍇', 'Nho cung cấp nhiều năng lượng và giúp giảm huyết áp hiệu quả.')">
+            <span>🍇</span><br><b>Nho</b>
+        </div>
+    </div>
+
+    <div id="details-overlay">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeDetail()">&times;</span>
+            <div id="modal-img"></div>
+            <h3 id="modal-title"></h3>
+            <p id="modal-desc"></p>
+        </div>
+    </div>
+
+    <script>
+        // Hàm xử lý hiện bảng thông tin
+        function showDetail(name, icon, desc) {
+            document.getElementById('modal-title').innerText = name;
+            document.getElementById('modal-img').innerText = icon;
+            document.getElementById('modal-desc').innerText = desc;
+            document.getElementById('details-overlay').style.display = 'flex';
+        }
+
+        // Hàm đóng bảng
+        function closeDetail() {
+            document.getElementById('details-overlay').style.display = 'none';
+        }
+
+        // Bấm ra ngoài vùng trắng cũng đóng bảng luôn
+        window.onclick = function(event) {
+            let overlay = document.getElementById('details-overlay');
+            if (event.target == overlay) closeDetail();
+        }
+    </script>
+
+</body>
+</html>
