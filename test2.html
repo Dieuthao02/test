@@ -22,7 +22,6 @@
             justify-content: center;
         }
 
-        /* Thẻ trái cây */
         .fruit-card {
             background: white;
             width: 180px;
@@ -37,20 +36,18 @@
 
         .fruit-card:hover {
             transform: translateY(-10px);
-            border-color: #ff7675;
-            box-shadow: 0 15px 35px rgba(255, 118, 117, 0.2);
+            border-color: #6c5ce7;
+            box-shadow: 0 15px 35px rgba(108, 92, 231, 0.2);
         }
 
-        /* Ảnh thu nhỏ trên thẻ */
         .fruit-card img {
             width: 100%;
             height: 120px;
-            object-fit: cover; /* Giữ ảnh không bị móp méo */
+            object-fit: cover;
             border-radius: 12px;
             margin-bottom: 10px;
         }
 
-        /* Bảng chi tiết (Modal) */
         #details-overlay {
             display: none;
             position: fixed;
@@ -86,29 +83,26 @@
             border-radius: 20px;
             margin-bottom: 20px;
         }
-
-        #modal-title { color: #d63031; font-size: 24px; margin: 10px 0; }
-        #modal-desc { color: #636e72; line-height: 1.6; font-size: 16px; }
     </style>
 </head>
 <body>
 
-    <h2>🍓 Danh sách trái cây yêu thích</h2>
+    <h2>🍇 Danh sách trái cây yêu thích</h2>
 
     <div class="fruit-container">
-        <div class="fruit-card" onclick="showDetail('Dâu Tây', 'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?q=80&w=500', 'Dâu tây là loại quả mọng màu đỏ, vị chua ngọt, rất giàu Vitamin C và chất chống oxy hóa.')">
-            <img src="https://images.unsplash.com/photo-1464965911861-746a04b4bca6?q=80&w=500" alt="Dâu tây">
-            <div class="fruit-name"><b>Dâu Tây</b></div>
+        <div class="fruit-card" onclick="showDetail('Dâu Tây', 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Perfect_Strawberry.jpg/640px-Perfect_Strawberry.jpg', 'Dâu tây chứa nhiều vitamin C và chất chống oxy hóa, rất tốt cho làn da.')">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Perfect_Strawberry.jpg/640px-Perfect_Strawberry.jpg" alt="Dâu tây">
+            <b>Dâu Tây</b>
         </div>
 
-        <div class="fruit-card" onclick="showDetail('Nho', 'https://images.unsplash.com/photo-1537084642907-629340c7e59c?q=80&w=500', 'Nho thường mọc thành chùm, cung cấp nhiều đường tự nhiên và polyphenol tốt cho tim mạch.')">
-            <img src="https://images.unsplash.com/photo-1537084642907-629340c7e59c?q=80&w=500" alt="Nho">
-            <div class="fruit-name"><b>Nho</b></div>
+        <div class="fruit-card" onclick="showDetail('Nho', 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Table_grapes_on_white.jpg/640px-Table_grapes_on_white.jpg', 'Nho tím chín mọng, cung cấp nhiều năng lượng và tốt cho hệ tim mạch.')">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Table_grapes_on_white.jpg/640px-Table_grapes_on_white.jpg" alt="Nho">
+            <b>Nho</b>
         </div>
 
-        <div class="fruit-card" onclick="showDetail('Xoài', 'https://images.unsplash.com/photo-1553279768-865429fa0078?q=80&w=500', 'Xoài chín có vị ngọt đậm đà, chứa nhiều Vitamin A giúp bảo vệ đôi mắt của bạn.')">
-            <img src="https://images.unsplash.com/photo-1553279768-865429fa0078?q=80&w=500" alt="Xoài">
-            <div class="fruit-name"><b>Xoài</b></div>
+        <div class="fruit-card" onclick="showDetail('Xoài', 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Haden_mango_aloha_art_01.jpg/640px-Haden_mango_aloha_art_01.jpg', 'Xoài là vua trái cây nhiệt đới, ngọt lịm và rất giàu vitamin A.')">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Haden_mango_aloha_art_01.jpg/640px-Haden_mango_aloha_art_01.jpg" alt="Xoài">
+            <b>Xoài</b>
         </div>
     </div>
 
@@ -124,7 +118,7 @@
     <script>
         function showDetail(name, imgSrc, desc) {
             document.getElementById('modal-title').innerText = name;
-            document.getElementById('modal-img-container').innerHTML = `<img src="${imgSrc}" alt="${name}">`;
+            document.getElementById('modal-img-container').innerHTML = `<img src="${imgSrc}">`;
             document.getElementById('modal-desc').innerText = desc;
             document.getElementById('details-overlay').style.display = 'flex';
         }
@@ -132,12 +126,6 @@
         function closeDetail() {
             document.getElementById('details-overlay').style.display = 'none';
         }
-
-        window.onclick = function(event) {
-            let overlay = document.getElementById('details-overlay');
-            if (event.target == overlay) closeDetail();
-        }
     </script>
-
 </body>
 </html>
