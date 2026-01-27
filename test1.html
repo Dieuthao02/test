@@ -2,80 +2,62 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Trái Cây Cao Siêu</title>
+    <title>Trái Cây Thông Minh</title>
     <style>
-        /* CSS giúp web "lột xác" */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f2f5;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
+            padding: 40px;
         }
 
-        h2 { color: #2d3436; text-transform: uppercase; letter-spacing: 2px; }
-
-        /* Tạo bố cục dạng lưới cho các thẻ */
         .fruit-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            display: flex;
             gap: 20px;
-            width: 80%;
-            margin-top: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
-        /* Hiệu ứng cho từng thẻ trái cây */
         .fruit-card {
             background: white;
+            width: 150px;
             padding: 20px;
-            border-radius: 15px;
+            border-radius: 20px;
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: all 0.3s ease; /* Làm mượt hiệu ứng */
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
             cursor: pointer;
-            border: 1px solid #eee;
+            transition: 0.3s;
         }
 
-        /* Hiệu ứng cao siêu khi di chuột vào (Hover) */
-        .fruit-card:hover {
-            transform: translateY(-10px); /* Nhảy lên trên */
-            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-            border-color: #00cec9;
+        .fruit-card:hover { transform: scale(1.05); background: #e3f2fd; }
+
+        .fruit-card span { font-size: 50px; }
+
+        /* Style cho cái bảng hiện ra (Modal) */
+        #details-overlay {
+            display: none; /* Mặc định là ẩn */
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
 
-        .fruit-card span { font-size: 40px; display: block; margin-bottom: 10px; }
-        .fruit-name { font-weight: bold; color: #333; font-size: 1.2em; }
-    </style>
-</head>
-<body>
-    <h2>🍎 Bộ Sưu Tập Trái Cây</h2>
-    
-    <div class="fruit-container">
-        <div class="fruit-card">
-            <span>🍓</span>
-            <div class="fruit-name">Dâu tây</div>
-            <small>Strawberry</small>
-        </div>
-        <div class="fruit-card">
-            <span>🍇</span>
-            <div class="fruit-name">Nho</div>
-            <small>Grape</small>
-        </div>
-        <div class="fruit-card">
-            <span>🥭</span>
-            <div class="fruit-name">Xoài</div>
-            <small>Mango</small>
-        </div>
-        <div class="fruit-card">
-            <span>🫐</span>
-            <div class="fruit-name">Việt quất</div>
-            <small>Blueberry</small>
-        </div>
-    </div>
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 25px;
+            max-width: 400px;
+            text-align: center;
+            position: relative;
+            animation: popUp 0.3s ease;
+        }
 
-    <p style="margin-top: 40px;"><a href="index.html" style="color: #636e72; text-decoration: none;">← Quay lại trang chủ</a></p>
-</body>
-</html>
+        @keyframes popUp { from { transform: scale(0.8); } to { transform: scale(1); } }
+
+        .close-btn {
+            position: absolute; top: 15px; right: 20px;
+            font-size: 25px; cursor:
