@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Trái Cây Cao Siêu</title>
+    <style>
+        /* CSS giúp web "lột xác" */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h2 { color: #2d3436; text-transform: uppercase; letter-spacing: 2px; }
+
+        /* Tạo bố cục dạng lưới cho các thẻ */
+        .fruit-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            width: 80%;
+            margin-top: 30px;
+        }
+
+        /* Hiệu ứng cho từng thẻ trái cây */
+        .fruit-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease; /* Làm mượt hiệu ứng */
+            cursor: pointer;
+            border: 1px solid #eee;
+        }
+
+        /* Hiệu ứng cao siêu khi di chuột vào (Hover) */
+        .fruit-card:hover {
+            transform: translateY(-10px); /* Nhảy lên trên */
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            border-color: #00cec9;
+        }
+
+        .fruit-card span { font-size: 40px; display: block; margin-bottom: 10px; }
+        .fruit-name { font-weight: bold; color: #333; font-size: 1.2em; }
+    </style>
+</head>
+<body>
+    <h2>🍎 Bộ Sưu Tập Trái Cây</h2>
+    
+    <div class="fruit-container">
+        <div class="fruit-card">
+            <span>🍓</span>
+            <div class="fruit-name">Dâu tây</div>
+            <small>Strawberry</small>
+        </div>
+        <div class="fruit-card">
+            <span>🍇</span>
+            <div class="fruit-name">Nho</div>
+            <small>Grape</small>
+        </div>
+        <div class="fruit-card">
+            <span>🥭</span>
+            <div class="fruit-name">Xoài</div>
+            <small>Mango</small>
+        </div>
+        <div class="fruit-card">
+            <span>🫐</span>
+            <div class="fruit-name">Việt quất</div>
+            <small>Blueberry</small>
+        </div>
+    </div>
+
+    <p style="margin-top: 40px;"><a href="index.html" style="color: #636e72; text-decoration: none;">← Quay lại trang chủ</a></p>
+</body>
+</html>
