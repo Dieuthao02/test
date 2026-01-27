@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Trái Cây Xịn Xò</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #fdfdfd;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px;
+        }
+
+        h2 { color: #2d3436; margin-bottom: 30px; }
+
+        .fruit-container {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* Thẻ trái cây */
+        .fruit-card {
+            background: white;
+            width: 180px;
+            padding: 15px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: 0.4s;
+            border: 1px solid #eee;
+        }
+
+        .fruit-card:hover {
+            transform: translateY(-10px);
+            border-color: #ff7675;
+            box-shadow: 0 15px 35px rgba(255, 118, 117, 0.2);
+        }
+
+        /* Ảnh thu nhỏ trên thẻ */
+        .fruit-card img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover; /* Giữ ảnh không bị móp méo */
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        /* Bảng chi tiết (Modal) */
+        #details-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 30px;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            animation: slideUp 0.4s ease;
+        }
+
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .close-btn {
+            position: absolute; top: 15px; right: 25px;
+            font-size: 30px; cursor: pointer; color: #636e72;
+        }
+
+        #modal-img-container img {
+            width: 100%;
+            max-height: 250px;
+            object-fit: contain;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        #modal-title { color: #d63031; font-size: 24px; margin: 10px 0; }
+        #modal-desc { color: #636e72; line-height: 1.6; font-size: 16px; }
+    </style>
+</head>
+<body>
+
+    <h2>🍓 Danh sách trái cây yêu thích</h2>
+
+    <div class="fruit-container">
+        <div class="fruit-card" onclick="showDetail('Dâu Tây', 'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?q=80&w=500', 'Dâu tây là loại quả mọng màu đỏ, vị chua ngọt, rất giàu Vitamin C và chất chống oxy hóa.')">
+            <img src="https://images.unsplash.com/photo-1464965911861-746a04b4bca6?q=80&w=500" alt="Dâu tây">
+            <div class="fruit-name"><b>Dâu Tây</b></div>
+        </div>
+
+        <div class="fruit-card" onclick="showDetail('Nho', 'https://images.unsplash.com/photo-1537084642907-629340c7e59c?q=80&w=500', 'Nho thường mọc thành chùm, cung cấp nhiều đường tự nhiên và polyphenol tốt cho tim mạch.')">
+            <img src="https://images.unsplash.com/photo-1537084642907-629340c7e59c?q=80&w=500" alt="Nho">
+            <div class="fruit-name"><b>Nho</b></div>
+        </div>
+
+        <div class="fruit-card" onclick="showDetail('Xoài', 'https://images.unsplash.com/photo-1553279768-865429fa0078?q=80&w=500', 'Xoài chín có vị ngọt đậm đà, chứa nhiều Vitamin A giúp bảo vệ đôi mắt của bạn.')">
+            <img src="https://images.unsplash.com/photo-1553279768-865429fa0078?q=80&w=500" alt="Xoài">
+            <div class="fruit-name"><b>Xoài</b></div>
+        </div>
+    </div>
+
+    <div id="details-overlay">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeDetail()">&times;</span>
+            <div id="modal-img-container"></div>
+            <h3 id="modal-title"></h3>
+            <p id="modal-desc"></p>
+        </div>
+    </div>
+
+    <script>
+        function showDetail(name, imgSrc, desc) {
+            document.getElementById('modal-title').innerText = name;
+            document.getElementById('modal-img-container').innerHTML = `<img src="${imgSrc}" alt="${name}">`;
+            document.getElementById('modal-desc').innerText = desc;
+            document.getElementById('details-overlay').style.display = 'flex';
+        }
+
+        function closeDetail() {
+            document.getElementById('details-overlay').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            let overlay = document.getElementById('details-overlay');
+            if (event.target == overlay) closeDetail();
+        }
+    </script>
+
+</body>
+</html>
