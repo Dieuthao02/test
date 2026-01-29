@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile Cá Nhân</title>
+
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 60px auto;
+            display: flex;
+            gap: 30px;
+            padding: 0 20px;
+        }
+
+        .profile, .social {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            padding: 30px;
+            backdrop-filter: blur(12px);
+        }
+
+        .profile {
+            flex: 2;
+        }
+
+        .social {
+            flex: 1;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 32px;
+        }
+
+        .sub {
+            margin-top: 8px;
+            color: #bcdcff;
+        }
+
+        .tags {
+            margin-top: 18px;
+        }
+
+        .tags span {
+            display: inline-block;
+            background: #4da3ff;
+            color: #000;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            margin: 6px 6px 0 0;
+            font-weight: 600;
+        }
+
+        .desc {
+            margin: 22px 0;
+            line-height: 1.6;
+            color: #e0e0e0;
+        }
+
+        .btn {
+            background: #4da3ff;
+            border: none;
+            padding: 12px 26px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .info {
+            display: flex;
+            gap: 40px;
+            margin-top: 30px;
+        }
+
+        .label {
+            font-size: 13px;
+            color: #aaa;
+        }
+
+        /* RIGHT */
+        .social img {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 12px;
+            border: 3px solid #4da3ff;
+        }
+
+        .social h3 {
+            margin-bottom: 20px;
+        }
+
+        .social a {
+            display: block;
+            text-decoration: none;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.12);
+            padding: 12px;
+            border-radius: 12px;
+            margin: 10px 0;
+            transition: 0.3s;
+            font-weight: 600;
+        }
+
+        .social a:hover {
+            background: #4da3ff;
+            color: #000;
+        }
+
+        .social small {
+            display: block;
+            margin-top: 15px;
+            color: #ccc;
+            font-size: 12px;
+        }
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- LEFT -->
+    <div class="profile">
+        <h1>Nhữ Thị Diệu Thảo</h1>
+        <p class="sub"> Sư Tử — <b>02.08.2007</b></p>
+
+        <div class="tags">
+            <span>Nickname : Otis</span>
+            <span>Sở thích : nghe nhạc, xem phim</span>
+    
+        </div>
+
+        <p class="desc">
+           -------------------------------------------------
+        </p>
+
+        <button class="btn">Kết nối</button>
+
+        <div class="info">
+            <div>
+                <p class="label">Trường</p>
+                <p>Trường Quốc Tế</p>
+            </div>
+            <div>
+                <p class="label">Lớp</p>
+                <p>FDB</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="social">
+        <img src="img/dieuthao.png.jpg" alt="Avatar">
+
+        <h3>Mạng xã hội</h3>
+<a id="link" href="https://www.facebook.com/dieuthao02/">Facebook</a>
+<a id="link" href="https://www.instagram.com/otis0280/">Instagram</a>
+<a id="link" href="https://github.com/dieuthao02">GitHub</a>
+<a id="link" href="https://www.tiktok.com/@otis0208">TikTok</a>
+
+        <small>dieuthao</small>
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,90 +1,70 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <title>Bài tập Fruits - LAB1</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f9f9f9;
-            padding: 20px;
-        }
+"
+        <!DOCTYPE html>
+        <html lang="vi">
+            <html lang="zh-CN">
+        <head>
+            <meta charset="UTF-8">
+            <title>Welcome</title>
+            <style>
+                body {
+                    background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    max-width: 600px;
+                    margin: 50px auto;
+                    padding: 40px;
+                    border-radius: 15px;
+                    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+                    color: #333;
+                    text-align: center;
+                }
+                h1 {
+                    color: #2a52be;
+                    margin-bottom: 25px;
+                    font-size: 3em;
+                }
+                p {
+                    font-size: 1.2em;
+                    margin: 15px 0;
+                }
+                strong {
+                    color: #154360;
+                }
+                .social-links {
+                    margin-top: 35px;
+                }
+                .social-links a {
+                    display: inline-block;
+                    margin: 0 15px;
+                    color: #154360;
+                    font-size: 2em;
+                    text-decoration: none;
+                    transition: color 0.3s ease;
+                }
+                .social-links a:hover {
+                    color: #2a52be;
+                }
+            </style>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+        </head>
+        <body>
+            <h1>Welcome !</h1>
+            
+            <p><strong>Name:</strong> Nhu Thi Dieu Thao.</p>
+            <p><strong>Nickname:</strong> 迪厄·陶.</p>
+            <p><strong>MSSV:</strong> 25070327.</p>
+            <p><strong>Major:</strong> Financial technology and digital business.</p>
+            <p>I am learning <strong>HTML and CSS</strong>!</p>
 
-        h1 { color: #d63031; }
+            <div class="social-links">
+                <a href="https://www.facebook.com/dieuthao02" target="_blank" aria-label="Facebook">
+                    <i class="fab fa-facebook-square"></i>
+                </a>
+                <a href="https://www.instagram.com/otis0280" target="_blank" aria-label="Instagram">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            
+            </div>
+        </body>
+        </html>
+      
 
-        /* Mỗi đoạn văn chứa 3 hình ảnh (tổng 2 đoạn cho 6 quả) */
-        .fruit-row {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 30px;
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-        }
-
-        .fruit-item {
-            width: 200px;
-            transition: transform 0.3s;
-        }
-
-        .fruit-item:hover {
-            transform: scale(1.1);
-        }
-
-        .fruit-item img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 10px;
-            border: 2px solid #eee;
-        }
-
-        .fruit-name {
-            margin-top: 10px;
-            font-weight: bold;
-            color: #2d3436;
-        }
-    </style>
-</head>
-<body>
-
-    <h1>DANH SÁCH TRÁI CÂY YÊU THÍCH</h1>
-    <p>Học viên: <strong>Nhữ Thị Diệu Thảo</strong></p>
-
-    <div class="fruit-row">
-        <div class="fruit-item">
-            <img src="https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=400" alt="Strawberry">
-            <div class="fruit-name">Dâu tây (Strawberry)</div>
-        </div>
-        <div class="fruit-item">
-            <img src="https://images.unsplash.com/photo-1537084642907-629340c7e59c?w=400" alt="Grape">
-            <div class="fruit-name">Nho (Grape)</div>
-        </div>
-        <div class="fruit-item">
-            <img src="https://images.unsplash.com/photo-1553279768-865429fa0078?w=400" alt="Mango">
-            <div class="fruit-name">Xoài (Mango)</div>
-        </div>
-    </div>
-
-    <div class="fruit-row">
-        <div class="fruit-item">
-            <img src="https://images.unsplash.com/photo-1498557850523-fd3d118b962e?w=400" alt="Blueberry">
-            <div class="fruit-name">Việt quất (Blueberry)</div>
-        </div>
-        <div class="fruit-item">
-            <img src="https://images.unsplash.com/photo-1528825831115-b5819d28bf23?w=400" alt="Cherry">
-            <div class="fruit-name">Anh đào (Cherry)</div>
-        </div>
-        <div class="fruit-item">
-            <img src="https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=400" alt="Watermelon">
-            <div class="fruit-name">Dưa hấu (Watermelon)</div>
-        </div>
-    </div>
-
-    <p><a href="index.html" style="text-decoration: none; color: #0984e3;">← Quay lại trang chủ</a></p>
-
-</body>
-</html>
