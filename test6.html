@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Lists</title>
+<style>
+        body {
+            font-family: 'Times New Roman', serif;
+            padding: 50px 80px;
+            line-height: 1.8;
+            background-color: #f9f9f9;
+            color: #033977;
+        }
+        /* Chỉnh kiểu số La Mã cho cấp 1 */
+        .roman-list { 
+            list-style-type: upper-roman; 
+            color: #033977;
+            font-weight: 600;
+            margin-bottom: 40px;
+        }
+        /* Khoảng cách giữa các mục cấp 1 */
+        .roman-list > li {
+            margin-bottom: 25px;
+            cursor: default;
+            transition: background-color 0.3s ease;
+            padding: 6px 12px;
+            border-radius: 5px;
+        }
+        .roman-list > li:hover {
+            background-color: #dbe9f4;
+        }
+
+        /* Chỉnh kiểu chữ cái cho cấp 2 của mục I */
+        .alpha-list { 
+            list-style-type: lower-alpha; 
+            color: #2a4d69;
+            font-weight: 500;
+            margin-top: 10px;
+        }
+        .alpha-list > li {
+            margin-bottom: 12px;
+            padding: 3px 10px;
+            border-radius: 3px;
+            transition: background-color 0.3s ease;
+        }
+        .alpha-list > li:hover {
+            background-color: #afc8e0;
+        }
+
+        /* Cấp 2 không class */
+        .roman-list > li > ol {
+            list-style-type: decimal;
+            color: #2a4d69;
+            margin-top: 10px;
+        }
+        .roman-list > li > ol > li {
+            margin-bottom: 10px;
+            padding: 3px 8px;
+            border-radius: 3px;
+            transition: background-color 0.3s ease;
+            cursor: default;
+        }
+        .roman-list > li > ol > li:hover {
+            background-color: #b6d7a8;
+        }
+
+        /* Cấp 3: ul trong nested ol */
+        ul {
+            list-style-type: disc;
+            margin-left: 20px;
+            color: #2a4d69;
+        }
+        ul > li {
+            margin-bottom: 6px;
+            padding-left: 5px;
+            cursor: default;
+            transition: color 0.3s ease;
+        }
+        ul > li:hover {
+            color: #2a4d69;
+        }
+    </style>
+
+</head>
+<body>
+<h1>Lists Example</h1>
+    <ol class="roman-list">
+        <li>List item 1
+            <ol class="alpha-list">
+                <li>Nested item 1.1</li>
+                <li>Nested item 1.2</li>
+            </ol>
+        </li>
+        <li>List item 2
+            <ol>
+                <li>Nested item 2.1</li>
+                <li>Nested item 2.2
+                    <ul>
+                        <li>Nested item 2.2.1</li>
+                        <li>Nested item 2.2.2</li>
+                        <li>Nested item 2.2.3</li>
+                    </ul>
+                </li>
+                <li>Nested item 2.3</li>
+            </ol>
+        </li>
+        <li>List item 3
+            <ul>
+                <li>Nested item 3.1</li>
+                <li>Nested item 3.2</li>
+                <li>Nested item 3.3</li>
+            </ul>
+        </li>
+    </ol>
+
+</body>
+</html>
