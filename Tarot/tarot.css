@@ -1,0 +1,88 @@
+ body { margin: 0; overflow: hidden; background-color: #050505; font-family: 'Times New Roman', serif; color: #fff; }
+        
+        #input-video { 
+            position: fixed; top: 0; left: 0; 
+            width: 100%; height: 100%; object-fit: cover;
+            opacity: 0; z-index: -10; pointer-events: none; 
+        } 
+        
+        #canvas-container { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1; }
+        #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+        
+        #guide-text {
+            position: absolute; width: 100%; text-align: center;
+            color: #fff; letter-spacing: 3px; font-weight: normal;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); pointer-events: none;
+            transition: opacity 0.5s; text-transform: uppercase;
+            font-size: 0.6rem; bottom: 2%; 
+        }
+
+        #counter {
+            position: absolute; top: 30px; right: 40px;
+            font-size: 1.2rem; color: #fff; font-weight: bold;
+            border: 1px solid rgba(255, 255, 255, 0.5); padding: 5px 15px; border-radius: 30px;
+            background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(5px);
+        }
+
+        #credit-text {
+            position: absolute; 
+            color: rgba(255, 255, 255, 0.6); font-family: sans-serif; font-size: 0.8rem;
+            pointer-events: none; z-index: 5; letter-spacing: 1px;
+            text-shadow: 0 0 5px rgba(0,0,0,0.5);
+            bottom: 10px; right: 5px;
+        }
+
+        #loading {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; z-index: 10; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; text-align: center;
+            transition: opacity 1.5s ease-out; pointer-events: auto;
+        }
+        .loader-content { opacity: 0.8; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+
+        #virtual-cursor {
+            position: absolute; width: 30px; height: 30px;
+            border: 2px solid rgba(255, 255, 255, 0.9); border-radius: 50%;
+            transform: translate(-50%, -50%); pointer-events: none;
+            z-index: 100; display: none; transition: transform 0.1s;
+            box-shadow: 0 0 10px rgba(255,255,255,0.6);
+        }
+        #virtual-cursor.pinching { 
+            background: #fff; width: 15px; height: 15px; border: none; 
+            box-shadow: 0 0 20px #fff, 0 0 40px #fff; 
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+        
+        #result-modal {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 80%; max-width: 900px; max-height: 80vh; overflow-y: auto;
+            background: rgba(10, 10, 10, 0.95); border: 1px solid #fff; 
+            padding: 50px; display: none; pointer-events: auto; 
+            box-shadow: 0 0 100px rgba(255,255,255,0.1); border-radius: 4px; z-index: 20;
+        }
+        #result-modal::-webkit-scrollbar { width: 6px; }
+        
+        #result-modal h2 { 
+            color: #fff; text-align: center; border-bottom: 1px solid #333; 
+            padding-bottom: 20px; margin-top: 0; text-transform: uppercase; 
+            letter-spacing: 4px; font-weight: normal; font-size: 1.8rem;
+        }
+        
+        .reading-section { margin-bottom: 40px; border-bottom: 1px solid #222; padding-bottom: 20px; animation: fadeIn 1.5s ease-out; }
+        .reading-label { color: #888; font-size: 0.7rem; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 15px; display: block;}
+        .reading-body { display: flex; gap: 30px; align-items: start; }
+        .reading-img { width: 100px; border-radius: 4px; filter: grayscale(0.2); transition: filter 0.5s; }
+        .reading-img:hover { filter: grayscale(0); }
+        .reading-content h3 { margin: 0 0 10px 0; color: #fff; font-size: 1.5rem; font-weight: normal; }
+        .reading-desc { color: #ccc; line-height: 1.6; font-size: 1rem; text-align: justify; font-weight: 300; }
+        
+        button.restart-btn { 
+            display: block; margin: 40px auto 0; padding: 15px 50px; 
+            background: transparent; border: 1px solid #fff; color: #fff; 
+            cursor: pointer; font-family: serif; letter-spacing: 3px; text-transform: uppercase;
+            font-size: 0.9rem; transition: all 0.5s; 
+        }
+        button.restart-btn:hover { background: #fff; color: #000; box-shadow: 0 0 20px #fff; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }

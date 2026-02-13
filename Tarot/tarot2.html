@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Tarot AR - Faster Scroll</title>
+    <link rel="stylesheet" href="tarot.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <video id="input-video" playsinline autoplay muted></video>
+    <div id="canvas-container"></div>
+    <div id="virtual-cursor"></div>
+    
+    <div id="ui-layer">
+        <div id="counter">0 / 5</div>
+        <div id="guide-text">Đưa tay lên trước Camera để bắt đầu</div>
+        <div id="credit-text">cre idea tiktok: binnanee</div>
+        
+        <div id="result-modal">
+            <h2>Lời Tiên Tri</h2>
+            <div id="final-reading"></div>
+            <button class="restart-btn" onclick="location.reload()">Trải Bài Mới</button>
+        </div>
+    </div>
+
+    <div id="loading">
+        <div class="loader-content">
+            <div style="font-size: 2rem; color: #fff;">✦</div>
+            <div style="font-size: 0.8rem; color: #888; letter-spacing: 4px; margin-top: 10px;">LOADING...</div>
+        </div>
+    </div>
+
+    <script src="tarot.js"></script>
+</body>
+</html>
