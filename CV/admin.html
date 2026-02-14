@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <div class="login-container" id="loginSection">
+        <div class="login-box">
+            <h2>Admin Login</h2>
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="login()">Login</button>
+        </div>
+    </div>
+
+    <div class="dashboard" id="dashboard" style="display: none;">
+        <div class="layout">
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <h2>Admin</h2>
+                    <div class="admin-user">
+                        <div class="avatar">DT</div>
+                        <div class="user-info">
+                            <p id="adminEmail">Loading...</p>
+                            <span class="status-online">● Online</span>
+                        </div>
+                    </div>
+                </div>
+
+                <nav class="sidebar-nav">
+                    <a href="javascript:void(0)" onclick="showDashboard(); setActive(this)" class="nav-item active">📊 Dashboard</a>
+                    <a href="javascript:void(0)" onclick="showSettings(); setActive(this)" class="nav-item">⚙️ Settings</a>
+                    <a href="javascript:void(0)" onclick="showLogs(); setActive(this)" class="nav-item">📜 Nhật ký</a>
+                </nav>
+
+                <div class="sidebar-footer">
+                    <button class="small logout" onclick="logout()">Logout 🚪</button>
+                </div>
+            </div>
+
+            <div class="main">
+                <div id="mainDashboardContent">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h1>Dashboard</h1>
+                        <button onclick="exportToExcel()" class="btn-excel">Export Excel 📊</button>
+                    </div>
+            <div class="card">
+                        <h3>Total Messages</h3>
+                        <div class="stat-number" id="totalCount">0</div>
+                    </div>
+             <div class="card">
+                        <canvas id="chart"></canvas>
+                    </div>
+            <div class="card">
+                        <div style="margin-bottom: 10px;">
+                            <button onclick="deleteSelected()" class="btn-delete-bulk">Delete Selected 🗑️</button>
+                            <button onclick="undoDelete()" class="btn-undo">Undo Last Delete ↩️</button>
+                        </div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th><input type="checkbox" id="selectAll" onclick="toggleAll(this)"></th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Message</th>
+                                    <th>Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="messages"></tbody>
+                        </table>
+                    </div>
+          <div class="card" id="trashSection" style="margin-top: 40px; border-color: #ff4d4d; display: none;">
+                        <h3 style="color: #ff4d4d; margin-bottom: 15px;">🗑️ Trash Bin</h3>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th><th>Email</th><th>Message</th><th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="trashMessages"></tbody>
+                        </table>
+                    </div>
+                </div>
+  <div id="settingsSection" style="display: none;">
+    <h1>⚙️ Website Settings</h1>
+    <div class="card">
+        <div class="form-group">
+            <label>Số điện thoại:</label>
+            <input type="text" id="set_phone" class="input-field" placeholder="Nhập SĐT...">
+        </div>
+        <div class="form-group" style="margin-top: 15px;">
+            <label>Email liên hệ:</label>
+            <input type="text" id="set_email" class="input-field" placeholder="Nhập Email...">
+        </div>
+        <button onclick="saveSettings()" class="btn-save" style="width: 100%; margin-top: 20px;">Lưu cấu hình ✅</button>
+    </div>
+</div>
+
+    <div class="card" id="logSection" style="display: none;">
+        <h2>📜 Nhật ký hoạt động</h2>
+        <table class="table">
+            <thead><tr><th>Thời gian</th><th>Người dùng</th><th>Hành động</th><th>Chi tiết</th></tr></thead>
+            <tbody id="logListFull"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="admin.js"></script>
+    <script>
+        function setActive(el) {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            el.classList.add('active');
+        }
+    </script>
+
+</body>
+</html>

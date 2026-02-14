@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Mine Pizza</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.19.3/package/dist/xlsx.full.min.js"></script>
+    
+    <style>
+        
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden; background-color: #ff3b3b;
+        }
+
+        .cursor-dot, .cursor-outline {
+            pointer-events: none; position: fixed;
+            top: 0; left: 0; transform: translate(-50%, -50%);
+            border-radius: 50%; z-index: 9999; transition: opacity 0.3s ease-in-out;
+        }
+        .cursor-dot { width: 8px; height: 8px; background-color: white; }
+        .cursor-outline { width: 30px; height: 30px; border: 2px solid rgba(255, 255, 255, 0.5); }
+
+        .login-container { display: flex; flex-direction: column; height: 100vh; width: 100%; }
+
+        .header-section {
+            flex: 0.35; display: flex; justify-content: center;
+            align-items: center; color: white; flex-direction: column;
+        }
+        .header-section h1 { font-size: 20px; font-weight: 300; letter-spacing: 1px; margin: 0; }
+
+        .login-box {
+            flex: 0.65; background-color: #ffffff;
+            border-top-left-radius: 50px; border-top-right-radius: 50px;
+            padding: 40px 30px; display: flex; flex-direction: column;
+            align-items: center; box-shadow: 0 -10px 25px rgba(0,0,0,0.1);
+        }
+
+        .login-box h2 { font-size: 28px; margin: 0; color: #1a1a1a; }
+        .brand-subtext { color: #888; font-size: 13px; margin-bottom: 30px; }
+
+        .input-group { width: 100%; margin-bottom: 20px; }
+        .input-group label { display: block; font-size: 12px; font-weight: 600; color: #666; margin-bottom: 8px; padding-left: 5px; }
+        .input-wrapper { background-color: #f2f2f2; border-radius: 15px; padding: 12px 15px; display: flex; align-items: center; }
+        .input-wrapper i { font-style: normal; margin-right: 10px; color: #999; }
+        .input-wrapper input { border: none; background: transparent; outline: none; width: 100%; font-size: 15px; }
+
+        .form-options { width: 100%; display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 30px; }
+        .form-options label { color: #666; display: flex; align-items: center; gap: 5px; }
+        .form-options a { color: #ff3b3b; text-decoration: none; font-weight: 600; }
+
+        .btn-login {
+            width: 100%; background-color: #ff4b4b; color: white;
+            border: none; padding: 16px; border-radius: 30px;
+            font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+        .btn-login:active { transform: scale(0.98); opacity: 0.9; }
+
+        .or-divider { margin: 20px 0; color: #bbb; font-size: 12px; }
+
+        .social-group { width: 100%; display: flex; gap: 15px; justify-content: center; }
+        .btn-social {
+            flex: 1; background-color: white; border: 1px solid #ddd;
+            padding: 12px; border-radius: 30px; display: flex;
+            justify-content: center; align-items: center; gap: 8px;
+            font-size: 14px; font-weight: 500; cursor: pointer; transition: 0.2s;
+        }
+        .btn-social:hover { background-color: #f9f9f9; border-color: #ccc; }
+        .btn-social img { width: 18px; height: 18px; }
+    </style>
+</head>
+<body>
+
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <div class="login-container" id="loginSection">
+        <div class="header-section">
+            <h1>Mine pizza</h1>
+        </div>
+
+        <div class="login-box">
+            <h2>Log in</h2>
+            <p class="brand-subtext">Admin</p>
+
+            <div class="input-group">
+                <label>Email</label>
+                <div class="input-wrapper">
+                    <i>✉</i>
+                    <input type="email" id="email" placeholder="Email">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Password</label>
+                <div class="input-wrapper">
+                    <i>🔒</i>
+                    <input type="password" id="password" placeholder="Password">
+                </div>
+            </div>
+
+            <div class="form-options">
+                <label><input type="checkbox"> Remember me</label>
+                <a href="#">Forget your password?</a>
+            </div>
+
+            <button class="btn-login" onclick="loginWithEmail()">Log in</button>
+
+            <div class="or-divider">-OR-</div>
+
+            <div class="social-group">
+                <button class="btn-social" onclick="loginWithSocial('google')">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/pwa-tooling/google-logo.png" alt="G">
+                    Google
+                </button>
+                
+                <button class="btn-social" onclick="loginWithSocial('facebook')">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b9/2023_Facebook_icon.svg" alt="F">
+                    Facebook
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. Cấu hình Supabase (Thay link và key thật của bạn vào đây)
+        const supabaseUrl = 'https://tcyvwehwadmakcwlieed.supabase.co'; // Đã lấy từ URL bạn gửi
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRjeXZ3ZWh3YWRtYWtjd2xpZWVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4MTc3MTEsImV4cCI6MjA4NjM5MzcxMX0.wXyvuEls8ZdWF2vXLYK1H3DLMi2cflXOyeBYxqsOvyI'; 
+        const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        // 2. Hiệu ứng Cursor
+        const dot = document.querySelector(".cursor-dot");
+        const outline = document.querySelector(".cursor-outline");
+        window.addEventListener("mousemove", (e) => {
+            dot.style.left = e.clientX + "px";
+            dot.style.top = e.clientY + "px";
+            outline.animate({
+                left: e.clientX + "px",
+                top: e.clientY + "px"
+            }, { duration: 500, fill: "forwards" });
+        });
+
+        // 3. Hàm đăng nhập Email/Password
+        async function loginWithEmail() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            const { data, error } = await _supabase.auth.signInWithPassword({
+                email: email,
+                password: password,
+            });
+
+            if (error) alert("Lỗi: " + error.message);
+            else alert("Đăng nhập thành công!");
+        }
+
+        // 4. Hàm đăng nhập Google/Facebook (Sẽ dùng link callback bạn gửi để điều hướng)
+        async function loginWithSocial(provider) {
+            const { data, error } = await _supabase.auth.signInWithOAuth({
+                provider: provider,
+                options: {
+                    // Link callback bạn gửi dùng để điền vào Dashboard Facebook/Google
+                    // Còn ở đây dùng origin để nó tự quay về trang hiện tại của bạn
+                    redirectTo: window.location.origin 
+                }
+            });
+
+            if (error) alert("Lỗi OAuth: " + error.message);
+        }
+    </script>
+</body>
+</html>
