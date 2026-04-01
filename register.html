@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng ký tài khoản</title>
+     <script type="text/javascript" src="https://cdn.jsdelivr.net"></script>
+     <style>
+        @import url('https://fonts.googleapis.com');
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background-color: #000000;
+    color: #ffffff;
+    height: 100vh; 
+    width: 100vw; 
+    display: flex;
+    justify-content: center; 
+    align-items: center;     
+    overflow: hidden;
+}
+
+.card {
+    background: #121212; 
+    padding: 2.5rem;
+    border-radius: 16px;
+    border: 1px solid #282828;
+    width: 100%;
+    max-width: 400px; 
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+}
+
+h2 { 
+    margin-bottom: 10px; 
+    font-size: 24px; 
+    font-weight: 600; 
+}
+p { 
+    color: #a0a0a0; 
+    margin-bottom: 25px; 
+    font-size: 14px; 
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 15px;
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: white;
+    outline: none;
+    transition: border 0.3s;
+}
+
+input:focus { 
+    border-color: #00f2fe; 
+}
+
+.btn-main {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #00f2fe 0%, #fb00ff 100%);
+    color: white;
+    text-decoration: none;
+    display: block;
+    transition: transform 0.2s, opacity 0.2s;
+}
+
+.btn-main:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+.otp-group { 
+    display: flex; 
+    gap: 5px; 
+}
+.btn-otp {
+    background: #282828;
+    color: #00f2fe;
+    border: 1px solid #333;
+    padding: 0 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    font-size: 12px;
+    white-space: nowrap;
+}
+.btn-main {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #00f2fe 0%, #fb00ff 100%);
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.btn-main:hover { transform: scale(1.02); }
+
+.link-switch { 
+    margin-top: 20px; 
+    font-size: 14px; 
+    color: #a0a0a0; 
+}
+.link-switch a { 
+    color: #00f2fe; 
+    text-decoration: none; 
+    font-weight: 600; 
+}
+.btn-social {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none; 
+    background: #1e1e1e;
+    border: 1px solid #333;
+    padding: 10px;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+.btn-social img {
+    width: 24px;            
+    height: 24px;           
+    object-fit: contain;    
+    display: block;         
+}
+    
+     </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Đăng ký</h2>
+        
+        <input type="text" id="reg_name" placeholder="Họ và Tên">
+        <input type="email" id="reg_email" placeholder="Email">
+        <input type="text" id="reg_phone" placeholder="Số điện thoại">
+        
+        <div class="otp-group">
+            <input type="text" id="otp_input" placeholder="Nhập mã 6 số">
+             <button type="button" class="btn-otp" onclick="testSend()">Gửi mã</button>
+        </div>
+        
+        <input type="password" id="reg_pass" placeholder="Mật khẩu">
+        
+        <button class="btn-main" onclick="handleRegister()">Tạo tài khoản</button>
+
+        <div class="divider">Hoặc đăng ký bằng</div>
+        
+        <div class="social-group">
+    
+    <a href="https://accounts.google.com" target="_blank" class="btn-social">
+    <img src="app/google.png" alt="Google">
+    <span>Google</span>
+    </a>
+
+    <a href="https://www.facebook.com" target="_blank" class="btn-social">
+        <img src="app/facebook.png" alt="Facebook">
+        <span>Facebook</span>
+    </a>
+    
+    <a href="https://www.tiktok.com" target="_blank" class="btn-social">
+        <img src="app/tiktok.png" alt="TikTok">
+        <span>TikTok</span>
+    </a>
+        </div>
+    <div class="link-switch">Đã có tài khoản? <a href="login.html">Đăng nhập</a></div>
+    
+    </div>
+    <script>
+        let codeMoi = null;
+
+        function testSend() {
+            const email = document.getElementById('email_test').value;
+            if (!email.includes('@')) {
+                alert("Bạn chưa nhập đúng Email!");
+                return;
+            }
+            
+            codeMoi = Math.floor(100000 + Math.random() * 900000);
+            alert("MÃ OTP CỦA BẠN LÀ: " + codeMoi);
+            console.log("Mã đã tạo:", codeMoi);
+        }
+
+        function testVerify() {
+            const nhapVao = document.getElementById('otp_input').value;
+            if (codeMoi && nhapVao == codeMoi) {
+                alert("CHÚC MỪNG! Mã đúng, đang chuyển trang...");
+            } else {
+                alert("Sai mã rồi! Thử lại nhé.");
+            }
+       } 
+       function verifyAndRegister() {
+    const email = document.getElementById('user_email').value;
+    const pass = document.getElementById('password').value; 
+    const userInput = document.getElementById('otp_input').value;
+    
+    if (userInput == generatedOTP) {
+        localStorage.setItem('userEmail', email);
+        localStorage.setItem('userPass', pass);
+
+        alert("Đăng ký thành công! Dữ liệu đã được lưu.");
+        window.location.href = "login.html";
+    } else {
+        alert("Mã OTP không đúng!");
+    }
+       }
+       let generatedOTP = null;
+        function testSend() {
+            generatedOTP = Math.floor(100000 + Math.random() * 900000);
+            alert("Mã OTP của bạn là: " + generatedOTP);
+        }
+
+     function handleRegister() {
+    const name = document.getElementById('reg_name').value;
+    const email = document.getElementById('reg_email').value;
+    const phone = document.getElementById('reg_phone').value;
+    const pass = document.getElementById('reg_pass').value;
+    const otp = document.getElementById('otp_input').value;
+
+    if(!name || !email || !phone || !pass) return alert("Vui lòng điền đủ thông tin!");
+    if(otp != generatedOTP) return alert("Mã OTP không đúng!");
+
+    localStorage.setItem('storedName', name);
+    localStorage.setItem('storedEmail', email);
+    localStorage.setItem('storedPhone', phone);
+    localStorage.setItem('storedPass', pass);
+
+    const listUsers = JSON.parse(localStorage.getItem('ticket_users')) || [];
+    const newUser = {
+        id: 'USER-' + Date.now(),
+        name: name,
+        email: email,
+        phone: phone,
+        time: new Date().toLocaleString('vi-VN')
+    };
+
+
+    listUsers.push(newUser);
+    localStorage.setItem('ticket_users', JSON.stringify(listUsers));
+
+    alert("Đăng ký thành công!");
+    window.location.href = "login.html";
+}
+    </script>
+</body>
+</html>
