@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Liên hệ với EventHub để được hỗ trợ về đặt vé, thanh toán số và hợp tác tổ chức sự kiện.">
+    <title>Liên Hệ | EventHub</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="contact.css">
+</head>
+<body>
+
+    <header class="site-header" id="header">
+        <div class="container">
+            <a href="index.html" class="logo">EventHub.</a>
+            <nav class="main-nav" aria-label="Điều hướng chính">
+                <ul>
+                    <li><a href="index.html">Trang chủ</a></li>
+                    <li><a href="events.html">Sự kiện</a></li>
+                    <li><a href="calendar.html">Lịch</a></li>
+                    <li><a href="about.html">Về chúng tôi</a></li>
+                    <li><a href="contact.html" class="active" aria-current="page">Liên hệ</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <a href="login.html" class="btn btn-primary">Đăng nhập</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="contact-page section-padding">
+        <div class="container">
+            
+            <div class="section-header text-center" style="margin-bottom: 60px;">
+                <h1 class="text-gradient" style="font-size: 3rem; margin-bottom: 15px;">Khởi Tạo Kết Nối</h1>
+                <p class="lead-text">Trao đổi ý tưởng, giải quyết vấn đề và cùng EventHub kiến tạo những trải nghiệm sự kiện đẳng cấp.</p>
+            </div>
+
+            <div class="grid-2-cols" style="gap: 60px;">
+                
+                <section class="contact-form-section" aria-labelledby="form-title">
+                    <h2 id="form-title" style="margin-bottom: 25px; font-size: 1.8rem;">Thông Tin Yêu Cầu</h2>
+                    
+                    <form id="contactForm" class="contact-form" novalidate>
+                        <div class="form-group">
+                            <label for="fullName">Đại diện liên hệ / Họ và tên <span class="required">*</span></label>
+                            <input type="text" id="fullName" name="fullName" placeholder="Nhập tên đầy đủ của bạn">
+                            <small class="error-message"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="emailAddress">Địa chỉ Email <span class="required">*</span></label>
+                            <input type="email" id="emailAddress" name="emailAddress" placeholder="Email cá nhân hoặc doanh nghiệp">
+                            <small class="error-message"></small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="subject">Lĩnh vực cần tư vấn</label>
+                            <select id="subject" name="subject">
+                                <option value="payment">Giao dịch & Thanh toán vé kỹ thuật số</option>
+                                <option value="partnership">Đề xuất Hợp tác & Tài trợ sự kiện</option>
+                                <option value="technical">Hỗ trợ Kỹ thuật & Trải nghiệm nền tảng</option>
+                                <option value="other">Các vấn đề khác</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message">Thông điệp / Yêu cầu chi tiết <span class="required">*</span></label>
+                            <textarea id="message" name="message" rows="5" placeholder="Vui lòng mô tả chi tiết vấn đề hoặc đề xuất của bạn..."></textarea>
+                            <small class="error-message"></small>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 card-hover" style="width: 100%; padding: 15px; font-size: 1.1rem; margin-top: 10px;">
+                            Gửi Thông Điệp <i class="fa-solid fa-paper-plane" style="margin-left: 8px;"></i>
+                        </button>
+                    </form>
+                </section>
+
+                <aside class="contact-info-section">
+                    <div class="info-card bg-light card-hover" style="padding: 35px; border-radius: var(--border-radius); border: 1px solid #e5e7eb; margin-bottom: 30px;">
+                        <h3 style="margin-bottom: 20px; color: var(--text-dark);">Văn Phòng Điều Hành</h3>
+                        <address style="font-style: normal; color: var(--text-muted); line-height: 2;">
+                            <p><i class="fa-solid fa-location-dot" style="width: 25px; color: var(--primary-pink);"></i> 123 Đường Công Nghệ, Quận 1, TP. HCM</p>
+                            <p><i class="fa-solid fa-phone" style="width: 25px; color: var(--primary-pink);"></i> <strong>1900.6408</strong> (Hotline Hỗ trợ 24/7)</p>
+                            <p><i class="fa-solid fa-envelope" style="width: 25px; color: var(--primary-pink);"></i> partners@eventhub.vn</p>
+                        </address>
+                    </div>
+
+                    <div class="map-container card-hover" style="border-radius: var(--border-radius); overflow: hidden; border: 1px solid #e5e7eb;">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.3242784558237!2d106.697410415334!3d10.786455292314782!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f349272337d%3A0x8e577ab0c3a887a0!2zUXXhuq1uIDEsIFRow6BuaCBwaOG7kSBI4buTIENow60gTWluaCwgVmnhu4d0IE5hbQ!5e0!3m2!1svi!2s!4v1620000000000!5m2!1svi!2s" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                    </div>
+                </aside>
+
+            </div>
+        </div>
+    </main>
+
+    <footer class="dark-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col brand-col">
+                    <h3>EventHub.</h3>
+                    <div class="social-icons">
+                        <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" aria-label="Tiktok"><i class="fa-brands fa-tiktok"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>LIÊN KẾT</h4>
+                    <ul>
+                        <li><a href="index.html">Trang chủ</a></li>
+                        <li><a href="about.html">Về chúng tôi</a></li>
+                        <li><a href="#">Hồ sơ tài trợ</a></li>
+                        <li><a href="#">Tuyển dụng</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>HỖ TRỢ</h4>
+                    <ul>
+                        <li><a href="#">Điều khoản sử dụng</a></li>
+                        <li><a href="#">Chính sách bảo mật</a></li>
+                        <li><a href="contact.html">Câu hỏi thường gặp</a></li>
+                        <li><a href="#">Quy trình hoàn tiền</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col contact-col">
+                    <h4>LIÊN HỆ</h4>
+                    <p class="hotline">1900.6408</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>2026 EVENTHUB GLOBAL 2ND EDITION</p>
+                <div class="language-flags">
+                    <span title="Tiếng Việt">🇻🇳</span> 
+                    <span title="English">🇺🇸</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="modal-overlay" id="successModal">
+        <div class="modal-content">
+            <div style="font-size: 3.5rem; margin-bottom: 15px; color: #10b981;">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3 class="text-gradient" style="font-size: 1.8rem; margin-bottom: 15px;">Gửi Thành Công!</h3>
+            <p style="color: var(--text-muted); margin-bottom: 25px; line-height: 1.6;">Cảm ơn bạn đã liên hệ. Đội ngũ EventHub sẽ phản hồi qua email của bạn trong thời gian sớm nhất.</p>
+            <button class="btn btn-primary" id="closeModalBtn" style="width: 100%; padding: 12px; font-size: 1rem;">Tuyệt vời</button>
+        </div>
+    </div>
+
+    <button class="chatbot-toggler" id="chatbotToggler">
+        <i class="fa-solid fa-robot"></i>
+    </button>
+
+    <div class="chatbot-window" id="chatbotWindow">
+        <div class="chat-header">
+            <div class="chat-header-info">
+                <div class="chat-avatar"><i class="fa-solid fa-robot"></i></div>
+                <div>
+                    <h4>Trợ lý ảo EventHub</h4>
+                    <span class="status-online">Online</span>
+                </div>
+            </div>
+            <button class="close-chat" id="closeChatBtn"><i class="fa-solid fa-chevron-down"></i></button>
+        </div>
+
+        <div class="chat-body" id="chatBody">
+            <div class="chat-message bot-message">
+                <p>Chào bạn đến với EventHub! Mời bạn bấm vào các nút bên dưới để khám phá tính năng, hoặc nhập câu hỏi để mình hỗ trợ nhé!</p>
+            </div>
+            
+            <div class="chat-quick-actions">
+                <button class="quick-action-btn"><i class="fa-solid fa-ticket"></i> Mua vé sự kiện</button>
+                <button class="quick-action-btn"><i class="fa-solid fa-money-bill-transfer"></i> Lỗi thanh toán</button>
+                <button class="quick-action-btn"><i class="fa-solid fa-calendar-days"></i> Lịch sự kiện</button>
+                <button class="quick-action-btn"><i class="fa-solid fa-handshake"></i> Hợp tác tổ chức</button>
+                <button class="quick-action-btn"><i class="fa-solid fa-circle-question"></i> Hướng dẫn</button>
+                <button class="quick-action-btn"><i class="fa-solid fa-bullhorn"></i> CT Khuyến mãi</button>
+            </div>
+        </div>
+
+        <div class="chat-footer">
+            <button class="menu-btn"><i class="fa-solid fa-bars"></i></button>
+            <input type="text" id="chatInput" placeholder="Nhập nội dung cần hỗ trợ...">
+            <button class="send-btn" id="sendChatBtn"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script src="contact.js"></script>
+</body>
+</html>
