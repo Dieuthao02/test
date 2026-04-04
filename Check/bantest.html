@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELYSIUM BLOG</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+      /* 1. VARIABLES & BASE STYLES */
+:root {
+    --pink-pastel: #FFB7CE;
+    --blue-pastel: #A2E1DB;
+    --dark-navy: #11141B;
+    --card-bg: #1C1F26;
+    --text-gray: #B0B3B8;
+}
+
+body {
+    margin: 0;
+    background-color: var(--dark-navy);
+    color: white;
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+}
+
+/* --- Global Buttons --- */
+.btn-green {
+    display: inline-block;
+    background: #728aca;
+    color: white;
+    padding: 14px 30px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn-green:hover {
+    background: #90d6cf;
+    transform: scale(1.05);
+}
+
+/* 2. HEADER & NAVIGATION */
+header {
+    padding: 10px 5% 0px 5%;
+    text-align: center;
+    border-bottom: none;
+}
+
+.logo-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 30px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.blog-brand {
+    font-family: 'Dancing Script', cursive;
+    font-size: 42px;
+    text-transform: none;
+    background: linear-gradient(45deg, var(--pink-pastel), var(--blue-pastel));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* --- Decorative Lines --- */
+.header-line {
+    width: 100%;
+    height: 3px;
+    background-color: #289fa7;
+    box-shadow: 0 2px 10px rgba(40, 85, 167, 0.3);
+    margin-top: 10px;
+}
+
+.mid-line {
+    width: auto;
+    height: 3px;
+    background-color: #289fa7;
+    box-shadow: 0 2px 10px rgba(40, 85, 167, 0.3);
+    margin-left: -5.3%;
+    margin-right: -5.3%;
+    margin-top: 0px;
+    margin-bottom: -10px;
+}
+
+/* --- Nav Menu --- */
+nav ul {
+    display: flex;
+    justify-content: center;
+    gap: 35px;
+    list-style: none;
+    margin-top: 20px;
+    padding: 0;
+}
+
+nav a {
+    text-decoration: none;
+    color: white;
+    font-weight: 600;
+    font-size: 14px;
+    opacity: 0.8;
+    transition: 0.3s;
+}
+
+nav a:hover {
+    opacity: 1;
+    color: var(--blue-pastel);
+}
+
+/* 3. HERO BANNER (SLIDER) */
+.hero {
+    margin: 20px 5%;
+    height: 480px;
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+    background-color: #000;
+}
+
+.hero-item {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: 60px;
+    box-sizing: border-box;
+}
+
+.hero-item.active {
+    opacity: 1;
+    z-index: 1;
+}
+
+.hero-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
+    z-index: 1;
+}
+
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 50%, transparent 100%);
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+}
+
+.hero-content h1 {
+    font-size: 38px;
+    line-height: 1.2;
+    margin-bottom: 25px;
+    font-weight: 800;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+}
+
+/* --- Hero Dots --- */
+.hero-dots {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    display: flex;
+    gap: 12px;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.dot.active {
+    background-color: #fff;
+    transform: scale(1.2);
+}
+
+/* 4. GRID & POST CARDS  */
+.container {
+    padding: 40px 5%;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 25px;
+    gap: 10px;
+}
+
+.section-header::after {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(to right, var(--blue-pastel), transparent);
+}
+
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.post-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: 0.3s;
+}
+
+.post-card:hover {
+    transform: translateY(-5px);
+}
+
+.post-img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.post-content {
+    padding: 15px;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+/*5. PROMO BANNERS & ƯU ĐÃI */
+.promo-banner {
+    margin: 40px 0;
+    background: linear-gradient(135deg, #6A11CB, #2575FC);
+    border-radius: 15px;
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.promo-text h2 {
+    margin: 0;
+    font-size: 28px;
+    color: #FFF200;
+}
+
+.promo-tag {
+    background: white;
+    color: #2575FC;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: 800;
+}
+
+/* --- Ưu đãi Section --- */
+.uudai-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 30px;
+    margin-top: 50px;
+    margin-bottom: 60px;
+}
+
+.uudai-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.uudai-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    text-decoration: none;
+    color: white;
+    transition: 0.3s;
+}
+
+.uudai-item:hover {
+    background: rgba(255, 255, 255, 0.03);
+    padding-left: 10px;
+}
+
+.uudai-img {
+    width: 140px;
+    height: 85px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.uudai-info h4 {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.4;
+    font-weight: 600;
+}
+
+/* --- Right Side Banner --- */
+.uudai-banner-right {
+    background: linear-gradient(135deg, #4A148C, #7B1FA2);
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    min-height: 400px;
+}
+
+.uudai-banner-right h3 {
+    font-size: 22px;
+    margin: 0;
+    color: var(--blue-pastel);
+}
+
+.uudai-banner-right .promo-code {
+    font-size: 32px;
+    font-weight: 800;
+    color: white;
+    margin: 15px 0;
+}
+
+.card-mockup {
+    width: 100%;
+    height: auto;
+    margin-top: 20px;
+    filter: drop-shadow(0 15px 25px rgba(0,0,0,0.5));
+}
+
+@media (max-width: 992px) {
+    .uudai-container { grid-template-columns: 1fr; }
+}
+
+/*  6. SPOTLIGHT (VIDEO) & NEWS */
+.spotlight-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+}
+
+.video-card {
+    aspect-ratio: 9/16;
+    background: #000;
+    border-radius: 12px;
+    position: relative;
+    background-size: cover;
+    border: 2px solid transparent;
+    transition: 0.3s;
+}
+
+.video-card:hover {
+    border-color: var(--pink-pastel);
+}
+
+.play-icon {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    width: 30px;
+    height: 30px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* --- News Section --- */
+.two-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-top: 50px;
+}
+
+.news-item {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.news-img {
+    width: 100px;
+    height: 70px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.news-title {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/*7.SỰ KIỆN NỔI BẬT*/
+.carousel-section {
+    padding-top: 0px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.carousel-header {
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: 700;
+    margin: 40px 0 0px 0;
+    gap: 15px;
+    color: white;
+}
+
+.carousel-header::after {
+    content: '';
+    flex: 1;
+    height: 2px;
+    background: linear-gradient(to right, var(--blue-pastel), transparent);
+}
+
+.slider {
+    position: relative;
+    width: 250px;
+    height: 350px;
+    margin-top: 80px;
+    margin-bottom: 100px;
+    transform-style: preserve-3d;
+    transform: rotateX(0deg) rotateY(0deg);
+    transition: transform 0.2s ease-out;
+}
+
+.item {
+    position: absolute;
+    inset: 0;
+    transform: rotateY(calc((var(--position) - 1) * (360deg / var(--quantity)))) 
+               translateZ(550px);
+    backface-visibility: hidden;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border: 2px solid rgba(255,255,255,0.1);
+    pointer-events: none;
+}
+
+/* --- Interaction Effects --- */
+.item:active img {
+    transform: scale(0.95);
+    filter: brightness(0.8);
+    transition: 0.1s;
+}
+
+.item.clicked img {
+    animation: click-flash 0.4s ease-out;
+}
+
+@keyframes click-flash {
+    0% { filter: brightness(1) contrast(1); transform: scale(0.95); }
+    50% { filter: brightness(1.8) contrast(1.2); transform: scale(1.02); }
+    100% { filter: brightness(1) contrast(1); transform: scale(1); }
+}
+
+/* 8. FOOTER STYLES (ELSYSIUM DARK EDITION) */
+footer {
+    background-color: var(--card-bg); /* #1C1F26 */
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Tựa đề các cột trong footer */
+footer h4 {
+    color: white;
+    border-left: 4px solid var(--blue-pastel);
+    padding-left: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.75rem; /* text-xs */
+    font-weight: 900;
+}
+
+/* Danh sách liên kết */
+footer ul li a {
+    color: var(--text-gray);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+footer ul li a:hover {
+    color: white;
+    transform: translateX(5px);
+}
+
+footer ul li a i {
+    color: var(--blue-pastel);
+    font-size: 10px;
+    margin-right: 8px;
+}
+
+/* Social Icons */
+.footer-social-icon {
+    width: 2.75rem; 
+    height: 2.75rem;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    transition: all 0.3s transform;
+}
+
+.footer-social-icon:hover {
+    background: var(--blue-pastel);
+    color: var(--dark-navy);
+    transform: scale(1.1);
+}
+
+/* Hotline & Email */
+.footer-hotline {
+    font-size: 1.875rem;
+    font-weight: 900;
+    color: var(--blue-pastel);
+    letter-spacing: -0.05em;
+}
+
+.footer-email {
+    color: var(--pink-pastel);
+    font-style: italic;
+    text-decoration: underline;
+    opacity: 0.8;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.footer-email:hover {
+    opacity: 1;
+}
+
+/* Địa chỉ & Icons */
+.footer-info-text {
+    font-size: 0.75rem;
+    color: var(--text-gray);
+    line-height: 1.6;
+    display: flex;
+    align-items: flex-start;
+}
+
+.footer-info-text i {
+    color: var(--blue-pastel);
+    margin-top: 4px;
+    margin-right: 12px;
+}
+
+/* Bottom Bar & Language Switcher */
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 2.5rem;
+}
+
+.lang-box {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.lang-box.active {
+    background: rgba(162, 225, 219, 0.1);
+    border: 1px solid rgba(162, 225, 219, 0.2);
+}
+
+.lang-box span {
+    font-size: 10px;
+    font-weight: 900;
+}
+
+/* Lớp phủ toàn màn hình */
+.video-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: none; /* Mặc định ẩn */
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(10px);
+}
+
+/* Nội dung hiển thị */
+.overlay-content {
+    position: relative;
+    width: 80%;
+    max-width: 900px;
+    animation: zoomIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.overlay-content img, .overlay-content video {
+    width: 100%;
+    border-radius: 15px;
+    box-shadow: 0 0 50px rgba(162, 225, 219, 0.3);
+}
+
+/* Thanh đếm ngược 4s */
+.overlay-timer-bar {
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    height: 4px;
+    background: var(--blue-pastel);
+    width: 100%;
+    animation: timer 4s linear forwards;
+}
+
+@keyframes zoomIn {
+    from { opacity: 0; transform: scale(0.5); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes timer {
+    from { width: 100%; }
+    to { width: 0%; }
+}
+    </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="logo-box">
+        elysium <span style="font-weight:100; opacity:0.3">|</span> <span class="blog-brand">Blog</span>
+    </div>
+     <div class="mid-line"></div>
+    <nav>
+        <ul>
+            <li><a href="#gi-day-troi">Gì dzậy trời?</a></li>
+            <li><a href="#su-kien">Sự kiện nổi bật</a></li>
+            <li><a href="#tips">Tips giải ngố</a></li>
+            <li><a href="#bantin">Bản tin tối cổ</a></li>
+            <li><a href="#uu-dai">Ưu đãi</a></li>
+            <li><a href="#spotlight">Spotlight</a></li>
+        </ul>
+    </nav>
+</header>
+<div class="header-line"></div>
+
+  <div class="hero">
+    <div class="hero-slider">
+        <div class="hero-item active" style="background-image: url('https://images.unsplash.com/photo-1459749411177-042180ce6742?w=1200');">
+            <div class="hero-overlay"></div> 
+            <div class="hero-content">
+                <h1>Vì Sao Bạn Sẽ Tiếc Nuối Nếu Bỏ Lỡ Anh Trai "Say Hi" Concert - Day 2?</h1>
+                <a href="#" class="btn-green">Đọc tiếp →</a>
+            </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="hero-item" style="background-image: url('https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=1200');">
+            <div class="hero-overlay"></div> <!-- Lớp phủ tối -->
+            <div class="hero-content">
+                <h1>Có Gì Đang Chờ Các Gai Con Tại Gai Home Concert?</h1>
+                <a href="#" class="btn-green">Đọc tiếp →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nút điều khiển (Dots) -->
+    <div class="hero-dots">
+        <span class="dot active" onclick="currentSlide(0)"></span>
+        <span class="dot" onclick="currentSlide(1)"></span>
+    </div>
+</div>
+
+    <div class="container">
+        <!-- Phần Gì dậy trời -->
+        <div id="gi-day-troi" class="section-header">Gì dzậy trời?</div>
+        <div class="grid-3">
+            <div class="post-card">
+                <img src="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=500" class="post-img">
+                <div class="post-content">Festival Indie Lớn Nhất Mùa Hè 2026 Có Gì Hot?</div>
+            </div>
+            <div class="post-card">
+                <img src="https://images.unsplash.com/photo-1514525253361-bee8718a747c?w=500" class="post-img">
+                <div class="post-content">Tại Sao Gen Z Bắt Đầu Đổ Xô Đi Xem Kịch Nói?</div>
+            </div>
+            <div class="post-card">
+                <img src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=500" class="post-img">
+                <div class="post-content">Vì Sao Concert "Say Hi" Lại Cháy Vé Trong 10 Phút?</div>
+            </div>
+        </div>
+
+<!-- PHẦN XOAY 3D MỚI -->
+ <div id="su-kien" class="carousel-header">Sự kiện nổi bật</div>
+<div class="carousel-section">
+    <div class="slider" style="--quantity: 10;">
+        <div class="item" style="--position: 1;"><img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=500" alt=""></div>
+        <div class="item" style="--position: 2;"><img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=500" alt=""></div>
+        <div class="item" style="--position: 3;"><img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=500" alt=""></div>
+        <div class="item" style="--position: 4;"><img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=500" alt=""></div>
+        <div class="item" style="--position: 5;"><img src="https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=500" alt=""></div>
+        <div class="item" style="--position: 6;"><img src="https://images.unsplash.com/photo-1426604966848-d7adac402bdb?w=500" alt=""></div>
+        <div class="item" style="--position: 7;"><img src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=500" alt=""></div>
+        <div class="item" style="--position: 8;"><img src="https://images.unsplash.com/photo-1505765050516-f72dcac9c60e?w=500" alt=""></div>
+        <div class="item" style="--position: 9;"><img src="https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?w=500" alt=""></div>
+        <div class="item" style="--position: 10;"><img src="https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=500" alt=""></div>
+    </div>
+</div>
+
+        <!-- Banner Quảng Cáo -->
+        <div class="promo-banner">
+            <div class="promo-text">
+                <span class="promo-tag">ƯU ĐÃI 20%</span>
+                <h2>MUA VÉ THẢ GA - TÍCH ĐIỂM CỰC ĐÃ</h2>
+            </div>
+            <a href="#" class="btn-green" style="background:#FFF200; color:#000">SĂN VÉ NGAY</a>
+        </div>
+
+        <!-- Hai cột Tips và Bản tin -->
+        <div class="two-columns">
+            <div>
+                <div id="tips" class="section-header">Tips giải ngố</div>
+                <div class="news-item">
+                    <img src="https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=200" class="news-img">
+                    <div class="news-title">Cảnh Báo Rủi Ro Lừa Đảo Khi Mua Bán Vé Qua Tính Năng "Tặng Vé"</div>
+                </div>
+                <div class="news-item">
+                    <img src="https://images.unsplash.com/photo-1551818255-e6e10975bc17?w=200" class="news-img">
+                    <div class="news-title">Hướng Dẫn Đặt Vé Concert Hidden Hearts Chi Tiết Nhất</div>
+                </div>
+                <div class="news-item">
+                    <img src="https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=200" class="news-img">
+                    <div class="news-title">Cảnh Báo Rủi Ro Lừa Đảo Khi Mua Bán Vé Qua Tính Năng "Tặng Vé"</div>
+                </div>
+                <div class="news-item">
+                    <img src="https://images.unsplash.com/photo-1551818255-e6e10975bc17?w=200" class="news-img">
+                    <div class="news-title">Hướng Dẫn Đặt Vé Concert Hidden Hearts Chi Tiết Nhất</div>
+                </div>
+            </div>
+            <div>
+                <div id="bantin" class="section-header">Bản tin tối cổ</div>
+                <div class="news-item">
+                    <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=200" class="news-img">
+                    <div class="news-title">Hoàng Dũng Tiết Lộ Lineup Khách Mời Cho Concert Xoay Tròn</div>
+                </div>
+                <div class="news-item">
+                    <img src="https://images.unsplash.com/photo-1506157786151-b8491531f063?w=200" class="news-img">
+                    <div class="news-title">Tại Sao Số Thứ Tự Queue Số 1 Vẫn Không Mua Được Vé?</div>
+                </div>
+                <div class="news-item">
+                    <img src="https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=200" class="news-img">
+                    <div class="news-title">Hoàng Dũng Tiết Lộ Lineup Khách Mời Cho Concert Xoay Tròn</div>
+                </div>
+                <div class="news-item">
+                    <img src="https://images.unsplash.com/photo-1506157786151-b8491531f063?w=200" class="news-img">
+                    <div class="news-title">Tại Sao Số Thứ Tự Queue Số 1 Vẫn Không Mua Được Vé?</div>
+                </div>
+            </div>
+        </div>
+          <!-- HTML MỤC ƯU ĐÃI -->
+<div class="container">
+    <div id="uu-dai" class="section-header">Ưu đãi</div>
+    
+    <div class="uudai-container">
+        <!-- Bên trái: Danh sách bài viết ưu đãi -->
+        <div class="uudai-list">
+            <a href="#" class="uudai-item">
+                <img src="https://images.unsplash.com/photo-1556742044-3c52d6e88c62?w=300" class="uudai-img">
+                <div class="uudai-info">
+                    <h4>Săn Vé Giải Trí, Nhớ Quét VIETQR Để Nhận Ưu Đãi Giảm 20K</h4>
+                </div>
+            </a>
+
+            <a href="#" class="uudai-item">
+                <img src="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=300" class="uudai-img">
+                <div class="uudai-info">
+                    <h4>Săn Vé Trên Ticketbox - Đừng Quên Tích Điểm UP Cùng Urbox Nhé!</h4>
+                </div>
+            </a>
+
+            <a href="#" class="uudai-item">
+                <img src="https://images.unsplash.com/photo-1621416848446-9911243de207?w=300" class="uudai-img">
+                <div class="uudai-info">
+                    <h4>Săn Vé Không Còn Ngại Giá Khi Thanh Toán Bằng Thẻ TPBank</h4>
+                </div>
+            </a>
+            <a href="#" class="uudai-item">
+                <img src="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=300" class="uudai-img">
+                <div class="uudai-info">
+                    <h4>Săn Vé Trên Ticketbox - Đừng Quên Tích Điểm UP Cùng Urbox Nhé!</h4>
+                </div>
+            </a>
+        </div>
+
+        <!-- Bên phải: Banner quảng cáo lớn (TPBank/Visa) -->
+        <div class="uudai-banner-right">
+            <div>
+                <p style="font-size: 12px; text-transform: uppercase; opacity: 0.8;">Đặt vé & Giải trí với thẻ</p>
+                <h3>TPBank Mastercard</h3>
+                <div class="promo-code">GIẢM 50%</div>
+                <p style="font-size: 14px;">Giao dịch đầu tiên</p>
+            </div>
+            
+            <!-- Chỗ này bạn thay bằng ảnh cái thẻ ngân hàng -->
+            <img src="https://img.freepik.com/free-vector/credit-card-design-template_1017-30234.jpg?w=400" class="card-mockup" alt="Bank Card">
+
+            <div style="margin-top: 20px;">
+                <p style="font-size: 13px; color: var(--pink-pastel);">VIBE THE LIFE!</p>
+            </div>
+        </div>
+    </div>
+</div>
+        <!-- Spotlight Video Section -->
+        <div id="spotlight" class="section-header" style="margin-top:60px">Spotlight</div>
+        <div class="spotlight-grid">
+            <div class="video-card" style="background-image: url('https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=400')">
+                <div class="play-icon">▶</div>
+            </div>
+            <div class="video-card" style="background-image: url('https://images.unsplash.com/photo-1520110120835-c96534a4c984?w=400')">
+                <div class="play-icon">▶</div>
+            </div>
+            <div class="video-card" style="background-image: url('https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=400')">
+                <div class="play-icon">▶</div>
+            </div>
+            <div class="video-card" style="background-image: url('https://images.unsplash.com/photo-1508700115892-45ecd05ae2ad?w=400')">
+                <div class="play-icon">▶</div>
+            </div>
+        </div>
+    </div>
+    <footer class="mt-20 py-16 px-6" style="background-color: var(--card-bg); border-top: 1px solid rgba(255,255,255,0.05);">
+    <div class="max-w-[1400px] mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+            <div class="space-y-6">
+                <!-- Đổi màu Brand sang Gradient Pastel giống Header -->
+                <h1 class="text-4xl font-black tracking-tighter" style="background: linear-gradient(45deg, var(--pink-pastel), var(--blue-pastel)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-family: 'Dancing Script', cursive; text-transform: none;">Elysium</h1>
+                <p class="text-sm font-medium leading-relaxed" style="color: var(--text-gray);">
+                    Nền tảng quản lý và phân phối vé sự kiện hàng đầu Đông Nam Á, ứng dụng Fintech và Blockchain để bảo vệ quyền lợi người hâm mộ.
+                </p>
+                <div class="flex space-x-4">
+                    <!-- Đổi màu Icon Social sang style Dark -->
+                    <a href="#" class="w-11 h-11 rounded-full flex items-center justify-center text-white transition-all transform hover:scale-110" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="w-11 h-11 rounded-full flex items-center justify-center text-white transition-all transform hover:scale-110" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="w-11 h-11 rounded-full flex items-center justify-center text-white transition-all transform hover:scale-110" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);"><i class="fa-brands fa-tiktok"></i></a>
+                    <a href="#" class="w-11 h-11 rounded-full flex items-center justify-center text-white transition-all transform hover:scale-110" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);"><i class="fa-brands fa-linkedin-in"></i></a>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="text-xs font-black uppercase tracking-widest mb-8 text-white border-l-4 pl-4" style="border-color: var(--blue-pastel);">Liên kết nhanh</h4>
+                <ul class="space-y-4 text-sm font-bold" style="color: var(--text-gray);">
+                    <li><a href="#" class="hover:text-white transition flex items-center"><i class="fa-solid fa-chevron-right text-[10px] mr-2" style="color: var(--blue-pastel);"></i>Trang chủ</a></li>
+                    <li><a href="#" class="hover:text-white transition flex items-center"><i class="fa-solid fa-chevron-right text-[10px] mr-2" style="color: var(--blue-pastel);"></i>Về chúng tôi</a></li>
+                    <li><a href="#" class="hover:text-white transition flex items-center"><i class="fa-solid fa-chevron-right text-[10px] mr-2" style="color: var(--blue-pastel);"></i>Hệ sinh thái</a></li>
+                    <li><a href="#" class="hover:text-white transition flex items-center"><i class="fa-solid fa-chevron-right text-[10px] mr-2" style="color: var(--blue-pastel);"></i>Tuyển dụng</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-xs font-black uppercase tracking-widest mb-8 text-white border-l-4 pl-4" style="border-color: var(--blue-pastel);">Trung tâm hỗ trợ</h4>
+                <ul class="space-y-4 text-sm font-bold" style="color: var(--text-gray);">
+                    <li><a href="#" class="hover:text-white transition flex items-center"><i class="fa-solid fa-chevron-right text-[10px] mr-2" style="color: var(--blue-pastel);"></i>Điều khoản sử dụng</a></li>
+                    <li><a href="#" class="hover:text-white transition flex items-center"><i class="fa-solid fa-chevron-right text-[10px] mr-2" style="color: var(--blue-pastel);"></i>Chính sách bảo mật</a></li>
+                    <li><a href="#" class="hover:text-white transition flex items-center"><i class="fa-solid fa-chevron-right text-[10px] mr-2" style="color: var(--blue-pastel);"></i>Câu hỏi thường gặp</a></li>
+                    <li><a href="#" class="hover:text-white transition flex items-center"><i class="fa-solid fa-chevron-right text-[10px] mr-2" style="color: var(--blue-pastel);"></i>Quy trình hoàn tiền</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-xs font-black uppercase tracking-widest mb-8 text-white border-l-4 pl-4" style="border-color: var(--blue-pastel);">Thông tin liên hệ</h4>
+                <p class="text-3xl font-black mb-2 tracking-tighter" style="color: var(--blue-pastel);">1900.6408</p>
+                <p class="text-sm font-bold mb-6 italic underline cursor-pointer transition" style="color: var(--pink-pastel); opacity: 0.8; transition: 0.3s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">support@elysium.vn</p>
+                <div class="space-y-4">
+                    <p class="text-xs font-bold leading-relaxed flex items-start" style="color: var(--text-gray);">
+                        <i class="fa-solid fa-location-dot mt-1 mr-3" style="color: var(--blue-pastel);"></i>
+                        Tòa nhà VNU-IS, 144 Xuân Thủy, Cầu Giấy, Hà Nội.
+                    </p>
+                    <p class="text-xs font-bold leading-relaxed flex items-start" style="color: var(--text-gray);">
+                        <i class="fa-solid fa-building mt-1 mr-3" style="color: var(--blue-pastel);"></i>
+                        Tòa nhà Viettel, 285 Cách Mạng Tháng Tám, Quận 10, TP. Hồ Chí Minh.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="pt-10 flex flex-col md:flex-row justify-between items-center gap-6" style="border-top: 1px solid rgba(255,255,255,0.05);">
+            <div class="flex flex-col items-center md:items-start gap-2">
+                <p class="text-[11px] font-black uppercase tracking-[0.3em]" style="color: var(--text-gray);">© 2026 ELYSIUM GLOBAL PRO EDITION</p>
+            </div>
+            <div class="flex items-center space-x-6">
+                <!-- Language Switcher Style Dark -->
+                <div class="flex items-center space-x-3 px-4 py-2 rounded-full" style="background: rgba(255,255,255,0.05);">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Flag_of_the_United_States.svg" class="w-5 rounded-sm shadow-sm">
+                    <span class="text-[10px] font-black" style="color: var(--text-gray);">EN</span>
+                </div>
+                <div class="flex items-center space-x-3 px-4 py-2 rounded-full border" style="background: rgba(162, 225, 219, 0.1); border-color: rgba(162, 225, 219, 0.2);">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Vietnam.svg" class="w-5 rounded-sm shadow-sm">
+                    <span class="text-[10px] font-black" style="color: var(--blue-pastel);">VN</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<div id="video-overlay" class="video-overlay">
+    <div class="overlay-content">
+        <!-- Chỗ này sẽ chứa Video hoặc Ảnh tùy theo card bạn bấm -->
+        <div id="media-container"></div>
+        <div class="overlay-timer-bar"></div> <!-- Thanh thời gian chạy dưới cùng -->
+    </div>
+</div>
+<script>
+    const slider = document.querySelector('.slider');
+    let isDragging = false;
+    let startX;
+    let currentRotateY = 0;
+    let tempRotateY = 0;
+
+    window.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        startX = e.clientX;
+        slider.style.transition = 'none';
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        let moveX = e.clientX - startX;
+        tempRotateY = currentRotateY + (moveX / 5); 
+        slider.style.transform = `rotateX(0deg) rotateY(${tempRotateY}deg)`;
+    });
+
+    window.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            currentRotateY = tempRotateY;
+            slider.style.transition = 'transform 0.5s ease-out';
+        }
+    });
+
+    // XỬ LÝ HIỆU ỨNG BẤM
+    const items = document.querySelectorAll('.item');
+    items.forEach((item) => {
+        item.addEventListener('click', function(e) {
+            // Kiểm tra nếu là click thật (không phải đang kéo)
+            if (Math.abs(e.clientX - startX) < 5) {
+                // 1. Thêm hiệu ứng lóe sáng
+                this.classList.add('clicked');
+                
+                // 2. Xóa class sau khi diễn xong animation để lần sau bấm lại vẫn có
+                setTimeout(() => {
+                    this.classList.remove('clicked');
+                    
+                    // 3. Sau khi lóe sáng xong thì mới thực hiện hành động (ví dụ nhảy trang)
+                    console.log("Đã bấm vào card!");
+                    // window.location.href = 'link_cua_ban.html'; 
+                }, 400);
+            }
+        });
+    });
+
+
+    let currentIndex = 0;
+    const slides = document.querySelectorAll('.hero-item');
+    const dots = document.querySelectorAll('.dot');
+
+    function showSlide(index) {
+        slides.forEach(s => s.classList.remove('active'));
+        dots.forEach(d => d.classList.remove('active'));
+
+        slides[index].classList.add('active');
+        dots[index].classList.add('active');
+        currentIndex = index;
+    }
+
+    function currentSlide(index) {
+        showSlide(index);
+    }
+
+    // Tự động chuyển sau 5 giây
+    setInterval(() => {
+        currentIndex = (currentIndex + 1) % slides.length;
+        showSlide(currentIndex);
+    }, 5000);
+    // Danh sách video/ảnh tương ứng với từng card (vị trí 1 đến 10)
+const mediaList = {
+    1: { type: 'image', url: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=1000' },
+    2: { type: 'video', url: 'https://www.w3schools.com/html/mov_bbb.mp4' }, // Ví dụ video
+    3: { type: 'image', url: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1000' },
+    // Bạn có thể thêm tiếp cho đến 10...
+};
+
+const overlay = document.getElementById('video-overlay');
+const mediaContainer = document.getElementById('media-container');
+
+items.forEach((item) => {
+    item.addEventListener('click', function(e) {
+        // Lấy vị trí của card vừa bấm (từ biến --position trong HTML)
+        const pos = this.style.getPropertyValue('--position').trim();
+        
+        if (Math.abs(e.clientX - startX) < 5) {
+            // 1. Hiện Overlay
+            overlay.style.display = 'flex';
+            
+            // 2. Kiểm tra xem card này có data media không
+            const data = mediaList[pos] || mediaList[1]; // Nếu không có thì lấy cái số 1 làm mặc định
+            
+            if(data.type === 'video') {
+                mediaContainer.innerHTML = `<video src="${data.url}" autoplay muted loop></video>`;
+            } else {
+                mediaContainer.innerHTML = `<img src="${data.url}" />`;
+            }
+
+            // 3. Sau 4 giây thì tắt
+            setTimeout(() => {
+                overlay.style.animation = 'fadeOut 0.5s forwards'; // Bạn có thể thêm animation fadeOut nếu muốn
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                    overlay.style.animation = ''; // Reset animation
+                    mediaContainer.innerHTML = ''; // Xóa nội dung để dừng video
+                }, 500);
+            }, 3000); 
+        }
+    });
+});
+</script>
+</body>
+</html>
