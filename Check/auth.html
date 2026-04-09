@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Elysium</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #121212;
+            --card-bg: #1e1e1e;
+            --pastel-pink: #ffdae9;
+            --pastel-blue: #d1e9ff;
+            --text-gray: #b0b0b0;
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            color: white;
+        }
+
+        .container {
+            background: var(--card-bg);
+            padding: 2rem 2.5rem;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.7);
+            width: 400px;
+            border: 1px solid #333;
+            backdrop-filter: blur(10px);
+        }
+
+        h2 { text-align: center; color: var(--pastel-blue); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 5px; }
+        p.subtitle { text-align: center; color: var(--text-gray); font-size: 12px; margin-bottom: 25px; }
+
+        .input-group { margin-bottom: 12px; }
+        label { display: block; font-size: 10px; color: var(--pastel-pink); margin-bottom: 5px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        
+        input {
+            width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #444;
+            background: #252525; color: white; box-sizing: border-box; outline: none; transition: 0.3s;
+        }
+        input:focus { border-color: var(--pastel-blue); background: #2d2d2d; }
+
+        .btn-main {
+            width: 100%; padding: 14px; border: none; border-radius: 12px;
+            cursor: pointer; font-size: 14px; font-weight: bold; margin-top: 15px;
+            transition: 0.4s; background: var(--pastel-pink); color: #5c3a4a;
+            text-transform: uppercase;
+        }
+        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255, 218, 233, 0.3); }
+        .btn-alt { background: var(--pastel-blue); color: #3a4a5c; }
+
+        .divider {
+            display: flex; align-items: center; text-align: center; margin: 20px 0;
+            color: #555; font-size: 11px; text-transform: uppercase;
+        }
+        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #333; }
+        .divider:not(:empty)::before { margin-right: 1em; }
+        .divider:not(:empty)::after { margin-left: 1em; }
+
+        .social-login { display: flex; gap: 12px; }
+        .social-btn {
+            flex: 1; padding: 11px; border-radius: 10px; border: 1px solid #444;
+            background: var(--glass); color: white; cursor: pointer; font-size: 13px;
+            display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.3s;
+        }
+        .social-btn i { font-size: 16px; }
+        .social-btn.google i { color: #ea4335; }
+        .social-btn:hover { background: #333; border-color: var(--pastel-blue); }
+
+        .toggle-link { text-align: center; margin-top: 20px; font-size: 13px; color: var(--text-gray); }
+        .toggle-link span { color: var(--pastel-blue); cursor: pointer; font-weight: bold; }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- FORM ĐĂNG KÝ -->
+        <div id="register-form">
+            <h2>Đăng Ký</h2>
+            <p class="subtitle">Tham gia hệ thống Elysium</p>
+            
+            <div class="input-group">
+                <label>Họ và Tên</label>
+                <input type="text" id="reg-name" placeholder="Họ tên của bạn...">
+            </div>
+            <div class="input-group">
+                <label>Số điện thoại</label>
+                <input type="text" id="reg-phone" placeholder="09xx xxx xxx">
+            </div>
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="reg-email" placeholder="example@gmail.com">
+            </div>
+            <div class="input-group">
+                <label>Mật khẩu</label>
+                <input type="password" id="reg-pass" placeholder="••••••••">
+            </div>
+            <div class="input-group">
+                <label>Xác nhận mật khẩu</label>
+                <input type="password" id="reg-repass" placeholder="••••••••">
+            </div>
+
+            <button class="btn-main" id="btn-register-submit">Tạo tài khoản</button>
+            
+            <div class="divider">Hoặc đăng ký với</div>
+
+            <div class="social-login">
+                <button class="social-btn google" id="btn-google">
+                    <i class="fa-brands fa-google"></i> Google
+                </button>
+                <button class="social-btn" id="btn-github">
+                    <i class="fa-brands fa-github"></i> GitHub
+                </button>
+            </div>
+
+            <div class="toggle-link">
+                Đã có tài khoản? <span onclick="toggleAuth()">Đăng nhập</span>
+            </div>
+        </div>
+
+        <div id="login-form" class="hidden">
+            <h2>Đăng Nhập</h2>
+            <p class="subtitle">Chào mừng bạn quay trở lại</p>
+            
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="login-email" placeholder="Nhập email...">
+            </div>
+            <div class="input-group"> 
+                <label>Mật khẩu</label>
+                <input type="password" id="login-pass" placeholder="••••••••">
+            </div>
+
+            <button class="btn-main btn-alt" id="btn-login-submit">Đăng nhập</button>
+
+            <div class="divider">Hoặc đăng nhập nhanh</div>
+
+            <div class="social-login">
+                <button class="social-btn google" id="btn-google-login">
+                    <i class="fa-brands fa-google"></i> Google
+                </button>
+                <button class="social-btn" id="btn-github-login">
+                    <i class="fa-brands fa-github"></i> GitHub
+                </button>
+            </div>
+
+            <div class="toggle-link">
+                Chưa có tài khoản? <span onclick="toggleAuth()">Đăng ký</span>
+            </div>
+        </div>
+    </div>
+
+<!-- Giữ nguyên toàn bộ phần HTML và CSS phía trên của bố nhé -->
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // 1. GIỮ NGUYÊN API KEY CỦA BỐ
+     const firebaseConfig = {
+  apiKey: "AIzaSyCwlTux_UtiiLF61JZz0HfebWuz50SxSGQ",
+  authDomain: "weblogin-1bee9.firebaseapp.com",
+  projectId: "weblogin-1bee9",
+  storageBucket: "weblogin-1bee9.firebasestorage.app",
+  messagingSenderId: "690617421091",
+  appId: "1:690617421091:web:b142d933ea3e1efc731096",
+  measurementId: "G-9D2C9XMTWS",
+        databaseURL: "https://weblogin-1bee9-default-rtdb.firebaseio.com"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    window.toggleAuth = () => {
+        document.getElementById('register-form').classList.toggle('hidden');
+        document.getElementById('login-form').classList.toggle('hidden');
+    };
+
+    // 2. HÀM LƯU DỮ LIỆU (Vừa Firebase vừa Local cho Admin)
+    async function saveUserData(uid, name, phone, email) {
+        try {
+            // Lưu lên Firebase Realtime Database
+            await set(ref(db, 'users/' + uid), {
+                fullName: name || "User",
+                phoneNumber: phone || "N/A",
+                email: email,
+                time: new Date().toLocaleString()
+            });
+
+            // --- ĐOẠN NÀY ĐỂ KHỚP VỚI ADMIN CỦA BỐ ---
+            // A. Gửi vào danh sách User (Hàm seedUsers/renderUserGrid)
+            const listUsers = JSON.parse(localStorage.getItem('ticket_users')) || [];
+            listUsers.push({ 
+                id: uid, 
+                name: name, 
+                fullName: name, 
+                email: email, 
+                phone: phone, 
+                isReal: true, 
+                time: new Date().toLocaleString('vi-VN') 
+            });
+            localStorage.setItem('ticket_users', JSON.stringify(listUsers));
+
+            // B. Gửi vào bảng Giao dịch (Hàm loadDeposits)
+            const newLog = {
+                id: 'GD' + Math.floor(Math.random() * 10000),
+                user: name,
+                amount: 0,
+                content: "Đăng ký Elysium",
+                time: new Date().toLocaleString('vi-VN')
+            };
+            
+            // Lưu vào kho gốc Admin
+            const adminLogs = JSON.parse(localStorage.getItem('admin_deposit_logs')) || [];
+            adminLogs.push(newLog);
+            localStorage.setItem('admin_deposit_logs', JSON.stringify(adminLogs));
+
+            // Bắn tín hiệu cho tab Admin nhận ngay
+            localStorage.setItem('new_registrations', JSON.stringify([newLog]));
+
+        } catch (e) { console.error("Lỗi lưu dữ liệu:", e); }
+    }
+
+    // 3. XỬ LÝ NÚT ĐĂNG KÝ
+    document.getElementById('btn-register-submit').onclick = async () => {
+        const name = document.getElementById('reg-name').value;
+        const email = document.getElementById('reg-email').value;
+        const phone = document.getElementById('reg-phone').value;
+        const pass = document.getElementById('reg-pass').value;
+        const repass = document.getElementById('reg-repass').value;
+
+        if (!name || !email || !pass) return alert("Điền thiếu thông tin kìa bố!");
+        if (pass !== repass) return alert("Mật khẩu xác nhận không khớp!");
+
+        try {
+            const res = await createUserWithEmailAndPassword(auth, email, pass);
+            await saveUserData(res.user.uid, name, phone, email);
+            
+            alert("Đăng ký thành công! Dữ liệu đã bay sang Admin.");
+            window.toggleAuth(); 
+        } catch (e) { alert("Lỗi: " + e.message); }
+    };
+
+    // 4. XỬ LÝ ĐĂNG NHẬP
+    document.getElementById('btn-login-submit').onclick = async () => {
+        const email = document.getElementById('login-email').value;
+        const pass = document.getElementById('login-pass').value;
+        try {
+            await signInWithEmailAndPassword(auth, email, pass);
+            alert("Đăng nhập thành công!");
+            window.location.href = "index.html"; 
+        } catch (e) { alert("Sai tài khoản hoặc mật khẩu!"); }
+    };
+
+    // 5. SOCIAL LOGIN
+    const loginSocial = async (provider) => {
+        try {
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+            // Lưu data social vào cả 2 nơi luôn
+            await saveUserData(user.uid, user.displayName, "Social", user.email);
+            alert("Đăng nhập/Đăng ký Social thành công!");
+            window.location.href = "index.html";
+        } catch (e) { alert(e.message); }
+    };
+
+    document.getElementById('btn-google').onclick = () => loginSocial(new GoogleAuthProvider());
+    document.getElementById('btn-github').onclick = () => loginSocial(new GithubAuthProvider());
+    document.getElementById('btn-google-login').onclick = () => loginSocial(new GoogleAuthProvider());
+    document.getElementById('btn-github-login').onclick = () => loginSocial(new GithubAuthProvider());
+
+</script>
+</body>
+</html>
