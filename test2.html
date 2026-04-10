@@ -160,7 +160,6 @@
         </div>
     </div>
 
-<!-- Giữ nguyên toàn bộ phần HTML và CSS phía trên của bố nhé -->
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -177,10 +176,8 @@
         document.getElementById('login-form').classList.toggle('hidden');
     };
 
-    // 2. HÀM LƯU DỮ LIỆU (Vừa Firebase vừa Local cho Admin)
     async function saveUserData(uid, name, phone, email) {
         try {
-            // Lưu lên Firebase Realtime Database
             await set(ref(db, 'users/' + uid), {
                 fullName: name || "User",
                 phoneNumber: phone || "N/A",
@@ -188,8 +185,7 @@
                 time: new Date().toLocaleString()
             });
 
-            // --- ĐOẠN NÀY ĐỂ KHỚP VỚI ADMIN CỦA BỐ ---
-            // A. Gửi vào danh sách User (Hàm seedUsers/renderUserGrid)
+        
             const listUsers = JSON.parse(localStorage.getItem('ticket_users')) || [];
             listUsers.push({ 
                 id: uid, 
@@ -202,7 +198,6 @@
             });
             localStorage.setItem('ticket_users', JSON.stringify(listUsers));
 
-            // B. Gửi vào bảng Giao dịch (Hàm loadDeposits)
             const newLog = {
                 id: 'GD' + Math.floor(Math.random() * 10000),
                 user: name,
@@ -211,8 +206,7 @@
                 time: new Date().toLocaleString('vi-VN')
             };
             
-            // Lưu vào kho gốc Admin
-            const adminLogs = JSON.parse(localStorage.getItem('admin_deposit_logs')) || [];
+         const adminLogs = JSON.parse(localStorage.getItem('admin_deposit_logs')) || [];
             adminLogs.push(newLog);
             localStorage.setItem('admin_deposit_logs', JSON.stringify(adminLogs));
 
@@ -258,7 +252,6 @@
         try {
             const result = await signInWithPopup(auth, provider);
             const user = result.user;
-            // Lưu data social vào cả 2 nơi luôn
             await saveUserData(user.uid, user.displayName, "Social", user.email);
             alert("Đăng nhập/Đăng ký Social thành công!");
             window.location.href = "index.html";
