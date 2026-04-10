@@ -1,0 +1,88 @@
+/* Tông màu đại dương */
+.color-ocean { background-color: #001d4d; color: white; }
+
+.custom-scroll::-webkit-scrollbar { width: 3px; }
+.custom-scroll::-webkit-scrollbar-track { background: transparent; }
+.custom-scroll::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 10px; }
+
+/* 1. THIẾT LẬP LỚP NỀN CHỨA CÁ VOI */
+#whale {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1; /* Nằm dưới cùng */
+    background-color: #000b1e; /* Màu xanh đen sâu thẳm */
+    pointer-events: none; /* Quan trọng: Để click xuyên qua cá vào map */
+}
+
+/* 2. THIẾT LẬP LỚP MAP NẰM TRÊN */
+#step-1 {
+    position: relative;
+    z-index: 10; /* Nằm trên cá */
+    background: transparent !important;
+}
+
+.map-viewport {
+    background: transparent !important;
+    overflow: hidden;
+    position: relative;
+}
+
+#container {
+    background: transparent !important;
+}
+
+/* 3. HIỆU ỨNG TRONG SUỐT CHO ẢNH MAP (CHÌA KHÓA Ở ĐÂY) */
+#map-img {
+    display: block;
+    max-w: none;
+    /* Cách A: Dùng độ mờ (Khuyên dùng) */
+    opacity: 0.85; 
+    
+    /* Cách B: Hòa trộn màu sắc (Nếu muốn cá hiện rõ hơn trong các vùng tối) */
+    /* mix-blend-mode: screen; */ 
+}
+
+#map-wrapper {
+    transition: transform 0.1s ease-out;
+    transform-origin: 0 0;
+    cursor: grab;
+    position: relative;
+    display: inline-block;
+}
+
+#map-wrapper:active { cursor: grabbing; }
+
+/* 4. ĐIỂM HOTSPOT - Đảm bảo nổi bật trên nền cá */
+.hotspot {
+    position: absolute;
+    width: 35px;
+    height: 35px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(0, 255, 255, 0.5); /* Viền màu xanh cyan cho hợp tone biển */
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s;
+    z-index: 20; /* Luôn nằm trên cùng của map */
+}
+
+.hotspot:hover {
+    background: rgba(0, 255, 255, 0.4);
+    box-shadow: 0 0 20px #00ffff;
+    transform: scale(1.2);
+}
+
+.hotspot.active {
+    background: rgba(255, 0, 0, 0.6);
+    border-color: #ff0000;
+    box-shadow: 0 0 25px #ff0000;
+}
+
+/* 5. SIDEBAR - Phải có z-index cao nhất để không bị cá che */
+.sidebar {
+    position: relative;
+    z-index: 100 !important;
+    background: #001433; 
+}

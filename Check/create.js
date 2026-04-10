@@ -438,40 +438,42 @@ function loadMyEvents() {
         }
 
         const card = `
-        <div class="event-item-card w-full flex items-center justify-between p-6 bg-white/5 border border-white/10 rounded-3xl mb-4 animate-fade-in" 
-        data-id="${ev.id}"
-        data-name="${ev.name || ev.title}"
-        data-type="${ev.type}"
-        data-locname="${ev.locname || ev.location}"
-        data-locdetail="${ev.locdetail}"
-        data-start="${ev.start}"
-        data-end="${ev.end}"
-        data-desc="${ev.desc}"
-        data-btcname="${ev.btcname || ev.organizer}"
-        data-btcemail="${ev.btcemail}"
-        data-btcphone="${ev.btcphone || ev.btcphone}"
-        data-btcinfo="${ev.btcinfo}"
-        data-bankname="${ev.bankname}"
-        data-bankuser="${ev.bankuser}"
-        data-bankacc="${ev.bankacc}"
-        data-img="${ev.img}"
-        data-tickets='${JSON.stringify(ev.tickets || [])}'
-    >
-            <div class="event-item-card w-full flex items-center justify-between p-6 bg-white/5 border border-white/10 rounded-3xl mb-4 animate-fade-in" 
-                data-id="${ev.id}" ... (các data-attributes khác giữ nguyên) ...>
-                
-                <div class="flex items-center gap-4">
-                    <img src="${ev.img || 'https://via.placeholder.com/50'}" class="w-14 h-14 rounded-xl object-cover bg-gray-800 border border-white/5">
-                    <div>
-                        <h4 class="font-bold text-white mb-1">${ev.title}</h4>
-                        ${statusBadge}
-                    </div>
-                </div>
-                <div class="flex gap-4">
-                    <button onclick="editEvent(this)" class="text-gray-400 hover:text-[#00d2ff] text-[10px] font-black uppercase transition-all">Sửa</button>
-                    <button onclick="deleteEvent(this)" class="text-red-500/40 hover:text-red-500 text-[10px] font-black uppercase transition-all">Xóa</button>
-                </div>
-            </div>`;
+<div class="event-item-card w-full flex items-center justify-between p-6 bg-white/5 border border-white/10 rounded-3xl mb-4 animate-fade-in" 
+    data-id="${ev.id}"
+    data-name="${ev.name || ev.title}"
+    data-type="${ev.type}"
+    data-locname="${ev.locname || ev.location}"
+    data-locdetail="${ev.locdetail}"
+    data-start="${ev.start}"
+    data-end="${ev.end}"
+    data-desc="${ev.desc}"
+    data-btcname="${ev.btcname || ev.organizer}"
+    data-btcemail="${ev.btcemail}"
+    data-btcphone="${ev.btcphone}"
+    data-btcinfo="${ev.btcinfo}"
+    data-bankname="${ev.bankname}"
+    data-bankuser="${ev.bankuser}"
+    data-bankacc="${ev.bankacc}"
+    data-img="${ev.img}"
+    data-tickets='${JSON.stringify(ev.tickets || [])}'
+>
+
+    <div class="flex items-center gap-4">
+        <img src="${ev.img || 'https://via.placeholder.com/50'}" 
+             class="w-14 h-14 rounded-xl object-cover bg-gray-800 border border-white/5">
+
+        <div>
+            <h4 class="font-bold text-white mb-1">${ev.title}</h4>
+            ${statusBadge}
+        </div>
+    </div>
+
+    <div class="flex gap-4">
+        <button onclick="editEvent(this)" class="text-gray-400 hover:text-[#00d2ff] text-[10px] font-black uppercase">Sửa</button>
+        <button onclick="deleteEvent(this)" class="text-red-500/40 hover:text-red-500 text-[10px] font-black uppercase">Xóa</button>
+    </div>
+
+</div>`;
         container.insertAdjacentHTML('beforeend', card);
     });
 }

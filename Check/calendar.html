@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EventHub - Lịch Sự Kiện Real-time (Pro Edition)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+        
+        :root {
+            --bg-body: #fdfbfb;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --text-main: #1f2937;
+            --border-color: rgba(0, 0, 0, 0.05);
+            --primary-color: #3b82f6; /* Blue-500 */
+            --accent-color: #ec4899;  /* Pink-500 */
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-body); 
+            color: var(--text-main);
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        .glass-card { 
+            background: var(--card-bg); 
+            backdrop-filter: blur(20px); 
+            border: 1px solid var(--border-color); 
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        .day-cell { transition: all 0.3s ease; min-height: 100px; background-color: white; }
+        .day-cell:hover { transform: translateY(-4px); box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.2); border-color: var(--primary-color); }
+        
+        .active-day { border: 2px solid var(--accent-color) !important; background: white !important; box-shadow: 0 0 20px rgba(236, 72, 153, 0.2); }
+
+        #user-dropdown {
+            display: none;
+            transform-origin: top right;
+            transition: all 0.2s ease;
+        }
+        #user-dropdown.show { display: block; animation: slideIn 0.2s ease-out; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .btn-create {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #2563eb 100%);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        footer {
+            background: #ffffff;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .calendar-header-bg {
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+        }
+    </style>
+</head>
+<body>
+
+    <header class="sticky top-0 z-[100] bg-white/80 backdrop-blur-xl border-b border-gray-100 shadow-sm">
+        <div class="max-w-[1400px] mx-auto px-6 py-3 flex items-center justify-between gap-8">
+            <div class="flex items-center space-x-10 flex-shrink-0">
+                <h1 class="text-3xl font-black text-blue-500 tracking-tighter cursor-pointer" onclick="location.href='index.html'">EventHub</h1>
+                <nav class="hidden xl:flex items-center space-x-8 font-bold text-gray-600">
+                    <a href="#" class="hover:text-blue-500 transition">Sự kiện</a>
+                    <a href="calendar.html" class="text-pink-500 relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-0.5 after:bg-pink-500">Lịch</a>
+                    <a href="contact.html" class="hover:text-blue-500 transition">Liên hệ</a>
+                    <button onclick="location.href='create.html'" class="btn-create px-5 py-2 rounded-full text-white text-sm font-black flex items-center gap-2 hover:scale-105 transition active:scale-95">
+                        <i class="fa-solid fa-plus text-[10px]"></i> Tạo sự kiện
+                    </button>
+                </nav>
+            </div>
+
+            <div class="flex items-center space-x-6">
+                <div class="text-right hidden md:block border-r pr-6 border-gray-200">
+                    <p id="real-time-clock" class="text-lg font-black text-gray-800 leading-none">00:00:00</p>
+                    <p id="real-time-date" class="text-[10px] font-bold text-pink-500 uppercase tracking-widest">-- THÁNG --, ----</p>
+                </div>
+                
+                <div class="relative">
+                    <div onclick="toggleUserMenu()" class="flex items-center space-x-3 cursor-pointer group p-1 hover:bg-gray-50 rounded-2xl transition">
+                        <div class="text-right hidden sm:block">
+                            <p class="text-xs font-black text-gray-800">Diệu Thảo</p>
+                            <p class="text-[10px] text-gray-400">Thành viên Kim cương</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-200 to-blue-200 border-2 border-white shadow-sm overflow-hidden">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" alt="avatar">
+                        </div>
+                    </div>
+                    
+                    <div id="user-dropdown" class="absolute right-0 mt-3 w-60 glass-card rounded-2xl shadow-2xl overflow-hidden py-2 z-50 bg-white">
+                        <a href="dashboard.html" class="flex items-center px-4 py-3 text-sm font-bold text-gray-700 hover:bg-blue-50 transition">
+                            <i class="fa-solid fa-user-circle w-6 text-pink-500 text-lg"></i> Tài khoản của tôi
+                        </a>
+                        <a href="dashboard.html" class="flex items-center px-4 py-3 text-sm font-bold text-gray-700 hover:bg-blue-50 transition">
+                            <i class="fa-solid fa-ticket w-6 text-blue-500 text-lg"></i> Vé của tôi
+                        </a>
+                        <a href="dashboard.html" class="flex items-center px-4 py-3 text-sm font-bold text-gray-700 dark:text-gray-200 hover:bg-pink-50 dark:hover:bg-slate-800 transition">
+                            <i class="fa-solid fa-calendar-check w-6 text-green-500 text-lg"></i> Sự kiện của tôi
+                        </a>
+                        <hr class="my-1 border-gray-100">
+                        <a href="index.html" class="flex items-center px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 transition">
+                            <i class="fa-solid fa-right-from-bracket w-6 text-lg"></i> Đăng xuất
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-[1400px] mx-auto px-6 py-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            <div class="lg:col-span-8 space-y-6">
+                <div class="flex items-center justify-between calendar-header-bg p-6 rounded-[2rem] shadow-lg border border-white/10">
+                    <button onclick="changeMonth(-1)" class="w-12 h-12 rounded-2xl bg-white/10 hover:bg-white/20 transition text-white"><i class="fa-solid fa-chevron-left"></i></button>
+                    <h2 id="month-year-display" class="text-3xl md:text-4xl font-black text-white tracking-tighter uppercase text-center">Tháng 03, 2026</h2>
+                    <button onclick="changeMonth(1)" class="w-12 h-12 rounded-2xl bg-white/10 hover:bg-white/20 transition text-white"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+
+                <div class="glass-card rounded-[2.5rem] p-6 overflow-hidden shadow-2xl border-white/5">
+                    <div class="grid grid-cols-7 mb-6">
+                        <div class="py-2 text-center text-[11px] font-black text-gray-400 uppercase tracking-widest">Thứ 2</div>
+                        <div class="py-2 text-center text-[11px] font-black text-gray-400 uppercase tracking-widest">Thứ 3</div>
+                        <div class="py-2 text-center text-[11px] font-black text-gray-400 uppercase tracking-widest">Thứ 4</div>
+                        <div class="py-2 text-center text-[11px] font-black text-gray-400 uppercase tracking-widest">Thứ 5</div>
+                        <div class="py-2 text-center text-[11px] font-black text-gray-400 uppercase tracking-widest">Thứ 6</div>
+                        <div class="py-2 text-center text-[11px] font-black text-blue-500 uppercase tracking-widest">Thứ 7</div>
+                        <div class="py-2 text-center text-[11px] font-black text-pink-500 uppercase tracking-widest">CN</div>
+                    </div>
+                    <div id="calendar-grid" class="grid grid-cols-7 gap-3"></div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-4 space-y-6">
+                <div class="glass-card rounded-[2.5rem] p-8 shadow-2xl sticky top-28 border-white/5">
+                    <div class="flex items-center justify-between mb-8">
+                        <div>
+                            <p class="text-[10px] font-black text-blue-500 uppercase tracking-widest mb-1">Sự kiện ngày</p>
+                            <h3 id="selected-date-title" class="text-3xl font-black text-gray-800">--/--/----</h3>
+                        </div>
+                        <div class="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center animate-pulse">
+                            <i class="fa-solid fa-bolt text-blue-500 text-xl"></i>
+                        </div>
+                    </div>
+                    <div id="event-list-container" class="space-y-5 max-h-[600px] overflow-y-auto pr-2 no-scrollbar"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="mt-20 py-16 px-6">
+        <div class="max-w-[1400px] mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+                <div class="space-y-6">
+                    <h1 class="text-4xl font-black text-blue-500 tracking-tighter">EventHub</h1>
+                    <p class="text-sm text-gray-500 font-medium leading-relaxed">
+                        Nền tảng quản lý và phân phối vé sự kiện hàng đầu Đông Nam Á, ứng dụng Fintech và Blockchain để bảo vệ quyền lợi người hâm mộ.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-500 hover:text-white transition-all transform hover:scale-110"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-500 hover:text-white transition-all transform hover:scale-110"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="#" class="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-500 hover:text-white transition-all transform hover:scale-110"><i class="fa-brands fa-tiktok"></i></a>
+                        <a href="#" class="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-500 hover:text-white transition-all transform hover:scale-110"><i class="fa-brands fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-xs font-black uppercase tracking-widest mb-8 text-gray-900 border-l-4 border-blue-500 pl-4">Liên kết nhanh</h4>
+                    <ul class="space-y-4 text-sm font-bold text-gray-500">
+                        <li><a href="#" class="hover:text-blue-500 transition flex items-center"><i class="fa-solid fa-chevron-right text-[10px] mr-2"></i>Trang chủ</a></li>
+                        <li><a href="#" class="hover:text-blue-500 transition flex items-center"><i class="fa-solid fa-chevron-right text-[10px] mr-2"></i>Về chúng tôi</a></li>
+                        <li><a href="#" class="hover:text-blue-500 transition flex items-center"><i class="fa-solid fa-chevron-right text-[10px] mr-2"></i>Hệ sinh thái</a></li>
+                        <li><a href="#" class="hover:text-blue-500 transition flex items-center"><i class="fa-solid fa-chevron-right text-[10px] mr-2"></i>Tuyển dụng</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-xs font-black uppercase tracking-widest mb-8 text-gray-900 border-l-4 border-blue-500 pl-4">Trung tâm hỗ trợ</h4>
+                    <ul class="space-y-4 text-sm font-bold text-gray-500">
+                        <li><a href="#" class="hover:text-blue-500 transition flex items-center"><i class="fa-solid fa-chevron-right text-[10px] mr-2"></i>Điều khoản sử dụng</a></li>
+                        <li><a href="#" class="hover:text-blue-500 transition flex items-center"><i class="fa-solid fa-chevron-right text-[10px] mr-2"></i>Chính sách bảo mật</a></li>
+                        <li><a href="#" class="hover:text-blue-500 transition flex items-center"><i class="fa-solid fa-chevron-right text-[10px] mr-2"></i>Câu hỏi thường gặp</a></li>
+                        <li><a href="#" class="hover:text-blue-500 transition flex items-center"><i class="fa-solid fa-chevron-right text-[10px] mr-2"></i>Quy trình hoàn tiền</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-xs font-black uppercase tracking-widest mb-8 text-gray-900 border-l-4 border-blue-500 pl-4">Thông tin liên hệ</h4>
+                    <p class="text-3xl font-black text-blue-500 mb-2 tracking-tighter">1900.6408</p>
+                    <p class="text-sm text-gray-400 font-bold mb-6 italic underline hover:text-pink-500 cursor-pointer transition">support@eventhub.vn</p>
+                    <div class="space-y-4">
+                        <p class="text-xs text-gray-500 font-bold leading-relaxed flex items-start">
+                            <i class="fa-solid fa-location-dot mt-1 mr-3 text-blue-500"></i>
+                            Tòa nhà VNU-IS, 144 Xuân Thủy, Cầu Giấy, Hà Nội.
+                        </p>
+                        <p class="text-xs text-gray-500 font-bold leading-relaxed flex items-start">
+                            <i class="fa-solid fa-building mt-1 mr-3 text-blue-500"></i>
+                            Tòa nhà Viettel, 285 Cách Mạng Tháng Tám, Quận 10, TP. Hồ Chí Minh.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="pt-10 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex flex-col items-center md:items-start gap-2">
+                    <p class="text-[11px] font-black text-gray-400 uppercase tracking-[0.3em]">© 2026 EVENTHUB GLOBAL PRO EDITION</p>
+                </div>
+                <div class="flex items-center space-x-6">
+                    <div class="flex items-center space-x-3 bg-gray-100 px-4 py-2 rounded-full">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/a/a4/Flag_of_the_United_States.svg" class="w-5 rounded-sm shadow-sm">
+                        <span class="text-[10px] font-black text-gray-400">EN</span>
+                    </div>
+                    <div class="flex items-center space-x-3 bg-blue-50 px-4 py-2 rounded-full border border-blue-100">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/2/21/Flag_of_Vietnam.svg" class="w-5 rounded-sm shadow-sm">
+                        <span class="text-[10px] font-black text-blue-500">VN</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const events = [
+    // --- THÁNG 3/2026 ---
+    { id: 1, name: "Concert Blackpink: World Tour", date: "2026-03-21", time: "19:00", loc: "Sân Mỹ Đình", color: "bg-pink-500", price: "2.500.000đ" },
+    { id: 2, name: "Workshop: Art Therapy - Vẽ Pastel", date: "2026-03-21", time: "09:00", loc: "EventHub Studio", color: "bg-blue-400", price: "Miễn phí" },
+    { id: 3, name: "Vietnam Tech Expo: AI & Future", date: "2026-03-05", time: "08:30", loc: "VNU Innovation Hub", color: "bg-indigo-500", price: "Miễn phí" },
+    { id: 4, name: "Giải Bóng đá MB Hanoi Cup 2026", date: "2026-03-25", time: "15:00", loc: "Sân Mỹ Đình", color: "bg-green-500", price: "200.000đ" },
+    { id: 5, name: "Đêm Nhạc Trịnh: Nối Vòng Tay Lớn", date: "2026-03-28", time: "20:00", loc: "Nhà hát Lớn", color: "bg-orange-500", price: "800.000đ" },
+    { id: 6, name: "Tech Talk: Web3 & Blockchain", date: "2026-03-12", time: "14:00", loc: "Quận 1, TP.HCM", color: "bg-cyan-500", price: "150.000đ" },
+    { id: 7, name: "VNU Fintech Forum 2026", date: "2026-03-05", time: "14:00", loc: "VNU-IS Hall", color: "bg-rose-500", price: "Miễn phí" },
+    { id: 8, name: "Vietnam Cosplay Festival 2026", date: "2026-03-08", time: "09:00", loc: "Công viên Thống Nhất", color: "bg-purple-500", price: "120.000đ" },
+    { id: 9, name: "Marathon Vì Cộng Đồng - UpRace", date: "2026-03-15", time: "05:00", loc: "Hồ Hoàn Kiếm", color: "bg-yellow-500", price: "Miễn phí" },
+    { id: 10, name: "Vietnam Fintech Summit 2026", date: "2026-03-15", time: "09:00", loc: "Lotte Center", color: "bg-emerald-500", price: "500.000đ" },
+    { id: 11, name: "VCS League Championship (LOL)", date: "2026-03-30", time: "13:00", loc: "GG Stadium", color: "bg-red-500", price: "100.000đ" },
+    { id: 12, name: "Triển lãm Vietnam Auto Expo", date: "2026-03-10", time: "08:00", loc: "SECC Quận 7", color: "bg-slate-500", price: "50.000đ" },
+    { id: 13, name: "Startup Pitch Night: Gen Z Innovators", date: "2026-03-14", time: "18:00", loc: "Hanoi Hub", color: "bg-teal-500", price: "Miễn phí" },
+    { id: 14, name: "Jazz Under The Stars: Moonlight", date: "2026-03-14", time: "20:30", loc: "Skyline Bar", color: "bg-blue-800", price: "350.000đ" },
+    { id: 15, name: "Lễ Hội Ánh Sáng: Heritage Night", date: "2026-03-14", time: "19:30", loc: "Phố Đi Bộ", color: "bg-violet-600", price: "150.000đ" },
+    { id: 16, name: "Giải Cờ Vua Quốc Tế HDBank", date: "2026-03-18", time: "08:00", loc: "Khách sạn Melia", color: "bg-amber-600", price: "Miễn phí" },
+    { id: 17, name: "K-Pop Festa Summer 2026", date: "2026-04-05", time: "17:00", loc: "Sân Quần Ngựa", color: "bg-fuchsia-500", price: "1.800.000đ" },
+    { id: 18, name: "Workshop: Nghệ thuật Gốm Bát Tràng", date: "2026-03-21", time: "14:00", loc: "Bát Tràng Studio", color: "bg-lime-500", price: "450.000đ" },
+    { id: 19, name: "Ngày hội Sách và Văn hóa Đọc", date: "2026-03-22", time: "08:00", loc: "Đường Sách 19/12", color: "bg-amber-800", price: "Miễn phí" },
+    { id: 20, name: "VNU Data Science Seminar", date: "2026-03-26", time: "14:00", loc: "VNU Sunwah", color: "bg-blue-600", price: "Miễn phí" },
+    { id: 21, name: "Rap Việt Star", date: "2026-03-28", time: "19:00", loc: "SECC Quận 7", color: "bg-yellow-400", price: "1.200.000đ" }, // Giữ nguyên
+    { id: 22, name: "Sáng sớm cùng Yoga Heritage", date: "2026-03-01", time: "06:00", loc: "Bờ Hồ Gươm", color: "bg-green-300", price: "Miễn phí" },
+    { id: 23, name: "Coffee Talk: AI in Visual Art", date: "2026-03-01", time: "15:00", loc: "The Coffee House", color: "bg-orange-400", price: "50.000đ" },
+    { id: 24, name: "Workshop: Kỹ Năng Tư Duy Phản Biện", date: "2026-03-02", time: "15:00", loc: "The Coffee House", color: "bg-violet-600", price: "80.000đ" },
+    { id: 25, name: "Concert: Anh Trai Say Hi (Live)", date: "2026-03-02", time: "19:00", loc: "Sân Mỹ Đình", color: "bg-blue-600", price: "1.200.000đ" },
+    { id: 26, name: "Arirang World Tour", date: "2026-05-08", time: "19:00", loc: "Sân vận động EL Campin", color: "bg-red-600", price: "1.000.000đ" }, // Giữ nguyên
+
+    // --- THÁNG 4/2026 ---
+    { id: 27, name: "VNU-IS Fintech Summit 2026", date: "2026-04-02", time: "08:30", loc: "Hội trường Sunwah", color: "bg-indigo-600", price: "Miễn phí" },
+    { id: 28, name: "Live Acoustic: Soul of Hanoi", date: "2026-04-03", time: "20:00", loc: "Tranquil Books & Coffee", color: "bg-amber-700", price: "150.000đ" },
+    { id: 29, name: "VnExpress Marathon Hanoi Midnight", date: "2026-04-05", time: "04:30", loc: "Hồ Hoàn Kiếm", color: "bg-emerald-500", price: "450.000đ" },
+    { id: 30, name: "Triển lãm Xe độ & Phụ kiện", date: "2026-04-05", time: "09:00", loc: "TT Triển lãm I.C.E", color: "bg-red-600", price: "100.000đ" },
+    { id: 31, name: "Workshop Digital Marketing Performance", date: "2026-04-07", time: "14:00", loc: "Coworking Space Q1", color: "bg-sky-500", price: "200.000đ" },
+    { id: 32, name: "Lễ hội Văn hóa Nhật Bản", date: "2026-04-10", time: "08:00", loc: "Công viên Thống Nhất", color: "bg-pink-300", price: "50.000đ" },
+    { id: 33, name: "Concert Sơn Tùng M-TP: Sky Tour", date: "2026-04-11", time: "19:30", loc: "Sân Mỹ Đình", color: "bg-gray-900", price: "1.500.000đ" },
+    { id: 34, name: "Hội chợ Sách Quốc tế Việt Nam", date: "2026-04-12", time: "09:00", loc: "Hoàng Thành Thăng Long", color: "bg-orange-300", price: "Miễn phí" },
+    { id: 35, name: "FPT Tech Day: Blockchain World", date: "2026-04-14", time: "15:00", loc: "FPT Tower", color: "bg-blue-700", price: "Miễn phí" },
+    { id: 36, name: "Workshop: Cắm Hoa Ikebana Nhật Bản", date: "2026-04-15", time: "09:30", loc: "Tiệm Hoa Xinh", color: "bg-rose-400", price: "350.000đ" },
+    { id: 37, name: "Giải Bóng rổ VBA 3x3 Prime", date: "2026-04-17", time: "18:00", loc: "Nhà thi đấu Thanh Xuân", color: "bg-orange-600", price: "120.000đ" },
+    { id: 38, name: "TEDx VNU-IS: Beyond Limits", date: "2026-04-18", time: "13:30", loc: "VNU International School", color: "bg-red-500", price: "300.000đ" },
+    { id: 39, name: "Hài Độc Thoại: Saigon Comic Night", date: "2026-04-18", time: "20:30", loc: "Rotunda Bar", color: "bg-purple-500", price: "250.000đ" },
+    { id: 40, name: "Workshop: Tinh hoa ẩm thực Sushi", date: "2026-04-19", time: "10:00", loc: "Học viện ẩm thực", color: "bg-teal-400", price: "500.000đ" },
+    { id: 41, name: "Talkshow: AI & Ethical Dilemmas", date: "2026-04-21", time: "14:00", loc: "Keangnam Landmark", color: "bg-cyan-600", price: "200.000đ" },
+    { id: 42, name: "Hội thảo: Săn học bổng Ivy League", date: "2026-04-22", time: "08:30", loc: "Khách sạn Daewoo", color: "bg-blue-800", price: "Miễn phí" },
+    { id: 43, name: "Workshop: Vẽ Tranh Acrylic Summer", date: "2026-04-24", time: "14:30", loc: "Art Center", color: "bg-yellow-700", price: "400.000đ" },
+    { id: 44, name: "Hay Glamping Music Festival", date: "2026-04-25", time: "16:00", loc: "Ecopark", color: "bg-fuchsia-600", price: "850.000đ" },
+    { id: 45, name: "Triển lãm: Di sản Sơn mài Việt", date: "2026-04-26", time: "09:00", loc: "Bảo tàng Mỹ thuật", color: "bg-stone-600", price: "40.000đ" },
+    { id: 46, name: "Workshop: Nghệ thuật Latte Art", date: "2026-04-27", time: "15:00", loc: "Aha Coffee Training", color: "bg-brown-500", price: "300.000đ" },
+    { id: 47, name: "Street Food Festival: Việt Nam vị ngon", date: "2026-04-29", time: "17:00", loc: "Phố đi bộ Hoàn Kiếm", color: "bg-lime-500", price: "Vào cửa tự do" },
+    { id: 48, name: "Concert Tổ quốc 30/4 -1/5 ", date: "2026-04-30", time: "20:00", loc: "Quảng trường Ba Đình", color: "bg-yellow-300", price: "Miễn phí" }, // Giữ nguyên
+    { id: 49, name: "Trải nghiệm: Đạp xe đêm Hà Nội", date: "2026-04-30", time: "22:00", loc: "Nhà hát Lớn", color: "bg-blue-400", price: "150.000đ" },
+    { id: 50, name: "Seminar: Fintech & Cybersecurity", date: "2026-04-08", time: "09:00", loc: "VNU-IS Building", color: "bg-slate-700", price: "Miễn phí" },
+    { id: 51, name: "Giải Tennis Hà Nội Open 2026", date: "2026-04-13", time: "07:30", loc: "Sân Quần Ngựa", color: "bg-green-600", price: "200.000đ" },
+    { id: 52, name: "Tham quan thuỷ cung", date: "2026-04-16", time: "08:00", loc: "Lotte Tây Hồ", color: "bg-pink-400", price: "250.000đ" }, // Giữ nguyên
+    { id: 53, name: "GreenGreen Cortis", date: "2026-04-20", time: "18:00", loc: "Vincom Center", color: "bg-red-600", price: "300.000đ" }, // Giữ nguyên
+    { id: 54, name: "Yoga Sunset: Khoảnh khắc hoàng hôn", date: "2026-04-23", time: "17:30", loc: "West Lake Park", color: "bg-orange-300", price: "150.000đ" },
+    { id: 55, name: "Jazz Classic: Blue Note Night", date: "2026-04-28", time: "20:00", loc: "Cool Cat Club", color: "bg-indigo-900", price: "400.000đ" },
+    { id: 56, name: "Saigon Garage Sale: Tái chế & Đồ cũ", date: "2026-04-04", time: "09:00", loc: "Quận 2, HCM", color: "bg-yellow-600", price: "Miễn phí" },
+    { id: 57, name: "Trải nghiệm: Khám phá Vũ trụ 3D", date: "2026-04-09", time: "19:00", loc: "Hanoi Planetarium", color: "bg-blue-900", price: "80.000đ" },
+    { id: 58, name: "Workshop: Sáng tạo Nến Thơm", date: "2026-04-14", time: "14:00", loc: "Scent Lab", color: "bg-rose-200", price: "380.000đ" },
+    { id: 59, name: "Giải Cờ vua Sinh viên VNU", date: "2026-04-22", time: "08:00", loc: "VNU-IS Library", color: "bg-zinc-800", price: "Miễn phí" },
+    { id: 60, name: "Bootcamp: Python for Data Analysis", date: "2026-04-15", time: "18:00", loc: "Online via MS Teams", color: "bg-yellow-500", price: "Miễn phí" },
+    { id: 61, name: "Lễ hội Cosplay: Manga Festival", date: "2026-04-26", time: "09:00", loc: "AEON Mall Long Biên", color: "bg-purple-600", price: "Miễn phí" },
+    { id: 62, name: "Hội thảo: Startup Gen Z & AI", date: "2026-04-11", time: "14:00", loc: "Hanoi Hub", color: "bg-emerald-400", price: "100.000đ" },
+    { id: 63, name: "Đêm nhạc: Rock Việt - Bùng nổ", date: "2026-04-18", time: "19:00", loc: "Sân vận động Tự Do", color: "bg-black", price: "300.000đ" },
+    { id: 64, name: "Workshop: Pottery & Decor", date: "2026-04-05", time: "10:00", loc: "Bát Tràng", color: "bg-orange-200", price: "450.000đ" },
+    { id: 65, name: "Giải Bơi lội Thanh niên 2026", date: "2026-04-30", time: "07:00", loc: "Cung dưới nước Mỹ Đình", color: "bg-blue-300", price: "Miễn phí" },
+    { id: 66, name: "Khám phá: Landscape Photography Tour", date: "2026-04-12", time: "05:00", loc: "Vườn quốc gia Ba Vì", color: "bg-green-700", price: "600.000đ" },
+
+    // --- THÁNG 5/2026 ---
+    { id: 67, name: "Lễ hội Quốc tế Lao động Việt-Xô", date: "2026-05-01", time: "09:00", loc: "Công viên Thống Nhất", color: "bg-red-500", price: "Miễn phí" },
+    { id: 68, name: "Bootcamp: Data Science & AI", date: "2026-05-02", time: "14:00", loc: "VNU-IS", color: "bg-blue-600", price: "Miễn phí" },
+    { id: 69, name: "Những Thành Phố Mơ Màng: Indie Night", date: "2026-05-03", time: "19:00", loc: "Nhà hát Hòa Bình", color: "bg-emerald-300", price: "500.000đ" },
+    { id: 70, name: "Giải Marathon TP.HCM (HCMC Run)", date: "2026-05-04", time: "04:00", loc: "Quận 1", color: "bg-blue-500", price: "600.000đ" },
+    { id: 71, name: "Hội thảo: AI Transform in Fintech", date: "2026-05-06", time: "09:00", loc: "Lotte Center", color: "bg-indigo-400", price: "300.000đ" },
+    { id: 72, name: "Workshop: Macaron Making Masterclass", date: "2026-05-08", time: "15:00", loc: "Bakery School", color: "bg-pink-200", price: "450.000đ" },
+    { id: 73, name: "Đại hội Thể thao Sinh viên VNU", date: "2026-05-10", time: "07:00", loc: "Sân vận động Bách Khoa", color: "bg-yellow-500", price: "Miễn phí" },
+    { id: 74, name: "Workshop: Kỹ năng Thuyết trình AI", date: "2026-05-12", time: "18:30", loc: "Toong Coworking", color: "bg-purple-400", price: "150.000đ" },
+    { id: 75, name: "Triển lãm: VIETNAM ICTCOMM 2026", date: "2026-05-15", time: "09:00", loc: "NIC Hòa Lạc", color: "bg-cyan-500", price: "Miễn phí" },
+    { id: 76, name: "Phòng trà: Tình ca Trịnh Công Sơn", date: "2026-05-16", time: "20:00", loc: "Phòng trà Không Tên", color: "bg-amber-600", price: "600.000đ" },
+    { id: 77, name: "Workshop: Vẽ Henna & Boho Style", date: "2026-05-17", time: "14:00", loc: "Bohemian Cafe", color: "bg-orange-400", price: "200.000đ" },
+    { id: 78, name: "Giải Cầu lông mở rộng 2026", date: "2026-05-19", time: "08:00", loc: "CLB thể thao Hoàn Kiếm", color: "bg-blue-400", price: "100.000đ" },
+    { id: 79, name: "Vietnam Marketing Summit 2026", date: "2026-05-20", time: "09:00", loc: "JW Marriott Hanoi", color: "bg-slate-800", price: "2.000.000đ" },
+    { id: 80, name: "Workshop: Terrarium Art Workshop", date: "2026-05-22", time: "10:00", loc: "Green Garden", color: "bg-green-400", price: "350.000đ" },
+    { id: 81, name: "Show: Fashion Walk Summer Vibe", date: "2026-05-23", time: "19:30", loc: "Phố đi bộ", color: "bg-fuchsia-400", price: "Vào cửa tự do" },
+    { id: 82, name: "Giải Đua thuyền rồng Hồ Tây", date: "2026-05-24", time: "07:30", loc: "Hồ Tây", color: "bg-red-400", price: "Miễn phí" },
+    { id: 83, name: "VNU Seminar: Tâm lý học Sinh viên", date: "2026-05-25", time: "14:00", loc: "VNU Library Hall", color: "bg-teal-500", price: "Miễn phí" },
+    { id: 84, name: "Workshop: DIY Leather Craft", date: "2026-05-27", time: "15:00", loc: "Craft Shop", color: "bg-stone-500", price: "550.000đ" },
+    { id: 85, name: "Concert: Chillies - Trên Những Đám Mây", date: "2026-05-29", time: "19:00", loc: "Nhà thi đấu Quân khu 7", color: "bg-sky-400", price: "700.000đ" },
+    { id: 86, name: "Lễ bế giảng năm học VNU-IS", date: "2026-05-31", time: "08:00", loc: "Hội trường lớn VNU", color: "bg-indigo-500", price: "Miễn phí" },
+    { id: 87, name: "Workshop: Tarot & Crystal Healing", date: "2026-05-05", time: "18:00", loc: "Mystic House", color: "bg-purple-900", price: "300.000đ" },
+    { id: 88, name: "Giải Bóng đá mini Business Cup", date: "2026-05-09", time: "16:00", loc: "Sân bóng cỏ nhân tạo", color: "bg-green-500", price: "100.000đ" },
+    { id: 89, name: "Lớp học: K-pop Dance Cover", date: "2026-05-14", time: "19:00", loc: "Dance Studio Q3", color: "bg-yellow-400", price: "120.000đ" },
+    { id: 90, name: "Hội thảo: Đầu tư Crypto cho người mới", date: "2026-05-21", time: "14:00", loc: "Hội sở Ngân hàng số", color: "bg-blue-900", price: "Miễn phí" },
+    { id: 91, name: "Skincare Masterclass by Shiseido", date: "2026-05-26", time: "15:00", loc: "Showroom Mỹ phẩm", color: "bg-pink-300", price: "Miễn phí" },
+    { id: 92, name: "Đêm nhạc Jazz Mùa hạ: Sunny", date: "2026-05-30", time: "20:30", loc: "Bình Minh Jazz Club", color: "bg-gray-800", price: "450.000đ" },
+    { id: 93, name: "Workshop: Mosaic Art for Beginners", date: "2026-05-07", time: "09:00", loc: "Creative Lab", color: "bg-orange-500", price: "420.000đ" },
+    { id: 94, name: "Saigon Craft Beer Festival", date: "2026-05-16", time: "17:00", loc: "Quận 1", color: "bg-yellow-700", price: "200.000đ" },
+    { id: 95, name: "Workshop: Creative Writing 101", date: "2026-05-11", time: "18:30", loc: "Book Cafe", color: "bg-blue-200", price: "100.000đ" },
+    { id: 96, name: "VPBank Midnight Run Hoàn Kiếm", date: "2026-05-23", time: "23:00", loc: "Bờ Hồ Hoàn Kiếm", color: "bg-lime-400", price: "750.000đ" },
+    { id: 97, name: "Seminar: Web3 & Metaverse Strategy", date: "2026-05-18", time: "09:00", loc: "VNU-IS Building", color: "bg-violet-700", price: "Miễn phí" },
+    { id: 98, name: "Workshop: Textile Design - Vẽ trên vải", date: "2026-05-04", time: "14:30", loc: "Tiệm May Nghệ Thuật", color: "bg-cyan-300", price: "280.000đ" },
+    { id: 99, name: "Show: Xiếc Nghệ Thuật 'Làng Tôi'", date: "2026-05-28", time: "19:00", loc: "Rạp xiếc Trung ương", color: "bg-red-700", price: "200.000đ" },
+    { id: 100, name: "Hội chợ Đồ chơi & Trải nghiệm Kid", date: "2026-05-31", time: "09:00", loc: "Cung Thiếu Nhi Hà Nội", color: "bg-blue-400", price: "Miễn phí" },
+    { id: 101, name: "Workshop: Digital Storytelling", date: "2026-05-13", time: "14:00", loc: "Hanoi Hub", color: "bg-emerald-600", price: "250.000đ" },
+    { id: 102, name: "Triển lãm: Green Architecture Expo", date: "2026-05-19", time: "10:00", loc: "Đại học Xây dựng", color: "bg-green-300", price: "Miễn phí" },
+    { id: 103, name: "Workshop: Night Makeup Look", date: "2026-05-08", time: "18:00", loc: "Makeup Academy", color: "bg-pink-500", price: "350.000đ" },
+    { id: 104, name: "Lễ hội Diều Quốc tế Sông Hồng", date: "2026-05-01", time: "15:00", loc: "Bãi giữa Sông Hồng", color: "bg-sky-500", price: "Miễn phí" },
+    { id: 105, name: "Workshop: Podcast Production 101", date: "2026-05-24", time: "14:00", loc: "Studio Hub", color: "bg-rose-600", price: "300.000đ" },
+    { id: 106, name: "Giao hưởng: Thu quyến rũ", date: "2026-05-10", time: "20:00", loc: "Nhà hát Lớn Hà Nội", color: "bg-amber-800", price: "1.000.000đ" },
+
+    // --- THÁNG 6/2026 ---
+    { id: 107, name: "Summer Tech Camp for Student", date: "2026-06-01", time: "08:00", loc: "Hòa Lạc Hi-Tech Park", color: "bg-blue-600", price: "2.500.000đ" },
+    { id: 108, name: "International Children's Day Fest", date: "2026-06-01", time: "16:00", loc: "Công viên Thủ Lệ", color: "bg-pink-400", price: "Miễn phí" },
+    { id: 109, name: "Workshop: NFT Strategy for Artists", date: "2026-06-03", time: "14:00", loc: "VNU-IS Hall", color: "bg-indigo-500", price: "Miễn phí" },
+    { id: 110, name: "Music Show: Summer Hit Countdown", date: "2026-06-05", time: "19:30", loc: "Phố đi bộ Hồ Gươm", color: "bg-orange-500", price: "Vào cửa tự do" },
+    { id: 111, name: "The Color Run Vietnam 2026", date: "2026-06-07", time: "06:00", loc: "Khu đô thị Sala", color: "bg-fuchsia-500", price: "350.000đ" },
+    { id: 112, name: "Workshop: Video Editing for TikTok", date: "2026-06-08", time: "18:30", loc: "Online via Zoom", color: "bg-black", price: "150.000đ" },
+    { id: 113, name: "Triển lãm: Food & Hotel Vietnam", date: "2026-06-10", time: "09:00", loc: "SECC Quận 7", color: "bg-emerald-600", price: "100.000đ" },
+    { id: 114, name: "Hội thảo: Crypto Mastery for Gen Z", date: "2026-06-12", time: "15:00", loc: "Hội sở MB Bank", color: "bg-yellow-600", price: "Miễn phí" },
+    { id: 115, name: "Workshop: Ceramic Art & Craft", date: "2026-06-13", time: "09:30", loc: "Tiệm Gốm Nhà Mình", color: "bg-stone-400", price: "400.000đ" },
+    { id: 116, name: "Giải Bóng đá Summer Cup VNU", date: "2026-06-14", time: "16:30", loc: "Sân bóng cỏ nhân tạo", color: "bg-green-600", price: "Miễn phí" },
+    { id: 117, name: "Jazz & Wine: Midnight Melodies", date: "2026-06-16", time: "20:00", loc: "Sky Bar Keangnam", color: "bg-purple-900", price: "800.000đ" },
+    { id: 118, name: "Workshop: Design Thinking Bootcamp", date: "2026-06-18", time: "09:00", loc: "Dreamplex Coworking", color: "bg-cyan-500", price: "300.000đ" },
+    { id: 119, name: "Bảo tàng chiêm tinh học", date: "2026-06-19", time: "08:00", loc: "Hoà Lạc, Hà Nội", color: "bg-amber-500", price: "150.000đ" }, // Giữ nguyên
+    { id: 120, name: "Trải nghiệm: Chèo Sup ngắm bình minh", date: "2026-06-21", time: "05:00", loc: "Hồ Tây", color: "bg-sky-400", price: "250.000đ" },
+    { id: 121, name: "Workshop: Terrarium Garden Design", date: "2026-06-22", time: "14:00", loc: "Garden Coffee", color: "bg-lime-600", price: "180.000đ" },
+    { id: 122, name: "Seminar: Fintech Startup Strategy", date: "2026-06-24", time: "09:00", loc: "NIC Hòa Lạc", color: "bg-slate-700", price: "Miễn phí" },
+    { id: 123, name: "Concert: Chill Night with Vũ.", date: "2026-06-26", time: "19:00", loc: "Nhà hát Lớn Hà Nội", color: "bg-teal-400", price: "500.000đ" },
+    { id: 124, name: "Workshop: Natural Skincare DIY", date: "2026-06-27", time: "10:00", loc: "Lab Studio", color: "bg-rose-300", price: "450.000đ" },
+    { id: 125, name: "Hội chợ: Thai Consumer Expo 2026", date: "2026-06-28", time: "08:30", loc: "Trung tâm Triển lãm", color: "bg-red-400", price: "Miễn phí" },
+    { id: 126, name: "Workshop: Personal Finance 101", date: "2026-06-30", time: "18:00", loc: "VNU Library Hall", color: "bg-indigo-700", price: "Miễn phí" },
+    { id: 127, name: "Lớp học: Bơi sải nâng cao", date: "2026-06-02", time: "06:00", loc: "Bể bơi Mỹ Đình", color: "bg-blue-300", price: "200.000đ" },
+    { id: 128, name: "Workshop: Modern Acrylic Painting", date: "2026-06-06", time: "14:30", loc: "Canvas Studio", color: "bg-yellow-400", price: "320.000đ" },
+    { id: 129, name: "Summer Mania: Cosplay Fest", date: "2026-06-20", time: "09:00", loc: "Nhà văn hóa Thanh Niên", color: "bg-violet-600", price: "120.000đ" },
+    { id: 130, name: "Khóa học: Yoga Harmony Summer", date: "2026-06-15", time: "17:30", loc: "CLB Sức Sống Mới", color: "bg-green-400", price: "800.000đ" },
+    { id: 131, name: "Hội thảo: Generative AI in Art", date: "2026-06-23", time: "14:00", loc: "Bảo tàng Mỹ thuật", color: "bg-stone-800", price: "100.000đ" },
+    { id: 132, name: "Workshop: Basic PC Build & Fix", date: "2026-06-25", time: "09:00", loc: "VNU IT Center", color: "bg-zinc-500", price: "Miễn phí" },
+    { id: 133, name: "Giao hưởng: Giai điệu mùa hạ", date: "2026-06-29", time: "20:00", loc: "Nhà hát Kịch Hà Nội", color: "bg-amber-900", price: "300.000đ" },
+    { id: 134, name: "Giải chạy: Sức Trẻ Việt Nam", date: "2026-06-04", time: "05:30", loc: "Công viên Yên Sở", color: "bg-emerald-400", price: "Miễn phí" },
+    { id: 135, name: "Workshop: iPhone Photography Tour", date: "2026-06-11", time: "15:00", loc: "Đường Phan Đình Phùng", color: "bg-gray-700", price: "200.000đ" },
+    { id: 136, name: "Hội thảo: Du học Châu Âu 2026", date: "2026-06-17", time: "08:30", loc: "Khách sạn Pullman", color: "bg-blue-800", price: "Miễn phí" },
+
+    // --- THÁNG 7/2026 ---
+    { id: 137, name: "8Wonder Summer: World Class Music", date: "2026-07-01", time: "19:00", loc: "VinWonders Nha Trang", color: "bg-red-500", price: "800.000đ" },
+    { id: 138, name: "Live Acoustic: Chuyện của Nắng", date: "2026-07-03", time: "20:30", loc: "Lululola Coffee+", color: "bg-orange-400", price: "350.000đ" },
+    { id: 139, name: "Trải nghiệm: Làng Gốm Bát Tràng Tour", date: "2026-07-04", time: "09:00", loc: "Bát Tràng, Hà Nội", color: "bg-stone-500", price: "450.000đ" },
+    { id: 140, name: "Summer Splash Swim Championship", date: "2026-07-05", time: "07:30", loc: "Cung dưới nước", color: "bg-blue-400", price: "150.000đ" },
+    { id: 141, name: "Jazz Night: Midnight Blues", date: "2026-07-07", time: "21:00", loc: "Bình Minh Jazz Club", color: "bg-indigo-900", price: "500.000đ" },
+    { id: 142, name: "Tour: Địa đạo Củ Chi - Di sản thép", date: "2026-07-10", time: "08:00", loc: "Củ Chi, TP.HCM", color: "bg-emerald-700", price: "600.000đ" },
+    { id: 143, name: "Workshop: Vẽ tranh En Plein Air", date: "2026-07-11", time: "16:00", loc: "Công viên Yên Sở", color: "bg-teal-400", price: "300.000đ" },
+    { id: 144, name: "Rock Concert: Lửa Mùa Hè 2026", date: "2026-07-12", time: "19:00", loc: "Nhà thi đấu Phú Thọ", color: "bg-gray-900", price: "400.000đ" },
+    { id: 145, name: "Giải Tennis VNU Open 2026", date: "2026-07-14", time: "08:00", loc: "Cụm sân Tennis VNU", color: "bg-lime-500", price: "Miễn phí" },
+    { id: 146, name: "Workshop: Mixology - Cocktail Art", date: "2026-07-15", time: "18:00", loc: "The Alchemist Bar", color: "bg-pink-600", price: "550.000đ" },
+    { id: 147, name: "Hard Rock Indie Night: Vol 1", date: "2026-07-17", time: "20:00", loc: "Hard Rock Cafe", color: "bg-fuchsia-700", price: "250.000đ" },
+    { id: 148, name: "Streetball Championship 3x3", date: "2026-07-18", time: "17:00", loc: "Sân bóng rổ ĐH Y", color: "bg-orange-600", price: "Miễn phí" },
+    { id: 149, name: "Tour đêm: Sống lại hào khí Hỏa Lò", date: "2026-07-19", time: "19:30", loc: "Di tích Hỏa Lò", color: "bg-zinc-800", price: "300.000đ" },
+    { id: 150, name: "Workshop: Modern Hand Embroidery", date: "2026-07-21", time: "14:00", loc: "Tiệm Thêu Tay", color: "bg-rose-300", price: "280.000đ" },
+    { id: 151, name: "Đêm nhạc Trịnh: Hạ Trắng & Mưa", date: "2026-07-22", time: "20:00", loc: "Phòng trà Đồng Dao", color: "bg-amber-700", price: "450.000đ" },
+    { id: 152, name: "Run for Love: Hanoi Summer Race", date: "2026-07-24", time: "04:30", loc: "Hồ Tây", color: "bg-sky-500", price: "500.000đ" },
+    { id: 153, name: "Workshop: Terrarium Art Design", date: "2026-07-25", time: "10:00", loc: "Green Oasis Lab", color: "bg-green-600", price: "420.000đ" },
+    { id: 154, name: "Acoustic Beach Party: Vũng Tàu", date: "2026-07-26", time: "19:00", loc: "Beach Club Vũng Tàu", color: "bg-cyan-400", price: "300.000đ" },
+    { id: 155, name: "Giải Cầu lông Cầu Giấy mở rộng", date: "2026-07-28", time: "08:00", loc: "Nhà thi đấu Cầu Giấy", color: "bg-yellow-500", price: "100.000đ" },
+    { id: 156, name: "Workshop: Scented Candle Making", date: "2026-07-29", time: "15:00", loc: "The Candle Shop", color: "bg-violet-400", price: "380.000đ" },
+    { id: 157, name: "Triển lãm Harry Potter: Trải nghiệm phép thuật", date: "2026-07-31", time: "07:00", loc: "Bảo tàng Harry Potter", color: "bg-blue-600", price: "200.000đ" }, // Giữ nguyên
+    { id: 158, name: "Trải nghiệm: Chèo Kayak Hồ Tuyền Lâm", date: "2026-07-02", time: "16:30", loc: "Đà Lạt", color: "bg-teal-500", price: "250.000đ" },
+    { id: 159, name: "Cooking Class: Master Sushi Art", date: "2026-07-08", time: "10:00", loc: "Học viện Ẩm thực", color: "bg-red-400", price: "450.000đ" },
+    { id: 160, name: "Giao hưởng: Pop-Ballad Symphony", date: "2026-07-16", time: "19:30", loc: "Nhà hát Lớn Hà Nội", color: "bg-purple-500", price: "1.200.000đ" },
+    { id: 161, name: "Giải Đua xe đạp Hà Nội Mới", date: "2026-07-20", time: "07:00", loc: "Đường Võ Nguyên Giáp", color: "bg-emerald-500", price: "Miễn phí" },
+    { id: 162, name: "Trải nghiệm: Bay Khinh khí cầu", date: "2026-07-23", time: "05:30", loc: "Sân vận động Long Biên", color: "bg-orange-300", price: "2.000.000đ" },
+    { id: 163, name: "Workshop: Analog Film Photography", date: "2026-07-27", time: "14:00", loc: "Film Lab Q1", color: "bg-zinc-600", price: "350.000đ" },
+    { id: 164, name: "Stand-up Comedy: Cười Hè Rực Rỡ", date: "2026-07-09", time: "20:30", loc: "Standing Bar", color: "bg-yellow-600", price: "200.000đ" },
+    { id: 165, name: "Workshop: Pioneer DJ Masterclass", date: "2026-07-30", time: "18:00", loc: "DJ Studio", color: "bg-black", price: "600.000đ" },
+    { id: 166, name: "Lễ hội Diều: Sắc màu Mỹ Khê", date: "2026-07-13", time: "15:00", loc: "Bãi biển Mỹ Khê", color: "bg-sky-400", price: "Miễn phí" },
+
+    // --- THÁNG 8/2026 ---
+    { id: 167, name: "Lễ hội Âm nhạc: Lời chào tháng 8", date: "2026-08-01", time: "19:30", loc: "Công viên Tao Đàn", color: "bg-emerald-400", price: "Vào cửa tự do" },
+    { id: 168, name: "Vietnam Summer Open Golf 2026", date: "2026-08-02", time: "06:00", loc: "Long Bien Golf Course", color: "bg-green-700", price: "3.500.000đ" },
+    { id: 169, name: "Workshop: Indigo Textile Dyeing", date: "2026-08-04", time: "14:00", loc: "Indigo House", color: "bg-blue-800", price: "400.000đ" },
+    { id: 170, name: "Live Music: Saxophone Jazz Night", date: "2026-08-05", time: "20:00", loc: "Le Club Bar", color: "bg-amber-900", price: "600.000đ" },
+    { id: 171, name: "Trải nghiệm: Leo núi Bouldering", date: "2026-08-07", time: "17:00", loc: "Vietclimb Gym", color: "bg-orange-500", price: "180.000đ" },
+    { id: 172, name: "Giải Karate Trẻ Toàn Quốc 2026", date: "2026-08-08", time: "08:30", loc: "Nhà thi đấu Trịnh Hoài Đức", color: "bg-red-600", price: "Miễn phí" },
+    { id: 173, name: "Workshop: Modern Calligraphy Art", date: "2026-08-09", time: "09:30", loc: "Thư quán Art", color: "bg-stone-700", price: "250.000đ" },
+    { id: 174, name: "G-Dragon World Tour", date: "2026-08-11", time: "20:00", loc: "Vinhomes Ocean Park 3, Hà Nội", color: "bg-indigo-600", price: "2.200.000đ" }, // Giữ nguyên
+    { id: 175, name: "Trải nghiệm: Bắn cung nghệ thuật", date: "2026-08-13", time: "15:00", loc: "Archery Tag HN", color: "bg-lime-600", price: "200.000đ" },
+    { id: 176, name: "Live Acoustic: Chút nắng vàng Thu", date: "2026-08-14", time: "20:30", loc: "Acoustic Cafe Q3", color: "bg-yellow-400", price: "200.000đ" },
+    { id: 177, name: "Vietnam Billiards Championship 2026", date: "2026-08-15", time: "10:00", loc: "CLB Billiards Star", color: "bg-blue-900", price: "100.000đ" },
+    { id: 178, name: "Workshop: DIY Phone Case Decor", date: "2026-08-16", time: "14:00", loc: "DIY Space", color: "bg-pink-400", price: "150.000đ" },
+    { id: 179, name: "Tour: Di sản Hội An đêm rằm", date: "2026-08-18", time: "18:00", loc: "Phố cổ Hội An", color: "bg-orange-300", price: "Miễn phí" },
+    { id: 180, name: "Board Game Night: Strategy Fest", date: "2026-08-20", time: "19:00", loc: "The Nest Coffee", color: "bg-violet-700", price: "50.000đ" },
+    { id: 181, name: "Giải Bóng chuyền bãi biển Tour", date: "2026-08-22", time: "07:30", loc: "Bãi biển Nha Trang", color: "bg-yellow-300", price: "Miễn phí" },
+    { id: 182, name: "Rap & Hip-hop Live: Underground", date: "2026-08-23", time: "20:00", loc: "1900 Le Théâtre", color: "bg-gray-800", price: "350.000đ" },
+    { id: 183, name: "Trải nghiệm: Kỹ năng sinh tồn rừng", date: "2026-08-25", time: "08:00", loc: "Rừng quốc gia Cúc Phương", color: "bg-green-800", price: "800.000đ" },
+    { id: 184, name: "Workshop: Xoay gốm nghệ thuật Chi", date: "2026-08-26", time: "14:30", loc: "Gốm Chi Studio", color: "bg-orange-800", price: "400.000đ" },
+    { id: 185, name: "Hanoi Skateboard Championship", date: "2026-08-27", time: "16:00", loc: "Lenin Park Skatepark", color: "bg-black", price: "Miễn phí" },
+    { id: 186, name: "Classical: Cello Solo Recital", date: "2026-08-28", time: "20:00", loc: "Manzi Art Space", color: "bg-stone-900", price: "300.000đ" },
+    { id: 187, name: "Hanoi City Bus Tour: Night Sight", date: "2026-08-29", time: "19:00", loc: "Nhà hát Lớn Hà Nội", color: "bg-red-500", price: "150.000đ" },
+    { id: 188, name: "Workshop: Authentic Thai Cooking", date: "2026-08-30", time: "10:00", loc: "Thai Cooking Class", color: "bg-orange-400", price: "500.000đ" },
+    { id: 189, name: "Concert: Farewell Summer 2026", date: "2026-08-31", time: "19:30", loc: "Sân Mỹ Đình", color: "bg-blue-700", price: "900.000đ" },
+    { id: 190, name: "Giải Bóng bàn Sinh viên Toàn quốc", date: "2026-08-03", time: "14:00", loc: "Nhà thi đấu VNU", color: "bg-cyan-600", price: "Miễn phí" },
+    { id: 191, name: "Workshop: Essential Oil Blending", date: "2026-08-06", time: "18:30", loc: "Aroma Studio", color: "bg-teal-200", price: "320.000đ" },
+    { id: 192, name: "Trekking: Chinh phục đỉnh Hàm Lợn", date: "2026-08-10", time: "05:00", loc: "Núi Hàm Lợn", color: "bg-green-700", price: "300.000đ" },
+    { id: 193, name: "Live Acoustic: Giai điệu Mưa Ngâu", date: "2026-08-12", time: "20:00", loc: "Trixie Cafe", color: "bg-indigo-400", price: "400.000đ" },
+    { id: 194, name: "Giải Cờ tướng Hội làng Triều Khúc", date: "2026-08-17", time: "08:00", loc: "Đình làng Triều Khúc", color: "bg-red-800", price: "Miễn phí" },
+    { id: 195, name: "Workshop: Tote Bag Painting Art", date: "2026-08-19", time: "15:00", loc: "Art Cafe", color: "bg-emerald-300", price: "220.000đ" },
+    { id: 196, name: "Trải nghiệm: Cafe Vợt Phố Cổ Tour", date: "2026-08-24", time: "09:00", loc: "Phố cổ Hà Nội", color: "bg-brown-600", price: "120.000đ" },
+
+    // --- CÁC ID TỪ 197 TRỞ ĐI ĐÃ LÀ SỰ KIỆN THẬT TỪ CÂU TRẢ LỜI TRƯỚC ---
+    { id: 197, name: "Lễ hội Pháo hoa Quốc tế Đà Nẵng (DIFF)", date: "2026-06-06", time: "20:00", loc: "Cảng Đà Nẵng", color: "bg-red-600", price: "800.000đ" },
+    { id: 198, name: "Vietnam ICTComm 2026", date: "2026-06-08", time: "09:00", loc: "SECC Quận 7", color: "bg-blue-700", price: "Miễn phí" },
+    { id: 199, name: "Concert Indie: Những Thành Phố Mơ Màng", date: "2026-06-13", time: "16:00", loc: "Công viên Yên Sở", color: "bg-orange-500", price: "650.000đ" },
+    { id: 200, name: "Giải Chạy VnExpress Marathon Quy Nhơn", date: "2026-06-14", time: "03:30", loc: "Quy Nhơn", color: "bg-sky-500", price: "750.000đ" },
+    { id: 201, name: "Workshop: AI & Fintech VNU-IS", date: "2026-06-16", time: "14:00", loc: "VNU International School", color: "bg-indigo-600", price: "Miễn phí" },
+    { id: 202, name: "Đêm nhạc: Soul of the Forest", date: "2026-06-20", time: "18:00", loc: "Flamingo Đại Lải", color: "bg-emerald-700", price: "1.200.000đ" },
+    { id: 203, name: "Kịch nói: Hồn Trương Ba Da Hàng Thịt", date: "2026-06-21", time: "20:00", loc: "Nhà hát Lớn Hà Nội", color: "bg-amber-800", price: "300.000đ" },
+    { id: 204, name: "Hội chợ Du lịch Quốc tế (VITM)", date: "2026-06-25", time: "08:30", loc: "ICE Hà Nội", color: "bg-teal-500", price: "50.000đ" },
+    { id: 205, name: "Workshop: Sáng tạo Nội dung số", date: "2026-06-27", time: "14:00", loc: "Toong Coworking Space", color: "bg-violet-600", price: "200.000đ" },
+    { id: 206, name: "Giải Bóng rổ VBA 2026 (Opening Day)", date: "2026-06-28", time: "19:00", loc: "Nhà thi đấu Tây Hồ", color: "bg-orange-600", price: "150.000đ" },
+    { id: 207, name: "Trải nghiệm: Bus Tour Đêm Sài Gòn", date: "2026-06-05", time: "19:30", loc: "Bưu điện Trung tâm TP", color: "bg-pink-500", price: "145.000đ" },
+    { id: 208, name: "Live Music: Acoustic Rooftop Night", date: "2026-06-12", time: "20:30", loc: "Chill Skybar", color: "bg-indigo-900", price: "400.000đ" },
+    { id: 209, name: "Workshop: Làm Nến Thơm Chill", date: "2026-06-19", time: "15:00", loc: "Hanoi Hub", color: "bg-rose-400", price: "350.000đ" },
+    { id: 210, name: "Tham quan: Bảo tàng Dân tộc học", date: "2026-06-24", time: "09:00", loc: "Cầu Giấy, HN", color: "bg-yellow-700", price: "40.000đ" },
+    { id: 211, name: "Concert: Hay Glamping Music Festival", date: "2026-06-30", time: "14:00", loc: "Công viên Yên Sở", color: "bg-lime-500", price: "900.000đ" },
+    { id: 212, name: "8Wonder Music Festival", date: "2026-07-04", time: "16:00", loc: "VinWonders Nha Trang", color: "bg-fuchsia-600", price: "2.500.000đ" },
+    { id: 213, name: "Giải Marathon Quốc tế Đà Nẵng", date: "2026-07-05", time: "04:00", loc: "Công viên Biển Đông", color: "bg-blue-500", price: "600.000đ" },
+    { id: 226, name: "Tham quan: Thủy cung Vinpearl Harbour", date: "2026-07-08", time: "10:00", loc: "Nha Trang", color: "bg-blue-300", price: "350.000đ" },
+    { id: 214, name: "Workshop: Đầu tư Chứng khoán cho Sinh viên", date: "2026-07-07", time: "18:30", loc: "VNU-IS Building", color: "bg-emerald-600", price: "Miễn phí" },
+    { id: 215, name: "Nhạc kịch: Shrek the Musical Việt Nam", date: "2026-07-10", time: "19:30", loc: "Nhà hát Hòa Bình", color: "bg-green-500", price: "1.000.000đ" },
+    { id: 216, name: "Workshop: Thủ công Resin Art", date: "2026-07-12", time: "09:30", loc: "Art Center HN", color: "bg-cyan-400", price: "450.000đ" },
+    { id: 217, name: "Live Music: Lululola Concert Đà Lạt", date: "2026-07-15", time: "17:30", loc: "Đà Lạt", color: "bg-amber-600", price: "550.000đ" },
+    { id: 218, name: "Giải Tennis Vô địch Quốc gia", date: "2026-07-18", time: "08:00", loc: "Cung điền kinh Mỹ Đình", color: "bg-blue-400", price: "100.000đ" },
+    { id: 219, name: "Trải nghiệm: Tour Ẩm thực Phố Cổ", date: "2026-07-19", time: "17:00", loc: "Chợ Đồng Xuân", color: "bg-orange-400", price: "250.000đ" },
+    { id: 220, name: "Hội thảo: Khởi nghiệp Fintech 2026", date: "2026-07-22", time: "09:00", loc: "Lotte Center HN", color: "bg-slate-800", price: "300.000đ" },
+    { id: 221, name: "Workshop: Vẽ Tranh Acrylic & Wine", date: "2026-07-25", time: "15:00", loc: "The Paint Bar", color: "bg-rose-500", price: "400.000đ" },
+    { id: 222, name: "Show xiếc: À Ố Show", date: "2026-07-26", time: "20:00", loc: "Nhà hát Thành phố HCM", color: "bg-stone-900", price: "700.000đ" },
+    { id: 223, name: "Giải Bơi lội Oceanman Việt Nam", date: "2026-07-27", time: "06:30", loc: "Cam Ranh", color: "bg-sky-600", price: "1.500.000đ" },
+    { id: 224, name: "Workshop: Pha chế Cà phê Đặc sản", date: "2026-07-29", time: "14:00", loc: "Oriberry Coffee", color: "bg-brown-600", price: "300.000đ" },
+    { id: 225, name: "Đêm nhạc Jazz: Summer Vibe", date: "2026-07-31", time: "21:00", loc: "Cool Cat Club", color: "bg-purple-800", price: "450.000đ" },
+
+    // --- THÁNG 8/2026 ---
+    { id: 227, name: "Lễ hội Âm nhạc Monsoon Music Festival", date: "2026-08-01", time: "16:00", loc: "Hoàng Thành Thăng Long", color: "bg-yellow-500", price: "800.000đ" },
+    { id: 228, name: "Giải Marathon Quốc tế Hà Nội (VPBank)", date: "2026-08-02", time: "04:00", loc: "Bờ Hồ Hoàn Kiếm", color: "bg-lime-500", price: "700.000đ" },
+    { id: 246, name: "Workshop: Kỹ năng Viết Research Paper", date: "2026-08-04", time: "14:30", loc: "Thư viện VNU-IS", color: "bg-emerald-500", price: "Miễn phí" },
+    { id: 229, name: "Hội thảo: Blockchain & Future Banking", date: "2026-08-05", time: "09:00", loc: "VNU-IS Hall", color: "bg-indigo-700", price: "Miễn phí" },
+    { id: 242, name: "Hội thảo: Cybersecurity in 2026", date: "2026-08-06", time: "14:00", loc: "NIC Hòa Lạc", color: "bg-cyan-700", price: "Miễn phí" },
+    { id: 230, name: "Workshop: Kỹ năng MC & Thuyết trình", date: "2026-08-08", time: "14:00", loc: "Cung Thiếu nhi Hà Nội", color: "bg-red-500", price: "250.000đ" },
+    { id: 231, name: "Live Concert: Những Bản Tình Ca Thu", date: "2026-08-10", time: "20:00", loc: "Nhà hát Lớn", color: "bg-amber-700", price: "1.500.000đ" },
+    { id: 232, name: "Workshop: Pottery (Gốm xoay) Summer", date: "2026-08-12", time: "10:00", loc: "Gốm Chi Studio", color: "bg-orange-800", price: "400.000đ" },
+    { id: 243, name: "Trải nghiệm: Workshop Làm Nước Hoa", date: "2026-08-14", time: "18:00", loc: "Scent Lab", color: "bg-violet-300", price: "600.000đ" },
+    { id: 233, name: "Giải Vô địch Cầu lông Sinh viên", date: "2026-08-15", time: "08:00", loc: "Nhà thi đấu VNU", color: "bg-teal-400", price: "Miễn phí" },
+    { id: 234, name: "Trải nghiệm: Trekking Vườn quốc gia Ba Vì", date: "2026-08-16", time: "05:00", loc: "Ba Vì", color: "bg-green-700", price: "550.000đ" },
+    { id: 244, name: "Giải Cờ vua Trẻ Toàn quốc", date: "2026-08-19", time: "08:00", loc: "Khách sạn La Thành", color: "bg-zinc-800", price: "100.000đ" },
+    { id: 235, name: "Show Ballet: Kẹp Hạt Dẻ (Trích đoạn)", date: "2026-08-20", time: "19:30", loc: "Nhà hát TP.HCM", color: "bg-stone-800", price: "500.000đ" },
+    { id: 236, name: "Hội chợ Sách Mùa Thu", date: "2026-08-22", time: "08:00", loc: "Đường sách 19/12", color: "bg-blue-400", price: "Vào cửa tự do" },
+    { id: 237, name: "Workshop: Photography (Chụp ảnh film)", date: "2026-08-23", time: "15:00", loc: "Phan Đình Phùng, HN", color: "bg-gray-600", price: "200.000đ" },
+    { id: 238, name: "Giải Đua xe đạp mở rộng", date: "2026-08-25", time: "06:30", loc: "Đại lộ Thăng Long", color: "bg-emerald-500", price: "Miễn phí" },
+    { id: 245, name: "Live Acoustic: Chuyện của Mùa Thu", date: "2026-08-26", time: "20:00", loc: "Trixie Cafe", color: "bg-indigo-400", price: "400.000đ" },
+    { id: 239, name: "Đêm nhạc Rock: Bức Tường & Friends", date: "2026-08-28", time: "19:30", loc: "Sân vận động Mỹ Đình", color: "bg-black", price: "450.000đ" },
+    { id: 240, name: "Workshop: Làm Bánh Trung Thu sớm", date: "2026-08-29", time: "09:00", loc: "Cooking Studio Q3", color: "bg-pink-300", price: "500.000đ" },
+    { id: 241, name: "Lễ hội Khinh khí cầu Quốc tế", date: "2026-08-31", time: "17:00", loc: "KĐT Thủ Thiêm", color: "bg-fuchsia-400", price: "Vào cửa tự do" }
+];
+
+        let currentDate = new Date(2026, 2, 1);
+
+        function toggleUserMenu() {
+            document.getElementById('user-dropdown').classList.toggle('show');
+        }
+
+        window.onclick = function(event) {
+            if (!event.target.closest('.relative')) {
+                document.getElementById('user-dropdown').classList.remove('show');
+            }
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            document.getElementById('real-time-clock').textContent = now.toLocaleTimeString('vi-VN');
+            document.getElementById('real-time-date').textContent = now.toLocaleDateString('vi-VN', options);
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            const monthDisplay = document.getElementById('month-year-display');
+            grid.innerHTML = '';
+
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            monthDisplay.textContent = `Tháng ${String(month + 1).padStart(2, '0')}, ${year}`;
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const startingDay = firstDay === 0 ? 6 : firstDay - 1;
+
+            for (let i = 0; i < startingDay; i++) {
+                grid.innerHTML += `<div class="day-cell bg-gray-50 rounded-2xl"></div>`;
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dayEvents = events.filter(e => e.date === dateStr);
+                
+                grid.innerHTML += `
+                    <div onclick="showEvents('${dateStr}')" id="day-${dateStr}" class="day-cell p-3 rounded-2xl border border-gray-100 bg-white cursor-pointer">
+                        <span class="text-sm font-black text-gray-700">${day}</span>
+                        <div class="flex flex-wrap gap-1 mt-2">
+                            ${dayEvents.map(e => `<div class="w-2.5 h-2.5 rounded-full ${e.color} shadow-sm"></div>`).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            if (month === 2) showEvents("2026-03-21");
+            else showEvents(`${year}-${String(month + 1).padStart(2, '0')}-01`);
+        }
+
+        function showEvents(dateStr) {
+            document.querySelectorAll('.day-cell').forEach(el => el.classList.remove('active-day'));
+            document.getElementById(`day-${dateStr}`)?.classList.add('active-day');
+
+            const container = document.getElementById('event-list-container');
+            const title = document.getElementById('selected-date-title');
+            title.textContent = dateStr.split('-').reverse().join('/');
+
+            const dayEvents = events.filter(e => e.date === dateStr);
+            
+            if (dayEvents.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-16 opacity-40">
+                        <i class="fa-solid fa-calendar-xmark text-4xl mb-4"></i>
+                        <p class="text-sm italic font-bold">Không có sự kiện nào.</p>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = dayEvents.map(e => `
+                <div class="event-card group p-5 rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500 cursor-pointer overflow-hidden relative">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-[10px] font-black text-white px-3 py-1.5 rounded-xl ${e.color} uppercase tracking-widest shadow-md">${e.time}</span>
+                        <span class="text-xs font-black text-blue-500 bg-blue-50 px-3 py-1 rounded-lg border border-blue-100">${e.price}</span>
+                    </div>
+                    <h4 class="text-lg font-black text-gray-800 group-hover:text-blue-500 transition-colors line-clamp-2 leading-tight">${e.name}</h4>
+                    <p class="text-xs text-gray-500 mt-3 flex items-center font-bold">
+                        <i class="fa-solid fa-location-dot mr-2 text-blue-500"></i> ${e.loc}
+                    </p>
+                   <button 
+    onclick="window.location.href='eventdetail.html?id=${e.id}'" 
+    class="w-full mt-6 py-4 bg-gray-900 text-white rounded-2xl text-xs font-black tracking-widest uppercase transform group-hover:scale-[1.02] transition-all active:scale-95 shadow-xl">
+    CHI TIẾT & ĐẶT VÉ
+</button>
+                    <div class="absolute -right-4 -bottom-4 w-16 h-16 ${e.color} opacity-5 blur-2xl group-hover:opacity-20 transition-all"></div>
+                </div>
+            `).join('');
+        }
+
+        function changeMonth(step) {
+            currentDate.setMonth(currentDate.getMonth() + step);
+            renderCalendar();
+        }
+
+        window.onload = renderCalendar;
+    </script>
+</body>
+</html>

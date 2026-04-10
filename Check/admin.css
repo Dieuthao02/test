@@ -1,0 +1,266 @@
+/* ==========================================================================
+   ROOT VARIABLES & BASE RESET 
+   ========================================================================== */
+:root {
+    --primary-green: #10b981;
+    --dark-bg: #0b0f19;
+    --glass-white: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+}
+
+
+/* ==========================================================================
+   LAYOUT: SIDEBAR & MAIN CONTENT
+   ========================================================================== */
+/* Sidebar Styling */
+aside {
+    height: 100vh;
+    overflow-y: auto;
+    flex-shrink: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 50;
+    background-color: var(--dark-bg);
+}
+
+.sidebar-link {
+    position: relative;
+    cursor: pointer;
+}
+
+.sidebar-link.active {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--primary-green);
+    border-right: 3px solid var(--primary-green);
+}
+
+.sidebar-link:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+}
+
+/* Main Content & Scrolling */
+main {
+    height: 100vh;
+    margin-left: 18rem; 
+    overflow-y: scroll;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+main::-webkit-scrollbar {
+    width: 6px;
+}
+
+main::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+main::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+main::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-green);
+}
+
+/* ==========================================================================
+  GENERAL COMPONENTS
+   ========================================================================== */
+.glass {
+    background: var(--glass-white);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    transition: all 0.3s ease;
+}
+
+.tab-content {
+    display: none;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+input:focus {
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+.chart-container {
+    position: relative;
+    height: 350px;
+    width: 100%;
+}
+
+/* ==========================================================================
+   TABLES & ACTIONS
+   ========================================================================== */
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+}
+
+
+#event-table-body tr, 
+#user-table-body tr, 
+#live-order-body tr {
+    transition: all 0.2s ease;
+}
+
+.order-row:hover, .user-row:hover, tbody tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+#event-table-body td:last-child, 
+#live-order-body td:last-child {
+    text-align: center;
+    min-width: 160px;
+    white-space: nowrap;
+}
+
+/* ==========================================================================
+   SUPPORT CARD & GMAIL
+   ========================================================================== */
+.glass.group:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(59, 130, 246, 0.1);
+}
+
+.support-gmail-text {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.support-gmail-text:hover {
+    color: #60a5fa;
+    text-shadow: 0 0 8px rgba(96, 165, 250, 0.5);
+}
+
+button[onclick="askAIHelp()"] {
+    position: relative;
+    overflow: hidden;
+}
+
+button[onclick="askAIHelp()"]::after {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+    transform: rotate(45deg);
+    transition: 0.5s;
+}
+
+button[onclick="askAIHelp()"]:hover::after {
+    left: 120%;
+}
+
+.support-message-box {
+    position: relative;
+    border-left: 2px solid rgba(59, 130, 246, 0.3);
+}
+
+.group:hover .opacity-0 {
+    opacity: 1 !important;
+    transform: translateY(0);
+}
+
+.group .opacity-0 {
+    transform: translateY(10px);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#support-list::-webkit-scrollbar {
+    width: 3px;
+}
+
+#support-list::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, #3b82f6, #6366f1);
+}
+
+/* ==========================================================================
+   LIVE ACTIVITY FEED 
+   ========================================================================== */
+#live-feed-container .glass {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+#live-feed-container .group:hover .glass {
+    background: rgba(255, 255, 255, 0.07);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+#live-feed-container::-webkit-scrollbar {
+    width: 4px;
+}
+
+#live-feed-container::-webkit-scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.2);
+    border-radius: 10px;
+}
+
+/* ==========================================================================
+   ANIMATIONS & EFFECTS 
+   ========================================================================== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(30px) scale(0.95); }
+    to { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glow {
+    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+    100% { box-shadow: 0 0 20px 10px rgba(16, 185, 129, 0); }
+}
+
+.animate-slide-in-right { 
+    animation: slideInRight 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; 
+}
+
+.support-card-animate { 
+    animation: fadeInUp 0.5s ease forwards; 
+}
+.approved-anim { 
+    animation: glow 1s ease-in-out; 
+}
+
+#event-grid > div { 
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+}
+
+/* ==========================================================================
+   FIXES & UTILITIES 
+   ========================================================================== */
+#activity .max-w-4xl { 
+    min-height: 500px; 
+}
+#support-list { 
+    transition: all 0.3s ease-in-out; 
+}
+.tab-content .glass { 
+    transition: transform 0.2s ease, opacity 0.2s ease; 
+}

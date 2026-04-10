@@ -321,14 +321,16 @@ input[type="checkbox"] {
 */
 #events-container {
     min-height: 400px;
-    width: 100%; /* Đảm bảo nó chiếm hết chiều ngang */
+    width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Căn giữa nội dung khi trống */
-    justify-content: center; /* Căn giữa nội dung khi trống */
+
+    align-items: stretch;   /* 🔥 FIX LỆCH */
+    justify-content: flex-start; /* 🔥 không căn giữa nữa */
+
     gap: 20px;
     padding: 40px;
-    border: 1px dashed rgba(255, 255, 255, 0.1); /* Tạo khung viền mờ cho đẹp */
+    border: 1px dashed rgba(255, 255, 255, 0.1);
     border-radius: 32px;
 }
 
@@ -504,10 +506,11 @@ input, select, textarea {
 
 /* Fix Card sự kiện ở trang "Sự kiện của tôi" */
 .event-item-card {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    width: 100% !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px; /* thêm khoảng cách cho đều */
+    width: 100%;
 }
 
 /* Đảm bảo ảnh poster trong Modal không bị vỡ */
@@ -517,4 +520,3 @@ input, select, textarea {
     object-fit: cover !important;
     border-radius: 16px !important;
 }
-

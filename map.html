@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khám phá Thủy Cung | Lotte World Aquarium</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- Reset định dạng chuẩn của trình duyệt -->
+<link rel="stylesheet" href="normalize.css">
+
+<!-- File CSS riêng cho con cá -->
+<link rel="stylesheet" href="style.css">
+
+<!-- File CSS chính của dự án (Chứa map và các thành phần khác) -->
+<link rel="stylesheet" href="map.css" media="screen" type="text/css">
+</head>
+<body class="bg-[#000b1e] overflow-hidden">
+<div id="whale"></div>
+    <div id="step-1" class="flex h-screen w-full overflow-hidden">
+        <main class="flex-1 relative map-viewport flex flex-col">
+            <!-- Header & Controls -->
+            <div class="absolute top-8 left-8 z-50 flex flex-col gap-4">
+                <button class="text-gray-400 hover:text-white font-bold text-xs uppercase tracking-widest transition">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> TRANG CHỦ
+                </button>
+                <div class="bg-blue-900/40 backdrop-blur-md p-3 rounded-lg border border-white/10 text-[10px] text-blue-200">
+                    <i class="fa-solid fa-magnifying-glass-plus mr-1"></i> Cuộn chuột để Zoom <br>
+                    <i class="fa-solid fa-hand-pointer mr-1"></i> Click vào các số để chọn khu vực
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-hidden relative" id="container">
+                <div id="map-wrapper">
+                    <!-- ẢNH SƠ ĐỒ CỦA BẠN - ĐẢM BẢO FILE TÊN map.jpg -->
+                    <img src="map.png" alt="Aquarium Map" id="map-img" class="block max-w-none">
+                </div>
+            </div>
+        </main>
+
+        <!-- Sidebar bên phải -->
+        <aside class="sidebar p-8 flex flex-col h-screen w-[400px] bg-[#001433] border-l border-white/10 text-white z-[100]">
+            <div class="flex-shrink-0 mb-8 text-center">
+                <h2 class="text-2xl font-black uppercase leading-tight tracking-tighter text-blue-400 italic">LOTTE WORLD AQUARIUM</h2>
+                <div class="mt-4 border-y border-white/5 py-4">
+                    <p class="text-white text-[11px] font-bold uppercase tracking-widest">THÔNG TIN KHU VỰC</p>
+                </div>
+            </div>
+            
+            <div class="flex-1 overflow-hidden flex flex-col min-h-0">
+                <h3 class="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em] pb-3 mb-4 border-b border-white/10">BẢNG GIÁ DỊCH VỤ (VNĐ)</h3>
+                
+                <div id="selected-zone-info" class="mb-6 p-4 bg-blue-900/20 rounded-xl border border-blue-500/30 hidden">
+                    <p class="text-zinc-500 text-[10px] uppercase font-bold">Khu vực đang chọn:</p>
+                    <p id="zone-name" class="text-lg font-black text-white italic uppercase"></p>
+                </div>
+
+                <div class="space-y-4 pr-2 overflow-y-auto custom-scroll flex-1">
+                    <div class="flex justify-between items-center py-2 border-b border-white/5"><span class="text-[11px] font-bold text-zinc-400">QUẦY VÉ TRỌN GÓI</span><span class="text-[12px] font-black text-blue-400">350.000</span></div>
+                    <div class="flex justify-between items-center py-2 border-b border-white/5"><span class="text-[11px] font-bold text-zinc-400">DỊCH VỤ HỒ CHẠM</span><span class="text-[12px] font-black text-blue-400">450.000</span></div>
+                    <div class="flex justify-between items-center py-2 border-b border-white/5"><span class="text-[11px] font-bold text-zinc-400">TOUR ĐƯỜNG HẦM</span><span class="text-[12px] font-black text-blue-400">550.000</span></div>
+                </div>
+            </div>
+
+            <div class="border-t border-white/10 pt-6 mt-auto">
+                <div class="flex justify-between items-end mb-4">
+                    <div>
+                        <p class="text-zinc-500 text-[10px] uppercase font-bold mb-1">TỔNG THANH TOÁN</p>
+                        <p id="total-price" class="text-4xl font-black text-blue-400 tracking-tighter">0</p>
+                    </div>
+                    <span class="text-blue-500 font-bold">VNĐ</span>
+                </div>
+                <button id="btn-next" onclick="alert('Đang chuyển tới thanh toán...')" class="hidden w-full py-5 bg-blue-600 text-white rounded-xl font-black uppercase text-xs tracking-[0.2em] shadow-[0_10px_20px_rgba(37,99,235,0.3)] hover:bg-blue-500 transition-all">
+                    ĐẶT VÉ NGAY
+                </button>
+            </div>
+        </aside>
+    </div>
+<script src="whale.js"></script>
+    <script>
+    
+        const wrapper = document.getElementById('map-wrapper');
+        const container = document.getElementById('container');
+        let scale = 0.5; // Bắt đầu ở mức thu nhỏ để thấy toàn cảnh
+        let isDragging = false;
+        let startX, startY, x = 0, y = 0;
+
+        // Khởi tạo vị trí ban đầu
+        wrapper.style.transform = `translate(0px, 0px) scale(${scale})`;
+
+        // Zoom bằng chuột
+        container.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const xs = (e.clientX - x) / scale;
+            const ys = (e.clientY - y) / scale;
+            const delta = -e.deltaY;
+            (delta > 0) ? (scale *= 1.1) : (scale /= 1.1);
+            scale = Math.min(Math.max(0.3, scale), 3);
+            x = e.clientX - xs * scale;
+            y = e.clientY - ys * scale;
+            wrapper.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+        }, { passive: false });
+
+        // Kéo bản đồ (Pan)
+        container.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX - x;
+            startY = e.clientY - y;
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            x = e.clientX - startX;
+            y = e.clientY - startY;
+            wrapper.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+        });
+
+        window.addEventListener('mouseup', () => isDragging = false);
+
+        // Xử lý click khu vực
+        function handleZoneClick(el, name, price) {
+            // Reset active state
+            document.querySelectorAll('.hotspot').forEach(h => h.classList.remove('active'));
+            el.classList.add('active');
+
+            // Cập nhật UI
+            document.getElementById('selected-zone-info').classList.remove('hidden');
+            document.getElementById('zone-name').innerText = name;
+            document.getElementById('total-price').innerText = price.toLocaleString('vi-VN');
+            
+            const nextBtn = document.getElementById('btn-next');
+            nextBtn.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

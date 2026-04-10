@@ -50,7 +50,7 @@ const TAROT_DATA = [
     { name: "Seven of Cups", url: "https://upload.wikimedia.org/wikipedia/commons/a/ae/Cups07.jpg", meaning: "Lựa chọn, ảo tưởng." },
     { name: "Eight of Cups", url: "https://upload.wikimedia.org/wikipedia/commons/6/60/Cups08.jpg", meaning: "Rời bỏ, tìm kiếm sự thật." },
     { name: "Nine of Cups", url: "https://upload.wikimedia.org/wikipedia/commons/2/24/Cups09.jpg", meaning: "Mãn nguyện, ước nguyện." },
-    { name: "Ten of Cups", url: "https://upload.wikimedia.org/wikipedia/commons/4/44/Cups10.jpg", meaning: "Hạnh phúc gia đình." },
+    { name: "Ten of Cups", url: "https://sacred-texts.com/tarot/pkt/img/cu10.jpg", meaning: "Hạnh phúc trọn vẹn, gia đình." },
     { name: "Page of Cups", url: "https://upload.wikimedia.org/wikipedia/commons/a/ad/Cups11.jpg", meaning: "Tin tức, sáng tạo." },
     { name: "Knight of Cups", url: "https://upload.wikimedia.org/wikipedia/commons/f/fa/Cups12.jpg", meaning: "Lãng mạn, mời gọi." },
     { name: "Queen of Cups", url: "https://upload.wikimedia.org/wikipedia/commons/6/62/Cups13.jpg", meaning: "Thấu cảm, nuôi dưỡng." },
@@ -93,14 +93,14 @@ const TAROT_DATA = [
          const CONFIG = {
             cardCount: TAROT_DATA.length, 
             radius: 40, 
-            cardWidth: 2.8, cardHeight: 4.2, 
+            cardWidth: 2.8, cardHeight: 4.2, 
             inspectPos: { x: 0, y: 0, z: 3.8 }, 
             inspectScale: 0.3,    
             storageScale: 0.07,   
             storageZ: 3.5, 
             storeMarginX: 0.1,    
             storeMarginTop: 0.8,  
-            storeGapY: 0.15       
+            storeGapY: 0.15 
         };
 
         let scene, camera, renderer, cardGroup, textureLoader;
@@ -148,8 +148,8 @@ const TAROT_DATA = [
     scene = new THREE.Scene();
     scene.fog = new THREE.FogExp2(0x050505, 0.02);
     
-    camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
-    camera.position.set(0, 0, 5);
+    camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 0, 8);
     
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
