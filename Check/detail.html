@@ -33,7 +33,40 @@
         .content-expanded { max-height: none; }
         .content-expanded::after { display: none; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-       
+    
+.description-html-content img {
+    width: 100% !important;
+    max-width: 100%;
+    height: auto !important;
+    display: block;
+    margin: 15px 0;
+    border-radius: 12px;
+}
+
+.description-html-content iframe {
+    width: 100% !important;
+    aspect-ratio: 16 / 9;
+    border-radius: 16px;
+    margin: 20px 0;
+}
+
+.description-html-content p {
+    margin-bottom: 15px;
+}
+
+#event-description {
+    white-space: pre-line;
+}
+
+.content-expanded { 
+    max-height: 20000px !important; 
+}
+
+.content-expanded::after { 
+    display: none !important; 
+}
+
+
 .spinner {
     width: 40px; height: 40px; border: 4px solid #F33B26;
     border-top: 4px solid transparent; border-radius: 50%;
@@ -113,27 +146,33 @@
 
         <!-- 2. GIỚI THIỆU CHI TIẾT -->
         <section class="bg-[#141414] rounded-[2rem] p-10 border border-white/5 relative">
-            <h3 class="text-xl font-bold mb-6 flex items-center">
-                <span class="w-2 h-8 bg-pink-500 rounded-full mr-4"></span> Giới thiệu sự kiện
-            </h3>
-            <div id="intro-content" class="content-collapsed">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-10 text-gray-400 leading-relaxed text-sm">
-                    <div id="event-description">
-                        <!-- Dữ liệu mô tả đổ vào đây -->
-                    </div>
-                    <ul class="space-y-2">
-                        <li><i class="fa-solid fa-check text-pink-500 mr-2"></i> Miễn phí nước uống tại khu vực GA</li>
-                        <li><i class="fa-solid fa-check text-pink-500 mr-2"></i> Nhận quà tặng giới hạn độc quyền</li>
-                        <li><i class="fa-solid fa-check text-pink-500 mr-2"></i> Hỗ trợ an ninh 24/7</li>
-                    </ul>
-                </div>
+    <h3 class="text-xl font-bold mb-6 flex items-center">
+        <span class="w-2 h-8 bg-pink-500 rounded-full mr-4"></span> Giới thiệu sự kiện
+    </h3>
+    
+    <div id="intro-content" class="content-collapsed">
+    <div class="flex flex-col md:flex-row gap-10">
+        
+        <div id="event-description" class="flex-1 text-gray-400 leading-relaxed text-sm description-html-content">
             </div>
-            <div class="text-center mt-4">
-                <button onclick="toggleIntro()" class="text-gray-500 hover:text-white transition-colors">
-                    <i class="fa-solid fa-chevron-down" id="toggle-icon"></i>
-                </button>
-            </div>
-        </section>
+
+        <div class="md:w-1/3 shrink-0">
+            <ul class="space-y-3 p-6 bg-white/5 rounded-2xl border border-white/10 h-fit">
+                <li class="flex items-center text-xs"><i class="fa-solid fa-check text-pink-500 mr-2"></i> Miễn phí nước uống tại khu vực GA</li>
+                <li class="flex items-center text-xs"><i class="fa-solid fa-check text-pink-500 mr-2"></i> Nhận quà tặng giới hạn độc quyền</li>
+                <li class="flex items-center text-xs"><i class="fa-solid fa-check text-pink-500 mr-2"></i> Hỗ trợ an ninh 24/7</li>
+            </ul>
+        </div>
+        
+    </div>
+</div>
+
+    <div class="text-center mt-4">
+        <button onclick="toggleIntro()" class="text-gray-500 hover:text-white transition-colors">
+            <i class="fa-solid fa-chevron-down" id="toggle-icon"></i>
+        </button>
+    </div>
+</section>
 
         <!-- 3. KHỐI VÉ -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -255,7 +294,12 @@
     // 2. Cập nhật Thông tin thời gian & Địa điểm
     document.getElementById('event-time').innerHTML = `<i class="fa-solid fa-calendar mr-2 text-green-400"></i> ${ev.time || 'Đang cập nhật...'}`;
     document.getElementById('event-location').innerHTML = `<i class="fa-solid fa-location-dot mr-2 text-pink-400"></i> ${ev.location}`;
-    document.getElementById('event-description').innerText = ev.description;
+    const descElement = document.getElementById('event-description');
+    if (ev.description) {
+        // Dùng innerHTML mới ra được ảnh/video nhé
+        descElement.innerHTML = ev.description; 
+        descElement.classList.add('description-html-content');
+        }
 
     // 3. Xử lý Danh sách vé & Tìm giá thấp nhất
     const ticketContainer = document.getElementById('ticket-list-container');
