@@ -86,16 +86,30 @@
                     <p id="real-time-date" class="text-[10px] font-bold text-pink-500 uppercase tracking-widest">-- THÁNG --, ----</p>
                 </div>
                 
-                <div class="relative">
-                    <div onclick="toggleUserMenu()" class="flex items-center space-x-3 cursor-pointer group p-1 hover:bg-gray-50 rounded-2xl transition">
-                        <div class="text-right hidden sm:block">
-                            <p class="text-xs font-black text-gray-800">Diệu Thảo</p>
-                            <p class="text-[10px] text-gray-400">Thành viên Kim cương</p>
-                        </div>
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-200 to-blue-200 border-2 border-white shadow-sm overflow-hidden">
-                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" alt="avatar">
-                        </div>
-                    </div>
+<div id="auth-buttons" class="hidden items-center space-x-4">
+    <a href="#" 
+       onclick="location.href='auth.html?mode=login&redirect=' + encodeURIComponent(window.location.pathname)" 
+       class="text-sm font-bold text-gray-600 hover:text-blue-500 transition">
+       Đăng nhập
+    </a>
+
+    <a href="#" 
+       onclick="location.href='auth.html?mode=register&redirect=' + encodeURIComponent(window.location.pathname)" 
+       class="px-6 py-2.5 bg-gray-900 text-white text-sm font-black rounded-full hover:bg-blue-600 transition shadow-lg">
+       Đăng ký
+    </a>
+    </div>
+
+<div id="user-profile" class="hidden relative">
+    <div onclick="toggleUserMenu()" class="flex items-center space-x-3 cursor-pointer group p-1 hover:bg-gray-50 rounded-2xl transition">
+        <div class="text-right hidden sm:block">
+            <p id="user-display-name" class="text-xs font-black text-gray-800">Diệu Thảo</p>
+            <p class="text-[10px] text-gray-400">Thành viên Elysium</p>
+        </div>
+        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-200 to-blue-200 border-2 border-white shadow-sm overflow-hidden">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Alex" alt="avatar">
+        </div>
+    </div>
                     
                     <div id="user-dropdown" class="absolute right-0 mt-3 w-60 glass-card rounded-2xl shadow-2xl overflow-hidden py-2 z-50 bg-white">
                         <a href="dashboard.html" class="flex items-center px-4 py-3 text-sm font-bold text-gray-700 hover:bg-blue-50 transition">
@@ -108,9 +122,9 @@
                             <i class="fa-solid fa-calendar-check w-6 text-green-500 text-lg"></i> Sự kiện của tôi
                         </a>
                         <hr class="my-1 border-gray-100">
-                        <a href="index.html" class="flex items-center px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 transition">
-                            <i class="fa-solid fa-right-from-bracket w-6 text-lg"></i> Đăng xuất
-                        </a>
+                        <button onclick="window.logout()" class="w-full flex items-center px-4 py-3 text-sm font-bold text-red-500 hover:bg-red-50 transition">
+    <i class="fa-solid fa-right-from-bracket w-6 text-lg"></i> Đăng xuất
+</button>
                     </div>
                 </div>
             </div>
@@ -224,8 +238,9 @@
         </div>
     </footer>
 
-    <script>
-        const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwU6IlGKSnqlc9xtBsBrH_aT5ttJJvbIkgXChprCgiEV9JLRQN4yj9GSDaXnCrOqzh1YQ/exec';
+<script type="module">
+// --- CẤU HÌNH & DỮ LIỆU TĨNH ---
+const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwU6IlGKSnqlc9xtBsBrH_aT5ttJJvbIkgXChprCgiEV9JLRQN4yj9GSDaXnCrOqzh1YQ/exec';
 const fixedEvents = [
     {
         id: "30", 
@@ -235,16 +250,39 @@ const fixedEvents = [
         loc: "Sân vận động Mỹ Đình, Hà Nội",
         color: "bg-pink-500",
         price: "Từ 500.000 đ"
-    },
-    ];
+    }
+];
 
-        let events = [...fixedEvents]; 
+let events = [...fixedEvents]; 
 let currentDate = new Date(); 
+
+// --- KHU VỰC QUẢN LÝ GIAO DIỆN (Gán vào window để HTML gọi được) ---
+
+window.toggleUserMenu = () => {
+    const dropdown = document.getElementById('user-dropdown');
+    if(dropdown) dropdown.classList.toggle('show');
+};
+
+window.changeMonth = (step) => {
+    currentDate.setMonth(currentDate.getMonth() + step);
+    renderCalendar();
+};
+
+window.updateClock = () => {
+    const now = new Date();
+    const options = { day: 'numeric', month: 'long', year: 'numeric' };
+    const clockEl = document.getElementById('real-time-clock');
+    const dateEl = document.getElementById('real-time-date');
+    if (clockEl) clockEl.textContent = now.toLocaleTimeString('vi-VN');
+    if (dateEl) dateEl.textContent = now.toLocaleDateString('vi-VN', options);
+};
+
+// --- LOGIC XỬ LÝ DỮ LIỆU ---
+
 async function fetchEventsFromSheet() {
     try {
         const response = await fetch(SHEET_API_URL);
         const rawData = await response.json();
-
 
         const priorityColors = {
             "2026-05-08": "bg-red-600",
@@ -254,9 +292,7 @@ async function fetchEventsFromSheet() {
 
         const luxuryColors = [
             "bg-pink-500", "bg-blue-600", "bg-emerald-500", "bg-purple-600", "bg-orange-500",
-            "bg-cyan-400", "bg-rose-500", "bg-indigo-500", "bg-amber-400", "bg-teal-500",
-            "bg-fuchsia-500", "bg-lime-500", "bg-violet-600", "bg-sky-500", "bg-yellow-500",
-            "bg-red-500", "bg-green-600", "bg-pink-300", "bg-slate-800", "bg-orange-600"
+            "bg-cyan-400", "bg-rose-500", "bg-indigo-500", "bg-amber-400", "bg-teal-500"
         ];
 
         const sheetEvents = rawData.map((ev, index) => {
@@ -266,7 +302,8 @@ async function fetchEventsFromSheet() {
             if (ev.time) {
                 eventTime = ev.time.split(',')[0].trim();
                 const dateMatches = ev.time.match(/\d+/g);
-                if (dateMatches && dateMatches.length >= 5) {
+                if (dateMatches && dateMatches.length >= 3) {
+                    // Logic lấy ngày tháng năm từ cuối chuỗi của m
                     const d = dateMatches[dateMatches.length - 3].padStart(2, '0');
                     const m = dateMatches[dateMatches.length - 2].padStart(2, '0');
                     const y = dateMatches[dateMatches.length - 1];
@@ -274,65 +311,42 @@ async function fetchEventsFromSheet() {
                 }
             }
 
-            const eventColor = priorityColors[formattedDate] || 
-                               luxuryColors[index % luxuryColors.length] || 
-                               "bg-emerald-500";
-
             return {
-                id: ev.id,
+                id: ev.id || `sheet-${index}`,
                 name: ev.eventName,
                 date: formattedDate,
                 time: eventTime,
                 loc: ev.location || "Đang cập nhật",
-                color: eventColor,
+                color: priorityColors[formattedDate] || luxuryColors[index % luxuryColors.length],
                 price: ev.priceList ? "Đã có giá vé" : "Miễn phí"
             };
         });
-        const allEventsMap = new Map();
 
+        // Gộp dữ liệu không trùng ID (Giữ nguyên logic Map của m)
+        const allEventsMap = new Map();
         fixedEvents.forEach(e => allEventsMap.set(String(e.id), e));
         sheetEvents.forEach(e => {
-            if (!allEventsMap.has(String(e.id))) {
-                allEventsMap.set(String(e.id), e);
-            }
+            if (!allEventsMap.has(String(e.id))) allEventsMap.set(String(e.id), e);
         });
+        
         events = Array.from(allEventsMap.values());
-
-        console.log("Dữ liệu sau khi gộp thành công:", events);
         renderCalendar(); 
-
     } catch (error) {
-        console.error("Lỗi tải dữ liệu:", error);
+        console.error("Lỗi tải dữ liệu Sheet:", error);
+        renderCalendar(); // Vẫn chạy để hiện sự kiện tĩnh
     }
 }
 
-        function toggleUserMenu() {
-            document.getElementById('user-dropdown').classList.toggle('show');
-        }
+// --- RENDER LỊCH ---
 
-        window.onclick = function(event) {
-            if (!event.target.closest('.relative')) {
-                document.getElementById('user-dropdown').classList.remove('show');
-            }
-        }
-
-        function updateClock() {
-            const now = new Date();
-            const options = { day: 'numeric', month: 'long', year: 'numeric' };
-            document.getElementById('real-time-clock').textContent = now.toLocaleTimeString('vi-VN');
-            document.getElementById('real-time-date').textContent = now.toLocaleDateString('vi-VN', options);
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        function renderCalendar() {
+function renderCalendar() {
     const grid = document.getElementById('calendar-grid');
     const monthDisplay = document.getElementById('month-year-display');
-    grid.innerHTML = '';
+    if (!grid || !monthDisplay) return;
 
+    grid.innerHTML = '';
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
-    
     const today = new Date();
     const isCurrentMonth = today.getMonth() === month && today.getFullYear() === year;
 
@@ -343,87 +357,126 @@ async function fetchEventsFromSheet() {
     const startingDay = firstDay === 0 ? 6 : firstDay - 1;
 
     for (let i = 0; i < startingDay; i++) {
-        grid.innerHTML += `<div class="day-cell bg-gray-50 rounded-2xl"></div>`;
+        grid.innerHTML += `<div class="day-cell bg-gray-50/50 rounded-2xl opacity-50"></div>`;
     }
 
     for (let day = 1; day <= daysInMonth; day++) {
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         const dayEvents = events.filter(e => e.date === dateStr);
-        
-        // KIỂM TRA NẾU LÀ NGÀY HÔM NAY THÌ THÊM CLASS ĐẶC BIỆT (active-day hoặc viền hồng)
         const isToday = isCurrentMonth && day === today.getDate();
         const specialClass = isToday ? 'border-2 border-pink-500 shadow-lg' : 'border-gray-100';
 
         grid.innerHTML += `
-            <div onclick="showEvents('${dateStr}')" id="day-${dateStr}" 
+            <div onclick="window.showEvents('${dateStr}')" id="day-${dateStr}" 
                  class="day-cell p-3 rounded-2xl border ${specialClass} bg-white cursor-pointer hover:bg-gray-50 transition-all">
                 <span class="text-sm font-black ${isToday ? 'text-pink-600' : 'text-gray-700'}">${day}</span>
                 <div class="flex flex-wrap gap-1 mt-2">
-                    ${dayEvents.map(e => `<div class="w-2.5 h-2.5 rounded-full ${e.color} shadow-sm"></div>`).join('')}
+                    ${dayEvents.slice(0, 4).map(e => `<div class="w-2 h-2 rounded-full ${e.color} shadow-sm"></div>`).join('')}
                 </div>
-            </div>
-        `;
+            </div>`;
     }
-    
-    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    
-    if (isCurrentMonth) {
-        showEvents(todayStr);
-    } else {
-        showEvents(`${year}-${String(month + 1).padStart(2, '0')}-01`);
-    }
+
+    const defaultDay = isCurrentMonth ? today.getDate() : 1;
+    const defaultDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(defaultDay).padStart(2, '0')}`;
+    window.showEvents(defaultDateStr);
 }
 
-        function showEvents(dateStr) {
-            document.querySelectorAll('.day-cell').forEach(el => el.classList.remove('active-day'));
-            document.getElementById(`day-${dateStr}`)?.classList.add('active-day');
+window.showEvents = (dateStr) => {
+    document.querySelectorAll('.day-cell').forEach(el => el.classList.remove('active-day'));
+    const selectedCell = document.getElementById(`day-${dateStr}`);
+    if (selectedCell) selectedCell.classList.add('active-day');
 
-            const container = document.getElementById('event-list-container');
-            const title = document.getElementById('selected-date-title');
-            title.textContent = dateStr.split('-').reverse().join('/');
+    const container = document.getElementById('event-list-container');
+    const title = document.getElementById('selected-date-title');
+    if (title) title.textContent = dateStr.split('-').reverse().join('/');
 
-            const dayEvents = events.filter(e => e.date === dateStr);
-            
-            if (dayEvents.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-16 opacity-40">
-                        <i class="fa-solid fa-calendar-xmark text-4xl mb-4"></i>
-                        <p class="text-sm italic font-bold">Không có sự kiện nào.</p>
-                    </div>`;
-                return;
-            }
+    const dayEvents = events.filter(e => e.date === dateStr);
+    
+    if (dayEvents.length === 0) {
+        container.innerHTML = `
+            <div class="text-center py-16 opacity-40">
+                <i class="fa-solid fa-calendar-xmark text-4xl mb-4"></i>
+                <p class="text-sm italic font-bold">Không có sự kiện nào.</p>
+            </div>`;
+        return;
+    }
 
-            container.innerHTML = dayEvents.map(e => `
-                <div class="event-card group p-5 rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500 cursor-pointer overflow-hidden relative">
-                    <div class="flex justify-between items-start mb-4">
-                        <span class="text-[10px] font-black text-white px-3 py-1.5 rounded-xl ${e.color} uppercase tracking-widest shadow-md">${e.time}</span>
-                        <span class="text-xs font-black text-blue-500 bg-blue-50 px-3 py-1 rounded-lg border border-blue-100">${e.price}</span>
-                    </div>
-                    <h4 class="text-lg font-black text-gray-800 group-hover:text-blue-500 transition-colors line-clamp-2 leading-tight">${e.name}</h4>
-                    <p class="text-xs text-gray-500 mt-3 flex items-center font-bold">
-                        <i class="fa-solid fa-location-dot mr-2 text-blue-500"></i> ${e.loc}
-                    </p>
-                   <button 
-    onclick="window.location.href='detail.html?id=${e.id}'" 
+    container.innerHTML = dayEvents.map(e => `
+        <div class="event-card group p-5 rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500 cursor-pointer overflow-hidden relative mb-4">
+            <div class="flex justify-between items-start mb-4">
+                <span class="text-[10px] font-black text-white px-3 py-1.5 rounded-xl ${e.color} uppercase tracking-widest shadow-md">${e.time}</span>
+                <span class="text-xs font-black text-blue-500 bg-blue-50 px-3 py-1 rounded-lg border border-blue-100">${e.price}</span>
+            </div>
+            <h4 class="text-lg font-black text-gray-800 group-hover:text-blue-500 transition-colors line-clamp-2 leading-tight">${e.name}</h4>
+            <p class="text-xs text-gray-500 mt-3 flex items-center font-bold">
+                <i class="fa-solid fa-location-dot mr-2 text-blue-500"></i> ${e.loc}
+            </p>
+            <button onclick="handleBooking('${e.id}')" 
     class="w-full mt-6 py-4 bg-gray-900 text-white rounded-2xl text-xs font-black tracking-widest uppercase transform group-hover:scale-[1.02] transition-all active:scale-95 shadow-xl">
     CHI TIẾT & ĐẶT VÉ
 </button>
-                    <div class="absolute -right-4 -bottom-4 w-16 h-16 ${e.color} opacity-5 blur-2xl group-hover:opacity-20 transition-all"></div>
-                </div>
-            `).join('');
-        }
+        </div>
+    `).join('');
+};
 
-        function changeMonth(step) {
-            currentDate.setMonth(currentDate.getMonth() + step);
-            renderCalendar();
-        }
+window.handleBooking = (eventId) => {
 
-        window.onload = () => {
-    updateClock();
+    const user = getAuth().currentUser; 
+
+    if (!user) {
+        alert("Bạn phải đăng nhập mới xem được chi tiết sự kiện này!");
+        return;
+    }
+
+    // Nếu đã đăng nhập thì mới cho đi
+    window.location.href = `detail.html?id=${eventId}`;
+};
+
+// --- AUTHENTICATION ---
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { firebaseConfig } from './firebase-config.js';
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+onAuthStateChanged(auth, (user) => {
+    const authButtons = document.getElementById('auth-buttons');
+    const userProfile = document.getElementById('user-profile');
+    const userNameDisplay = document.getElementById('user-display-name');
+    const userAvatar = document.querySelector('#user-profile img');
+
+    if (user) {
+        if (authButtons) authButtons.classList.add('hidden');
+        if (userProfile) userProfile.classList.remove('hidden');
+        if (userNameDisplay) userNameDisplay.textContent = user.displayName || "Thành viên";
+        if (userAvatar) userAvatar.src = user.photoURL || `https://api.dicebear.com/7.x/adventurer/svg?seed=${user.uid}`;
+    } else {
+        if (authButtons) authButtons.classList.remove('hidden');
+        if (userProfile) userProfile.classList.add('hidden');
+    }
+});
+
+window.logout = async () => {
+    try {
+        await signOut(auth);
+        console.log("Đã đăng xuất thành công");
+        // Load lại chính trang hiện tại để cập nhật giao diện
+        window.location.reload(); 
+    } catch (error) {
+        console.error("Lỗi đăng xuất:", error);
+    }
+};
+
+// --- KHỞI CHẠY ---
+window.onload = () => {
+    // ĐÃ BỎ checkAuthStatus() lỗi - dùng onAuthStateChanged ở trên là đủ
+    window.updateClock();
+    setInterval(window.updateClock, 1000);
     renderCalendar(); 
     fetchEventsFromSheet();
-    highlightSpecificEvent(); 
 };
-    </script>
+</script>
+
 </body>
 </html>

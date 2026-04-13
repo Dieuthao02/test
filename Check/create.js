@@ -1,27 +1,42 @@
-/* ================================================================
-   TICKETBOX ORGANIZER - ULTIMATE JS (FINAL OPTIMIZED STRUCTURE)
-   Nhữ Thị Diệu Thảo - 2026
-   ================================================================ */
-
 // --- 0. BIẾN TOÀN CỤC & KHỞI TẠO ---
 let isEditing = false;
 let currentEditCard = null;
 
+
+
 // Khởi chạy khi cửa sổ tải xong
 window.onload = () => { 
-    // Kiểm tra xem đã xem thông báo chưa
-    const hasSeen = sessionStorage.getItem('hasSeenNotice');
+    const userData = localStorage.getItem('userLogin');
+    let loggedInUser = null;
+
+    try {
+        loggedInUser = userData ? JSON.parse(userData) : null;
+    } catch (e) {
+        loggedInUser = null;
+    }
     
-    if (!hasSeen) {
-        openNoticeModal(); // Hiện modal trước
+    // SỬA Ở ĐÂY: Nếu không có user, đá về index ngay lập tức
+    if (!loggedInUser || !loggedInUser.name) {
+        alert("Bạn cần đăng nhập trước nhé!");
+        window.location.href = "index.html"; 
+        return;
+    }
+
+    // Nếu ok thì chạy tiếp
+    syncUserInterface(loggedInUser);
+    
+    // Kiểm tra thông báo
+    if (!sessionStorage.getItem('hasSeenNotice')) {
+        openNoticeModal();
     } else {
-        showPage('home'); // Nếu xem rồi thì mới vào thẳng trang chủ
+        showPage('home');
     }
 
     if (document.getElementById('admin-events-container')) {
         loadEventsAdmin();
     }
 };
+
 
 // --- 1. TIỆN ÍCH HỆ THỐNG (UTILITIES) ---
 function getTimeAgo() { return "Vừa xong"; }
@@ -46,7 +61,7 @@ function showPage(pageId) {
         
         if (pageId === 'create-event') {
     if (!isEditing) {
-        cancelCreate(); // Nếu không phải đang sửa thì reset trắng
+        cancelCreate();
     }
 }
 
@@ -151,42 +166,48 @@ function finishCreateEvent(isDraft = false) {
     const rawName = document.getElementById('event-name-input')?.value.trim() || "";
     
     if (!isDraft && (rawName === "" || rawName === "Diệu Thảo")) { 
-        alert("Thảo ơi, tên sự kiện không được để trống nhé!");
+        alert("Tên sự kiện không được để trống nhé!");
         return;
     }
 
     const posterImg = document.getElementById('poster-prev');
     let imgPath = (posterImg && posterImg.src && posterImg.src.includes('data:image')) ? posterImg.src : "";
+    
+    const mapImg = document.getElementById('map-prev');
+    let mapPath = (mapImg && mapImg.src && mapImg.src.includes('data:image')) ? mapImg.src : "";
 
-    const newEvent = {
-        id: isEditing && currentEditCard ? currentEditCard.dataset.id : 'ev-' + Date.now(),
-        title: rawName || "Sự kiện chưa đặt tên",
-        name: rawName || "Sự kiện chưa đặt tên", 
-        type: formatNA('event-type-input'),
-        locname: formatNA('event-location-name'), 
-        location: formatNA('event-location-name'),
-        locdetail: formatNA('event-location-detail'),
-        start: formatNA('start-time'),
-        end: formatNA('end-time'),
-        desc: formatNA('event-description'),
-        btcdame: formatNA('btc-name'),
-        organizer: formatNA('btc-name'),
-        btcemail: formatNA('btc-email'),
-        btcehone: formatNA('btc-phone'),
-        btcinfo: formatNA('btc-info'),
-        bankname: formatNA('bank-name'),
-        bankuser: formatNA('bank-user'),
-        bankacc: formatNA('bank-acc'),
-        img: imgPath,
-        status: isDraft ? 'draft' : 'pending',
-        timeCreate: new Date().toLocaleString(),
-        price: document.querySelector('.ticket-price-input')?.value || "0",
-        tickets: Array.from(document.querySelectorAll('#ticket-list > div')).map(row => ({
-            name: row.querySelector('.ticket-name-input')?.value.trim() || "Vé thường",
-            price: row.querySelector('.ticket-price-input')?.value.trim() || "0",
-            qty: row.querySelector('.ticket-qty-input')?.value.trim() || "0"
-        }))
-    };
+    // Lấy ảnh QR Ngân hàng (Giả sử ID preview là bank-qr-prev)
+    const qrImg = document.getElementById('bank-qr-prev');
+    let qrPath = (qrImg && qrImg.src && qrImg.src.includes('data:image')) ? qrImg.src : "";
+    
+    const newEvent = {
+    id: isEditing && currentEditCard ? currentEditCard.dataset.id : 'ev-' + Date.now(),
+    title: rawName || "Sự kiện chưa đặt tên",
+    name: rawName || "Sự kiện chưa đặt tên", 
+    type: formatNA('event-type-input'),
+    locname: formatNA('event-location-name'),
+    locdetail: formatNA('event-location-detail'),
+    start: formatNA('start-time'),
+    end: formatNA('end-time'),
+    desc: formatNA('event-description'),
+    btcname: formatNA('btc-name'),         
+    btcemail: formatNA('btc-email'),
+    btcphone: formatNA('btc-phone'),          
+    btcinfo: formatNA('btc-info'),
+    bankname: formatNA('bank-name'),
+    bankuser: formatNA('bank-user'),
+    bankacc: formatNA('bank-acc'),
+    img: imgPath,
+    map: mapPath, // Thêm mới
+    bankqr: qrPath,
+    status: isDraft ? 'draft' : 'pending',
+    timeCreate: new Date().toLocaleString(),
+    tickets: Array.from(document.querySelectorAll('#ticket-list > div')).map(row => ({
+        name: row.querySelector('.ticket-name-input')?.value.trim() || "Vé thường",
+        price: row.querySelector('.ticket-price-input')?.value.trim() || "0",
+        qty: row.querySelector('.ticket-qty-input')?.value.trim() || "0"
+    }))
+};
 
     let allData = JSON.parse(localStorage.getItem('ticket_events')) || [];
     if (isEditing && currentEditCard) {
@@ -199,7 +220,12 @@ function finishCreateEvent(isDraft = false) {
     localStorage.setItem('ticket_events', JSON.stringify(allData));
     if (typeof closeConfirmModal === "function") closeConfirmModal();
 
-    alert(isDraft ? "Đã lưu bản nháp!" : "Sự kiện đã gửi thành công!");
+    if (isDraft) {
+    alert("Đã lưu bản nháp thành công!");
+
+    } else {
+        openSuccessModal();
+    }
     
     isEditing = false;
     cancelCreate(); 
@@ -231,114 +257,163 @@ function cancelCreate() {
     goToStep(1);
 }
 
-// --- SỬA SỰ KIỆN (FIXED: HIỂN THỊ ẢNH KHI SỬA) ---
-function editEvent(btn) {
-    isEditing = true;
-    currentEditCard = btn.closest('.event-item-card');
-    const d = currentEditCard.dataset; 
-
-    showPage('create-event');
-    goToStep(1);
-
-    const clean = (val) => (val === "N/A" || !val || val === "undefined") ? "" : val;
-
-    // Đổ dữ liệu vào các ô input
-    document.getElementById('event-name-input').value = clean(d.name);
-    document.getElementById('event-type-input').value = clean(d.type);
-    document.getElementById('event-location-name').value = clean(d.locname);
-    document.getElementById('event-location-detail').value = clean(d.locdetail);
-    document.getElementById('start-time').value = clean(d.start);
-    document.getElementById('end-time').value = clean(d.end);
-    document.getElementById('event-description').value = clean(d.desc);
-    document.getElementById('btc-name').value = clean(d.btcname);
-    document.getElementById('btc-email').value = clean(d.btcemail);
-    document.getElementById('btc-phone').value = clean(d.btcphone);
-    document.getElementById('btc-info').value = clean(d.btcInfo);
-    document.getElementById('bank-name').value = clean(d.bankname);
-    document.getElementById('bank-user').value = clean(d.bankuser);
-    document.getElementById('bank-acc').value = clean(d.bankacc);
-
-    // --- FIX QUAN TRỌNG: HIỂN THỊ LẠI ẢNH POSTER ---
-    const posterPrev = document.getElementById('poster-prev');
-    const wrap = document.getElementById('poster-wrap');
-    const ui = document.getElementById('poster-prev-ui');
-
-    if (d.img && d.img !== "" && d.img !== "null") {
-        posterPrev.src = d.img;
-        posterPrev.style.display = 'block';
-        posterPrev.style.width = '100%';
-        posterPrev.style.height = '100%';
-        posterPrev.style.objectFit = 'cover';
-        
-        if (wrap) wrap.classList.remove('hidden'); // Hiện khung chứa ảnh
-        if (ui) ui.classList.add('hidden');       // Ẩn cái icon "Upload" đi
-    } else {
-        // Nếu không có ảnh thì trả về trạng thái mặc định
-        if (wrap) wrap.classList.add('hidden');
-        if (ui) ui.classList.remove('hidden');
-    }
-
-    // Load lại danh sách vé
-    const list = document.getElementById('ticket-list');
-    if (list && d.tickets) {
-        list.innerHTML = ""; 
-        try {
-            const tickets = JSON.parse(d.tickets);
-            tickets.forEach(t => {
-                const div = document.createElement('div');
-                div.className = "grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-white/5 border border-white/10 rounded-xl relative mb-3 animate-fade-in";
-                div.innerHTML = `
-                    <input type="text" value="${t.name}" class="ticket-name-input bg-transparent border border-gray-400 rounded p-2 text-white outline-none">
-                    <input type="number" value="${t.price}" class="ticket-price-input bg-transparent border border-gray-400 rounded p-2 text-white outline-none">
-                    <div class="flex gap-2">
-                        <input type="number" value="${t.qty}" class="ticket-qty-input flex-1 bg-transparent border border-gray-400 rounded p-2 text-white outline-none">
-                        <button onclick="this.parentElement.parentElement.remove()" class="text-red-500 px-2"><i class="fa-solid fa-trash"></i></button>
-                    </div>`;
-                list.appendChild(div);
-            });
-        } catch (e) { console.error(e); }
-    }
-
-    const mainFinishBtn = document.querySelector('button[onclick="showConfirmModal()"]');
-    if(mainFinishBtn) mainFinishBtn.innerText = "CẬP NHẬT SỰ KIỆN";
+function openSuccessModal() {
+    const modal = document.getElementById('success-notice-modal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
 }
+
+function closeSuccessModal() {
+    const modal = document.getElementById('success-notice-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+    // Sau khi đóng modal mới chuyển trang
+    showPage('my-events');
+}
+
+function editEvent(btn) {
+    isEditing = true;
+    // 1. Lấy ID từ card
+    currentEditCard = btn.closest('.event-item-card');
+    const eventId = currentEditCard.dataset.id; 
+
+    // 2. Tìm dữ liệu gốc trong localStorage thay vì dùng dataset
+    let allData = JSON.parse(localStorage.getItem('ticket_events')) || [];
+    const ev = allData.find(item => item.id === eventId);
+
+    if (!ev) {
+        alert("Không tìm thấy dữ liệu sự kiện!");
+        return;
+    }
+
+    // 3. Chuyển trang
+    showPage('create-event');
+    goToStep(1);
+
+    // 4. Đổ dữ liệu vào Form (Dùng chính xác tên biến bạn đã lưu ở hàm finishCreateEvent)
+    document.getElementById('event-name-input').value = cleanData(ev.name || ev.title);
+    document.getElementById('event-type-input').value = cleanData(ev.type);
+    document.getElementById('event-location-name').value = cleanData(ev.locname);
+    document.getElementById('event-location-detail').value = cleanData(ev.locdetail);
+    document.getElementById('start-time').value = cleanData(ev.start);
+    document.getElementById('end-time').value = cleanData(ev.end);
+    document.getElementById('event-description').value = cleanData(ev.desc);
+    document.getElementById('btc-name').value = cleanData(ev.btcname);
+    document.getElementById('btc-email').value = cleanData(ev.btcemail);
+    document.getElementById('btc-phone').value = cleanData(ev.btcphone);
+    document.getElementById('btc-info').value = cleanData(ev.btcinfo); 
+    document.getElementById('bank-name').value = cleanData(ev.bankname);
+    document.getElementById('bank-user').value = cleanData(ev.bankuser);
+    document.getElementById('bank-acc').value = cleanData(ev.bankacc);
+
+    // --- 5. HIỂN THỊ LẠI CÁC LOẠI ẢNH ---
+const renderImagePreview = (data, prevId, wrapId, uiId) => {
+    const prev = document.getElementById(prevId);
+    const wrap = document.getElementById(wrapId);
+    const ui = document.getElementById(uiId);
+
+    if (data && data.length > 10 && data.includes('data:image')) {
+        if (prev) {
+            prev.src = data;
+            prev.style.display = 'block';
+            prev.style.width = '100%';
+            prev.style.height = '100%';
+            prev.style.objectFit = 'cover';
+        }
+        if (wrap) wrap.classList.remove('hidden');
+        if (ui) ui.classList.add('hidden');
+    } else {
+        // Nếu không có ảnh, đưa về trạng thái khung trống (+)
+        if (wrap) wrap.classList.add('hidden');
+        if (ui) ui.classList.remove('hidden');
+        if (prev) prev.src = "";
+    }
+};
+
+// Gọi hiển thị cho 3 loại ảnh
+renderImagePreview(ev.img, 'poster-prev', 'poster-wrap', 'poster-prev-ui');
+renderImagePreview(ev.map, 'map-prev', 'map-wrap', 'map-prev-ui');
+renderImagePreview(ev.bankqr, 'bank-qr-prev', 'bank-qr-wrap', 'bank-qr-prev-ui');
+
+    const mainFinishBtn = document.querySelector('button[onclick="showConfirmModal()"]');
+    if(mainFinishBtn) mainFinishBtn.innerText = "CẬP NHẬT SỰ KIỆN";
+}
+
 
 // --- 6. MODAL XÁC NHẬN (CONFIRMATION) ---
 function showConfirmModal() {
-    try {
-        const getVal = (id) => {
-            const el = document.getElementById(id);
-            const val = el ? el.value.trim() : "";
-            return val !== "" ? val : '<span class="text-gray-400 italic font-normal">N/A</span>';
-        };
+    try {
+        const getVal = (id) => {
+            const el = document.getElementById(id);
+            const val = el ? el.value.trim() : "";
+            return val !== "" ? val : '<span class="text-gray-400 italic font-normal">N/A</span>';
+        };
 
-        const posterImg = document.getElementById('poster-prev');
-        const posterSrc = (posterImg && posterImg.src.includes('data:image')) ? posterImg.src : 'https://via.placeholder.com/150?text=No+Poster';
+        const getImgSrc = (id) => {
+            const img = document.getElementById(id);
+            return (img && img.src && img.src.includes('data:image')) ? img.src : null;
+        };
 
-        let ticketInfo = "";
-        document.querySelectorAll('#ticket-list > div').forEach((row, index) => {
-            const tName = row.querySelector('.ticket-name-input')?.value.trim();
-            const tPrice = row.querySelector('.ticket-price-input')?.value.trim();
-            const tQty = row.querySelector('.ticket-qty-input')?.value.trim();
-            if (tName || tPrice || tQty) {
-                ticketInfo += `
-                    <div class="flex justify-between items-center text-xs border-b border-gray-100 py-2 last:border-0">
-                        <div class="flex flex-col">
-                            <span class="font-bold text-gray-900">${tName || 'Vé ' + (index + 1)}</span>
-                            <span class="text-[10px] text-gray-500 font-medium">SL: ${tQty || '0'}</span>
-                        </div>
-                        <b class="text-[#ff007a]">${tPrice ? Number(tPrice).toLocaleString() : '0'} VNĐ</b>
-                    </div>`;
-            }
-        });
+        const posterSrc = getImgSrc('poster-prev') || 'https://via.placeholder.com/150?text=No+Poster';
+        const mapSrc = getImgSrc('map-prev');      
+        const qrSrc = getImgSrc('bank-qr-prev');   
+        const btcImgSrc = getImgSrc('btc-logo-prev'); // Giả sử id preview logo là btc-logo-prev
 
-      const content = `
+        // 1. Xử lý hiển thị Sơ đồ vé
+        let mapHtml = "";
+        if (mapSrc) {
+            mapHtml = `
+    <div class="w-full">
+        <p class="text-[10px] text-gray-400 uppercase font-black mb-2 tracking-widest">
+            <i class="fa-solid fa-map-location-dot"></i> Sơ đồ vé
+        </p>
+        <div class="bg-white border border-gray-100 rounded-2xl p-2 shadow-sm overflow-hidden text-center">
+            <img src="${mapSrc}" class="w-full h-auto rounded-lg block" style="display: block !important;">
+        </div>
+    </div>`;
+        }
+
+        // 2. Xử lý hiển thị QR Ngân hàng
+        let qrHtml = "";
+        if (qrSrc) {
+            qrHtml = `
+                <div class="mt-3 flex justify-center">
+                    <div class="bg-white p-2 rounded-xl border border-green-100 shadow-sm">
+                        <img src="${qrSrc}" class="w-32 h-32 object-contain">
+                        <p class="text-[8px] text-center text-gray-400 mt-1 uppercase font-bold">Quét mã chuyển khoản</p>
+                    </div>
+                </div>`;
+        }
+
+        // 3. Xử lý danh sách vé
+        let ticketInfo = "";
+        document.querySelectorAll('#ticket-list > div').forEach((row, index) => {
+            const tName = row.querySelector('.ticket-name-input')?.value.trim();
+            const tPrice = row.querySelector('.ticket-price-input')?.value.trim();
+            const tQty = row.querySelector('.ticket-qty-input')?.value.trim();
+            if (tName || tPrice || tQty) {
+                ticketInfo += `
+                    <div class="flex justify-between items-center text-[11px] border-b border-gray-50 py-2">
+                        <div class="flex flex-col min-w-0 pr-2">
+                            <span class="font-bold text-gray-900 truncate">${tName || 'Vé ' + (index + 1)}</span>
+                            <span class="text-[9px] text-gray-500">SL: ${tQty || '0'}</span>
+                        </div>
+                        <b class="text-[#ff007a] whitespace-nowrap">${tPrice ? Number(tPrice).toLocaleString() : '0'}đ</b>
+                    </div>`;
+            }
+        });
+
+        const content = `
     <div class="space-y-6 pb-4 text-left w-full">
         <div class="flex gap-4 items-center w-full">
-            <img src="${posterSrc}" class="w-24 h-32 object-cover rounded-2xl border border-gray-100 bg-gray-50 shrink-0">
+            <img src="${posterSrc}" class="w-24 h-32 object-cover rounded-2xl border border-gray-100 bg-gray-50 shrink-0 shadow-sm">
             <div class="flex-1 min-w-0 space-y-2">
-                <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest leading-none">Sự kiện</p>
-                <h4 class="font-black text-xl text-gray-900 uppercase truncate">${getVal('event-name-input')}</h4>
+                <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest">Sự kiện</p>
+                <h4 class="font-black text-xl text-gray-900 uppercase truncate leading-tight">${getVal('event-name-input')}</h4>
                 <span class="inline-block px-3 py-1 bg-blue-50 text-[#00d2ff] text-[10px] font-bold rounded-full border border-blue-100 uppercase">${getVal('event-type-input')}</span>
             </div>
         </div>
@@ -361,41 +436,59 @@ function showConfirmModal() {
             </div>
         </div>
 
+        ${mapHtml}
+
         <div class="w-full">
             <p class="text-[10px] text-gray-400 uppercase font-black mb-2 tracking-widest"><i class="fa-solid fa-ticket"></i> Thông tin vé</p>
-            <div class="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm space-y-1 w-full text-[11px] font-medium text-gray-700">
-                ${ticketInfo || 'Chưa có thông tin'}
+            <div class="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm w-full">
+                <div class="grid grid-cols-2 gap-x-6 gap-y-1">
+                    ${ticketInfo || '<span class="col-span-2 text-gray-400 text-xs italic">Chưa có thông tin</span>'}
+                </div>
             </div>
         </div>
 
         <div class="space-y-3 w-full">
-            <div class="p-3 bg-purple-50 rounded-2xl border border-purple-100 w-full">
-                <p class="text-[9px] text-purple-400 uppercase font-black mb-1">Ban tổ chức</p>
-                <p class="text-[11px] font-bold text-purple-900">${getVal('btc-name')}</p>
-                <p class="text-[10px] text-purple-700">${getVal('btc-email')} | ${getVal('btc-phone')}</p>
+            <div class="p-3 bg-purple-50 rounded-2xl border border-purple-100 w-full flex gap-3 items-center">
+                ${btcImgSrc ? `<img src="${btcImgSrc}" class="w-10 h-10 rounded-lg object-cover border border-purple-200">` : ''}
+                <div>
+                    <p class="text-[9px] text-purple-400 uppercase font-black mb-1">Ban tổ chức</p>
+                    <p class="text-[11px] font-bold text-purple-900">${getVal('btc-name')}</p>
+                    <p class="text-[10px] text-purple-700 font-medium">${getVal('btc-email')} | ${getVal('btc-phone')}</p>
+                </div>
             </div>
             
             <div class="p-3 bg-green-50 rounded-2xl border border-green-100 w-full">
                 <p class="text-[9px] text-green-600 uppercase font-black mb-1">Tài khoản nhận tiền</p>
-                <div class="flex justify-between items-end w-full">
+                <div class="flex justify-between items-start w-full">
                     <div class="flex-1">
                         <p class="text-[11px] font-bold text-green-900 uppercase">${getVal('bank-name')}</p>
                         <p class="text-[10px] text-green-700 font-medium">Chủ TK: ${getVal('bank-user')}</p>
+                        <p class="text-[12px] text-green-600 font-black tracking-tighter mt-1">${getVal('bank-acc')}</p>
                     </div>
-                    <p class="text-[12px] text-green-600 font-black tracking-tighter shrink-0">${getVal('bank-acc')}</p>
+                    ${qrHtml}
                 </div>
             </div>
         </div>
+
+        <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200 mt-4">
+            <p class="text-[10px] text-amber-600 font-black uppercase mb-1 flex items-center gap-2">
+                <i class="fa-solid fa-circle-exclamation"></i> Quy trình xét duyệt
+            </p>
+            <ul class="text-[11px] text-amber-800 space-y-1 font-bold leading-tight">
+                <li>• Thời gian chờ duyệt: 5 - 7 ngày làm việc.</li>
+                <li>• Thời gian hiển thị: Cần thêm 5 - 7 ngày để lên trang chủ.</li>
+            </ul>
+        </div>
     </div>`;
 
-        const modalContent = document.getElementById('confirm-content');
-        const modal = document.getElementById('confirm-modal');
-        if (modalContent && modal) {
-            modalContent.innerHTML = content;
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-    } catch (error) { console.error("Modal Error:", error); }
+        const modalContent = document.getElementById('confirm-content');
+        const modal = document.getElementById('confirm-modal');
+        if (modalContent && modal) {
+            modalContent.innerHTML = content;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+    } catch (error) { console.error("Modal Error:", error); }
 }
 
 function closeConfirmModal() {
@@ -415,7 +508,7 @@ function loadMyEvents() {
                 <div class="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10">
                     <i class="fa-solid fa-calendar-plus text-2xl text-[#00d2ff]"></i>
                 </div>
-                <p class="text-gray-400 italic mb-6">Thảo chưa tạo sự kiện nào đâu!</p>
+                <p class="text-gray-400 italic mb-6">Bạn chưa tạo sự kiện nào đâu!</p>
                 <button onclick="showPage('create-event')" class="px-8 py-3 bg-black text-white rounded-xl border border-white/10 hover:bg-[#00d2ff] hover:text-black transition-all font-bold uppercase tracking-widest text-xs">
                     Tạo sự kiện ngay
                 </button>
@@ -481,7 +574,7 @@ function loadMyEvents() {
 function deleteEvent(btn) {
     const card = btn.closest('.event-item-card');
     const eventId = card.dataset.id;
-    if(confirm("Xác nhận xóa vĩnh viễn sự kiện này nhé Thảo?")) {
+    if(confirm("Xác nhận xóa vĩnh viễn sự kiện này nhé?")) {
         let allData = JSON.parse(localStorage.getItem('ticket_events')) || [];
         allData = allData.filter(ev => ev.id !== eventId);
         localStorage.setItem('ticket_events', JSON.stringify(allData));
@@ -490,6 +583,27 @@ function deleteEvent(btn) {
     }
 }
 
+function deleteAllEvents() {
+    if (!confirm("Bạn có chắc chắn muốn xóa vĩnh viễn tất cả sự kiện?")) {
+        return;
+    }
+    localStorage.removeItem('events'); 
+    const container = document.getElementById('events-container');
+    if (container) {
+        container.innerHTML = `
+            <div id="empty-state" class="flex flex-col items-center justify-center py-24 w-full bg-white/[0.02] rounded-[30px] border border-dashed border-white/10">
+                <i class="fa-solid fa-box-open text-4xl text-gray-700 mb-4"></i>
+                <h3 class="text-gray-400 text-lg font-bold uppercase">Đã xóa sạch sự kiện</h3>
+                <p class="text-gray-500 text-xs">F5 lần nữa nhé!</p>
+            </div>
+        `;
+    }
+    
+    alert("Đã xóa xong danh sách sự kiện!");
+}
+
+
+
 // --- 8. ADMIN RENDER LOGIC (Trang 1.html) ---
 function loadEventsAdmin() {
     const container = document.getElementById('admin-events-container');
@@ -497,7 +611,7 @@ function loadEventsAdmin() {
 
     const allEvents = JSON.parse(localStorage.getItem('ticket_events')) || [];
     if (allEvents.length === 0) {
-        container.innerHTML = `<div class="text-center py-20 bg-white/5 rounded-3xl border border-white/10"><p class="text-gray-500 italic">Chưa có sự kiện nào được tạo, Thảo ơi!</p></div>`;
+        container.innerHTML = `<div class="text-center py-20 bg-white/5 rounded-3xl border border-white/10"><p class="text-gray-500 italic">Chưa có sự kiện nào được tạo, bạn ơi!</p></div>`;
         return;
     }
 
@@ -536,7 +650,7 @@ function loadEventsAdmin() {
                             <div class="space-y-3">
                                 <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest border-b border-white/10 pb-1">📍 Địa điểm & Thời gian</p>
                                 <p class="text-xs text-gray-200"><b>Lịch:</b> ${ev.start} → ${ev.end}</p>
-                                <p class="text-xs text-gray-200"><b>Nơi:</b> ${ev.locName}</p>
+                                <p class="text-xs text-gray-200"><b>Nơi:</b> ${ev.locname}</p>
                             </div>
                             <div class="space-y-3">
                                 <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest border-b border-white/10 pb-1">🎫 Thông tin vé</p>
@@ -545,12 +659,12 @@ function loadEventsAdmin() {
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
                             <div class="p-4 bg-blue-500/5 rounded-2xl border border-blue-500/10">
-                                <p class="text-[9px] text-blue-400 font-black uppercase mb-2">BTC: ${ev.btcName}</p>
-                                <p class="text-[11px] text-gray-400">${ev.btcEmail} | ${ev.btcPhone}</p>
+                                <p class="text-[9px] text-blue-400 font-black uppercase mb-2">BTC: ${ev.btcname}</p>
+                                <p class="text-[11px] text-gray-400">${ev.btcemail} | ${ev.btcphone}</p>
                             </div>
                             <div class="p-4 bg-green-500/5 rounded-2xl border border-green-500/10">
-                                <p class="text-[9px] text-green-400 font-black uppercase mb-2">BANK: ${ev.bankName}</p>
-                                <p class="text-[12px] text-white font-mono">STK: ${ev.bankAcc}</p>
+                                <p class="text-[9px] text-green-400 font-black uppercase mb-2">BANK: ${ev.bankname}</p>
+                                <p class="text-[12px] text-white font-mono">STK: ${ev.bankacc}</p>
                             </div>
                         </div>
                     </div>
@@ -583,13 +697,12 @@ function approveEvent(id) {
     }
 }
 
-
 // --- 9. MODAL LƯU Ý (NOTICE MODAL) ---
 function openNoticeModal() {
     const modal = document.getElementById('notice-modal');
     if (modal) {
         modal.classList.remove('hidden');
-        modal.classList.add('flex'); // Ép nó dùng flex để căn giữa nội dung
+        modal.classList.add('flex'); 
     }
 }
 
@@ -598,10 +711,39 @@ function closeNoticeModal() {
     if (modal) {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
-        
-        // TẠM THỜI XOÁ HOẶC COMMENT DÒNG NÀY ĐỂ TEST F5:
-        // sessionStorage.setItem('hasSeenNotice', 'true'); 
-
         showPage('home'); 
     }
 }
+
+function syncUserInterface(user) {
+    const userNameEl = document.getElementById('user-name-sidebar');
+    const userAvatarEl = document.getElementById('user-avatar');
+    const userNameWelcome = document.getElementById('user-name-welcome');
+
+    if (user && userNameEl && userAvatarEl) {
+        // Hiển thị tên
+        userNameEl.textContent = user.name;
+        if (userNameWelcome) userNameWelcome.textContent = user.name;
+        if (user.avatar) {
+            userAvatarEl.innerHTML = `<img src="${user.avatar}" class="w-full h-full rounded-full object-cover border-2 border-white/20">`;
+            userAvatarEl.classList.remove('bg-gradient-to-br', 'from-[#00d2ff]', 'to-[#3a7bd5]'); // Bỏ nền gradient nếu có ảnh
+        } else {
+            const initials = user.name
+                .split(' ')
+                .map(n => n[0])
+                .join('')
+                .toUpperCase()
+                .slice(-2);
+            userAvatarEl.textContent = initials;
+        }
+    }
+}
+
+function handleLogout() {
+    if (confirm("Bạn có chắc chắn muốn đăng xuất không?")) {
+        localStorage.removeItem('userLogin'); // Xóa thông tin đăng nhập
+        sessionStorage.removeItem('hasSeenNotice'); // Reset thông báo nếu cần
+        window.location.href = "index.html"; 
+    }
+} 
+

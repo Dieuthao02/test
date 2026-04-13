@@ -35,13 +35,15 @@
         </nav>
 
        <div class="p-6 mt-auto border-t border-white/5 relative z-10">
-    <a href="dashboard.html" 
+    <a href="dashboard.html" id="user-profile-sidebar"
        class="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-all active:scale-95 no-underline block">
         
-        <div class="w-10 h-10 bg-gradient-to-tr from-purple-500 to-pink-500 rounded-full flex items-center justify-center font-bold text-white shadow-lg">NT</div>
+        <div id="user-avatar" class="w-10 h-10 bg-gradient-to-tr from-purple-500 to-pink-500 rounded-full flex items-center justify-center font-bold text-white shadow-lg">
+            --
+        </div>
         
         <div class="flex-1">
-            <p class="text-xs font-bold text-white mb-0">Diệu Thảo</p>
+            <p id="user-name-sidebar" class="text-xs font-bold text-white mb-0 italic">Đang tải...</p>
             <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-0">Pro Account</p>
         </div>
         
@@ -67,7 +69,7 @@
         <div class="relative overflow-hidden rounded-[40px] bg-gradient-to-br from-[#111] to-[#050505] border border-white/10 p-12 mb-10 shadow-2xl">
             <div class="relative z-10">
                 <h1 class="text-4xl font-black italic uppercase tracking-tighter mb-4">
-                    Chào mừng trở lại, <span class="text-[#00d2ff]">Diệu Thảo</span>
+                    Chào mừng trở lại, <span id="user-name-welcome" class="text-[#00d2ff]">Diệu Thảo</span>
                 </h1>
                 <p class="text-gray-500 max-w-xl mb-8 leading-relaxed">
                     Hôm nay bạn muốn tổ chức sự kiện gì nào? Hãy bắt đầu bằng cách nhấn nút tạo bên dưới hoặc xem lại danh sách sự kiện cũ nhé!
@@ -383,7 +385,10 @@
                        class="w-full bg-white/5 border border-white/10 rounded-full px-8 py-4 outline-none focus:border-[#00d2ff] transition-all text-white" 
                        placeholder="Tìm kiếm sự kiện của bạn...">
             </div>
-        </div>
+       <button onclick="deleteAllEvents()" 
+                class="px-4 py-2.5 rounded-xl border border-red-500/30 text-red-500 hover:bg-red-500 hover:text-white transition-all font-bold text-xs flex items-center gap-2 whitespace-nowrap bg-red-500/5 active:scale-95">
+            <i class="fa-solid fa-trash-can"></i> Xóa tất cả
+        </button>
     </div>
 
     <div id="events-container" class="w-full min-h-[500px]">
@@ -456,6 +461,31 @@
                 OK
             </button>
         </div>
+    </div>
+</div>
+
+<div id="success-notice-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div class="bg-white rounded-[32px] p-8 max-w-md w-full shadow-2xl transform transition-all animate-fade-in text-center">
+        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fa-solid fa-paper-plane text-3xl text-green-500"></i>
+        </div>
+        
+        <h3 class="text-2xl font-black text-gray-900 uppercase mb-4 tracking-tighter">Gửi thành công!</h3>
+        
+        <div class="space-y-4 text-left bg-gray-50 p-5 rounded-2xl border border-gray-100 mb-6">
+            <div class="flex gap-3">
+                <span class="text-blue-500 font-bold">01.</span>
+                <p class="text-sm text-blue-600">Hệ thống sẽ tiến hành duyệt nội dung trong <b>5-7 ngày làm việc</b>.</p>
+            </div>
+            <div class="flex gap-3">
+                <span class="text-blue-500 font-bold">02.</span>
+                <p class="text-sm text-blue-600">Sau khi duyệt, cần thêm <b>5-7 ngày</b> để sự kiện hiển thị trên trang chủ.</p>
+            </div>
+        </div>
+
+        <button onclick="closeSuccessModal()" class="w-full py-4 bg-black text-white rounded-2xl font-bold uppercase tracking-widest hover:bg-[#00d2ff] hover:text-black transition-all shadow-lg">
+            Đã hiểu, cảm ơn!
+        </button>
     </div>
 </div>
 
