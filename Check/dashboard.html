@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EventHub Pro Dashboard - Pastel Experience</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #fdfcf0; }
+        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 2px solid #ffffff; }
+        .custom-gradient { background: linear-gradient(135deg, #FFDEE9 0%, #B5FFFC 100%); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+
+        button:active, a:active { transform: scale(0.95); }
+        .dropdown-menu { display: none; animation: fadeInScale 0.2s ease-out forwards; }
+        .dropdown-menu.active { display: block; }
+        
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .page-content { display: none; }
+        .page-content.active { display: block; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* FIX: State active chuẩn cho tất cả nav-item */
+        .nav-item.active { background: white !important; box-shadow: 0 4px 15px rgba(236, 72, 153, 0.1) !important; color: #ec4899 !important; border: 2px solid #fce7f3 !important; }
+
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; padding: 20px; }
+        .modal.active { display: flex; animation: fadeIn 0.3s ease; }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <div class="flex min-h-screen">
+        <!-- SIDEBAR -->
+        <aside class="w-72 bg-white/50 sticky top-0 h-screen p-8 hidden xl:flex flex-col border-r border-white">
+            <div class="mb-12">
+                <h1 class="text-3xl font-black text-[#F33B26] tracking-tighter">EventHub</h1>
+                <span class="text-[10px] bg-black text-white px-2 py-0.5 rounded ml-1 font-bold">PRO</span>
+            </div>
+
+            <nav class="space-y-4 flex-1">
+                <p class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Menu Chính</p>
+                <button onclick="showPage('dashboard', this)" class="nav-item active w-full flex items-center space-x-4 p-4 rounded-3xl font-bold transition-all">
+                    <i class="fa-solid fa-grid-2 w-5"></i>
+                    <span>Bảng điều khiển</span>
+                </button>
+                <button onclick="showPage('tickets', this)" class="nav-item w-full flex items-center space-x-4 text-gray-500 hover:bg-white p-4 rounded-3xl font-bold transition-all">
+                    <i class="fa-solid fa-ticket-simple w-5"></i>
+                    <span>Kho vé của tôi</span>
+                </button>
+                <button onclick="showPage('wallet', this)" class="nav-item w-full flex items-center space-x-4 text-gray-500 hover:bg-white p-4 rounded-3xl font-bold transition-all">
+                    <i class="fa-solid fa-wallet w-5"></i>
+                    <span>Kho Voucher</span>
+                </button>
+                <button onclick="showPage('refund-page', this)" class="nav-item w-full flex items-center space-x-4 text-gray-500 hover:bg-white p-4 rounded-3xl font-bold transition-all">
+                    <i class="fa-solid fa-heart w-5"></i>
+                    <span>Yêu cầu hoàn tiền</span>
+                </button>
+            </nav>
+
+            <div class="bg-gradient-to-br from-blue-50 to-pink-50 p-6 rounded-[2rem] border-2 border-white shadow-inner">
+                <p class="text-xs font-black text-blue-500 uppercase mb-2">Hạng thành viên</p>
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-lg font-black">PLATINUM</span>
+                    <i class="fa-solid fa-crown text-yellow-400"></i>
+                </div>
+                <div class="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
+                    <div class="bg-pink-400 h-full w-[75%]"></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="flex-1 p-6 md:p-12 overflow-y-auto no-scrollbar">
+            
+            <!-- TOP BAR -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+    <div>
+        <h2 class="text-4xl font-black text-gray-900 leading-tight">
+            Chào mừng trở lại,<br>
+            <span id="user-welcome-name" class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-blue-500">
+                Đang tải... ✨
+            </span>
+        </h2>
+    </div>
+    
+    <div class="flex items-center space-x-4 relative">
+        <div class="text-right hidden sm:block">
+            <p id="real-time-date" class="text-sm font-black uppercase text-gray-800">
+                -- Tháng --, 2026
+            </p>
+            <p id="user-location" class="text-xs font-bold text-gray-400 italic">
+                Đang xác định vị trí...
+            </p>
+        </div>
+
+        <div id="auth-zone" class="relative">
+            <div class="animate-pulse bg-gray-200 w-12 h-12 rounded-full"></div> 
+        </div>
+    
+                    <!-- Dropdown -->
+                    <div id="dropdown-menu" class="dropdown-menu absolute right-0 mt-20 w-60 bg-white/90 backdrop-blur-md rounded-[2.5rem] shadow-2xl border border-white p-4 z-50">
+                        <button onclick="showPage('profile')" class="w-full text-left p-3 hover:bg-pink-50 rounded-2xl transition flex items-center space-x-3 text-xs font-bold">
+                            <i class="fa-solid fa-user-gear text-pink-400"></i>
+                            <span>Cập nhật hồ sơ</span>
+                        </button>
+                        <button onclick="alert('Đang đăng xuất...')" class="w-full text-left p-3 hover:bg-red-50 rounded-2xl transition flex items-center space-x-3 text-xs font-bold text-red-500">
+                            <i class="fa-solid fa-power-off"></i>
+                            <span>Đăng xuất</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 1. DASHBOARD -->
+            <div id="dashboard" class="page-content active">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+                    <div class="md:col-span-2 glass-card p-8 rounded-[3rem] relative overflow-hidden shadow-sm border-none">
+                        <p class="text-xs font-black text-gray-400 uppercase mb-2">Số dư ví EventPay</p>
+                        <h3 id="balance-dashboard" class="text-4xl font-black text-gray-800">4.250.000 <span class="text-sm">VND</span></h3>
+                        <div class="flex mt-6 space-x-2">
+                            <button onclick="openModal('modal-nap-tien')" class="bg-black text-white px-4 py-2 rounded-2xl text-xs font-bold">+ Nạp tiền</button>
+                            <button onclick="openModal('modal-history')" class="bg-white px-4 py-2 rounded-2xl text-xs font-bold border border-gray-100 shadow-sm">Lịch sử</button>
+                        </div>
+                    </div>
+                    <div class="glass-card p-8 rounded-[3rem] text-center border-none shadow-sm">
+                        <div class="w-14 h-14 bg-pink-100 text-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4"><i class="fa-solid fa-ticket text-2xl"></i></div>
+                        <p class="text-[10px] font-black text-gray-400 uppercase mb-1">Vé sắp tới</p>
+                        <h4 class="text-3xl font-black">03</h4>
+                    </div>
+                    <div class="glass-card p-8 rounded-[3rem] text-center border-none shadow-sm">
+                        <div class="w-14 h-14 bg-yellow-100 text-yellow-600 rounded-2xl flex items-center justify-center mx-auto mb-4"><i class="fa-solid fa-gift text-2xl"></i></div>
+                        <p class="text-[10px] font-black text-gray-400 uppercase mb-1">Ưu đãi mới</p>
+                        <h4 class="text-3xl font-black text-yellow-600">07</h4>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+                    <div class="lg:col-span-2 space-y-8">
+                        <h3 class="text-2xl font-black italic uppercase">Vé đã đặt gần đây</h3>
+                        <div class="group bg-white p-6 rounded-[2.5rem] shadow-sm hover:shadow-md transition-all border-2 border-transparent hover:border-pink-200 flex flex-wrap md:flex-nowrap items-center gap-6">
+                            <div class="w-24 h-24 rounded-3xl overflow-hidden border-2 border-white shadow-md">
+                                <img src="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=400" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-1">
+                                <span class="bg-pink-100 text-pink-500 text-[9px] font-black px-2 py-0.5 rounded-full uppercase">Âm nhạc • Live</span>
+                                <h4 class="text-xl font-black mt-1 uppercase">GAI HOME CONCERT 2026</h4>
+                                <p class="text-xs font-bold text-gray-400 mt-1">18.04.2026 • VIP A12</p>
+                            </div>
+                            <button onclick="openModal('modal-ticket-detail')" class="bg-gray-100 hover:bg-black hover:text-white px-6 py-3 rounded-2xl font-black text-[10px] uppercase transition-all">Chi tiết</button>
+                        </div>
+                    </div>
+
+                    <!-- TRẢ LẠI PHẦN TIN MỚI NHẤT -->
+                    <div class="space-y-8">
+                        <h3 class="text-2xl font-black italic uppercase">Tin mới nhất</h3>
+                        <div class="bg-[#1a1a1a] text-white p-8 rounded-[3rem] shadow-2xl relative overflow-hidden group">
+                            <div class="relative z-10">
+                                <span class="bg-pink-500 text-[9px] font-black px-2 py-1 rounded mb-4 inline-block">HOT NEWS</span>
+                                <p class="text-sm font-bold leading-relaxed italic">Nghệ sĩ <span class="text-pink-400 font-black">MONO</span> vừa xác nhận tham gia Concert 9 tại SVĐ Mỹ Đình!</p>
+                                <div class="mt-6 flex items-center text-[10px] font-black text-gray-400">
+                                    <span>XEM CHI TIẾT</span>
+                                    <i class="fa-solid fa-arrow-right ml-2 group-hover:translate-x-2 transition"></i>
+                                </div>
+                            </div>
+                            <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-pink-500/10 rounded-full"></div>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-[2.5rem] border-2 border-white shadow-sm">
+                            <p class="text-[10px] font-black text-gray-400 uppercase mb-4">Mẹo bảo mật</p>
+                            <p class="text-xs font-bold">Đừng bao giờ chia sẻ mã QR vé cho người lạ để tránh mất vé!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. HỒ SƠ -->
+            <div id="profile" class="page-content">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-1 space-y-6">
+            <div class="glass-card p-8 rounded-[3rem] text-center border-none">
+                <div class="relative inline-block">
+                    <img id="profile-avatar-preview" src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix" class="w-32 h-32 rounded-[2.5rem] bg-blue-50 border-4 border-white mx-auto shadow-lg object-cover">
+                    <label for="avatar-upload" class="absolute -bottom-2 -right-2 bg-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:bg-pink-50 transition-all border border-pink-100">
+                        <i class="fa-solid fa-camera text-pink-500 text-sm"></i>
+                        <input type="file" id="avatar-upload" class="hidden" accept="image/*">
+                    </label>
+                </div>
+                <h4 id="profile-name-display" class="text-xl font-black mt-4">Diệu Thảo</h4>
+                <p class="text-xs font-bold text-gray-400 uppercase">Platinum Member</p>
+            </div>
+        </div>
+        <div class="lg:col-span-2 space-y-8">
+            <div class="bg-white/80 p-10 rounded-[3rem] border-2 border-white shadow-sm">
+                <h3 class="text-xl font-black mb-8 uppercase italic">Thông tin cá nhân</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2 md:col-span-2">
+                        <label class="text-[10px] font-black text-gray-400 uppercase ml-4">Họ và tên</label>
+                        <input type="text" id="edit-fullname" placeholder="Nhập tên của bạn" class="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-pink-200 rounded-[2rem] outline-none font-bold">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-gray-400 uppercase ml-4">Số điện thoại</label>
+                        <input type="text" id="edit-phone" placeholder="09xx.xxx.xxx" class="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-pink-200 rounded-[2rem] outline-none font-bold">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-gray-400 uppercase ml-4">Địa chỉ</label>
+                        <input type="text" id="edit-address" placeholder="Hà Nội, Việt Nam" class="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-[2rem] outline-none font-bold">
+                    </div>
+                </div>
+                <button onclick="updateUserProfile()" class="w-full bg-black text-white py-4 rounded-[2rem] font-black text-sm uppercase mt-6 shadow-lg active:scale-95 transition-all">Lưu thông tin</button>
+            </div>
+            <div class="bg-white/80 p-10 rounded-[3rem] border-2 border-white shadow-sm">
+                <h3 class="text-xl font-black mb-8 uppercase italic">Đổi mật khẩu</h3>
+                <div class="space-y-4">
+                    <input type="password" id="old-pass" placeholder="Mật khẩu cũ" class="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-red-200 rounded-[2rem] outline-none font-bold text-sm">
+                    <input type="password" id="new-pass" placeholder="Mật khẩu mới" class="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-red-200 rounded-[2rem] outline-none font-bold text-sm">
+                    <button onclick="changePassword()" class="w-full bg-gray-100 hover:bg-red-500 hover:text-white py-4 rounded-[2rem] font-black text-sm uppercase transition-all">Cập nhật mật khẩu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+            <!-- 3. KHO VÉ -->
+            <div id="tickets" class="page-content">
+    <h3 class="text-3xl font-black mb-8 uppercase italic">Vé của bạn</h3>
+    
+    <div onclick="openModal('modal-ticket-detail')" 
+         class="relative bg-white group cursor-pointer transition-all duration-300 hover:scale-[1.02]">
+        
+        <div class="flex items-center overflow-hidden rounded-[2rem] border-2 border-gray-100 shadow-sm hover:border-pink-200">
+            <div class="w-24 h-32 bg-pink-500 flex flex-col items-center justify-center text-white border-r-2 border-dashed border-gray-200">
+                <i class="fa-solid fa-ticket-alt text-3xl mb-1"></i>
+                <span class="text-[10px] font-bold uppercase rotate-[-90deg] origin-center">EventHub</span>
+            </div>
+
+            <div class="flex-1 p-5 relative">
+                <div class="absolute -left-[10px] top-1/2 -translate-y-1/2 w-5 h-5 bg-[#fdfaf5] rounded-full border-r-2 border-gray-100"></div>
+                
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h4 id="display-event-name" class="font-black text-xl uppercase text-gray-800">GAI HOME CONCERT</h4>
+                        <div class="flex items-center gap-4 mt-1 text-gray-500 font-bold text-[11px]">
+                            <span><i class="fa-solid fa-calendar-days mr-1"></i> 20:00 - 15/05/2026</span>
+                            <span><i class="fa-solid fa-location-dot mr-1"></i> Sân vận động Mỹ Đình</span>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span class="bg-pink-100 text-pink-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter">
+                            Đã thanh toán
+                        </span>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-gray-50 flex justify-between items-center">
+                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Nhấn để xem chi tiết vé thật</p>
+                    <span class="font-black text-pink-500 text-lg">1.500.000đ</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+            <div id="wallet" class="page-content">
+    <div class="max-w-4xl mx-auto">
+        <div class="flex items-end justify-between mb-8">
+            <div>
+                <h3 class="text-3xl font-black uppercase italic">Ưu đãi của bạn</h3>
+                <p class="text-gray-400 font-bold text-xs uppercase tracking-widest">Sử dụng Voucher để tiết kiệm hơn</p>
+            </div>
+            <div class="text-right">
+                <p class="text-[10px] font-black text-gray-400 uppercase">Số dư ví</p>
+                <span id="balance-wallet" class="text-2xl font-black text-pink-500">4.250.000đ</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="relative bg-white flex rounded-3xl overflow-hidden shadow-sm border border-gray-100 group">
+                <div class="w-1/3 bg-gradient-to-br from-pink-500 to-rose-400 p-4 flex flex-col items-center justify-center text-white relative">
+                    <span class="text-3xl font-black">-50k</span>
+                    <span class="text-[10px] font-bold uppercase opacity-80">Giảm giá</span>
+                    <div class="absolute -right-[8px] top-0 bottom-0 w-4 flex flex-col justify-around py-2">
+                        <div class="w-2 h-2 bg-white rounded-full"></div>
+                        <div class="w-2 h-2 bg-white rounded-full"></div>
+                        <div class="w-2 h-2 bg-white rounded-full"></div>
+                    </div>
+                </div>
+                <div class="flex-1 p-5 pr-14">
+                    <h4 class="font-black text-gray-800 uppercase text-sm">Welcome Newbie</h4>
+                    <p class="text-[10px] text-gray-400 font-bold">HSD: 31/12/2026</p>
+                    <button class="mt-3 text-[10px] font-black text-pink-500 uppercase border-b-2 border-pink-500">Dùng ngay</button>
+                </div>
+                <div class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-100 text-4xl group-hover:text-pink-50 transition-colors">
+                    <i class="fa-solid fa-ticket"></i>
+                </div>
+            </div>
+
+            <div class="flex gap-4 items-center">
+                <button onclick="openModal('modal-nap-tien')" class="flex-1 bg-black text-white h-full rounded-[2rem] font-black uppercase text-sm hover:scale-95 transition-transform flex items-center justify-center gap-2 py-8 md:py-0">
+                    <i class="fa-solid fa-plus-circle"></i> Nạp thêm tiền
+                </button>
+                <button onclick="openModal('modal-history')" class="w-20 bg-white text-gray-400 h-full rounded-[2rem] border-2 border-dashed border-gray-200 hover:border-pink-300 hover:text-pink-500 transition-all flex items-center justify-center py-8 md:py-0">
+                    <i class="fa-solid fa-clock-rotate-left text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+            <div id="refund-page" class="page-content p-6">
+    <div class="flex items-center justify-between mb-8">
+        <h3 class="text-3xl font-black uppercase italic text-gray-800">Yêu cầu <span class="text-red-500">Hoàn tiền</span></h3>
+        <span class="bg-red-50 px-4 py-1 rounded-full text-[10px] font-bold text-red-500 border border-red-100 uppercase">Chính sách: Hoàn 90% giá trị</span>
+    </div>
+
+    <div id="ticket-list-refund" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="bg-white p-6 rounded-[2.5rem] border-2 border-gray-50 relative overflow-hidden group hover:shadow-xl transition-all">
+            <div class="flex justify-between items-start mb-4">
+                <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center text-red-500 text-xl">
+                    <i class="fa-solid fa-ticket"></i>
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase leading-none">Mã đơn hàng</p>
+                    <p class="text-xs font-black text-blue-600 font-mono">#TK-616301</p>
+                </div>
+            </div>
+
+            <h4 class="font-black uppercase text-sm text-gray-800 mb-1">GAI HOME CONCERT</h4>
+            <div class="space-y-1 mb-4">
+                <p class="text-[10px] text-gray-500 font-bold"><i class="fa-regular fa-clock mr-1"></i> Mua lúc: 17:36:52 - 14/04/2026</p>
+                <p class="text-[10px] text-gray-500 font-bold"><i class="fa-solid fa-money-bill-wave mr-1"></i> Giá vé: 1.500.000đ</p>
+            </div>
+
+            <button onclick="openRefundModal('TK-616301', 1500000)" class="w-full bg-gray-900 text-white py-3 rounded-2xl text-[10px] font-black uppercase tracking-wider hover:bg-red-600 transition-colors">
+                Yêu cầu hoàn tiền
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="refund-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999] hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl scale-95 transition-transform">
+        <div class="text-center mb-6">
+            <div class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                <i class="fa-solid fa-rotate-left"></i>
+            </div>
+            <h3 class="text-xl font-black uppercase">Xác nhận hoàn tiền</h3>
+            <p class="text-xs text-gray-500 font-medium mt-1">Vui lòng cho chúng tôi biết lý do bạn muốn hoàn vé</p>
+        </div>
+
+        <div class="space-y-4">
+            <div>
+                <label class="text-[10px] font-black uppercase text-gray-400 ml-2">Lý do hoàn tiền</label>
+                <select id="refund-reason-select" onchange="toggleOtherReason()" class="w-full mt-1 bg-gray-50 border-2 border-gray-100 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-red-500 transition-all">
+                    <option value="Thay đổi kế hoạch cá nhân">Thay đổi kế hoạch cá nhân</option>
+                    <option value="Sức khỏe không cho phép">Sức khỏe không cho phép</option>
+                    <option value="Đặt nhầm sự kiện/thời gian">Đặt nhầm sự kiện/thời gian</option>
+                    <option value="other">Lý do khác...</option>
+                </select>
+            </div>
+
+            <div id="other-reason-container" class="hidden">
+                <label class="text-[10px] font-black uppercase text-gray-400 ml-2">Nhập lý do cụ thể</label>
+                <textarea id="refund-reason-text" placeholder="Viết lý do của bạn tại đây..." class="w-full mt-1 bg-gray-50 border-2 border-gray-100 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-red-500 transition-all h-24 resize-none"></textarea>
+            </div>
+
+            <div class="bg-orange-50 border border-orange-100 p-4 rounded-2xl">
+                <div class="flex gap-3">
+                    <i class="fa-solid fa-circle-exclamation text-orange-500 mt-0.5"></i>
+                    <p class="text-[11px] text-orange-700 leading-relaxed">
+                        <b>Lưu ý:</b> Phí dịch vụ hoàn vé là <b>20%</b> giá trị vé. Bạn sẽ nhận lại được <span id="refund-amount" class="font-black text-red-600">0đ</span>.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 mt-8">
+            <button onclick="closeRefundModal()" class="py-4 rounded-2xl text-[10px] font-black uppercase bg-gray-100 text-gray-500 hover:bg-gray-200 transition-all">Hủy bỏ</button>
+            <button onclick="confirmRefundRequest()" class="py-4 rounded-2xl text-[10px] font-black uppercase bg-red-500 text-white shadow-lg shadow-red-200 hover:bg-red-600 transition-all">Xác nhận gửi</button>
+        </div>
+    </div>
+    </div>
+    
+    <!-- MODALS -->
+    <!-- Chi tiết vé -->
+   <div id="modal-ticket-detail" class="modal hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onclick="closeModal('modal-ticket-detail')">
+    <div class="bg-white rounded-[3rem] overflow-hidden max-w-sm w-[90%] shadow-2xl transform transition-all" onclick="event.stopPropagation()">
+        
+        <div class="bg-gradient-to-br from-gray-900 to-gray-800 p-8 text-white relative">
+            <div class="flex justify-between items-center mb-6">
+                <span class="text-xs font-black tracking-[0.3em] opacity-50 uppercase">Official Ticket</span>
+                <img src="logo.png" class="h-4 grayscale invert brightness-200 opacity-50" alt="">
+            </div>
+
+            <div class="bg-white p-4 rounded-3xl mb-6 shadow-inner mx-auto w-fit">
+                <img id="ticket-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=GAI-HOME-2026" 
+                     class="w-44 h-44" alt="QR Code">
+            </div>
+
+            <h3 id="ticket-event-name" class="text-2xl font-black uppercase text-center mb-1 leading-none tracking-tight">GAI HOME CONCERT</h3>
+            <p id="ticket-seat" class="text-pink-400 font-black text-sm text-center tracking-[0.2em]">VIP A12 • ROW 01</p>
+        </div>
+
+        <div class="p-8 pt-6 relative">
+            <div class="absolute -top-3 left-0 w-full flex justify-around opacity-20 text-gray-900">
+                <span>•</span><span>•</span><span>•</span><span>•</span><span>•</span><span>•</span><span>•</span><span>•</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-y-4">
+                <div>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase italic">Chủ vé</p>
+                    <p id="ticket-owner" class="font-black text-gray-800">Diệu Thảo</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase italic">Mã số vé</p>
+                    <p id="ticket-id" class="font-black text-gray-800">#EHB-99201</p>
+                </div>
+                <div>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase italic">Thời gian</p>
+                    <p id="ticket-time" class="font-black text-gray-800">20:00 - 15/05/2026</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase italic">Giá vé</p>
+                    <p id="ticket-price" class="font-black text-pink-500">1.500.000đ</p>
+                </div>
+                <div class="col-span-2">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase italic">Địa điểm</p>
+                    <p id="ticket-location" class="font-black text-gray-800 uppercase text-xs">Sân vận động Quốc gia Mỹ Đình, Hà Nội</p>
+                </div>
+            </div>
+
+            <button onclick="closeModal('modal-ticket-detail')" 
+                    class="w-full mt-8 py-4 bg-gray-100 rounded-2xl font-black text-[10px] uppercase text-gray-500 hover:bg-gray-200 transition-colors">
+                Đóng cửa sổ
+            </button>
+        </div>
+    </div>
+</div>
+
+    <!-- Nạp tiền (ĐÃ CẬP NHẬT THEO YÊU CẦU) -->
+<div id="modal-nap-tien" class="modal" onclick="closeModal('modal-nap-tien')">
+    <div class="bg-white rounded-[3rem] p-10 max-w-md w-full relative overflow-hidden" onclick="event.stopPropagation()">
+        
+        <!-- Màn hình chính: Nhập số tiền -->
+        <div id="nap-tien-step-1">
+            <h3 class="text-2xl font-black mb-6 uppercase italic leading-tight">Nạp tiền nhanh</h3>
+            
+            <p class="text-[10px] font-black text-gray-400 uppercase mb-3 ml-2">Chọn nhanh số tiền</p>
+            <div class="grid grid-cols-3 gap-3 mb-6">
+                <button onclick="setAmount(500000)" class="bg-gray-50 p-4 rounded-2xl font-black text-xs hover:bg-pink-100 transition border border-transparent hover:border-pink-200">500k</button>
+                <button onclick="setAmount(1000000)" class="bg-gray-50 p-4 rounded-2xl font-black text-xs hover:bg-pink-100 transition border border-transparent hover:border-pink-200">1tr</button>
+                <button onclick="setAmount(2000000)" class="bg-gray-50 p-4 rounded-2xl font-black text-xs hover:bg-pink-100 transition border border-transparent hover:border-pink-200">2tr</button>
+            </div>
+
+            <p class="text-[10px] font-black text-gray-400 uppercase mb-3 ml-2">Số tiền muốn nạp</p>
+            <input id="nap-tien-input" type="number" placeholder="0" class="w-full p-5 bg-gray-50 rounded-[2rem] font-bold border-2 border-transparent focus:border-pink-200 outline-none mb-6 text-lg">
+
+            <p class="text-[10px] font-black text-gray-400 uppercase mb-3 ml-2">Chọn phương thức</p>
+            <div class="grid grid-cols-2 gap-3 mb-8">
+                <button onclick="selectMethod('momo')" id="method-momo" class="payment-method flex flex-col items-center justify-center p-4 bg-gray-50 rounded-3xl border-2 border-transparent transition-all">
+                    <img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" class="w-8 h-8 mb-2 rounded-lg">
+                    <span class="text-[10px] font-black uppercase">Ví MoMo</span>
+                </button>
+                <button onclick="selectMethod('bank')" id="method-bank" class="payment-method flex flex-col items-center justify-center p-4 bg-gray-50 rounded-3xl border-2 border-transparent transition-all">
+                    <i class="fa-solid fa-qrcode text-blue-500 text-2xl mb-2"></i>
+                    <span class="text-[10px] font-black uppercase">QR Bank</span>
+                </button>
+            </div>
+
+            <button onclick="processPayment()" class="w-full bg-black text-white py-5 rounded-[2rem] font-black uppercase text-sm shadow-xl hover:scale-[1.02] transition-all">Tiếp tục</button>
+        </div>
+
+        <!-- Màn hình 2: Giả lập QR/Momo -->
+        <div id="nap-tien-step-2" class="hidden text-center animate-fadeIn">
+            <div id="payment-status" class="mb-4">
+                <span class="inline-block px-3 py-1 bg-yellow-100 text-yellow-600 rounded-full text-[10px] font-black uppercase animate-pulse">Đang chờ thanh toán...</span>
+            </div>
+            
+            <div class="bg-gray-50 p-6 rounded-[2.5rem] mb-6">
+                <div id="qr-container" class="bg-white p-4 rounded-2xl inline-block border-2 border-dashed border-gray-200 mb-4">
+                    <!-- QR sẽ được render tại đây -->
+                    <img id="qr-image" src="" alt="QR Payment" class="w-48 h-48 mx-auto">
+                </div>
+                <h4 id="display-amount" class="text-2xl font-black">0đ</h4>
+                <p id="payment-instruction" class="text-xs font-bold text-gray-400 mt-2 px-4">Vui lòng quét mã để hoàn tất giao dịch</p>
+            </div>
+
+            <div class="flex space-x-2">
+                <button onclick="backToStep1()" class="flex-1 py-4 bg-gray-100 rounded-2xl font-black text-xs uppercase">Hủy</button>
+                <button onclick="simulateSuccess(event)" class="flex-[2] py-4 bg-green-500 text-white rounded-2xl font-black text-xs uppercase shadow-lg shadow-green-200">Xác nhận đã chuyển</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Lịch sử -->
+<div id="modal-history" class="modal" onclick="closeModal('modal-history')">
+    <div class="bg-white rounded-[3rem] p-10 max-w-lg w-full max-h-[80vh] overflow-y-auto no-scrollbar" onclick="event.stopPropagation()">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-2xl font-black uppercase italic">Giao dịch gần đây</h3>
+            <!-- NÚT IN TỔNG HỢP -->
+            <button onclick="printInvoice('Tất cả giao dịch', currentBalance)" class="text-pink-500 hover:text-pink-700">
+                <i class="fa-solid fa-print text-xl"></i>
+            </button>
+        </div>
+        <div id="history-list" class="space-y-4">
+            <!-- Các mục giao dịch sẽ ở đây -->
+            <div class="flex justify-between items-center p-5 bg-gray-50 rounded-[2rem] border border-white shadow-sm">
+                <div>
+                    <p class="font-black text-sm">Nạp tiền hệ thống</p>
+                    <p class="text-[10px] font-bold text-gray-400">Giao dịch mẫu</p>
+                </div>
+                <button onclick="printInvoice('Nạp tiền hệ thống', '500.000')" class="ml-4 text-gray-400 hover:text-black">
+                    <i class="fa-solid fa-receipt"></i>
+                </button>
+            </div>
+        </div>
+        <button onclick="closeModal('modal-history')" class="w-full mt-6 py-4 font-black text-xs uppercase text-gray-400">Quay lại</button>
+    </div>
+</div>
+
+<script type="module">
+    // --- 1. NHẬP LIỆU FIREBASE ---
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { firebaseConfig } from './firebase-config.js';
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // --- 2. KHỞI TẠO DỮ LIỆU VÀ BIẾN TOÀN CỤC ---
+    let currentBalance = 4250000; 
+    let selectedMethod = '';
+    const authZone = document.getElementById('auth-zone');
+    const dropdownMenu = document.getElementById('dropdown-menu');
+
+    // Hàm cập nhật thời gian thực (Ngày tháng)
+    function updateRealTime() {
+        const dateElement = document.getElementById('real-time-date');
+        if (dateElement) {
+            const now = new Date();
+            const days = now.getDate();
+            const months = now.getMonth() + 1;
+            const years = now.getFullYear();
+            dateElement.innerText = `${days} Tháng ${months}, ${years}`;
+        }
+    }
+
+    // Hàm cập nhật thông tin Top Bar (Tên & Địa chỉ) từ LocalStorage
+    function updateTopBarUI() {
+        const userLocal = JSON.parse(localStorage.getItem('userLogin'));
+        if (userLocal) {
+            // Cập nhật tên chào mừng
+            const welcomeName = document.getElementById('user-welcome-name');
+            if (welcomeName) welcomeName.innerText = (userLocal.name || "Bạn") + " ✨";
+
+            // Cập nhật địa chỉ
+            const locationElement = document.getElementById('user-location');
+            if (locationElement) {
+                locationElement.innerText = userLocal.address || "Việt Nam";
+            }
+        }
+    }
+
+    // Chạy cập nhật ngay khi load trang
+    updateRealTime();
+    updateTopBarUI();
+
+    // Theo dõi trạng thái đăng nhập
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            // Lấy dữ liệu cũ nếu có để không ghi đè mất SĐT/Địa chỉ khi login lại
+            let existingData = JSON.parse(localStorage.getItem('userLogin')) || {};
+            
+            const userObj = {
+                ...existingData,
+                name: existingData.name || user.displayName || "User",
+                email: user.email,
+                uid: user.uid,
+                avatar: existingData.avatar || user.photoURL
+            };
+            
+            localStorage.setItem('userLogin', JSON.stringify(userObj));
+            
+            // Cập nhật giao diện sau khi có dữ liệu Auth
+            updateTopBarUI();
+
+            authZone.innerHTML = `
+                <div id="avatar-btn" class="flex items-center gap-3 bg-white/50 backdrop-blur-sm p-1 pr-4 rounded-full border border-pink-100 shadow-sm cursor-pointer">
+                    <img src="${userObj.avatar || 'https://api.dicebear.com/7.x/adventurer/svg?seed=' + user.uid}" 
+                         class="w-8 h-8 rounded-full border-2 border-white shadow-sm object-cover">
+                    <div class="flex flex-col">
+                        <span class="text-[10px] text-gray-400 leading-none uppercase">Thành viên</span>
+                        <span class="text-xs text-pink-600 truncate max-w-[100px] font-bold">${userObj.name}</span>
+                    </div>
+                    <button id="logout-btn" class="ml-2 text-gray-400 hover:text-red-500 transition">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </div>
+            `;
+
+            // Gán sự kiện click cho Avatar mới tạo
+            document.getElementById('avatar-btn').onclick = (e) => {
+                e.stopPropagation();
+                dropdownMenu.classList.toggle('active');
+            };
+
+            document.getElementById('logout-btn').onclick = (e) => {
+                e.stopPropagation();
+                signOut(auth).then(() => {
+                    localStorage.removeItem('userLogin');
+                    location.reload();
+                });
+            };
+        }
+    });
+
+    // --- 3. CÁC HÀM LOGIC (Giữ nguyên từ code cũ của bạn) ---
+
+    function updateBalanceUI(newAmount) {
+        const walletBalance = document.getElementById('balance-wallet');
+        if (!walletBalance) return;
+
+        const start = currentBalance;
+        const end = newAmount;
+        const duration = 1000; 
+        let startTime = null;
+
+        function animation(currentTime) {
+            if (!startTime) startTime = currentTime;
+            const progress = Math.min((currentTime - startTime) / duration, 1);
+            const currentDisplay = Math.floor(progress * (end - start) + start);
+            const formatted = new Intl.NumberFormat('vi-VN').format(currentDisplay);
+            
+            walletBalance.innerText = `${formatted}đ`;
+            
+            if (progress < 1) requestAnimationFrame(animation);
+            else currentBalance = end;
+        }
+        requestAnimationFrame(animation);
+    }
+
+    function addHistoryEntry(amount) {
+        const historyContainer = document.querySelector('#modal-history .space-y-4');
+        if(!historyContainer) return;
+        const now = new Date();
+        const dateStr = `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`;
+        const formattedAmount = new Intl.NumberFormat('vi-VN').format(amount);
+        const newEntry = document.createElement('div');
+        newEntry.className = "flex justify-between items-center p-5 bg-green-50 rounded-[2rem] border border-green-100 shadow-sm animate-fadeIn";
+        newEntry.innerHTML = `
+            <div>
+                <p class="font-black text-sm">Nạp tiền hệ thống</p>
+                <p class="text-[10px] font-bold text-gray-400">${dateStr}</p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <p class="text-green-500 font-black">+${formattedAmount}đ</p>
+                <button onclick="printInvoice('Nạp tiền ví EventPay', '${formattedAmount}')" 
+                        class="w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-sm hover:bg-pink-500 hover:text-white transition-all">
+                    <i class="fa-solid fa-print text-xs"></i>
+                </button>
+            </div>
+        `;
+        historyContainer.prepend(newEntry);
+    }
+
+    function processPayment() {
+        const amountInput = document.getElementById('nap-tien-input').value;
+        const amount = parseInt(amountInput);
+        if (!amount || amount < 10000) return alert("Vui lòng nạp tối thiểu 10.000đ!");
+        if (!selectedMethod) return alert("Vui lòng chọn phương thức thanh toán!");
+
+        document.getElementById('nap-tien-step-1').classList.add('hidden');
+        document.getElementById('nap-tien-step-2').classList.remove('hidden');
+        document.getElementById('display-amount').innerText = new Intl.NumberFormat('vi-VN').format(amount) + 'đ';
+
+        const qrImg = document.getElementById('qr-image');
+        if (selectedMethod === 'bank') {
+            qrImg.src = `https://img.vietqr.io/image/MB-0378217462-qr_only.png?amount=${amount}&addInfo=EHP${amount}NAPVI`;
+        } else {
+            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=MOMO_PAYMENT_${amount}&color=A50064`;
+        }
+    }
+
+    function simulateSuccess(event) {
+        const amount = parseInt(document.getElementById('nap-tien-input').value);
+        const btn = event.currentTarget;
+        btn.innerHTML = '<i class="fa-solid fa-circle-notch animate-spin"></i> ĐANG XÁC THỰC...';
+        btn.disabled = true;
+
+        setTimeout(() => {
+            const contentLabel = selectedMethod === 'bank' ? "Nạp tiền qua Ngân hàng" : "Nạp tiền qua Momo";
+            sendDepositToAdmin(amount, contentLabel); 
+            updateBalanceUI(currentBalance + amount);
+            addHistoryEntry(amount);
+            closeModal('modal-nap-tien');
+            
+            btn.innerHTML = 'XÁC NHẬN ĐÃ CHUYỂN'; 
+            btn.disabled = false;
+            backToStep1();
+            alert(`Nạp thành công ${new Intl.NumberFormat('vi-VN').format(amount)}đ!`);
+        }, 1500);
+    }
+
+    function sendDepositToAdmin(amount, content) {
+        let logs = JSON.parse(localStorage.getItem('admin_deposit_logs')) || [];
+        const userLocal = JSON.parse(localStorage.getItem('userLogin'));
+        
+        const newTransaction = {
+            id: 'GD' + Math.floor(1000 + Math.random() * 9000),
+            user: userLocal ? userLocal.name : "Khách", 
+            amount: amount,
+            content: content,
+            time: new Date().toLocaleString('vi-VN'),
+            status: 'completed'
+        };
+        logs.push(newTransaction);
+        localStorage.setItem('admin_deposit_logs', JSON.stringify(logs));
+        window.dispatchEvent(new Event('storage_updated'));
+    }
+
+    // Các hàm phụ trợ khác
+    function openModal(id) { document.getElementById(id).classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+    function backToStep1() {
+        document.getElementById('nap-tien-step-1').classList.remove('hidden');
+        document.getElementById('nap-tien-step-2').classList.add('hidden');
+    }
+
+    // --- 5. LOGIC CẬP NHẬT HỒ SƠ (LƯU NỘI BỘ ACC) ---
+
+// Hàm xử lý khi chọn ảnh đại diện mới
+function handleAvatarChange(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const base64Image = e.target.result;
+            // Cập nhật ảnh xem trước trong trang profile
+            const previewImg = document.getElementById('profile-avatar-preview');
+            if (previewImg) previewImg.src = base64Image;
+            
+            // Lưu tạm vào biến để khi nhấn "Lưu thông tin" mới ghi đè chính thức
+            window.tempAvatar = base64Image;
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+// Hàm lưu thông tin cá nhân (Tên, SĐT, Địa chỉ, Avatar)
+function updateUserProfile() {
+    const newName = document.getElementById('edit-fullname').value;
+    const newPhone = document.getElementById('edit-phone').value;
+    const newAddress = document.getElementById('edit-address').value;
+
+    if (!newName) return alert("Họ và tên không được để trống!");
+
+    // Lấy dữ liệu hiện tại
+    let userLocal = JSON.parse(localStorage.getItem('userLogin')) || {};
+    
+    // Cập nhật thông tin mới
+    userLocal.name = newName;
+    userLocal.phone = newPhone;
+    userLocal.address = newAddress;
+    if (window.tempAvatar) {
+        userLocal.avatar = window.tempAvatar;
+    }
+
+    // Lưu lại vào localStorage (Chỉ lưu trong acc người này)
+    localStorage.setItem('userLogin', JSON.stringify(userLocal));
+
+    // Cập nhật giao diện ngay lập tức mà không cần reload
+    // 1. Cập nhật tên ở câu chào
+    const welcomeName = document.querySelector('h2 span');
+    if (welcomeName) welcomeName.innerText = newName + " ✨";
+    
+    // 2. Cập nhật tên và ảnh ở nút Avatar góc trên
+    const headerName = document.querySelector('#avatar-btn .text-pink-600');
+    const headerImg = document.querySelector('#avatar-btn img');
+    if (headerName) headerName.innerText = newName;
+    if (headerImg && userLocal.avatar) headerImg.src = userLocal.avatar;
+
+    // 3. Cập nhật tên ở trang Profile
+    const profileName = document.getElementById('profile-name-display');
+    if (profileName) profileName.innerText = newName;
+
+    alert("Cập nhật hồ sơ thành công!");
+}
+
+// Hàm đổi mật khẩu (Lưu vào object user nội bộ)
+function changePassword() {
+    const oldPass = document.getElementById('old-pass').value;
+    const newPass = document.getElementById('new-pass').value;
+
+    if (!oldPass || !newPass) return alert("Vui lòng nhập đầy đủ mật khẩu!");
+    if (newPass.length < 6) return alert("Mật khẩu mới phải có ít nhất 6 ký tự!");
+
+    let userLocal = JSON.parse(localStorage.getItem('userLogin')) || {};
+    
+    // Lưu mật khẩu vào acc (Lưu ý: Thực tế nên mã hóa, nhưng đây là lưu local nên ta lưu trực tiếp)
+    userLocal.password = newPass; 
+    localStorage.setItem('userLogin', JSON.stringify(userLocal));
+
+    alert("Đổi mật khẩu thành công!");
+    document.getElementById('old-pass').value = '';
+    document.getElementById('new-pass').value = '';
+}
+
+// Hàm đổ dữ liệu từ LocalStorage vào các ô Input khi mở trang Profile
+function loadProfileToInputs() {
+    const userLocal = JSON.parse(localStorage.getItem('userLogin'));
+    if (userLocal) {
+        if (document.getElementById('edit-fullname')) document.getElementById('edit-fullname').value = userLocal.name || "";
+        if (document.getElementById('edit-phone')) document.getElementById('edit-phone').value = userLocal.phone || "";
+        if (document.getElementById('edit-address')) document.getElementById('edit-address').value = userLocal.address || "";
+        if (userLocal.avatar && document.getElementById('profile-avatar-preview')) {
+            document.getElementById('profile-avatar-preview').src = userLocal.avatar;
+        }
+    }
+}
+
+function updateTicketData(data) {
+    // 1. Đổ dữ liệu text vào các ID tương ứng
+    document.getElementById('ticket-event-name').innerText = data.eventName;
+    document.getElementById('ticket-seat').innerText = `${data.seatType} • ${data.seatNumber}`;
+    document.getElementById('ticket-owner').innerText = data.ownerName;
+    document.getElementById('ticket-id').innerText = data.ticketId;
+    document.getElementById('ticket-time').innerText = data.time;
+    document.getElementById('ticket-price').innerText = data.price.toLocaleString('vi-VN') + 'đ';
+    document.getElementById('ticket-location').innerText = data.location;
+
+    // 2. Tạo nội dung cho QR Code 
+    const qrContent = `
+SỰ KIỆN: ${data.eventName}
+VỊ TRÍ: ${data.seatType} - ${data.seatNumber}
+CHỦ VÉ: ${data.ownerName}
+MÃ VÉ: ${data.ticketId}
+THỜI GIAN: ${data.time}
+ĐỊA ĐIỂM: ${data.location}
+    `.trim();
+
+    // 3. Mã hóa chuỗi nội dung để đưa vào URL API
+    const encodedContent = encodeURIComponent(qrContent);
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodedContent}`;
+
+    // 4. Cập nhật ảnh QR
+    document.getElementById('ticket-qr').src = qrUrl;
+}
+
+// Ví dụ cách gọi hàm khi người dùng nhấn xem vé:
+const myTicket = {
+    eventName: "GAI HOME CONCERT",
+    seatType: "VIP A12",
+    seatNumber: "ROW 01",
+    ownerName: "Diệu Thảo",
+    ticketId: "#EHB-99201",
+    time: "20:00 - 15/05/2026",
+    price: 1500000,
+    location: "Sân vận động Quốc gia Mỹ Đình, Hà Nội"
+};
+
+// Khởi tạo các biến để lưu thông tin vé đang chọn
+let selectedTicketId = '';
+let selectedPrice = 0;
+
+// 1. Hàm mở Modal hoàn tiền
+function openRefundModal(ticketId, price) {
+    selectedTicketId = ticketId;
+    selectedPrice = price;
+
+    // Hiển thị mã đơn hàng lên Modal (nếu cần)
+    // Tính số tiền hoàn lại (80%)
+    const refundAmount = price * 0.9;
+    
+    // Cập nhật số tiền vào UI của Modal
+    const amountDisplay = document.getElementById('refund-amount');
+    if (amountDisplay) {
+        amountDisplay.innerText = refundAmount.toLocaleString('vi-VN') + 'đ';
+    }
+
+    // Hiển thị Modal
+    const modal = document.getElementById('refund-modal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex'); // Tailwind cần flex để căn giữa
+}
+
+// 2. Hàm đóng Modal
+function closeRefundModal() {
+    const modal = document.getElementById('refund-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+// 3. Hàm xử lý khi chọn lý do "Khác..."
+function toggleOtherReason() {
+    const select = document.getElementById('refund-reason-select');
+    const container = document.getElementById('other-reason-container');
+    
+    if (select.value === 'other') {
+        container.classList.remove('hidden');
+    } else {
+        container.classList.add('hidden');
+    }
+}
+
+// 4. Hàm xác nhận gửi yêu cầu về Admin
+function confirmRefundRequest() {
+    const reason = document.getElementById('refund-reason-select').value;
+    const note = document.getElementById('refund-reason-text').value;
+    
+    const finalReason = reason === 'other' ? note : reason;
+
+    if (reason === 'other' && !note.trim()) {
+        alert("Vui lòng nhập lý do cụ thể!");
+        return;
+    }
+
+    // Giao diện thông báo giả lập
+    alert(`Đã gửi yêu cầu hoàn tiền cho đơn ${selectedTicketId}!\nLý do: ${finalReason}`);
+    
+    // Đóng modal sau khi gửi thành công
+    closeRefundModal();
+}
+
+// --- 6. CẬP NHẬT PHƠI HÀM RA WINDOW ---
+Object.assign(window, {
+    setAmount: (val) => { document.getElementById('nap-tien-input').value = val; },
+    selectMethod: (method) => {
+        selectedMethod = method;
+        document.querySelectorAll('.payment-method').forEach(btn => btn.classList.remove('border-pink-500', 'bg-pink-50', 'border-blue-500', 'bg-blue-50'));
+        const activeBtn = document.getElementById(`method-${method}`);
+        if (method === 'momo') activeBtn.classList.add('border-pink-500', 'bg-pink-50');
+        else activeBtn.classList.add('border-blue-500', 'bg-blue-50');
+    },
+    processPayment,
+    simulateSuccess,
+    showPage: (pageId, element) => {
+        document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        
+        // Nếu mở trang profile thì load dữ liệu vào input
+        if (pageId === 'profile') {
+            loadProfileToInputs();
+        }
+
+        // Xử lý active menu sidebar
+        if (element) {
+            document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+            element.classList.add('active');
+        }
+        dropdownMenu.classList.remove('active');
+    },
+    openModal: (id) => { 
+    const modal = document.getElementById(id);
+    if (modal) {
+        modal.classList.add('active');
+
+        // KIỂM TRA: Nếu mở modal chi tiết vé thì cập nhật dữ liệu luôn
+        if (id === 'modal-ticket-detail') {
+            // Lấy thông tin user từ localStorage để đổ vào "Chủ vé"
+            const userLocal = JSON.parse(localStorage.getItem('userLogin')) || {};
+            
+            // Cập nhật lại tên chủ vé trong object myTicket
+            myTicket.ownerName = userLocal.name || "Khách hàng";
+            
+            // Chạy hàm đổ dữ liệu và tạo QR
+            updateTicketData(myTicket);
+        }
+    }
+},
+    closeModal,
+    updateTicketData,
+    backToStep1,
+    updateUserProfile, 
+    changePassword,    
+    handleAvatarChange, 
+    printInvoice: (type, amount) => { }
+});
+
+// Lắng nghe sự kiện chọn file avatar (vì input file nằm trong HTML)
+document.addEventListener('change', (e) => {
+    if (e.target && e.target.id === 'avatar-upload') {
+        handleAvatarChange(e);
+    }
+});
+
+document.addEventListener('click', () => dropdownMenu.classList.remove('active'));
+</script>
+
+</body>
+</html>

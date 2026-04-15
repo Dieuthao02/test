@@ -166,6 +166,8 @@
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
     import { firebaseConfig } from './firebase-config.js';
+const urlParams = new URLSearchParams(window.location.search);
+const redirectTarget = urlParams.get('redirect') || 'index.html'; 
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -237,7 +239,7 @@
             if (!document.getElementById('register-form').classList.contains('hidden')) {
                 window.toggleAuth();
             }
-            // Điền sẵn email vừa đăng ký vào form đăng nhập cho tiện
+   
             document.getElementById('login-email').value = email;
             
         } catch (e) { 
@@ -255,24 +257,45 @@
         if (!email || !pass) return alert("Nhập đủ Email và Mật khẩu nhé!");
 
         try {
-            await signInWithEmailAndPassword(auth, email, pass);
-            alert("Đăng nhập thành công!");
-            window.location.href = "index.html"; 
-        } catch (e) { 
-            alert("Sai tài khoản hoặc mật khẩu! Thử lại xem sao."); 
-        }
+        await signInWithEmailAndPassword(auth, email, pass);
+        alert("Đăng nhập thành công!");
+  
+        window.location.href = redirectTarget; 
+    } catch (e) { 
+        alert("Sai tài khoản hoặc mật khẩu!"); 
+    }
     };
 
-    const loginSocial = async (provider) => {
-        try {
-            const result = await signInWithPopup(auth, provider);
-            const user = result.user;
-            await saveUserData(user.uid, user.displayName, "Social", user.email);
-            alert("Đăng nhập thành công!");
-            window.location.href = "index.html";
-        } catch (e) { alert("Lỗi đăng nhập mạng xã hội!"); }
-    };
+   const loginSocial = async (provider) => {
+    try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        await saveUserData(user.uid, user.displayName, "Social", user.email);
+        alert("Đăng nhập thành công!");
 
+        window.location.href = redirectTarget;
+    } catch (e) { 
+        alert("Lỗi đăng nhập mạng xã hội!"); 
+    }
+};
+// --- LOGIC TỰ ĐỘNG CHUYỂN FORM DỰA TRÊN URL ---
+const mode = urlParams.get('mode'); 
+function setInitialForm() {
+    const regForm = document.getElementById('register-form');
+    const loginForm = document.getElementById('login-form');
+
+    if (mode === 'login') {
+        regForm.classList.add('hidden');
+        loginForm.classList.remove('hidden');
+    } else {
+  
+        regForm.classList.remove('hidden');
+        loginForm.classList.add('hidden');
+    }
+}
+
+
+setInitialForm();
 
     document.getElementById('btn-google').onclick = () => loginSocial(new GoogleAuthProvider());
     document.getElementById('btn-github').onclick = () => loginSocial(new GithubAuthProvider());
