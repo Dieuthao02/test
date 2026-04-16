@@ -242,14 +242,14 @@
                 <div class="mt-8">
                     <h3 class="font-bold border-b border-white/10 pb-2 mb-4 uppercase text-sm text-[#00d2ff]">Sơ đồ chỗ ngồi (Không bắt buộc)</h3>
                     <div class="upload-box w-full h-48 rounded-lg border border-dashed border-white/20 bg-white/5 relative">
-                        <input type="file" id="input-seating" class="hidden" accept="image/*" onchange="previewImg(this, 'seating-prev')">
-                        <div id="seating-prev-ui" class="flex flex-col items-center justify-center h-full cursor-pointer" onclick="document.getElementById('input-seating').click()">
+                        <input type="file" id="input-map" class="hidden" accept="image/*" onchange="previewImg(this, 'map-prev')">
+                        <div id="map-prev-ui" class="flex flex-col items-center justify-center h-full cursor-pointer" onclick="document.getElementById('input-map').click()">
                             <i class="fa-solid fa-map-location-dot text-3xl mb-2 text-gray-500"></i>
                             <p class="text-xs text-gray-500">Tải lên sơ đồ khán đài hoặc sơ đồ vị trí</p>
                         </div>
-                        <div id="seating-wrap" class="hidden h-full relative p-2">
-                            <div class="remove-btn absolute top-2 right-2 bg-red-500 text-white w-6 h-6 flex items-center justify-center rounded-full cursor-pointer" onclick="removeImg('input-seating', 'seating-prev', 'seating-wrap', 'seating-prev-ui')"><i class="fa-solid fa-xmark"></i></div>
-                            <img id="seating-prev" class="w-full h-full object-contain">
+                        <div id="map-wrap" class="hidden h-full relative p-2">
+                            <div class="remove-btn absolute top-2 right-2 bg-red-500 text-white w-6 h-6 flex items-center justify-center rounded-full cursor-pointer" onclick="removeImg('input-map', 'map-prev', 'map-wrap', 'map-prev-ui')"><i class="fa-solid fa-xmark"></i></div>
+                            <img id="map-prev" class="w-full h-full object-contain">
                         </div>
                     </div>
                 </div>
@@ -349,7 +349,7 @@
         <div class="flex gap-4 mt-10">
             <button type="button" onclick="goToStep(3)" 
                 class="flex-1 bg-white/5 border border-white/10 hover:bg-white/10 text-gray-400 hover:text-white py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2">
-                QUAY LẠI
+                SỬA
             </button>
             
             <button type="button" onclick="showConfirmModal()" 
@@ -371,7 +371,7 @@
             </div>
         <div class="p-6 bg-gray-50 border-t flex gap-4">
             <button onclick="closeConfirmModal()" class="flex-1 py-3 border border-gray-300 rounded-xl font-bold hover:bg-gray-100 transition">SỬA LẠI</button>
-            <button onclick="finishCreateEvent()" class="flex-1 py-3 bg-black text-white rounded-xl font-bold hover:bg-gray-800 transition">XÁC NHẬN & ĐĂNG</button>
+            <button onclick="finishCreateEvent(isDraft = false)" class="flex-1 py-3 bg-black text-white rounded-xl font-bold hover:bg-gray-800 transition">XÁC NHẬN & ĐĂNG</button>
         </div>
     </div>
 </div>

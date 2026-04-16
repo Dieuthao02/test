@@ -2,8 +2,6 @@
 let isEditing = false;
 let currentEditCard = null;
 
-
-
 // Khởi chạy khi cửa sổ tải xong
 window.onload = () => { 
     const userData = localStorage.getItem('userLogin');
@@ -169,15 +167,25 @@ function finishCreateEvent(isDraft = false) {
         alert("Tên sự kiện không được để trống nhé!");
         return;
     }
+    const getFinalImg = (id) => {
+        const imgEl = document.getElementById(id);
+        if (imgEl && imgEl.src && imgEl.src.startsWith('data:image')) {
+            return imgEl.src;
+        }
+        return "";
+    };
 
     const posterImg = document.getElementById('poster-prev');
     let imgPath = (posterImg && posterImg.src && posterImg.src.includes('data:image')) ? posterImg.src : "";
+
+    const btcLogoImg = document.getElementById('logo-prev');
+    let btcLogoPath = (btcLogoImg && btcLogoImg.src && btcLogoImg.src.includes('data:image')) ? btcLogoImg.src : "";
     
     const mapImg = document.getElementById('map-prev');
     let mapPath = (mapImg && mapImg.src && mapImg.src.includes('data:image')) ? mapImg.src : "";
 
-    // Lấy ảnh QR Ngân hàng (Giả sử ID preview là bank-qr-prev)
-    const qrImg = document.getElementById('bank-qr-prev');
+
+    const qrImg = document.getElementById('qr-prev');
     let qrPath = (qrImg && qrImg.src && qrImg.src.includes('data:image')) ? qrImg.src : "";
     
     const newEvent = {
@@ -198,7 +206,8 @@ function finishCreateEvent(isDraft = false) {
     bankuser: formatNA('bank-user'),
     bankacc: formatNA('bank-acc'),
     img: imgPath,
-    map: mapPath, // Thêm mới
+    btclogo: btcLogoPath,
+    map: mapPath, 
     bankqr: qrPath,
     status: isDraft ? 'draft' : 'pending',
     timeCreate: new Date().toLocaleString(),
@@ -233,28 +242,54 @@ function finishCreateEvent(isDraft = false) {
 }
 
 function cancelCreate() {
-    isEditing = false;
-    currentEditCard = null;
-    const createPage = document.getElementById('page-create-event');
-    if (!createPage) return;
+    isEditing = false;
+    currentEditCard = null;
+    const createPage = document.getElementById('page-create-event');
+    if (!createPage) return;
 
-    createPage.querySelectorAll('input, textarea, select').forEach(field => {
-        field.value = ''; 
-        if (field.type === 'checkbox' || field.type === 'radio') field.checked = false;
-    });
+    // 1. Reset tất cả input text, date, textarea
+    createPage.querySelectorAll('input, textarea, select').forEach(field => {
+        field.value = ''; 
+        if (field.type === 'checkbox' || field.type === 'radio') field.checked = false;
+    });
 
-    const posterPrev = document.getElementById('poster-prev');
-    if (posterPrev) { posterPrev.src = ""; posterPrev.removeAttribute('style'); }
-    
-    removeImg('event-poster', 'poster-prev', 'poster-wrap', 'poster-prev-ui');
+    // 2. Danh sách các ID preview ảnh cần dọn dẹp
+    const imageIds = ['poster-prev', 'map-prev', 'qr-prev', 'logo-prev', 'seating-prev', 'qr-prev'];
+    
+    imageIds.forEach(id => {
+        // Xóa nội dung ảnh
+        const img = document.getElementById(id);
+        if (img) {
+            img.src = "";
+            img.style.display = 'none'; // Ẩn hẳn thẻ img
+        }
 
-    const list = document.getElementById('ticket-list');
-    if (list) { list.innerHTML = ''; addTicketRow(); }
+        // Hiện lại khung dấu cộng (+), ẩn khung chứa ảnh (wrap)
+        const wrapId = id.replace('-prev', '-wrap');
+        const uiId = id.replace('-prev', '-prev-ui');
+        const wrap = document.getElementById(wrapId);
+        const ui = document.getElementById(uiId);
+        
+        if (wrap) wrap.classList.add('hidden');
+        if (ui) ui.classList.remove('hidden');
 
-    const mainFinishBtn = document.querySelector('button[onclick="showConfirmModal()"]');
-    if (mainFinishBtn) mainFinishBtn.innerText = "TẠO SỰ KIỆN";
+        // 3. QUAN TRỌNG: Xóa luôn dữ liệu tạm trong LocalStorage (nếu có lưu)
+        localStorage.removeItem('temp_img_' + id);
+    });
 
-    goToStep(1);
+    // 4. Reset danh sách vé về mặc định (1 hàng trống)
+    const list = document.getElementById('ticket-list');
+    if (list) { 
+        list.innerHTML = ''; 
+        addTicketRow(); 
+    }
+
+    // 5. Đưa nút bấm về trạng thái ban đầu
+    const mainFinishBtn = document.querySelector('button[onclick="showConfirmModal()"]');
+    if (mainFinishBtn) mainFinishBtn.innerText = "TẠO SỰ KIỆN";
+
+    // 6. Quay về bước 1
+    goToStep(1);
 }
 
 function openSuccessModal() {
@@ -311,14 +346,14 @@ function editEvent(btn) {
     document.getElementById('bank-acc').value = cleanData(ev.bankacc);
 
     // --- 5. HIỂN THỊ LẠI CÁC LOẠI ẢNH ---
-const renderImagePreview = (data, prevId, wrapId, uiId) => {
+    const renderImagePreview = (data, prevId, wrapId, uiId) => {
     const prev = document.getElementById(prevId);
     const wrap = document.getElementById(wrapId);
     const ui = document.getElementById(uiId);
 
     if (data && data.length > 10 && data.includes('data:image')) {
         if (prev) {
-            prev.src = data;
+            prev.src = data; // Hiển thị ảnh cũ lên
             prev.style.display = 'block';
             prev.style.width = '100%';
             prev.style.height = '100%';
@@ -326,23 +361,38 @@ const renderImagePreview = (data, prevId, wrapId, uiId) => {
         }
         if (wrap) wrap.classList.remove('hidden');
         if (ui) ui.classList.add('hidden');
+        
+        // QUAN TRỌNG: Lưu lại vào localStorage tạm để hàm finishCreateEvent có cái mà lấy
+        localStorage.setItem('temp_img_' + prevId, data); 
     } else {
-        // Nếu không có ảnh, đưa về trạng thái khung trống (+)
         if (wrap) wrap.classList.add('hidden');
         if (ui) ui.classList.remove('hidden');
         if (prev) prev.src = "";
+        localStorage.removeItem('temp_img_' + prevId);
     }
 };
 
-// Gọi hiển thị cho 3 loại ảnh
 renderImagePreview(ev.img, 'poster-prev', 'poster-wrap', 'poster-prev-ui');
 renderImagePreview(ev.map, 'map-prev', 'map-wrap', 'map-prev-ui');
-renderImagePreview(ev.bankqr, 'bank-qr-prev', 'bank-qr-wrap', 'bank-qr-prev-ui');
+renderImagePreview(ev.bankqr, 'qr-prev', 'qr-wrap', 'qr-prev-ui');
+renderImagePreview(ev.btclogo, 'logo-prev', 'logo-wrap', 'logo-prev-ui');
 
     const mainFinishBtn = document.querySelector('button[onclick="showConfirmModal()"]');
     if(mainFinishBtn) mainFinishBtn.innerText = "CẬP NHẬT SỰ KIỆN";
-}
 
+    // Đổ lại danh sách vé
+const list = document.getElementById('ticket-list');
+if (list && ev.tickets) {
+    list.innerHTML = ''; // Xóa trắng
+    ev.tickets.forEach(t => {
+        addTicketRow(); // Tạo row mới
+        const lastRow = list.lastElementChild;
+        lastRow.querySelector('.ticket-name-input').value = t.name;
+        lastRow.querySelector('.ticket-price-input').value = t.price;
+        lastRow.querySelector('.ticket-qty-input').value = t.qty;
+    });
+}
+}
 
 // --- 6. MODAL XÁC NHẬN (CONFIRMATION) ---
 function showConfirmModal() {
@@ -350,7 +400,7 @@ function showConfirmModal() {
         const getVal = (id) => {
             const el = document.getElementById(id);
             const val = el ? el.value.trim() : "";
-            return val !== "" ? val : '<span class="text-gray-400 italic font-normal">N/A</span>';
+            return val !== "" ? val : '<span class="text-gray-400 italic font-normal">Chưa nhập</span>';
         };
 
         const getImgSrc = (id) => {
@@ -358,49 +408,22 @@ function showConfirmModal() {
             return (img && img.src && img.src.includes('data:image')) ? img.src : null;
         };
 
-        const posterSrc = getImgSrc('poster-prev') || 'https://via.placeholder.com/150?text=No+Poster';
-        const mapSrc = getImgSrc('map-prev');      
-        const qrSrc = getImgSrc('bank-qr-prev');   
-        const btcImgSrc = getImgSrc('btc-logo-prev'); // Giả sử id preview logo là btc-logo-prev
+        const posterSrc = getImgSrc('poster-prev') || 'https://via.placeholder.com/400x600?text=No+Poster';
+        const seatingSrc = getImgSrc('map-prev');
+        const qrSrc = getImgSrc('qr-prev');           
+        const btcLogoSrc = getImgSrc('logo-prev');     
 
-        // 1. Xử lý hiển thị Sơ đồ vé
-        let mapHtml = "";
-        if (mapSrc) {
-            mapHtml = `
-    <div class="w-full">
-        <p class="text-[10px] text-gray-400 uppercase font-black mb-2 tracking-widest">
-            <i class="fa-solid fa-map-location-dot"></i> Sơ đồ vé
-        </p>
-        <div class="bg-white border border-gray-100 rounded-2xl p-2 shadow-sm overflow-hidden text-center">
-            <img src="${mapSrc}" class="w-full h-auto rounded-lg block" style="display: block !important;">
-        </div>
-    </div>`;
-        }
-
-        // 2. Xử lý hiển thị QR Ngân hàng
-        let qrHtml = "";
-        if (qrSrc) {
-            qrHtml = `
-                <div class="mt-3 flex justify-center">
-                    <div class="bg-white p-2 rounded-xl border border-green-100 shadow-sm">
-                        <img src="${qrSrc}" class="w-32 h-32 object-contain">
-                        <p class="text-[8px] text-center text-gray-400 mt-1 uppercase font-bold">Quét mã chuyển khoản</p>
-                    </div>
-                </div>`;
-        }
-
-        // 3. Xử lý danh sách vé
         let ticketInfo = "";
         document.querySelectorAll('#ticket-list > div').forEach((row, index) => {
             const tName = row.querySelector('.ticket-name-input')?.value.trim();
             const tPrice = row.querySelector('.ticket-price-input')?.value.trim();
             const tQty = row.querySelector('.ticket-qty-input')?.value.trim();
-            if (tName || tPrice || tQty) {
+            if (tName || tPrice) {
                 ticketInfo += `
                     <div class="flex justify-between items-center text-[11px] border-b border-gray-50 py-2">
                         <div class="flex flex-col min-w-0 pr-2">
                             <span class="font-bold text-gray-900 truncate">${tName || 'Vé ' + (index + 1)}</span>
-                            <span class="text-[9px] text-gray-500">SL: ${tQty || '0'}</span>
+                            <span class="text-[9px] text-gray-500">Số lượng: ${tQty || '0'}</span>
                         </div>
                         <b class="text-[#ff007a] whitespace-nowrap">${tPrice ? Number(tPrice).toLocaleString() : '0'}đ</b>
                     </div>`;
@@ -409,12 +432,22 @@ function showConfirmModal() {
 
         const content = `
     <div class="space-y-6 pb-4 text-left w-full">
-        <div class="flex gap-4 items-center w-full">
-            <img src="${posterSrc}" class="w-24 h-32 object-cover rounded-2xl border border-gray-100 bg-gray-50 shrink-0 shadow-sm">
-            <div class="flex-1 min-w-0 space-y-2">
-                <p class="text-[10px] text-gray-400 uppercase font-black tracking-widest">Sự kiện</p>
-                <h4 class="font-black text-xl text-gray-900 uppercase truncate leading-tight">${getVal('event-name-input')}</h4>
-                <span class="inline-block px-3 py-1 bg-blue-50 text-[#00d2ff] text-[10px] font-bold rounded-full border border-blue-100 uppercase">${getVal('event-type-input')}</span>
+        <div class="relative w-full h-32 rounded-3xl overflow-hidden border border-gray-100 shadow-sm bg-gray-200">
+            <img src="${posterSrc}" class="w-full h-full object-cover blur-[2px] opacity-40">
+            <div class="absolute inset-0 flex items-center p-4 gap-4 bg-gradient-to-r from-white via-white/80 to-transparent">
+                <img src="${posterSrc}" class="w-20 h-28 object-cover rounded-xl shadow-lg border-2 border-white shrink-0">
+                <div class="flex-1 min-w-0">
+                    <p class="text-[9px] text-gray-500 uppercase font-black tracking-widest">Xem trước sự kiện</p>
+                    <h4 class="font-black text-lg text-gray-900 uppercase truncate leading-tight">${getVal('event-name-input')}</h4>
+                    <span class="inline-block mt-1 px-3 py-0.5 bg-blue-50 text-[#00d2ff] text-[9px] font-bold rounded-full border border-blue-100 uppercase">${getVal('event-type-input')}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-full">
+            <p class="text-[10px] text-gray-400 uppercase font-black mb-2 tracking-widest"><i class="fa-solid fa-align-left"></i> Mô tả chi tiết</p>
+            <div class="bg-gray-50 border border-gray-100 rounded-2xl p-3 text-[11px] text-gray-600 leading-relaxed max-h-32 overflow-y-auto">
+                ${getVal('event-description').replace(/\n/g, '<br>')}
             </div>
         </div>
 
@@ -436,36 +469,36 @@ function showConfirmModal() {
             </div>
         </div>
 
-        ${mapHtml}
-
         <div class="w-full">
             <p class="text-[10px] text-gray-400 uppercase font-black mb-2 tracking-widest"><i class="fa-solid fa-ticket"></i> Thông tin vé</p>
             <div class="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm w-full">
-                <div class="grid grid-cols-2 gap-x-6 gap-y-1">
-                    ${ticketInfo || '<span class="col-span-2 text-gray-400 text-xs italic">Chưa có thông tin</span>'}
+                <div class="grid grid-cols-1 gap-1 mb-3">
+                    ${ticketInfo || '<span class="text-gray-400 text-xs italic text-center">Chưa có thông tin vé</span>'}
                 </div>
+                ${seatingSrc ? `<p class="text-[9px] text-gray-400 mb-1 uppercase font-bold">Sơ đồ:</p><img src="${seatingSrc}" class="w-full rounded-lg border border-gray-100">` : ''}
             </div>
         </div>
 
         <div class="space-y-3 w-full">
             <div class="p-3 bg-purple-50 rounded-2xl border border-purple-100 w-full flex gap-3 items-center">
-                ${btcImgSrc ? `<img src="${btcImgSrc}" class="w-10 h-10 rounded-lg object-cover border border-purple-200">` : ''}
-                <div>
+                ${btcLogoSrc ? `<img src="${btcLogoSrc}" class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm">` : '<div class="w-12 h-12 rounded-full bg-purple-200 flex items-center justify-center text-purple-500"><i class="fa-solid fa-user-tie"></i></div>'}
+                <div class="flex-1 min-w-0">
                     <p class="text-[9px] text-purple-400 uppercase font-black mb-1">Ban tổ chức</p>
-                    <p class="text-[11px] font-bold text-purple-900">${getVal('btc-name')}</p>
-                    <p class="text-[10px] text-purple-700 font-medium">${getVal('btc-email')} | ${getVal('btc-phone')}</p>
+                    <p class="text-[11px] font-bold text-purple-900 truncate">${getVal('btc-name')}</p>
+                    <p class="text-[10px] text-purple-700 font-medium truncate">${getVal('btc-email')} | ${getVal('btc-phone')}</p>
+                    <p class="text-[10px] text-purple-600 mt-1 italic leading-tight">${getVal('btc-info').replace(/\n/g, '<br>')}</p>
                 </div>
             </div>
             
             <div class="p-3 bg-green-50 rounded-2xl border border-green-100 w-full">
                 <p class="text-[9px] text-green-600 uppercase font-black mb-1">Tài khoản nhận tiền</p>
-                <div class="flex justify-between items-start w-full">
+                <div class="flex justify-between items-center w-full gap-4">
                     <div class="flex-1">
                         <p class="text-[11px] font-bold text-green-900 uppercase">${getVal('bank-name')}</p>
                         <p class="text-[10px] text-green-700 font-medium">Chủ TK: ${getVal('bank-user')}</p>
-                        <p class="text-[12px] text-green-600 font-black tracking-tighter mt-1">${getVal('bank-acc')}</p>
+                        <p class="text-[14px] text-green-600 font-black tracking-tight mt-1">${getVal('bank-acc')}</p>
                     </div>
-                    ${qrHtml}
+                    ${qrSrc ? `<img src="${qrSrc}" class="w-16 h-16 bg-white p-1 rounded border border-green-200 object-contain">` : ''}
                 </div>
             </div>
         </div>
@@ -488,14 +521,15 @@ function showConfirmModal() {
             modal.classList.remove('hidden');
             modal.classList.add('flex');
         }
-    } catch (error) { console.error("Modal Error:", error); }
+    } catch (e) { console.error(e); }
 }
 
 function closeConfirmModal() {
-    document.getElementById('confirm-modal')?.classList.add('hidden');
+    document.getElementById('confirm-modal')?.classList.add('hidden');
 }
 
-// --- 7. HIỂN THỊ DANH SÁCH (RENDERER) ---
+
+// --- 7. HIỂN THỊ DANH SÁCH ---
 function loadMyEvents() {
     const container = document.getElementById('events-container');
     if (!container) return;
@@ -578,8 +612,11 @@ function deleteEvent(btn) {
         let allData = JSON.parse(localStorage.getItem('ticket_events')) || [];
         allData = allData.filter(ev => ev.id !== eventId);
         localStorage.setItem('ticket_events', JSON.stringify(allData));
+if (isEditing && currentEditCard && currentEditCard.dataset.id === eventId) {
+            cancelCreate(); 
+        }
         loadMyEvents();
-        alert("Đã tiễn biệt sự kiện thành công!");
+        alert("Đã xoá sự kiện thành công!");
     }
 }
 
@@ -603,6 +640,25 @@ function deleteAllEvents() {
 }
 
 
+function loadEventsForUser() {
+    const grid = document.getElementById('event-grid'); 
+    if (!grid) return;
+
+    grid.innerHTML = ""; 
+
+    const realEvents = JSON.parse(localStorage.getItem('ticket_events')) || [];
+
+    if (realEvents.length === 0) {
+        grid.innerHTML = "<p>Chưa có sự kiện nào được tạo.</p>";
+        return;
+    }
+
+    realEvents.forEach(ev => {
+        addEventCardToGrid(ev, true);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', loadEventsForUser);
 
 // --- 8. ADMIN RENDER LOGIC (Trang 1.html) ---
 function loadEventsAdmin() {
@@ -741,8 +797,8 @@ function syncUserInterface(user) {
 
 function handleLogout() {
     if (confirm("Bạn có chắc chắn muốn đăng xuất không?")) {
-        localStorage.removeItem('userLogin'); // Xóa thông tin đăng nhập
-        sessionStorage.removeItem('hasSeenNotice'); // Reset thông báo nếu cần
+        localStorage.removeItem('userLogin'); 
+        sessionStorage.removeItem('hasSeenNotice');
         window.location.href = "index.html"; 
     }
 } 
