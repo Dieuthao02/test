@@ -22,39 +22,52 @@
             </div>
         </div>
 
-        <nav class="flex-1 px-4 space-y-2">
-            <p class="px-4 text-[10px] font-bold text-gray-500 uppercase mb-4 tracking-widest">Menu chính</p>
-            <a href="#" onclick="showTab('dashboard')" class="sidebar-link active flex items-center gap-4 px-4 py-3 rounded-lg transition-all group">
-                <i class="fa-solid fa-grid-2 text-sm group-hover:scale-110 transition"></i> <span class="text-sm font-semibold">Tổng quan</span>
-            </a>
-            <a href="#" onclick="showTab('events')" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-lg transition-all group text-gray-400">
-                <i class="fa-solid fa-calendar-days text-sm group-hover:scale-110 transition"></i> <span class="text-sm font-semibold">Sự kiện</span>
-            </a>
-            <a href="#" onclick="showTab('users')" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-lg transition-all group text-gray-400">
-                <i class="fa-solid fa-user-group text-sm group-hover:scale-110 transition"></i> <span class="text-sm font-semibold">Khách hàng</span>
-            </a>
-            <!-- MỤC MỚI: QUẢN LÝ NẠP TIỀN -->
-<a href="#" onclick="showTab('deposits')" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-lg transition-all group text-gray-400">
-    <div class="relative">
-        <i class="fa-solid fa-file-invoice-dollar text-sm group-hover:scale-110 transition"></i>
-        <!-- Chấm đỏ thông báo nếu có giao dịch mới -->
-        <span id="deposit-notif-dot" class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full hidden"></span>
-    </div>
-    <span class="text-sm font-semibold">Giao dịch nạp tiền</span>
-</a>
-            <a href="#" onclick="showTab('orders')" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-lg transition-all group text-gray-400">
-                <i class="fa-solid fa-receipt text-sm group-hover:scale-110 transition"></i> <span class="text-sm font-semibold">Đơn đặt vé</span>
-            </a>
-        
-            <a href="#" onclick="showTab('support')" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-lg transition-all group text-gray-400">
-                <i class="fa-solid fa-headset text-sm group-hover:scale-110 transition"></i> <span class="text-sm font-semibold">Hỗ trợ</span>
-            </a>
+       <nav class="flex-1 px-4 space-y-2">
+    <p class="px-4 text-[10px] font-bold text-gray-500 uppercase mb-4 tracking-widest">Menu chính</p>
+    
+    <a href="#" onclick="showTab('dashboard', this)" class="sidebar-link active flex items-center gap-4 px-4 py-3 rounded-lg transition-all group">
+        <i class="fa-solid fa-grid-2 text-sm group-hover:scale-110 transition w-5 text-center"></i> 
+        <span class="text-sm font-semibold">Tổng quan</span>
+    </a>
 
-            <a href="#" onclick="showTab('activity')" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-lg transition-all group text-gray-400">
-                <i class="fa-solid fa-bolt-lightning text-sm group-hover:scale-110 transition"></i> <span class="text-sm font-semibold">Thông báo</span>
-            </a>
-            
-        </nav>
+    <a href="#" onclick="showTab('events', this)" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-lg transition-all group text-gray-400">
+        <i class="fa-solid fa-calendar-days text-sm group-hover:scale-110 transition w-5 text-center"></i> 
+        <span class="text-sm font-semibold">Sự kiện</span>
+    </a>
+
+    <a href="#" onclick="showTab('users', this)" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-lg transition-all group text-gray-400">
+        <i class="fa-solid fa-user-group text-sm group-hover:scale-110 transition w-5 text-center"></i> 
+        <span class="text-sm font-semibold">Khách hàng</span>
+    </a>
+
+    <a href="#" onclick="showTab('deposits', this)" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-lg transition-all group text-gray-400">
+        <div class="relative w-5 flex justify-center">
+            <i class="fa-solid fa-file-invoice-dollar text-sm group-hover:scale-110 transition"></i>
+            <span id="deposit-notif-dot" class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full hidden"></span>
+        </div>
+        <span class="text-sm font-semibold">Giao dịch nạp tiền</span>
+    </a>
+
+    <a href="#" onclick="showTab('orders', this)" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-lg transition-all group text-gray-400">
+        <i class="fa-solid fa-receipt text-sm group-hover:scale-110 transition w-5 text-center"></i> 
+        <span class="text-sm font-semibold">Đơn đặt vé</span>
+    </a>
+
+    <a href="#" onclick="showTab('refund', this)" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-lg transition-all group text-gray-400">
+        <i class="fa-solid fa-money-bill-transfer text-sm group-hover:scale-110 transition w-5 text-center"></i>
+        <span class="text-sm font-semibold">Hoàn tiền (90%)</span>
+    </a>
+
+    <a href="#" onclick="showTab('support', this)" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-lg transition-all group text-gray-400">
+        <i class="fa-solid fa-headset text-sm group-hover:scale-110 transition w-5 text-center"></i> 
+        <span class="text-sm font-semibold">Hỗ trợ</span>
+    </a>
+
+    <a href="#" onclick="showTab('activity', this)" class="sidebar-link flex items-center gap-4 px-4 py-3 rounded-lg transition-all group text-gray-400">
+        <i class="fa-solid fa-bolt-lightning text-sm group-hover:scale-110 transition w-5 text-center"></i> 
+        <span class="text-sm font-semibold">Thông báo</span>
+    </a>
+</nav>
 
         <div class="p-6">
             <button onclick="alert('Đang kết nối hỗ trợ...')" class="w-full glass hover:bg-green-500 hover:text-black py-3 rounded-2xl text-[11px] font-bold uppercase transition-all flex items-center justify-center gap-2">
@@ -372,13 +385,66 @@
                 </div>
             </div>
         </section>
+
+
+        <section id="refund" class="tab-content hidden p-4 md:p-8 animate-fade-in">
+    <div class="flex flex-col md:flex-row justify-between items-stretch md:items-center mb-5 gap-3">
+        
+        <div class="relative flex-1 max-w-md group">
+            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-red-500 text-xs transition-colors"></i>
+            <input type="text" 
+                id="refund-search"
+                placeholder="Tìm mã đơn, tên khách hàng..." 
+                class="w-full h-10 bg-white/5 border border-white/10 pl-11 pr-4 rounded-xl text-xs text-white focus:outline-none focus:border-red-500/50 transition-all placeholder:text-gray-600"
+            >
+        </div>
+        
+        <div class="flex items-center gap-3 h-10">
+            <button onclick="openPendingRefundsModal()" class="h-full flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 rounded-xl text-[10px] font-black transition-all shadow-lg shadow-red-500/20 whitespace-nowrap">
+                <i class="fa-solid fa-bell-concierge"></i>
+                YÊU CẦU CHỜ DUYỆT
+                <span id="pending-count-badge" class="bg-white text-red-500 px-1.5 rounded-md ml-1">0</span>
+            </button>
+
+            <div class="glass h-full px-4 rounded-xl border border-white/10 flex items-center gap-3">
+                <div class="flex flex-col justify-center">
+                    <span class="text-gray-500 text-[7px] uppercase font-black tracking-widest leading-none mb-1">Nguồn tiền</span>
+                    <span id="admin-balance-display" class="text-green-400 text-[11px] font-black leading-none">1,001,000,000</span>
+                </div>
+                <button onclick="rechargeAdminMoney()" class="text-white/30 hover:text-green-400 transition-colors">
+                    <i class="fa-solid fa-circle-plus text-xs"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass rounded-[2rem] border border-white/5 overflow-hidden shadow-2xl">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-white/[0.02] border-b border-white/5">
+                        <th class="p-5 text-[9px] font-black text-gray-500 uppercase">Mã Đơn</th>
+                        <th class="p-5 text-[9px] font-black text-gray-500 uppercase">Khách Hàng</th>
+                        <th class="p-5 text-[9px] font-black text-gray-500 uppercase">Sự Kiện/Số Vé</th>
+                        <th class="p-5 text-[9px] font-black text-gray-500 uppercase">Giá Gốc</th>
+                        <th class="p-5 text-[9px] font-black text-gray-500 uppercase text-red-400">Hoàn (90%)</th>
+                        <th class="p-5 text-[9px] font-black text-right text-gray-500 uppercase">Trạng Thái</th>
+                    </tr>
+                </thead>
+                <tbody id="refund-table-body" class="divide-y divide-white/[0.02]">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
    
         <section id="support" class="tab-content hidden p-4 md:p-8 animate-fade-in">
     <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-10">
         <div class="relative w-full md:w-[500px]">
             <i class="fa-solid fa-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-blue-500 text-sm"></i>
-            <input type="text" placeholder="Tìm kiếm yêu cầu hoặc email khách hàng..." 
-                class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-14 pr-4 text-xs outline-none focus:border-blue-500/50 focus:bg-white/[0.08] transition-all text-white shadow-2xl">
+           <input type="text" 
+    placeholder="Tìm kiếm yêu cầu hoặc email khách hàng..." 
+    class="support-search-input w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-14 pr-4 text-xs outline-none focus:border-blue-500/50 focus:bg-white/[0.08] transition-all text-white shadow-2xl">
         </div>
         
         <div class="flex items-center gap-3">
@@ -407,18 +473,18 @@
                 <div class="space-y-6">
                     <div>
                         <div class="flex justify-between items-center text-[11px] mb-2">
-                            <span class="text-gray-400 font-medium">Đang chờ xử lý</span>
-                            <span class="text-yellow-500 font-bold">12</span>
-                        </div>
+    <span class="text-gray-400 font-medium">Đang chờ xử lý</span>
+    <span id="support-pending-count" class="text-yellow-500 font-bold">12</span>
+</div>
                         <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
                             <div class="bg-yellow-500 h-full shadow-[0_0_10px_rgba(245,158,11,0.5)]" style="width: 40%"></div>
                         </div>
                     </div>
                     <div>
                         <div class="flex justify-between items-center text-[11px] mb-2">
-                            <span class="text-gray-400 font-medium">Đã giải quyết</span>
-                            <span class="text-green-500 font-bold">85</span>
-                        </div>
+    <span class="text-gray-400 font-medium">Đã giải quyết</span>
+    <span id="support-resolved-count" class="text-green-500 font-bold">85</span>
+</div>
                         <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
                             <div class="bg-green-500 h-full shadow-[0_0_10px_rgba(34,197,94,0.5)]" style="width: 85%"></div>
                         </div>
@@ -498,6 +564,131 @@
 </section>
 
     </main>
+
+<div id="refund-modal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div class="glass w-full max-w-md rounded-[2.5rem] border border-white/10 overflow-hidden animate-zoom-in">
+        <div class="p-8">
+            <h3 class="text-xl font-black text-white mb-6 uppercase tracking-tighter">Chi tiết hoàn tiền</h3>
+            
+            <div class="bg-white/5 rounded-2xl p-4 mb-6 space-y-3">
+                <div class="flex justify-between text-xs">
+                    <span class="text-gray-500 font-bold uppercase">Mã đơn:</span>
+                    <span id="modal-order-id" class="text-white font-black">#TK-000</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                    <span class="text-gray-500 font-bold uppercase">Khách hàng:</span>
+                    <span id="modal-customer-name" class="text-white font-black">---</span>
+                </div>
+                <div class="flex justify-between text-xs border-t border-white/5 pt-3">
+                    <span class="text-gray-500 font-bold uppercase">Số tiền hoàn (90%):</span>
+                    <span id="modal-refund-amount" class="text-red-400 font-black text-lg">0đ</span>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label class="text-[10px] font-black text-gray-500 uppercase ml-2 tracking-widest">Lý do hoàn tiền</label>
+                <textarea id="modal-refund-reason" 
+                    class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white text-sm focus:outline-none focus:border-blue-500/50 transition-all"
+                    placeholder="Nhập lý do hủy đơn..." rows="3">Khách yêu cầu hủy vé</textarea>
+            </div>
+
+            <div class="flex gap-3 mt-8">
+                <button onclick="closeRefundModal()" class="flex-1 px-6 py-4 rounded-2xl bg-white/5 text-gray-400 text-xs font-black hover:bg-white/10 transition-all uppercase">Hủy</button>
+                <button id="modal-confirm-btn" class="flex-[2] px-6 py-4 rounded-2xl bg-red-500 text-white text-xs font-black hover:bg-red-600 transition-all shadow-lg shadow-red-500/20 uppercase">Xác Nhận Hoàn</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="recharge-input-modal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <div class="glass w-full max-w-sm rounded-[2.5rem] border border-white/10 p-8">
+        <div class="text-center mb-6">
+            <h3 class="text-xl font-black text-white uppercase">Nạp tiền hệ thống</h3>
+        </div>
+        <div class="relative mb-6">
+            <input type="number" id="recharge-amount-input" 
+                class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-6 text-white text-2xl font-black text-center focus:outline-none"
+                placeholder="0">
+        </div>
+        <div class="flex gap-3">
+            <button onclick="closeRechargeInput()" class="flex-1 py-4 rounded-2xl bg-white/5 text-gray-400 text-xs font-black uppercase">Hủy</button>
+            <button onclick="confirmRecharge()" class="flex-[2] py-4 rounded-2xl bg-green-500 text-white text-xs font-black uppercase shadow-lg shadow-green-500/20">Xác nhận nạp</button>
+        </div>
+    </div>
+</div>
+
+<div id="recharge-modal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
+    <div id="invoice-print-area" class="bg-white w-full max-w-md rounded-lg shadow-2xl overflow-hidden p-8 text-slate-800 relative animate-zoom-in">
+        <div class="text-center border-b-2 border-dashed border-slate-200 pb-6 mb-6">
+            <h1 class="text-2xl font-black text-slate-900 uppercase">TicketAdmin Receipt</h1>
+            <p class="text-[10px] text-slate-500 font-bold uppercase">Hệ thống quản lý vé sự kiện</p>
+        </div>
+
+        <div class="space-y-4">
+            <div class="flex justify-between text-xs">
+                <span class="text-slate-400 font-bold">MÃ GIAO DỊCH:</span>
+                <span id="invoice-id" class="text-slate-900 font-black">#RCG-0000</span>
+            </div>
+            <div class="flex justify-between text-xs">
+                <span class="text-slate-400 font-bold">NGÀY NẠP:</span>
+                <span id="invoice-date" class="text-slate-900 font-bold">--/--/----</span>
+            </div>
+            
+            <div class="bg-slate-50 rounded-xl p-6 mt-6 border border-slate-100 text-center">
+                <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Số tiền đã nạp</p>
+                <h2 id="invoice-amount" class="text-3xl font-black text-green-600">+0đ</h2>
+            </div>
+        </div>
+
+        <div class="mt-8 flex justify-end">
+            <div class="border-4 border-red-500/30 text-red-500/40 font-black text-[10px] p-2 rotate-[-15deg] uppercase rounded-lg border-double">
+                ĐÃ XÁC NHẬN<br>ADMIN THẢO
+            </div>
+        </div>
+
+        <div class="mt-8 flex gap-3">
+            <button onclick="closeRechargeModal()" class="flex-1 px-6 py-4 rounded-2xl bg-slate-100 text-slate-500 text-xs font-black hover:bg-slate-200 uppercase">Đóng</button>
+            <button onclick="window.print()" class="flex-[2] px-6 py-4 rounded-2xl bg-blue-600 text-white text-xs font-black hover:bg-blue-700 uppercase shadow-lg shadow-blue-600/20">In hoá đơn</button>
+        </div>
+    </div>
+</div>
+<div id="pending-refund-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-md" onclick="closePendingRefundsModal()"></div>
+    
+    <div class="glass w-full max-w-2xl rounded-[2.5rem] border border-white/10 overflow-hidden relative animate-zoom-in shadow-2xl">
+        <div class="p-6 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
+            <div>
+                <h3 class="text-white font-black uppercase tracking-widest text-xs">Yêu cầu đang chờ</h3>
+                <p class="text-[9px] text-gray-500 uppercase mt-1">Phê duyệt để hoàn tiền vào ví khách hàng</p>
+            </div>
+            <button onclick="closePendingRefundsModal()" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-gray-400 hover:text-white transition-all">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="max-h-[450px] overflow-y-auto p-2" id="pending-refund-list">
+            <div class="p-4 rounded-3xl hover:bg-white/[0.02] transition-all flex items-center justify-between group">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500 font-bold text-xs">
+                        HT
+                    </div>
+                    <div>
+                        <div class="text-white text-xs font-bold">Nguyễn Văn A</div>
+                        <div class="text-[10px] text-gray-500">Đơn: #TK-8829 | 900,000đ</div>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button class="px-3 py-1.5 rounded-lg bg-green-500/20 text-green-500 text-[9px] font-black hover:bg-green-500 hover:text-white transition-all">ĐÃ XỬ LÝ</button>
+                    <button class="px-3 py-1.5 rounded-lg bg-white/5 text-gray-500 text-[9px] font-black hover:bg-red-500 hover:text-white transition-all">HỦY YÊU CẦU</button>
+                </div>
+            </div>
+            </div>
+
+        <div class="p-4 bg-white/[0.01] border-t border-white/5 text-center">
+            <span class="text-[9px] text-gray-600 uppercase font-bold tracking-tighter">Nhấn bên ngoài để đóng bảng</span>
+        </div>
+    </div>
+</div>
 
     <script src="admin1.js"></script>
 

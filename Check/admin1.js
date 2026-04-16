@@ -3,6 +3,7 @@ let totalTickets = parseInt(localStorage.getItem('total_tickets'));
 let totalRevenue = parseFloat(localStorage.getItem('total_revenue'));
 let totalUsers = parseInt(localStorage.getItem('total_users'));
 
+
 // fallback chuẩn
 if (isNaN(totalTickets)) totalTickets = 15402;
 if (isNaN(totalRevenue)) totalRevenue = 2840000000; 
@@ -23,11 +24,11 @@ function saveDashboardStats(stats) {
 function syncDashboard() {
     const tEl = document.getElementById('stat-tickets');
     const rEl = document.getElementById('stat-revenue');
-    const uEl = document.getElementById('stat-users'); // Giả sử ID của số người dùng là stat-users
+    const uEl = document.getElementById('stat-users'); 
 
     if (tEl) tEl.innerText = totalTickets.toLocaleString();
     if (rEl) rEl.innerText = (totalRevenue / 1000000000).toFixed(3) + " tỷ";
-    if (uEl) uEl.innerText = totalUsers.toLocaleString(); // Cập nhật hiển thị số người dùng
+    if (uEl) uEl.innerText = totalUsers.toLocaleString(); 
     
     // Lưu lại vào máy
     localStorage.setItem('total_tickets', totalTickets);
@@ -84,24 +85,104 @@ function logAdminAction(type, message, extra = {}) {
 
 function loadAllAdminData() {
     try {
+        const grid = document.getElementById('event-grid');
+        if (grid) grid.innerHTML = '';
+
         // ===== USERS =====
         let users = JSON.parse(localStorage.getItem('admin_dummy_users')) || [];
         if (typeof addUserCardToGrid === "function") {
             users.forEach(u => addUserCardToGrid(u, false));
         }
 
-        // ===== EVENTS =====
-        let events = JSON.parse(localStorage.getItem('ticket_events')) || [];
-        if (typeof addEventCardToGrid === "function") {
-            events.forEach(ev => addEventCardToGrid(ev, false));
-        }
+       // ===== EVENTS =====
+let realEvents = JSON.parse(localStorage.getItem('ticket_events')) || [];
+let dummyEvents = JSON.parse(localStorage.getItem('admin_dummy_events')) || [];
 
+const markedReal = realEvents.map(ev => ({ 
+    ...ev, // Giữ lại tất cả: ev.status, ev.rejectReason...
+    _isReal: true, 
+    _sortKey: ev.createdAt || parseInt(String(ev.id).replace(/\D/g, '')) || Date.now() 
+}));
+
+const markedDummy = dummyEvents.map(ev => ({ 
+    ...ev, // Giữ lại tất cả: ev.status, ev.rejectReason...
+    _isReal: false, 
+    _sortKey: ev.createdAt || parseInt(String(ev.id).replace(/\D/g, '')) || 0 
+}));
+
+let allEvents = [...markedReal, ...markedDummy];
+
+// SẮP XẾP
+allEvents.sort((a, b) => {
+    // 1. Thực (true) luôn đứng trước Ảo (false) -> logic này của bạn đúng rồi
+    if (a._isReal !== b._isReal) return a._isReal ? -1 : 1;
+    
+    // 2. Thằng nào mới hơn (_sortKey lớn hơn) thì lên đầu nhóm đó
+    return b._sortKey - a._sortKey; 
+});
+
+
+
+// Xóa sạch grid trước khi vẽ theo thứ tự mới
+if (grid) {
+    grid.innerHTML = ''; 
+    if (typeof addEventCardToGrid === "function") {
+        allEvents.forEach(ev => addEventCardToGrid(ev, ev._isReal));
+    }
+}
+
+if (grid) {
+    grid.innerHTML = ''; 
+    if (typeof addEventCardToGrid === "function") {
+        // QUAN TRỌNG: Truyền nguyên object ev vào, hàm addEventCardToGrid sẽ tự đọc ev.status
+        allEvents.forEach(ev => addEventCardToGrid(ev, ev._isReal));
+    }
+}
+ 
         // ===== ORDERS =====
-        let orders = JSON.parse(localStorage.getItem('admin_orders')) || [];
-        if (typeof addLiveOrder === "function") {
-            orders.forEach(o => addLiveOrder(o.name, o.event, o.price, true, o));
-        }
+           const body = document.getElementById('live-order-body');
+           if (body) {
+            body.innerHTML = ''; 
+    let real = JSON.parse(localStorage.getItem('eventOrders')) || [];
+    let dummy = JSON.parse(localStorage.getItem('admin_orders')) || [];
 
+    let allOrders = [
+        ...dummy.map(o => ({
+            ...o, 
+            _isReal: false,
+            // Đảm bảo đơn ảo có sortTime (ưu tiên createdAt, nếu không có thì chế từ ngày/giờ)
+            sortTime: o.createdAt || new Date(`${o.date.split('/').reverse().join('-')} ${o.time}`).getTime()
+        })),
+        ...real.filter(o => !o._isRefund).map(o => {
+            const timeParts = o.time ? o.time.split(' ') : ["00:00:00", "14/04/2026"];
+            const hms = timeParts[0]; // Giờ:phút:giây
+            const dmy = timeParts[1] || "14/04/2026"; // Ngày/tháng/năm
+            
+            // Chuyển ngày/tháng/năm (DD/MM/YYYY) thành YYYY-MM-DD để JS hiểu
+            const isoDate = dmy.split('/').reverse().join('-');
+            const finalSortTime = o.createdAt || new Date(`${isoDate} ${hms}`).getTime();
+
+            return {
+                ...o,
+                id: o.id,
+                name: o.customer, 
+                event: o.event, 
+                price: Number(String(o.total).replace(/\D/g, '')), 
+                time: hms,
+                date: dmy,
+                _isReal: true,
+                sortTime: finalSortTime // Dùng cái này để sắp xếp
+            };
+        })
+    ];
+
+    // SẮP XẾP: Thằng nào có sortTime lớn hơn (mới hơn) thì lên đầu
+    allOrders.sort((a, b) => b.sortTime - a.sortTime);
+
+    // Render ra bảng
+    allOrders.forEach(o => renderOrderRow(o));
+}
+    
         // ===== SUPPORT =====
         let supports = JSON.parse(localStorage.getItem('admin_support')) || [];
         if (window.allSupportData) {
@@ -116,9 +197,17 @@ function loadAllAdminData() {
     }
 }
 
-/* --- DỮ LIỆU MẪU (DUMMY DATA) --- */
+
+/* --- DỮ LIỆU MẪU --- */
+
+const replyTemplates = {
+    "payment": "Chào {name}, chúng tôi đã kiểm tra hệ thống. Giao dịch của bạn đang được ngân hàng xử lý, vui lòng chờ trong 5-10 phút nhé!",
+    "location": "Chào {name}, địa điểm tổ chức sự kiện đã được gửi trong phần thông tin vé. Bạn có thể xem bản đồ tại mục 'Lịch trình' nhé.",
+    "cancel": "Chào {name}, về yêu cầu hủy vé, bạn vui lòng gửi kèm ảnh chụp hóa đơn để chúng tôi tiến hành hoàn tiền theo quy định.",
+    "default": "Chào {name}, AI đã nhận được yêu cầu của bạn và đang chuyển cho bộ phận hỗ trợ. Chúng tôi sẽ phản hồi bạn sớm nhất! "
+};
 const names = ["Minh Quân", "Huyền My", "Quốc Anh", "Thu Trang", "Hoàng Long", "Bảo Ngọc", "Thành Nam", "Ánh Tuyết", "Diệu Nhi", "Gia Bách"];
-const eventNames = ["Những Thành Phố Mơ Màng", "Lululola Show", "Fintech GenZ 2026", "Rap Việt Concert", "Đà Lạt Mộng Mơ", "Tech Expo VNU", "Music Festival 2026"];
+const eventNames = ["Những Thành Phố Mơ Màng", "Lululola Show", "Fintech GenZ 2026", "WorkShop Nến thơm", "Đà Lạt Mộng Mơ", "Tech Expo VNU", "Music Festival 2026"];
 const locations = ["Hà Nội", "TP. Hồ Chí Minh", "Đà Nẵng", "Cần Thơ", "Hải Phòng"];
 const supportSubjects = ["Lỗi thanh toán vé", "Hỗ trợ đổi thông tin", "Hợp tác tài trợ", "Tư vấn mua vé Group", "Khiếu nại dịch vụ", "Yêu cầu hoàn tiền"];
 const supportMessages = [
@@ -164,6 +253,7 @@ function showTab(tabId, el) {
         'users': 'Cộng đồng khách hàng',
         'deposits': 'Quản lý nạp tiền',
         'orders': 'Lịch sử giao dịch',
+        'refund': 'Lịch sử hoàn tiền',
         'support': 'Hỗ trợ khách hàng',
         'activity': 'Dòng thời gian '
     };
@@ -188,6 +278,12 @@ if (tabId === 'deposits') {
         console.log("Đang mở tab Nạp tiền - Tiến hành load dữ liệu...");
         loadDeposits(); 
     }
+    if (tabId === 'refund') {
+        console.log("Đang mở tab Hoàn tiền...");
+        if (typeof loadRefundData === 'function') {
+            loadRefundData(); 
+        }
+        }
 }
 
 /* --- QUẢN LÝ KHÁCH HÀNG (Gộp 2 trong 1) --- */
@@ -310,7 +406,6 @@ function addUserCardToGrid(user, isReal) {
 }
 
 /*KHAI BÁO BIẾN TOÀN CỤC & KHỞI TẠO (SEED DATA) */
-
 function seedEvents() {
     const eventContainer = document.getElementById('events');
     if (!eventContainer) return;
@@ -319,7 +414,7 @@ function seedEvents() {
         <div class="mb-8 flex flex-col md:flex-row justify-between items-center gap-4 px-2">
             <div class="relative w-full md:w-80">
                 <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-[10px]"></i>
-                <input type="text" id="search-events" onkeyup="filterEvents()" placeholder="Tìm tên sự kiện, địa điểm..." 
+                <input type="text" id="search-events" onkeyup="filterEvents()" placeholder="Tìm tên sự kiện, BTC,địa điểm..." 
                     class="w-full bg-white/5 border border-white/10 rounded-2xl py-3.5 pl-11 pr-4 text-xs outline-none focus:border-blue-500 transition-all placeholder:text-gray-600 shadow-inner">
             </div>
             <div class="flex gap-3 w-full md:w-auto">
@@ -336,58 +431,80 @@ function seedEvents() {
 
 
     const grid = document.getElementById('event-grid');
-    const realEvents = JSON.parse(localStorage.getItem('ticket_events')) || [];
-    realEvents.reverse().forEach(ev => addEventCardToGrid(ev, true));
-
-    for (let i = 1; i <= 50; i++) {
-        const dummyEv = {
-            id: 'ev-' + i,
-            title: (typeof eventNames !== 'undefined' ? eventNames[Math.floor(Math.random() * eventNames.length)] : "Sự kiện") + " #" + i,
-            location: (typeof locations !== 'undefined' ? locations[Math.floor(Math.random() * locations.length)] : "Địa điểm"),
-            organizer: "Ban Tổ Chức " + i,
-            bankAccount: "999-000-" + (100 + i),
-            price: Math.floor(Math.random() * 2000000) + 500000
-        };
-        addEventCardToGrid(dummyEv, false);
-    }
+    loadAllAdminData();
 }
 
 /* QUẢN LÝ THẺ SỰ KIỆN  */
-
 function addEventCardToGrid(ev, isReal) {
     const grid = document.getElementById('event-grid');
     if (!grid) return;
 
+    // 1. Lấy trạng thái từ dữ liệu (quan trọng nhất)
+    const status = ev.status || 'pending';
+    
+    // 2. Chuẩn bị biến để chứa HTML cho các nút bấm
+    let buttonsHTML = '';
+    let statusText = 'ĐANG CHỜ DUYỆT';
+    let statusClass = 'text-blue-500';
+    let cardBorder = 'border-white/5';
+
+    // 3. Tùy biến nút dựa trên trạng thái đã lưu
+    if (status === 'active') {
+        statusText = 'ĐÃ PHÊ DUYỆT';
+        statusClass = 'text-green-500';
+        cardBorder = 'border-green-500/50';
+        // Trạng thái active thì chỉ hiện nút "Đã duyệt" bị vô hiệu hóa
+        buttonsHTML = `<button disabled class="text-[9px] font-bold text-gray-500 bg-white/10 px-3 py-1.5 rounded-lg cursor-not-allowed">ĐÃ DUYỆT</button>`;
+    } else if (status === 'rejected') {
+        statusText = 'BỊ TỪ CHỐI';
+        statusClass = 'text-red-500';
+        // Trạng thái rejected thì hiện lý do và nút Hoàn tác
+        buttonsHTML = `
+            <div class="flex items-center gap-2">
+                <span class="text-[8px] text-red-400 bg-red-400/10 px-2 py-1 rounded">Lý do: ${ev.rejectReason || 'Từ chối'}</span>
+                <button onclick="undoReject('${ev.id}')" class="text-blue-400 hover:text-white"><i class="fa-solid fa-rotate-left"></i></button>
+            </div>`;
+    } else {
+        // Trạng thái pending (mặc định) -> Hiện đủ 2 nút để admin làm việc
+        buttonsHTML = `
+            <button onclick="openRejectModal('${ev.id}')" class="text-[9px] font-black text-red-400 bg-red-400/10 px-3 py-1.5 rounded-lg hover:bg-red-400 hover:text-white transition">TỪ CHỐI</button>
+            <button onclick="approveEvent('${ev.id}', this)" class="text-[9px] font-black text-white bg-blue-600 px-3 py-1.5 rounded-lg hover:bg-blue-500 transition shadow-lg shadow-blue-500/20">DUYỆT</button>
+        `;
+    }
+
+    const displayLocation = ev.location || ev.city || ev.locname || 'N/A';
+    const displayOrganizer = ev.organizer || ev.btcname || 'N/A';
+    const formattedPrice = parseInt(ev.price || 0).toLocaleString();
+
+    // 4. Vẽ card - Chèn biến buttonsHTML vào đúng chỗ
     const html = `
-        <div id="event-card-${ev.id}" class="glass p-5 rounded-3xl group hover:border-blue-500/50 transition-all border border-white/5 relative">
+        <div id="event-card-${ev.id}" class="glass p-5 rounded-3xl group hover:border-blue-500/50 transition-all border ${cardBorder} relative">
             <div class="flex items-center gap-4 mb-4">
                 <div class="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center border border-blue-500/20 text-blue-500 text-xl">
                     <i class="fa-solid fa-ticket"></i>
                 </div>
                 <div>
-                    <h4 class="font-bold text-sm text-white truncate w-40">${ev.title || 'N/A'}</h4>
-                    <p class="status-badge text-[8px] text-blue-500 font-bold uppercase tracking-widest">${isReal ? 'Dữ liệu thực' : 'Đang chờ duyệt'}</p>
+                    <h4 class="font-bold text-sm text-white truncate w-40">${ev.title || ev.name || 'N/A'}</h4>
+                    <p class="status-badge text-[8px] ${statusClass} font-bold uppercase tracking-widest">${statusText}</p>
                 </div>
             </div>
             <div class="space-y-2 text-[11px] text-gray-400 mb-4">
-                <p><i class="fa-solid fa-location-dot w-5 text-blue-500"></i>${ev.location || 'N/A'}</p>
+                <p><i class="fa-solid fa-location-dot w-5 text-blue-500"></i>${displayLocation}</p>
                 <div class="flex items-center gap-2">
-                    <p><i class="fa-solid fa-user-tie w-5 text-blue-500"></i>${ev.organizer || 'N/A'}</p>
+                    <p><i class="fa-solid fa-user-tie w-5 text-blue-500"></i>${displayOrganizer}</p>
                     <button onclick="viewEventDetails('${ev.id}')" class="w-5 h-5 rounded-full bg-white/5 hover:bg-blue-500/20 flex items-center justify-center transition" title="Xem chi tiết">
                         <i class="fa-solid fa-circle-info text-[10px] text-blue-400"></i>
                     </button>
                 </div>
             </div>
             <div class="flex justify-between items-center pt-4 border-t border-white/5 action-area">
-                <p class="text-sm font-black text-blue-500">${parseInt(ev.price || 0).toLocaleString()} đ</p>
+                <p class="text-sm font-black text-blue-500">${formattedPrice} đ</p>
                 <div class="flex gap-2">
-                    <button onclick="openRejectModal('${ev.id}')" class="text-[9px] font-black text-red-400 bg-red-400/10 px-3 py-1.5 rounded-lg hover:bg-red-400 hover:text-white transition">TỪ CHỐI</button>
-                    <button onclick="approveEvent('${ev.id}', this)" class="text-[9px] font-black text-white bg-blue-600 px-3 py-1.5 rounded-lg hover:bg-blue-500 transition shadow-lg shadow-blue-500/20">DUYỆT</button>
-                </div>
+                    ${buttonsHTML} </div>
             </div>
         </div>
     `;
-    grid.insertAdjacentHTML('afterbegin', html);
+    grid.insertAdjacentHTML('beforeend', html);
 }
 
 
@@ -440,34 +557,35 @@ function approveEvent(eventId, btnElement) {
  * @param {string} reason - Lý do (thường dùng khi từ chối)
  */
 function updateEventStatus(eventId, newStatus, reason = "") {
-    // 1. Lấy toàn bộ danh sách sự kiện từ LocalStorage (cả ảo lẫn thật)
-    let allEvents = JSON.parse(localStorage.getItem('ticket_events')) || [];
+    // 1. Lấy dữ liệu hiện tại ra
+    let realEvents = JSON.parse(localStorage.getItem('ticket_events')) || [];
+    let dummyEvents = JSON.parse(localStorage.getItem('admin_dummy_events')) || [];
 
-    // 2. Kiểm tra xem sự kiện có tồn tại không
-    const eventIndex = allEvents.findIndex(ev => String(ev.id) === String(eventId));
+    let updated = false;
 
-    if (eventIndex !== -1) {
-        // 3. Cập nhật trạng thái
-        allEvents[eventIndex].status = newStatus;
+    // 2. Hàm phụ để cập nhật trong mảng
+    const updateInArray = (arr) => {
+        return arr.map(ev => {
+            if (String(ev.id) === String(eventId)) {
+                updated = true;
+                return { ...ev, status: newStatus, rejectReason: reason };
+            }
+            return ev;
+        });
+    };
 
-        // 4. Nếu có lý do (thường là từ chối), lưu thêm vào object
-        if (reason) {
-            allEvents[eventIndex].rejectReason = reason;
-        } else {
-            // Nếu duyệt lại thì xóa lý do cũ đi cho sạch dữ liệu
-            delete allEvents[eventIndex].rejectReason;
-        }
+    // 3. Cập nhật cả 2 nguồn (cho chắc)
+    const newReal = updateInArray(realEvents);
+    const newDummy = updateInArray(dummyEvents);
 
-        // 5. Lưu đè lại vào LocalStorage để "đọng" dữ liệu vĩnh viễn
-        localStorage.setItem('ticket_events', JSON.stringify(allEvents));
+    // 4. LƯU NGƯỢC LẠI VÀO MÁY
+    localStorage.setItem('ticket_events', JSON.stringify(newReal));
+    localStorage.setItem('admin_dummy_events', JSON.stringify(newDummy));
 
-        // 6. Log để bà kiểm tra trong Console (F12)
-        console.log(`✅ Hệ thống: Sự kiện ${eventId} -> ${newStatus.toUpperCase()}${reason ? ' (Lý do: ' + reason + ')' : ''}`);
-        
-        return true; // Trả về true để hàm gọi biết là đã update thành công
+    if (updated) {
+        console.log(`✅ Đã chốt: ${eventId} sang ${newStatus}`);
     } else {
-        console.error(`❌ Không tìm thấy sự kiện ID: ${eventId} để cập nhật.`);
-        return false;
+        console.error(`❌ Không tìm thấy ID ${eventId} trong bộ nhớ!`);
     }
 }
 
@@ -503,50 +621,48 @@ function confirmReject(reason) {
     const card = document.getElementById(`event-card-${currentRejectingId}`);
     
     if (card) {
-        const actionArea = card.querySelector('.action-area');
-        // Lấy đúng div chứa buttons bên trong action-area
-        const innerDiv = (actionArea && actionArea.querySelector('div')) ? actionArea.querySelector('div') : actionArea;
+        // 1. Hiệu ứng card
+        card.style.opacity = '0.7';
+        card.classList.add('border-red-500/30'); // Thêm viền đỏ nhẹ cho card bị từ chối
         
-        if (actionArea) {
-            // Lưu lại để có thể hoàn tác
-            card.dataset.oldButtons = innerDiv.innerHTML; 
-            
-            // Hiệu ứng làm mờ card chuyên nghiệp
-            card.style.opacity = '0.5';
-            card.classList.add('grayscale', 'transition-all', 'duration-500');
-            
-            // Cập nhật Badge trạng thái
-            const badge = card.querySelector('.status-badge');
-            if(badge) {
-                badge.innerText = "● BỊ TỪ CHỐI";
-                badge.classList.remove('text-blue-500', 'text-green-500');
-                badge.classList.add('text-red-500');
-            }
+        // 2. Cập nhật Badge trạng thái phía trên
+        const badge = card.querySelector('.status-badge');
+        if(badge) {
+            badge.innerText = "● BỊ TỪ CHỐI";
+            badge.classList.remove('text-blue-500', 'text-green-500');
+            badge.classList.add('text-red-500');
+        }
 
-            // FIX TẠI ĐÂY: Dùng flex-row và items-center để giữ độ cao cố định
-            innerDiv.innerHTML = `
-                <div class="flex items-center gap-3 animate-fade-in">
-                    <div class="flex flex-col items-end">
-                        <span class="text-[9px] font-black text-red-500 uppercase bg-red-500/10 px-3 py-1 rounded-lg border border-red-500/20">
-                            Lý do: ${reason}
-                        </span>
-                    </div>
+        // 3. Cập nhật vùng Action Area (Nơi chứa tiền và nút)
+        const actionArea = card.querySelector('.action-area');
+        if (actionArea) {
+            // Lấy lại giá tiền hiện tại để không bị mất
+            const priceText = actionArea.querySelector('p')?.innerText || '0 đ';
+
+            // Ghi đè lại đúng cấu trúc giống như khi F5
+            actionArea.innerHTML = `
+                <p class="text-sm font-black text-blue-500">${priceText}</p>
+                <div class="flex items-center gap-2 animate-fade-in">
+                    <span class="text-[8px] text-red-400 bg-red-400/10 px-2 py-1 rounded border border-red-400/20 max-w-[120px] truncate">
+                        Lý do: ${reason}
+                    </span>
                     <button onclick="undoReject('${currentRejectingId}')" 
-                        class="h-8 w-8 flex items-center justify-center rounded-full bg-white/5 text-blue-400 hover:bg-blue-400 hover:text-white transition-all shadow-lg" 
+                        class="w-7 h-7 flex items-center justify-center rounded-full bg-white/5 text-blue-400 hover:bg-blue-400 hover:text-white transition-all" 
                         title="Hoàn tác">
                         <i class="fa-solid fa-rotate-left text-[10px]"></i>
                     </button>
                 </div>
             `;
-
-            // Lưu vào LocalStorage để F5 không bị mất trạng thái
-            updateEventStatus(currentRejectingId, 'rejected', reason);
-
-            if (typeof addNotification === 'function') {
-                addNotification("Hệ thống", `Đã từ chối sự kiện #${currentRejectingId}`);
-            }
-            closeRejectModal();
         }
+
+        // 4. Lưu dữ liệu
+        updateEventStatus(currentRejectingId, 'rejected', reason);
+        
+        if (typeof addNotification === 'function') {
+            addNotification("Hệ thống", `Đã từ chối sự kiện với lý do: ${reason}`);
+        }
+        
+        closeRejectModal();
     }
 }
 
@@ -554,26 +670,45 @@ function confirmReject(reason) {
 function undoReject(eventId) {
     const card = document.getElementById(`event-card-${eventId}`);
     if (card) {
+        // 1. Khôi phục giao diện card
         card.style.opacity = '1';
-        card.classList.remove('grayscale');
+        card.classList.remove('grayscale', 'border-red-500/30');
         
+        // 2. Cập nhật Badge trạng thái về màu xanh
         const badge = card.querySelector('.status-badge');
         if(badge) {
-            badge.innerText = "ĐANG CHỜ DUYỆT";
-            badge.classList.replace('text-red-500', 'text-blue-500');
+            badge.innerText = "● ĐANG CHỜ DUYỆT";
+            badge.classList.remove('text-red-500', 'text-green-500');
+            badge.classList.add('text-blue-500');
         }
 
+        // 3. Vẽ lại nút Duyệt và Từ chối mà không cần F5
         const actionArea = card.querySelector('.action-area');
-        const innerDiv = (actionArea && actionArea.querySelector('div')) ? actionArea.querySelector('div') : actionArea;
-        
-        if (card.dataset.oldButtons) {
-            innerDiv.innerHTML = card.dataset.oldButtons;
+        if (actionArea) {
+            // Lấy lại giá tiền hiện có
+            const priceText = actionArea.querySelector('p')?.innerText || '0 đ';
+
+            actionArea.innerHTML = `
+                <p class="text-sm font-black text-blue-500">${priceText}</p>
+                <div class="flex gap-2 animate-fade-in">
+                    <button onclick="openRejectModal('${eventId}')" 
+                        class="text-[9px] font-black text-red-400 bg-red-400/10 px-3 py-1.5 rounded-lg hover:bg-red-400 hover:text-white transition">
+                        TỪ CHỐI
+                    </button>
+                    <button onclick="approveEvent('${eventId}', this)" 
+                        class="text-[9px] font-black text-white bg-blue-600 px-3 py-1.5 rounded-lg hover:bg-blue-500 transition shadow-lg shadow-blue-500/20">
+                        DUYỆT
+                    </button>
+                </div>
+            `;
         }
 
-        // --- BỔ SUNG: ĐƯA TRẠNG THÁI VỀ CHỜ DUYỆT ---
-        updateEventStatus(eventId, 'pending');
+        // 4. Cập nhật dữ liệu vào LocalStorage
+        updateEventStatus(eventId, 'pending', '');
 
-        if (typeof addNotification === 'function') addNotification("Hệ thống", `Đã hoàn tác trạng thái sự kiện #${eventId}`);
+        if (typeof addNotification === 'function') {
+            addNotification("Hệ thống", `Đã đưa sự kiện #${eventId} về trạng thái chờ duyệt`);
+        }
     }
 }
 
@@ -596,16 +731,78 @@ function viewEventDetails(eventId) {
     document.getElementById('det-cover').src = finalImg;
     document.getElementById('det-thumb').src = finalImg;
 
-    // --- 2. ĐỊA ĐIỂM CHI TIẾT (Fix lỗi chưa hiện) ---
-    // Trong ảnh xác nhận của cậu, nó nằm ở phần "Địa điểm" phía dưới tên tỉnh
-    const addrElem = document.getElementById('det-address');
-    if (addrElem) {
-        // Thử lấy locdetail hoặc locationDetail
-        addrElem.innerText = ev.locdetail || ev.locationDetail || ev.address || 'N/A';
-    }
+    // --- 2. ĐỊA ĐIỂM CHI TIẾT & THỜI GIAN ---
 
-    // --- 3. BAN TỔ CHỨC (Fix lỗi hiện N/A) ---
-    // Khớp với tên "Diệu thảo" và Gmail trong ảnh của cậu
+    const locNameElem = document.getElementById('det-loc-name');
+    if (locNameElem) locNameElem.innerText = ev.locname || 'N/A';
+
+    const locDetailElem = document.getElementById('det-loc-detail');
+    if (locDetailElem) locDetailElem.innerText = ev.locdetail || 'N/A';
+
+    // Thay vì chỉ hiện start - end, hãy kiểm tra nếu có timeslots
+if (document.getElementById('det-time-full')) {
+    document.getElementById('det-time-full').innerHTML = ev.timeslots || `${ev.start || 'N/A'} - ${ev.end || 'N/A'}`;
+}
+    // --- 3. TRAILER & NỘI QUY (Bổ sung mới) ---
+    const trailerContainer = document.getElementById('det-trailer-area');
+    if (ev.trailer && ev.trailer.trim() !== "") {
+    let embedLink = ev.trailer;
+    if (embedLink.includes("watch?v=")) embedLink = embedLink.replace("watch?v=", "embed/");
+    else if (embedLink.includes("youtu.be/")) embedLink = embedLink.replace("youtu.be/", "youtube.com/embed/");
+
+    trailerContainer.innerHTML = `
+        <h3 class="text-[10px] text-red-500 font-black uppercase mb-3 tracking-widest flex items-center gap-2">
+            <i class="fa-brands fa-youtube"></i> Trailer Sự kiện
+        </h3>
+        <div class="relative w-full aspect-video rounded-2xl overflow-hidden border border-white/5 bg-black">
+            <iframe src="${embedLink}" class="absolute inset-0 w-full h-full" frameborder="0" allowfullscreen></iframe>
+        </div>`;
+} else {
+    trailerContainer.innerHTML = '';
+}
+    // --- 3. HỒ SƠ PHÁP LÝ (Khớp key với Admin) ---
+// 1. Mã số thuế
+const taxElem = document.getElementById('det-tax-id-input');
+if (taxElem) {
+    taxElem.innerText = ev.taxid || ev.tax_id || ev['tax-id'] || 'N/A';
+}
+
+// 2. Số GP/CMND
+const legalElem = document.getElementById('det-legal-id-input');
+if (legalElem) {
+    legalElem.innerText = ev.legalid || ev.legal_id || ev['legal-id'] || 'N/A';
+}
+
+// 3. Chính sách hoàn tiền
+const refundElem = document.getElementById('det-refund-policy');
+if (refundElem) {
+    refundElem.innerText = ev.refund || ev.refund_policy || 'Theo quy định';
+}
+
+// 4. Trách nhiệm bồi thường
+const compenElem = document.getElementById('det-compensation');
+if (compenElem) {
+    compenElem.innerText = ev.compensation || ev.compensation_input || 'N/A';
+}
+
+// 5. Tệp đính kèm
+const filesElem = document.getElementById('det-files-list');
+if (filesElem) {
+    if (ev.files && ev.files !== "Không có tệp đính kèm") {
+        filesElem.innerHTML = ev.files; 
+    } else {
+        filesElem.innerText = 'Không có tệp đính kèm';
+    }
+}
+
+
+// 6. Nội quy
+if (document.getElementById('det-rules')) {
+    document.getElementById('det-rules').innerText = ev.rules || ev.event_rules || 'Chưa có nội quy cụ thể.';
+}
+    
+    // --- 3. BAN TỔ CHỨC  ---
+  
     if (document.getElementById('det-btc-name')) 
         document.getElementById('det-btc-name').innerText = ev.btcname || ev.organizer || 'Chưa có tên';
     
@@ -616,17 +813,15 @@ function viewEventDetails(eventId) {
         document.getElementById('det-btc-phone').innerText = ev.btcphone || ev.phone || 'N/A';
     
     if (document.getElementById('det-btc-info')) 
-        document.getElementById('det-btc-info').innerText = ev.btcInfo || 'Ban tổ chức sự kiện';
+        document.getElementById('det-btc-info').innerText = ev.btcinfo || 'Ban tổ chức sự kiện';
 
     // Ảnh Logo BTC
     const btcLogoElem = document.getElementById('det-btc-logo');
     if (btcLogoElem) {
-        // Nếu cậu có upload logo thì dùng btcLogo, không thì dùng avatar tự động
-        btcLogoElem.src = ev.btcLogo || `https://ui-avatars.com/api/?name=${encodeURIComponent(ev.btcname || 'BTC')}&background=00d2ff&color=fff`;
+        btcLogoElem.src = ev.btclogo || `https://ui-avatars.com/api/?name=${encodeURIComponent(ev.btcname || 'BTC')}&background=00d2ff&color=fff`;
     }
 
     // --- 4. TÀI KHOẢN NGÂN HÀNG (Fix lỗi N/A) ---
-    // Khớp với MB và STK 03478789 trong ảnh của cậu
     if (document.getElementById('det-bank-name')) 
         document.getElementById('det-bank-name').innerText = ev.bankname || ev.bankName || 'N/A';
     
@@ -636,7 +831,19 @@ function viewEventDetails(eventId) {
     if (document.getElementById('det-bank-user')) 
         document.getElementById('det-bank-user').innerText = ev.bankuser || ev.bankHolder || 'N/A';
 
+    if (document.getElementById('det-bank-branch')) 
+        document.getElementById('det-bank-branch').innerText = ev.bankbranch || 'N/A';
+
+    const qrElem = document.getElementById('det-bank-qr'); 
+    if (qrElem && ev.bankqr) {
+        qrElem.src = ev.bankqr;
+        qrElem.classList.remove('hidden');
+    }
+
     // --- 5. CÁC THÔNG TIN KHÁC ---
+    if (document.getElementById('det-mode-text')) 
+    document.getElementById('det-mode-text').innerText = ev.mode || 'N/A'; 
+
     if (document.getElementById('det-category'))
         document.getElementById('det-category').innerText = ev.type || 'MUSIC';
     
@@ -667,11 +874,17 @@ function viewEventDetails(eventId) {
                     </div>
                 </div>`;
         });
+    if (ev.map) {
+            ticketContainer.innerHTML += `
+                <div class="mt-4">
+                    <p class="text-[10px] text-gray-500 uppercase font-black mb-2">Sơ đồ chỗ ngồi:</p>
+                    <img src="${ev.map}" class="w-full rounded-2xl border border-white/10 shadow-lg">
+                </div>`;
+        }
     }
 
-
     const favContainer = document.getElementById('fav-btn-container');
-    if (favContainer) favContainer.remove(); // Xóa hẳn phần container nút nếu nó tồn tại
+    if (favContainer) favContainer.remove(); 
 
     // --- 7. HIỆN MODAL ---
     const modal = document.getElementById('detail-modal');
@@ -687,14 +900,20 @@ function closeDetailModal() {
 /* CẤU TRÚC HTML MODAL  */
 
 document.body.insertAdjacentHTML('beforeend', `
-    <div id="reject-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[999] hidden flex items-center justify-center p-4">
+   <div id="reject-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[999] hidden flex items-center justify-center p-4">
         <div class="bg-[#1a1a1a] border border-white/10 w-full max-w-sm rounded-[2rem] p-8 shadow-2xl scale-95 transition-all">
             <h3 class="text-white font-bold text-lg mb-2">Lý do từ chối</h3>
             <p class="text-gray-400 text-xs mb-6">Vui lòng chọn lý do để phản hồi cho đối tác tạo sự kiện.</p>
-            <div class="space-y-3 mb-8">
+            <div class="space-y-3 mb-8 max-h-[320px] overflow-y-auto pr-2 custom-scroll">
                 <button onclick="confirmReject('Sản phẩm vi phạm pháp luật')" class="w-full text-left p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-red-500/50 hover:bg-red-500/5 text-gray-300 text-xs transition">🚫 Sản phẩm vi phạm pháp luật</button>
                 <button onclick="confirmReject('Nội dung chưa đầy đủ')" class="w-full text-left p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-yellow-500/50 hover:bg-yellow-500/5 text-gray-300 text-xs transition">📝 Nội dung chưa đầy đủ</button>
                 <button onclick="confirmReject('Tiêu chuẩn hình ảnh không đạt')" class="w-full text-left p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-blue-500/50 hover:bg-blue-500/5 text-gray-300 text-xs transition">🖼️ Tiêu chuẩn kiểm duyệt hình ảnh</button>
+                <button onclick="confirmReject('Thông tin liên hệ BTC không hợp lệ')" class="w-full text-left p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-orange-500/50 hover:bg-orange-500/5 text-gray-300 text-xs transition">📞 Thông tin liên hệ BTC không hợp lệ</button>
+                <button onclick="confirmReject('Sai lệch thông tin địa điểm')" class="w-full text-left p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-purple-500/50 hover:bg-purple-500/5 text-gray-300 text-xs transition">📍 Sai lệch thông tin địa điểm</button>
+                <button onclick="confirmReject('Giá vé không hợp lệ hoặc quá cao')" class="w-full text-left p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-pink-500/50 hover:bg-pink-500/5 text-gray-300 text-xs transition">💰 Giá vé không hợp lệ</button>
+                <button onclick="confirmReject('Sự kiện có dấu hiệu lừa đảo')" class="w-full text-left p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-red-700/50 hover:bg-red-700/5 text-gray-300 text-xs transition">⚠️ Sự kiện có dấu hiệu lừa đảo</button>
+                <button onclick="confirmReject('Thiếu giấy phép tổ chức')" class="w-full text-left p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-emerald-500/50 hover:bg-emerald-500/5 text-gray-300 text-xs transition">📜 Thiếu giấy phép tổ chức (theo yêu cầu)</button>
+                <button onclick="confirmReject('Nội dung mang tính chất spam')" class="w-full text-left p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-gray-500/50 hover:bg-gray-500/5 text-gray-300 text-xs transition">🧹 Nội dung mang tính chất spam</button>
             </div>
             <button onclick="closeRejectModal()" class="w-full py-3 text-gray-500 text-[10px] font-black uppercase tracking-widest hover:text-white transition">Hủy bỏ</button>
         </div>
@@ -710,6 +929,10 @@ document.body.insertAdjacentHTML('beforeend', `
                 <img id="det-thumb" src="" class="w-24 h-24 rounded-2xl object-cover border-4 border-[#121212] shadow-xl bg-gray-800">
                 <div class="mb-2">
                     <span id="det-category" class="text-[10px] bg-blue-500 text-white px-2 py-0.5 rounded-md font-black uppercase">N/A</span>
+                    <span id="det-mode" class="text-[10px] bg-emerald-500 text-white px-2 py-0.5 rounded-md font-black uppercase flex items-center gap-1">
+            <i class="fa-solid fa-circle text-[6px]"></i>
+            <span id="det-mode-text">N/A</span>
+        </span>
                     <h2 id="det-title" class="text-2xl font-black text-white mt-1 uppercase">N/A</h2>
                 </div>
             </div>
@@ -718,22 +941,44 @@ document.body.insertAdjacentHTML('beforeend', `
         <div class="p-8 overflow-y-auto custom-scroll space-y-8">
             <div class="grid grid-cols-2 gap-4">
                 <div class="glass p-4 rounded-2xl bg-white/5 border border-white/5">
-                    <p class="text-[10px] text-gray-500 uppercase font-black mb-1">Thời gian</p>
-                    <p class="text-xs text-gray-200"><i class="fa-regular fa-calendar-check mr-2 text-blue-500"></i><span id="det-time">N/A</span></p>
+                    <p class="text-[10px] text-gray-500 uppercase font-black mb-1">Thời gian tổ chức</p>
+                    <p class="text-[11px] text-gray-200"><i class="fa-regular fa-clock mr-2 text-blue-500"></i><span id="det-time-full">N/A</span></p>
                 </div>
                 <div class="glass p-4 rounded-2xl bg-white/5 border border-white/5">
-                    <p class="text-[10px] text-gray-500 uppercase font-black mb-1">Địa điểm chi tiết</p>
-                    <p class="text-xs text-gray-200"><i class="fa-solid fa-location-arrow mr-2 text-blue-500"></i><span id="det-address">N/A</span></p>
+                    <p class="text-[10px] text-gray-500 uppercase font-black mb-1">Địa điểm</p>
+                    <p class="text-[11px] text-gray-200"><i class="fa-solid fa-location-dot mr-2 text-blue-500"></i><span id="det-loc-name">N/A</span></p>
+                    <p class="text-[10px] text-gray-400 mt-1 italic"><i class="fa-solid fa-map-pin mr-2 text-blue-400"></i><span id="det-loc-detail">N/A</span></p>
                 </div>
             </div>
+
+            <div id="det-trailer-area"></div>
 
             <div>
                 <h3 class="text-sm font-bold text-white mb-2 uppercase tracking-widest text-blue-500">Thông tin sự kiện</h3>
-                <p id="det-desc" class="text-xs text-gray-400 leading-relaxed whitespace-pre-line">N/A</p>
+                <p id="det-desc" class="text-xs text-gray-400 leading-relaxed whitespace-pre-line bg-white/[0.02] p-4 rounded-2xl border border-white/5">N/A</p>
+            </div>
+
+            <div class="p-5 bg-blue-500/5 rounded-2xl border border-blue-500/10">
+                <h3 class="text-[10px] text-blue-500 font-black uppercase mb-3 tracking-widest flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved"></i> Hồ sơ pháp lý & Quy định
+                </h3>
+                <div class="grid grid-cols-2 gap-4 text-[10px] border-b border-white/5 pb-3">
+                    <div><span class="text-gray-500 block">Mã số thuế:</span> <span id="tax-id-input" class="text-gray-200 font-bold font-mono">N/A</span></div>
+                    <div><span class="text-gray-500 block">Số GP/CMND:</span> <span id="legal-id-input" class="text-gray-200 font-bold font-mono">N/A</span></div>
+                </div>
+                <div class="mt-3 space-y-2 text-[10px]">
+                    <div class="flex justify-between italic"><span class="text-gray-500">Chinh sách hoàn tiền:</span> <span id="refund-policy" class="text-blue-400 font-bold">N/A</span></div>
+                    <div class="flex justify-between italic"><span class="text-gray-500">Trách nhiệm bồi thường:</span> <span id="det-compensation" class="text-blue-400 font-bold">N/A</span></div>
+                    <div class="flex justify-between italic"><span class="text-gray-500">Tệp đính kèm:</span> <span id="det-files-list">N/A</span></div>
+                </div>
+                <div class="mt-4 p-3 bg-white/5 rounded-xl">
+                    <p class="text-[9px] text-gray-500 uppercase font-bold mb-1">Nội quy sự kiện:</p>
+                    <p id="det-rules" class="text-[10px] text-gray-400 whitespace-pre-line leading-relaxed italic">N/A</p>
+                </div>
             </div>
 
             <div>
-                <h3 class="text-sm font-bold text-white mb-3 uppercase tracking-widest text-blue-500">Loại vé</h3>
+                <h3 class="text-sm font-bold text-white mb-3 uppercase tracking-widest text-blue-500">Hạng vé</h3>
                 <div id="det-tickets" class="space-y-2"></div>
             </div>
 
@@ -743,7 +988,7 @@ document.body.insertAdjacentHTML('beforeend', `
                     <img id="det-btc-logo" src="" class="w-14 h-14 rounded-full object-cover border-2 border-blue-500/20">
                     <div class="flex-1">
                         <h4 id="det-btc-name" class="font-bold text-white text-base">N/A</h4>
-                        <p id="det-btc-info" class="text-[11px] text-gray-500 mt-1 italic">N/A</p>
+                        <p id="det-btc-info" class="text-[11px] text-gray-500 mt-1 italic leading-tight">N/A</p>
                         
                         <div class="flex flex-wrap gap-4 mt-3">
                             <span class="text-[10px] text-gray-400"><i class="fa-solid fa-envelope text-blue-500 mr-1"></i> <span id="det-btc-email">N/A</span></span>
@@ -752,18 +997,21 @@ document.body.insertAdjacentHTML('beforeend', `
                     </div>
                 </div>
 
-                <div class="bg-blue-500/5 border border-blue-500/10 p-5 rounded-3xl mt-4 flex justify-between items-center">
-                    <div>
+                <div class="bg-blue-500/5 border border-blue-500/10 p-5 rounded-3xl mt-4 flex justify-between items-center gap-4">
+                    <div class="flex-1 min-w-0">
                         <p class="text-[10px] text-blue-500 font-black uppercase mb-2">Tài khoản nhận tiền</p>
                         <div class="space-y-1">
-                            <p class="text-xs text-gray-400">Ngân hàng: <span id="det-bank-name" class="text-white font-bold">N/A</span></p>
-                            <p class="text-lg text-[#00d2ff] font-black font-mono tracking-wider" id="det-bank-acc">0000000000</p>
+                            <p class="text-[10px] text-gray-400">Ngân hàng: <span id="det-bank-name" class="text-white font-bold">N/A</span></p>
+                            <p class="text-[10px] text-gray-400 truncate">Chi nhánh: <span id="det-bank-branch" class="text-white font-bold">N/A</span></p>
+                            <p class="text-lg text-[#00d2ff] font-black font-mono tracking-wider leading-none my-2" id="det-bank-acc">0000000000</p>
                             <p class="text-[10px] text-gray-500 uppercase tracking-tighter">Chủ TK: <span id="det-bank-user" class="text-white">N/A</span></p>
                         </div>
                     </div>
-                    <div class="text-right flex flex-col items-end gap-2">
-                        <i class="fa-solid fa-building-columns text-blue-500/20 text-3xl"></i>
-                        <span class="text-[8px] bg-blue-500/20 text-blue-400 px-2 py-1 rounded uppercase font-bold">Giao dịch an toàn</span>
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="flex-shrink-0 bg-white p-1.5 rounded-xl shadow-lg">
+                            <img id="det-bank-qr" src="" alt="QR Code" class="w-20 h-20 object-contain">
+                        </div>
+                         <span class="text-[7px] bg-blue-500/20 text-blue-400 px-2 py-1 rounded uppercase font-bold whitespace-nowrap">Giao dịch an toàn</span>
                     </div>
                 </div>
             </div>
@@ -789,7 +1037,8 @@ function seedOrders() {
             </button>
         </div>
         <div class="glass rounded-3xl overflow-hidden shadow-2xl">
-            <div class="overflow-x-auto"> <table class="w-full text-left border-collapse" id="live-order-table">
+            <div class="overflow-x-auto"> 
+                <table class="w-full text-left border-collapse" id="live-order-table">
                     <thead class="text-gray-500 border-b border-white/5 bg-white/[0.02]">
                         <tr>
                             <th class="p-5 font-bold uppercase text-[10px] tracking-wider w-[12%]">Mã đơn</th>
@@ -801,61 +1050,14 @@ function seedOrders() {
                             <th class="p-5 font-bold uppercase text-[10px] tracking-wider text-right w-[10%]">Trạng thái</th>
                         </tr>
                     </thead>
-                    <tbody id="live-order-body"></tbody>
-                </table>
+                    <tbody id="live-order-body"></tbody> </table>
             </div>
         </div>`;
-
-    const body = document.getElementById('live-order-body');
-    if (!body) return;
-
-    // Định dạng tiền chuẩn
-    const formatVND = (num) => new Intl.NumberFormat('vi-VN').format(num) + "đ";
-
-    let fakeRows = "";
-    for (let i = 1; i <= 20; i++) {
-        // Random giá thực tế: 200.000 đến 1.500.000
-        const price = Math.floor(Math.random() * 1300000) + 200000;
-        
-        fakeRows += `
-            <tr class="border-b border-white/5 hover:bg-white/[0.02] transition order-row">
-                <td class="p-5 font-mono text-blue-400 text-xs font-bold">#TK-${10000 + i}</td>
-                <td class="p-5 text-gray-400 text-[11px] leading-relaxed">16:33:05<br>12/4/2026</td>
-                <td class="p-5">
-                    <div class="flex flex-col">
-                        <span class="font-bold text-white text-sm">${names[Math.floor(Math.random() * names.length)]}</span>
-                        <span class="text-[10px] text-gray-500">customer${i}@gmail.com</span>
-                    </div>
-                </td>
-                <td class="p-5 text-[11px] text-gray-400 italic leading-snug">${eventNames[Math.floor(Math.random() * eventNames.length)]}</td>
-                <td class="p-5 text-center">
-                    <span class="bg-white/5 px-3 py-1 rounded-md text-xs font-bold text-gray-300">01</span>
-                </td>
-                <td class="p-5 font-bold text-green-400 text-sm">${formatVND(price)}</td>
-                <td class="p-5 text-right">
-                    <span class="text-[9px] bg-blue-500/10 text-blue-500 border border-blue-500/20 px-2 py-1 rounded font-black uppercase">Mới</span>
-                </td>
-            </tr>`;
-    }
-    body.innerHTML = fakeRows;
-
-    if (typeof renderAdminTable === "function") {
-        renderAdminTable();
-    }
 }
 
 function loadSavedOrders() {
-    const body = document.getElementById('live-order-body');
-    if (!body) return;
-    const savedOrders = JSON.parse(localStorage.getItem('admin_orders')) || [];
-    if (savedOrders.length > 0) {
-        body.innerHTML = ""; 
-        savedOrders.forEach(ord => {
-            addLiveOrder(ord.name, ord.event, ord.price, true);
-        });
-    } else {
-        seedOrders(); 
-    }
+    seedOrders();       // 1. Tạo khung bảng
+    loadAllAdminData(); // 2. Nạp dữ liệu 
 }
 
 function filterOrders() {
@@ -868,55 +1070,54 @@ function filterOrders() {
     });
 }
 
-function addLiveOrder(name, event, price = 0, isReplay = false) {
+function addLiveOrder(name, event, price = 0, isReplay = false, orderObj = {}) {
+    if (orderObj._isRefund) return;
     const body = document.getElementById('live-order-body');
     if (!body) return;
-    let actualPrice = price > 0 ? price : (Math.floor(Math.random() * 1500) + 500) * 1000;
-    const formattedPrice = new Intl.NumberFormat('vi-VN').format(Math.floor(actualPrice));
-    const rowId = `order-${Date.now()}`;
-    const now = new Date();
-    const currentTime = now.getHours() + ":" + String(now.getMinutes()).padStart(2, '0') + ":" + String(now.getSeconds()).padStart(2, '0');
-    const currentDate = now.toLocaleDateString('vi-VN');
-    
-    const row = `
-        <tr id="${rowId}" class="border-b border-white/5 bg-blue-500/5 animate-pulse order-row">
-            <td class="p-6 font-mono text-[11px] text-blue-500 font-bold">#TK-${Math.floor(20000 + Math.random() * 70000)}</td>
-            
-            <td class="p-6 text-gray-400 text-xs">
-                <p>${currentTime}</p>
-                <p class="text-[10px] opacity-50">${currentDate}</p>
-            </td>
 
+    const finalPrice = price || orderObj.price || 0;
+    const formattedPrice = new Intl.NumberFormat('vi-VN').format(finalPrice);
+    
+    // Xử lý thời gian: Ưu tiên thời gian từ orderObj, nếu không có mới tạo mới
+    const timeDisplay = orderObj.time || new Date().toLocaleTimeString('vi-VN');
+    const dateDisplay = orderObj.date || new Date().toLocaleDateString('vi-VN');
+    const orderId = orderObj.id || `TK-${Math.floor(20000 + Math.random() * 70000)}`;
+    const status = orderObj._isReal ? "HOÀN TẤT" : "MỚI";
+    const statusClass = orderObj._isReal ? "bg-green-500/10 text-green-500" : "bg-blue-500 text-white animate-bounce";
+
+    const row = `
+        <tr class="border-b border-white/5 ${orderObj._isReal ? '' : 'bg-blue-500/5'} transition order-row">
+            <td class="p-6 font-mono text-[11px] text-blue-500 font-bold">${orderId}</td>
+            <td class="p-6 text-gray-400 text-xs">
+                <p>${timeDisplay}</p>
+                <p class="text-[10px] opacity-50">${dateDisplay}</p>
+            </td>
             <td class="p-6">
                 <p class="font-black text-white text-sm">${name}</p>
                 <p class="text-[10px] text-gray-500">${name.toLowerCase().replace(/\s/g, '')}@gmail.com</p>
             </td>
-
             <td class="p-6 text-xs text-gray-300 italic">${event}</td>
-
             <td class="p-6 text-center">
                 <span class="bg-white/5 px-3 py-1 rounded-md text-xs font-bold">01</span>
             </td>
-
             <td class="p-6 font-bold text-green-500 text-sm">${formattedPrice}đ</td>
-
             <td class="p-6 text-right">
-                <span class="text-[9px] bg-blue-500 text-white font-black px-2 py-1 rounded animate-bounce">MỚI</span>
+                <span class="text-[9px] ${statusClass} font-black px-2 py-1 rounded uppercase">${status}</span>
             </td>
         </tr>`;
         
     body.insertAdjacentHTML('afterbegin', row);
-
-    if (!isReplay) {
+    if (!isReplay && !orderObj._isReal) {
         try {
             let orders = JSON.parse(localStorage.getItem('admin_orders')) || [];
             orders.unshift({
-                id: tkCode, // Lưu lại mã TK này
+                id: orderId,
                 name: name,
                 event: event,
                 price: actualPrice,
-                time: new Date().toLocaleTimeString('vi-VN'),
-                date: new Date().toLocaleDateString('vi-VN')
+                time: timeDisplay,
+                date: dateDisplay,
+                _isReal: false
             });
             if (orders.length > 50) orders.pop();
             localStorage.setItem('admin_orders', JSON.stringify(orders));
@@ -925,44 +1126,90 @@ function addLiveOrder(name, event, price = 0, isReplay = false) {
 }
 
 
+function renderOrderRow(orderObj) {
+    const body = document.getElementById('live-order-body');
+    if (!body || orderObj._isRefund) return;
+
+    const formattedPrice = new Intl.NumberFormat('vi-VN').format(orderObj.price || 0);
+    const status = orderObj._isReal ? "HOÀN TẤT" : "MỚI";
+    const statusClass = orderObj._isReal ? "bg-green-500/10 text-green-500" : "bg-blue-500 text-white";
+    
+    // --- ĐỒNG BỘ ID TẠI ĐÂY ---
+    let rawId = String(orderObj.id).replace('TK-', ''); 
+    if (rawId.length > 10) {
+        rawId = rawId.slice(-10);
+    }
+    const displayId = `TK-${rawId}`; 
+    // -------------------------
+
+    const row = `
+        <tr class="border-b border-white/5 ${orderObj._isReal ? '' : 'bg-blue-500/5'} transition order-row">
+            <td class="p-6 font-mono text-[11px] text-blue-500 font-bold">${displayId}</td>
+            <td class="p-6 text-gray-400 text-xs">
+                <p>${orderObj.time || '00:00:00'}</p>
+                <p class="text-[10px] opacity-50">${orderObj.date || '14/04/2026'}</p>
+            </td>
+            <td class="p-6">
+                <p class="font-black text-white text-sm">${orderObj.name || orderObj.customer}</p>
+                <p class="text-[10px] text-gray-500">${(orderObj.name || "khach").toLowerCase().replace(/\s/g, '')}@gmail.com</p>
+            </td>
+            <td class="p-6 text-xs text-gray-300 italic">${orderObj.event}</td>
+            <td class="p-6 text-center"><span class="bg-white/5 px-3 py-1 rounded-md text-xs font-bold">01</span></td>
+            <td class="p-6 font-bold text-green-500 text-sm">${formattedPrice}đ</td>
+            <td class="p-6 text-right">
+                <span class="text-[9px] ${statusClass} font-black px-2 py-1 rounded uppercase">${status}</span>
+            </td>
+        </tr>`;
+        
+    body.insertAdjacentHTML('beforeend', row);
+}
+
 /* --- HÀM TỰ ĐỘNG HÓA ĐA NHIỆM TỔNG HỢP --- */
 function startAutomation() {
     // Chạy mỗi 12 giây
     setInterval(() => {
-        const randomAction = Math.random();
-        
-        // 0. Khởi tạo dữ liệu ngẫu nhiên dùng chung cho các kịch bản
+       const randomAction = Math.random();
         const buyer = names[Math.floor(Math.random() * names.length)];
         const event = eventNames[Math.floor(Math.random() * eventNames.length)];
-        const location = locations[Math.floor(Math.random() * locations.length)];
-        const timestamp = Date.now();
+        const timestamp = new Date().toLocaleString('vi-VN');
+        const now = Date.now();
+        const orderId = 'TK-' + now;
 
-        // KỊCH BẢN 1: Bán vé ảo (30%) - Tăng Vé & Doanh thu
+        /// KỊCH BẢN 1: Bán vé ảo (30%) - CHỈ GIỮ BÁN VÉ
         if (randomAction > 0.7) {
-            const price = (Math.random() * 1.5 + 0.5) * 1000000; // tiền thật VND
-            
-            // Cập nhật các con số trên Dashboard (1 vé, +price tiền, 0 user mới)
-            updateDashboardStats(1, price, 0); 
-            
-            // Hiển thị đơn hàng trực tiếp
-            if (typeof addLiveOrder === "function") {
-                addLiveOrder(buyer, event, price);
-            }
-        
-            addNotification("Giao dịch", `${buyer} vừa mua vé "${event}"`);
-            addActivity(
-    'TICKET',
-    buyer,
-    `Mua ${event} (${new Intl.NumberFormat('vi-VN').format(price)}đ)`
-);
+            // 1. Tạo giá gốc
+            const originalPrice = (Math.floor(Math.random() * 10) + 5) * 100000; 
 
-            // Cập nhật biểu đồ nếu có
-            if (window.mainChart) {
-                const lastIdx = mainChart.data.datasets[0].data.length - 1;
-                mainChart.data.datasets[0].data[lastIdx] += price;
-                mainChart.update('none');
-            }
-        } 
+            // 2. Định dạng đối tượng đơn hàng chuẩn
+            const salesOrder = { 
+                id: orderId, 
+                name: buyer, 
+                event: event, 
+                price: originalPrice, 
+                time: new Date().toLocaleTimeString('vi-VN'),
+                date: new Date().toLocaleDateString('vi-VN'),
+                createdAt: now, // Thêm timestamp để sau này sort thời gian cho chuẩn
+                _isReal: false 
+            };
+
+            // 3. Lưu vào admin_orders (Dữ liệu ảo)
+            try {
+                let adminOrders = JSON.parse(localStorage.getItem('admin_orders')) || [];
+                adminOrders.unshift(salesOrder);
+                // Giới hạn 50 đơn cho nhẹ máy
+                if (adminOrders.length > 50) adminOrders.pop();
+                localStorage.setItem('admin_orders', JSON.stringify(adminOrders));
+                syncRefundFromOrders();
+            } catch (e) { console.error("Lưu đơn ảo lỗi:", e); }
+            
+            // 4. Vẽ ngay lên bảng hiển thị
+            addLiveOrder(buyer, event, originalPrice, true, salesOrder);
+
+            // Ghi log hoạt động
+            logAdminAction('ORDER', `Đơn hàng mới: ${buyer} mua vé ${event}`);
+            addNotification("Giao dịch", `Khách hàng ${buyer} vừa đặt vé thành công.`);
+        }
+
 
         // KỊCH BẢN 2: Khách hàng mới (25%) - Tăng User
         else if (randomAction > 0.45) {
@@ -995,32 +1242,34 @@ function startAutomation() {
             addNotification("Thành viên", `Khách hàng mới: ${buyer} vừa gia nhập.`);
         }
 
-        // KỊCH BẢN 3: Sự kiện mới ảo (25%) - Chờ duyệt
-        else if (randomAction > 0.2) {
-            const dummyEv = {
-                id: 'ev-' + timestamp,
-                title: event,
-                location: location,
-                organizer: "BTC " + buyer,
-                price: (Math.floor(Math.random() * 8) + 2) * 100000 
-            };
+        // KỊCH BẢN 3: Sự kiện mới ảo
+else if (randomAction > 0.2) {
+    const now = Date.now(); // Lấy timestamp hiện tại
+    const dummyEv = {
+        id: 'ev-' + now, // Dùng ID chứa số để dễ parse
+        title: event,
+        location: locations[Math.floor(Math.random() * locations.length)],
+        organizer: "BTC " + buyer,
+        price: (Math.floor(Math.random() * 8) + 2) * 100000,
+        createdAt: now // BẮT BUỘC PHẢI CÓ để sort lên đầu
+    };
 
-            if (typeof addEventCardToGrid === "function") {
-                addEventCardToGrid(dummyEv, false);
-            }
-            // ✅ LƯU EVENT
-            try {
-                let events = JSON.parse(localStorage.getItem('ticket_events')) || [];
-                events.push(dummyEv);
-                localStorage.setItem('ticket_events', JSON.stringify(events));
-            } catch {}
+    // 1. Lưu vào LocalStorage trước
+    try {
+        let dummyList = JSON.parse(localStorage.getItem('admin_dummy_events')) || [];
+        dummyList.push(dummyEv);
+        if(dummyList.length > 50) dummyList.shift(); 
+        localStorage.setItem('admin_dummy_events', JSON.stringify(dummyList));
+    } catch(err) {}
 
-            // ✅ LOG
-            logAdminAction('EVENT', `Event "${event}" đang chờ duyệt`, {
-                eventId: dummyEv.id
-            });
-            addNotification("Sự kiện", `Sự kiện mới "${event}" đang chờ duyệt.`, dummyEv.id);
-        }
+    // 2. THAY VÌ gọi addEventCardToGrid trực tiếp (gây lỗi vị trí)
+    // HÃY gọi hàm load tổng để nó tự sắp xếp lại toàn bộ
+    loadAllAdminData(); 
+
+    // ✅ LOG & NOTIF
+    logAdminAction('EVENT', `Event "${event}" đang chờ duyệt`);
+    addNotification("Sự kiện", `Sự kiện mới "${event}" đang chờ duyệt.`);
+}
 
         // KỊCH BẢN 4: Tin nhắn hỗ trợ mới (20%)
         else {
@@ -1057,6 +1306,7 @@ function startAutomation() {
     newTicket.message
 );
         }
+
 
     }, 12000); 
 }
@@ -1180,6 +1430,11 @@ function renderSupportList(data) {
     container.innerHTML = data.map(tk => {
         const firstLetter = tk.name ? tk.name.charAt(0) : 'K';
         const subject = tk.subject || "Yêu cầu hỗ trợ";
+        const isResolved = tk.status === 'resolved';
+        const isReplied = tk.status === 'replied';
+        const cardOpacity = (isResolved || isReplied) ? 'opacity-50 grayscale' : '';
+        const btnAiText = isReplied ? "AI DONE" : "AI REPLY";
+        const btnResolveText = isResolved ? "HOÀN TẤT" : "ĐÃ XỬ LÝ";
 
         return `
         <div id="card-${tk.id}" class="glass p-6 rounded-[2rem] border border-white/5 hover:border-blue-500/30 transition-all group support-card-animate">
@@ -1206,100 +1461,160 @@ function renderSupportList(data) {
                 <p class="text-gray-400 text-[11px] italic leading-relaxed">"${tk.message || 'Không có nội dung'}"</p>
             </div>
             <div class="flex gap-2 justify-end opacity-0 group-hover:opacity-100 transition-all">
-                <button onclick="askAIHelp('${tk.id}')" class="text-[10px] font-black text-white bg-gradient-to-r from-indigo-600 to-blue-600 px-4 py-2 rounded-xl hover:shadow-[0_0_15px_rgba(37,99,235,0.4)] transition-all flex items-center gap-2">
-                    <i class="fa-solid fa-robot text-[9px]"></i> AI REPLY
-                </button>
-                <button onclick="resolveTicket(this)" class="text-[10px] font-black text-green-500 bg-green-500/10 px-4 py-2 rounded-xl hover:bg-green-500 hover:text-white transition-all">ĐÃ XỬ LÝ</button>
+                <button onclick="askAIHelp('${tk.id}')" 
+    ${tk.status === 'replied' || tk.status === 'resolved' ? 'disabled' : ''} 
+    class="text-[10px] font-black text-white bg-gradient-to-r from-indigo-600 to-blue-600 px-4 py-2 rounded-xl hover:shadow-[0_0_15px_rgba(37,99,235,0.4)] transition-all flex items-center gap-2">
+    <i class="fa-solid fa-robot text-[9px]"></i> 
+    ${tk.status === 'replied' ? 'AI DONE' : 'AI REPLY'}
+</button>
+                <button onclick="resolveTicket(this, '${tk.id}')" 
+    ${tk.status === 'resolved' ? 'disabled' : ''} 
+    class="text-[10px] font-black text-green-500 bg-green-500/10 px-4 py-2 rounded-xl hover:bg-green-500 hover:text-white transition-all">
+    ${tk.status === 'resolved' ? 'HOÀN TẤT' : 'ĐÃ XỬ LÝ'}
+</button>
                 <a href="mailto:${tk.email}?subject=Re: ${subject}" class="text-[10px] font-black text-white/50 bg-white/5 px-4 py-2 rounded-xl hover:bg-white/10 transition-all border border-white/5">GMAIL</a>
             </div>
         </div>
     `}).join('');
 }
 
-// 2. Hàm AI Reply (Kích hoạt nhảy số Dashboard)
-function askAIHelp(id) {
-    const card = document.getElementById(`card-${id}`);
-    if (!card) return;
+function updateSupportStatus(id, newStatus) {
+    try {
+        // Lấy dữ liệu cũ ra
+        let supports = JSON.parse(localStorage.getItem('admin_support')) || [];
+        let contacts = JSON.parse(localStorage.getItem('contact_messages')) || [];
 
-    if (typeof addNotification === 'function') {
-        addNotification("AI System", "Đang tự động soạn phản hồi tối ưu...");
-    }
+        // Cập nhật cho cả mảng ảo và mảng thật (nếu có)
+        supports = supports.map(tk => tk.id == id ? { ...tk, status: newStatus } : tk);
+        contacts = contacts.map(tk => tk.id == id ? { ...tk, status: newStatus } : tk);
 
-    // Hiệu ứng card
-    card.style.opacity = '0.5';
-    const btn = card.querySelector('button[onclick^="askAIHelp"]');
-    if (btn) btn.innerText = "SENDING...";
-
-    setTimeout(() => {
-        if (typeof addNotification === 'function') {
-            addNotification("Thành công", "AI đã gửi phản hồi thành công.");
+        // Lưu ngược lại vào máy
+        localStorage.setItem('admin_support', JSON.stringify(supports));
+        localStorage.setItem('contact_messages', JSON.stringify(contacts));
+        
+        // Cập nhật biến tạm đang hiển thị
+        if (window.allSupportData) {
+            window.allSupportData = window.allSupportData.map(tk => tk.id == id ? { ...tk, status: newStatus } : tk);
         }
         
-        // NHẢY SỐ TRÊN DASHBOARD
-        const pendingEl = document.querySelector('.text-yellow-500.font-bold');
-        const resolvedEl = document.querySelector('.text-green-500.font-bold');
-        if (pendingEl && resolvedEl) {
-            let p = parseInt(pendingEl.innerText) || 0;
-            let r = parseInt(resolvedEl.innerText) || 0;
-            pendingEl.innerText = Math.max(0, p - 1);
-            resolvedEl.innerText = r + 1;
-        }
-
-        card.style.filter = 'grayscale(1)';
-        if (btn) btn.innerText = "AI DONE";
-    }, 1500);
+        console.log(`Đã lưu trạng thái ${newStatus} cho ID: ${id}`);
+    } catch (e) { 
+        console.error("Lưu trạng thái lỗi:", e); 
+    }
 }
 
-// 3. Khởi tạo dữ liệu gộp (Đảm bảo số liệu bay vào window.allSupportData)
-function initDummySupport() {
-    // 1. Lấy dữ liệu THẬT từ khách hàng gửi qua Contact Form
-    const realTickets = JSON.parse(localStorage.getItem('contact_messages')) || [];
-    
-    // 2. Tạo dữ liệu ẢO (Giữ nguyên logic của Thảo)
-    const dummyTickets = Array.from({ length: 15 }).map((_, i) => ({
-        id: `TK-${200 + i}`,
-        name: (typeof names !== 'undefined') ? names[Math.floor(Math.random() * names.length)] : "Khách hàng mẫu",
-        email: `customer${200+i}@gmail.com`,
-        subject: "Yêu cầu hệ thống",
-        message: "Tôi cần hỗ trợ về việc thanh toán vé sự kiện.",
-        time: `${Math.floor(Math.random() * 23) + 1} giờ trước`,
-        priority: Math.random() > 0.7 ? "Cao" : "Trung bình"
-    }));
+function updateDashboardNumbers() {
+    const data = window.allSupportData || [];
+    const pendingCount = data.filter(tk => tk.status === 'pending' || !tk.status).length;
+    const resolvedCount = data.filter(tk => tk.status === 'resolved' || tk.status === 'replied').length;
 
-    // 3. Gộp lại: Đưa dữ liệu THẬT lên trước, sau đó mới tới dữ liệu ẢO
-    window.allSupportData = [...realTickets.reverse(), ...dummyTickets];
-    
-    // 4. Hiển thị ra màn hình
+    const pendingEl = document.getElementById('support-pending-count');
+    const resolvedEl = document.getElementById('support-resolved-count');
+
+    if (pendingEl) pendingEl.innerText = pendingCount;
+    if (resolvedEl) resolvedEl.innerText = 85 + resolvedCount; // 85 là số gốc của Thảo
+}
+
+// AI REPLY
+function askAIHelp(id) {
+    const data = window.allSupportData.find(tk => tk.id == id);
+    if (!data) return;
+
+    let message = data.message.toLowerCase();
+    let template = replyTemplates.default;
+    if (/hủy|huỷ|trả vé|hoàn tiền/.test(message)) {
+        template = replyTemplates.cancel;
+    } 
+    else if (/tiền|thanh toán|chuyển khoản|bank/.test(message)) {
+        template = replyTemplates.payment;
+    } 
+    else if (/ở đâu|địa chỉ|vị trí|map|đường/.test(message)) {
+        template = replyTemplates.location;
+    }
+
+    // 2. Điền tên khách vào văn mẫu
+    const finalContent = template.replace(/{name}/g, data.name); // Dùng /g để thay thế tất cả nếu có nhiều chỗ {name}
+
+    // 3. Mở Gmail
+    const subject = encodeURIComponent(`Phản hồi hỗ trợ: ${data.subject}`);
+    const body = encodeURIComponent(finalContent);
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${data.email}&su=${subject}&body=${body}`;
+
+    // 4. Lưu trạng thái & Mở tab
+    updateSupportStatus(id, 'replied');
+    window.open(gmailUrl, '_blank');
+
+    // 5. Vẽ lại giao diện
     renderSupportList(window.allSupportData);
 }
 
-// 4. Hàm Đã xử lý (Cũng kích hoạt nhảy số luôn cho đồng bộ)
-function resolveTicket(btn) {
+// 3. Khởi tạo dữ liệu gộp (Đảm bảo số liệu bay vào window.allSupportData)
+function resolveTicket(btn, id) {
     const card = btn.closest('.glass');
     if (!card) return;
 
-    // 1. HIỆN THÔNG BÁO (Dòng này Thảo đang thiếu nè)
+    // --- BƯỚC 1: LƯU VÀO MÁY (QUAN TRỌNG NHẤT) ---
+    updateSupportStatus(id, 'resolved');
+
+    // --- BƯỚC 2: HIỆN THÔNG BÁO ---
     if (typeof addNotification === 'function') {
-        // Lấy tên khách từ card để thông báo cho xịn
         const customerName = card.querySelector('.text-white\\/80')?.innerText || "Khách hàng";
         addNotification("Thành công", `Đã xử lý xong yêu cầu của ${customerName}`, "SUPPORT");
     }
 
-    // 2. Hiệu ứng làm mờ card
-    card.style.opacity = '0.4';
-    card.style.filter = 'grayscale(1)';
+    // --- BƯỚC 3: HIỆU ỨNG GIAO DIỆN ---
+    card.classList.add('opacity-50', 'grayscale');
     btn.innerText = "HOÀN TẤT";
     btn.disabled = true;
 
-    // 3. Cập nhật con số trên Dashboard
-    const pendingEl = document.querySelector('.text-yellow-500.font-bold');
-    const resolvedEl = document.querySelector('.text-green-500.font-bold');
+    // --- BƯỚC 4: NHẢY SỐ DASHBOARD ---
+    const pendingEl = document.getElementById('support-pending-count');
+    const resolvedEl = document.getElementById('support-resolved-count');
     if (pendingEl && resolvedEl) {
         let p = parseInt(pendingEl.innerText) || 0;
         let r = parseInt(resolvedEl.innerText) || 0;
         pendingEl.innerText = Math.max(0, p - 1);
         resolvedEl.innerText = r + 1;
     }
+}
+
+// 3. Khởi tạo dữ liệu gộp (Đảm bảo số liệu bay vào window.allSupportData)
+function initDummySupport() {
+    // 1. Kiểm tra xem trong máy đã có dữ liệu support chưa
+    let savedSupports = JSON.parse(localStorage.getItem('admin_support'));
+
+    // 2. Nếu chưa có (lần đầu chạy), mới tạo ra 15 đơn ảo
+    if (!savedSupports || savedSupports.length === 0) {
+        const dummyTickets = Array.from({ length: 15 }).map((_, i) => ({
+            id: `TK-SEED-${200 + i}`, // Thêm chữ SEED để phân biệt
+            name: (typeof names !== 'undefined') ? names[Math.floor(Math.random() * names.length)] : "Khách hàng mẫu",
+            email: `customer${200+i}@gmail.com`,
+            subject: "Yêu cầu hệ thống",
+            message: "Tôi cần hỗ trợ về việc thanh toán vé sự kiện.",
+            time: `${Math.floor(Math.random() * 23) + 1} giờ trước`,
+            priority: Math.random() > 0.7 ? "Cao" : "Trung bình",
+            status: 'pending' // Mặc định là đang chờ
+        }));
+        
+        localStorage.setItem('admin_support', JSON.stringify(dummyTickets));
+        savedSupports = dummyTickets;
+    }
+
+    // 3. Lấy thêm dữ liệu THẬT (từ Contact Form) nếu có
+    const realTickets = JSON.parse(localStorage.getItem('contact_messages')) || [];
+    const markedReal = realTickets.map(t => ({
+        ...t,
+        id: t.id || 'TK-REAL-' + Date.now(),
+        status: t.status || 'pending' // Giữ status nếu đã có
+    }));
+
+    window.allSupportData = [...markedReal, ...savedSupports];
+    
+    // 5. Vẽ ra màn hình
+    renderSupportList(window.allSupportData);
+    
+    // 6. Cập nhật con số trên Dashboard ngay khi load
+    updateDashboardNumbers();
 }
 
 /* --- 5. HÀM TÌM KIẾM HỖ TRỢ (SEARCH SUPPORT) --- */
@@ -1550,42 +1865,6 @@ function loadEventsAdmin() {
     });
 }
 
-function renderAdminTable() {
-    const tableBody = document.getElementById('live-order-body');
-    if (!tableBody) return;
-
-    const data = localStorage.getItem('eventOrders');
-    const savedOrders = data ? JSON.parse(data) : [];
-
-    // FIX: Xóa sạch body cũ trước khi render mới để tránh lặp dữ liệu
-    tableBody.innerHTML = ""; 
-
-    if (savedOrders.length === 0) return;
-
-    // Hiển thị tối đa 10 đơn hàng mới nhất
-    const displayOrders = savedOrders.slice().reverse(); 
-    
-    const newOrdersHTML = displayOrders.map(order => {
-        const totalQty = order.tickets ? order.tickets.reduce((sum, t) => sum + t.qty, 0) : 0;
-        return `
-            <tr class="border-b border-white/5 bg-blue-500/5 transition">
-                <td class="p-6 font-mono text-green-500 text-xs font-bold">#${order.id}</td>
-                <td class="p-6 text-gray-400 text-xs">${order.time || '--'}</td>
-                <td class="p-6">
-                    <p class="font-bold text-white text-sm">${order.customer}</p>
-                    <p class="text-[10px] text-gray-500">${order.email || order.phone}</p>
-                </td>
-                <td class="p-6 text-gray-300 italic text-xs">${order.event}</td>
-                <td class="p-6 text-center"><span class="bg-white/5 px-3 py-1 rounded-md text-xs font-bold">${String(totalQty).padStart(2, '0')}</span></td>
-                <td class="p-6 font-black text-green-500 text-sm">${order.total}</td>
-                <td class="p-6 text-right">
-                    <span class="text-[9px] bg-green-500/10 text-green-500 px-2 py-1 rounded font-black uppercase">Hoàn tất</span>
-                </td>
-            </tr>`;
-    }).join('');
-
-    tableBody.innerHTML = newOrdersHTML;
-}
 
 window.onfocus = function() {
     if (document.getElementById('deposits') && !document.getElementById('deposits').classList.contains('hidden')) {
@@ -1755,6 +2034,17 @@ window.addEventListener('storage', (e) => {
                 pendingEl.innerText = count + 1;
             }
         }
+
+if (e.key === 'ticket_events') {
+        console.log("Dữ liệu sự kiện đã thay đổi, đang cập nhật lại...");
+        // Gọi hàm load dữ liệu thật của trang Create
+        if (typeof loadEventsForUser === "function") {
+            loadEventsForUser();
+        } else {
+            location.reload();
+            }
+    }
+
 
     } catch (err) {
         console.error("Lỗi storage:", err);
@@ -1926,6 +2216,338 @@ function replayAdminLogs() {
     });
 }
 
+function syncRefundFromOrders() {
+    let allOrders = JSON.parse(localStorage.getItem('eventOrders')) || [];
+    let updated = false;
+
+    // Lọc đơn bán và đơn hoàn hiện có
+    const salesOrders = allOrders.filter(o => !o._isRefund);
+    const refundIds = new Set(allOrders.filter(o => o._isRefund).map(o => o.id));
+
+    salesOrders.forEach(sale => {
+        if (!refundIds.has(sale.id)) {
+            const refundEntry = {
+                ...sale,
+                total: (Number(String(sale.total).replace(/\D/g, '')) * 0.9),
+                _isRefund: true,
+                requestDate: (sale.date || '') + ' ' + (sale.time || ''),
+                status: 'pending' 
+            };
+            allOrders.push(refundEntry);
+            updated = true;
+        }
+    });
+
+    if (updated) {
+        localStorage.setItem('eventOrders', JSON.stringify(allOrders));
+    }
+}
+
+// 1. Hàm load danh sách hoàn tiền (Đã cập nhật Nguồn tiền Admin)
+function loadRefundData() {
+    const tbody = document.getElementById('refund-table-body');
+    const adminDisplay = document.getElementById('admin-balance-display');
+    if (!tbody) return;
+
+    const adminBalance = parseInt(localStorage.getItem('admin_source_money')) || 1000000000;
+    if (adminDisplay) adminDisplay.innerText = adminBalance.toLocaleString();
+
+    // CHỈ lấy những đơn hàng gốc (không lấy đơn có flag _isRefund nếu lỡ có trong máy)
+    let allOrders = JSON.parse(localStorage.getItem('eventOrders')) || [];
+    const realOrders = allOrders.filter(o => !o._isRefund); 
+
+    const refundHistory = JSON.parse(localStorage.getItem('admin_refunds')) || [];
+
+    tbody.innerHTML = realOrders.map(order => {
+        // Lấy giá gốc từ đơn hàng
+        const rawTotal = String(order.total || '0').replace(/\D/g, '');
+        const originalPrice = parseInt(rawTotal) || 0;
+
+        const refundAmount = Math.floor(originalPrice * 0.9);
+        
+        const isRefunded = refundHistory.some(r => r.orderId == order.id);
+
+        return `
+            <tr class="hover:bg-white/[0.02] border-b border-white/5 transition-all">
+                <td class="p-6 text-xs font-bold text-white">${order.id}</td>
+                <td class="p-6 text-xs text-gray-400">${order.customer}</td>
+                <td class="p-6 text-xs text-gray-400">${order.event} <span class="text-blue-500 ml-2">(x${order.quantity || 1})</span></td>
+                <td class="p-6 text-xs font-bold text-gray-500">${originalPrice.toLocaleString()}đ</td>
+                <td class="p-6 text-xs font-black text-red-400">${refundAmount.toLocaleString()}đ</td>
+                <td class="p-6">
+                    ${isRefunded 
+                        ? '<span class="text-[10px] font-black text-green-500 bg-green-500/10 px-3 py-1 rounded-lg border border-green-500/20">ĐÃ HOÀN VÍ</span>' 
+                        : `<button onclick="openRefundModal('${order.id}', '${order.customer}', ${refundAmount})" 
+                            class="text-[10px] font-black text-white bg-red-500 px-4 py-2 rounded-xl hover:bg-red-600 transition-all">
+                            XÁC NHẬN HOÀN
+                           </button>`
+                    }
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function processRefund(orderId, customerName, amount) {
+    // 1. Lấy nguồn tiền hiện tại của Admin (Mặc định 1 tỷ nếu chưa có)
+    let adminBalance = parseInt(localStorage.getItem('admin_source_money')) || 1000000000;
+
+    // 2. Kiểm tra xem Admin còn đủ tiền để hoàn không
+    if (adminBalance < amount) {
+        alert("Nguồn tiền hệ thống không đủ để thực hiện hoàn tiền!");
+        return;
+    }
+    const reason = prompt(`Lý do hoàn tiền cho đơn ${orderId} của khách ${customerName}:`, "Khách yêu cầu hủy vé");
+    if (reason === null) return; // Nếu bấm Cancel thì dừng
+
+    if (!confirm(`Xác nhận rút ${amount.toLocaleString()}đ từ kho để hoàn cho ${customerName}?`)) return;
+
+    try {
+        // --- BƯỚC A: TRỪ TIỀN KHO ADMIN ---
+        adminBalance -= amount;
+        localStorage.setItem('admin_source_money', adminBalance.toString());
+
+        // --- BƯỚC B: CỘNG TIỀN VÀO VÍ KHÁCH ---
+        let userBalances = JSON.parse(localStorage.getItem('user_balances')) || {};
+        userBalances[customerName] = (userBalances[customerName] || 0) + amount;
+        localStorage.setItem('user_balances', JSON.stringify(userBalances));
+
+        // --- BƯỚC C: LƯU LỊCH SỬ HOÀN TIỀN ---
+        let refundHistory = JSON.parse(localStorage.getItem('admin_refunds')) || [];
+        refundHistory.push({
+            orderId: orderId,
+            customer: customerName,
+            amount: amount,
+            reason: reason,
+            type: 'OUT',
+            date: new Date().toLocaleString('vi-VN')
+        });
+        localStorage.setItem('admin_refunds', JSON.stringify(refundHistory));
+
+        // --- BƯỚC D: TẠO LOG GIAO DỊCH (Để đồng bộ sang tab Nạp tiền/Giao dịch) ---
+        let depositLogs = JSON.parse(localStorage.getItem('admin_deposit_logs')) || [];
+        depositLogs.unshift({
+            user: customerName,
+            amount: amount,
+            type: 'REFUND',
+            time: "Vừa xong",
+            status: 'Thành công'
+        });
+        localStorage.setItem('admin_deposit_logs', JSON.stringify(depositLogs));
+
+        // --- BƯỚC E: CẬP NHẬT GIAO DIỆN ---
+        // Cập nhật số dư Admin hiển thị trên đầu
+        const adminDisplay = document.getElementById('admin-balance-display');
+        if (adminDisplay) adminDisplay.innerText = adminBalance.toLocaleString();
+
+        // Hiện thông báo góc màn hình
+        if (typeof addNotification === 'function') {
+            addNotification("Thành công", `Đã trừ kho và hoàn ${amount.toLocaleString()}đ cho khách`, "SUCCESS");
+        }
+
+        // Vẽ lại bảng hoàn tiền để hiện chữ "ĐÃ HOÀN VÍ"
+        loadRefundData();
+        
+        // Nếu có hàm load bảng nạp tiền thì chạy luôn cho đồng bộ
+        if (typeof loadDeposits === 'function') loadDeposits();
+
+    } catch (e) {
+        console.error("Lỗi hệ thống hoàn tiền:", e);
+        alert("Có lỗi xảy ra khi xử lý dữ liệu!");
+    }
+}
+
+function updateUserBalanceDisplay() {
+    // 1. Lấy tên người dùng đang đăng nhập (Thảo thường lưu trong 'currentUser')
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (!currentUser) return;
+
+    // 2. Tìm số dư trong cái túi 'user_balances' mà Admin vừa bỏ tiền vào
+    const allBalances = JSON.parse(localStorage.getItem('user_balances')) || {};
+    
+    // Nếu có tiền trong ví thì lấy, không thì mặc định là 0
+    const userMoney = allBalances[currentUser.name] || 0;
+
+    // 3. Dán con số này lên giao diện trang User
+    const balanceEl = document.getElementById('user-wallet-balance');
+    if (balanceEl) {
+        balanceEl.innerText = userMoney.toLocaleString() + 'đ';
+    }
+}
+
+// 1. Mở bảng nhập tiền
+function rechargeAdminMoney() {
+    const inputModal = document.getElementById('recharge-input-modal');
+    if (inputModal) {
+        inputModal.classList.remove('hidden');
+        document.getElementById('recharge-amount-input').focus();
+    }
+}
+
+function closeRechargeInput() {
+    const modal = document.getElementById('recharge-input-modal');
+    if (modal) modal.classList.add('hidden');
+}
+
+function confirmRecharge() {
+    const amountInput = document.getElementById('recharge-amount-input');
+    const amount = parseInt(amountInput.value);
+
+    if (!amount || amount <= 0) {
+        alert("Vui lòng nhập số tiền hợp lệ!");
+        return;
+    }
+
+    try {
+        // A. Cập nhật số dư vào LocalStorage
+        let current = parseInt(localStorage.getItem('admin_source_money')) || 1000000000;
+        let newBalance = current + amount;
+        localStorage.setItem('admin_source_money', newBalance.toString());
+
+        // B. Đổ dữ liệu vào các thẻ trong Biên lai (Hóa đơn trắng)
+        // Thảo kiểm tra xem các ID này trong HTML có đúng chưa nhé
+        if (document.getElementById('invoice-id')) {
+            document.getElementById('invoice-id').innerText = '#RCG-' + Math.floor(Math.random() * 90000 + 10000);
+        }
+        if (document.getElementById('invoice-date')) {
+            document.getElementById('invoice-date').innerText = new Date().toLocaleString('vi-VN');
+        }
+        if (document.getElementById('invoice-amount')) {
+            document.getElementById('invoice-amount').innerText = "+" + amount.toLocaleString() + "đ";
+        }
+
+        // C. ĐIỀU KIỂN MODAL (Mấu chốt ở đây)
+        // Đóng bảng nhập tiền
+        const inputModal = document.getElementById('recharge-input-modal');
+        if (inputModal) inputModal.classList.add('hidden');
+
+        // HIỆN BIÊN LAI TRẮNG LÊN
+        const receiptModal = document.getElementById('recharge-modal');
+        if (receiptModal) {
+            receiptModal.classList.remove('hidden');
+        } else {
+            console.error("Không tìm thấy id='recharge-modal' trong HTML của Thảo");
+        }
+        
+        // D. Reset input và cập nhật con số ngoài màn hình chính
+        amountInput.value = '';
+        loadRefundData(); 
+
+    } catch (e) {
+        console.error("Lỗi nạp tiền:", e);
+        alert("Có lỗi xảy ra, kiểm tra lại Console (F12)");
+    }
+}
+
+// 3. Đóng biên lai
+function closeRechargeModal() {
+    const receiptModal = document.getElementById('recharge-modal');
+    if (receiptModal) receiptModal.classList.add('hidden');
+}
+
+
+// Hàm mở Modal
+function openRefundModal(orderId, customerName, amount) {
+    currentRefundData = { orderId, customerName, amount };
+    
+    // Đổ dữ liệu vào Modal
+    document.getElementById('modal-order-id').innerText = '#' + orderId;
+    document.getElementById('modal-customer-name').innerText = customerName;
+    document.getElementById('modal-refund-amount').innerText = amount.toLocaleString() + 'đ';
+    document.getElementById('modal-refund-reason').value = "Khách yêu cầu hủy vé";
+
+    // Hiện Modal
+    const modal = document.getElementById('refund-modal');
+    modal.classList.remove('hidden');
+    
+    // Gán sự kiện cho nút Xác nhận trong Modal
+    document.getElementById('modal-confirm-btn').onclick = function() {
+        const reason = document.getElementById('modal-refund-reason').value;
+        executeRefund(reason);
+    };
+}
+
+// Hàm đóng Modal
+function closeRefundModal() {
+    document.getElementById('refund-modal').classList.add('hidden');
+}
+
+// Hàm thực thi hoàn tiền 
+function executeRefund(reason) {
+    if (!currentRefundData) return;
+    const { orderId, customerName, amount } = currentRefundData;
+
+    // 1. Kiểm tra xem đơn này ĐÃ ĐƯỢC HOÀN CHƯA (Chống lặp)
+    let refundHistory = JSON.parse(localStorage.getItem('admin_refunds')) || [];
+    const alreadyDone = refundHistory.some(r => r.orderId === orderId);
+    
+    if (alreadyDone) {
+        alert("Đơn hàng này đã được hoàn tiền trước đó!");
+        closeRefundModal();
+        return;
+    }
+
+    let adminBalance = parseInt(localStorage.getItem('admin_source_money')) || 1000000000;
+    if (adminBalance < amount) {
+        alert("Nguồn tiền hệ thống không đủ!");
+        return;
+    }
+
+    // 2. Thực hiện trừ/cộng tiền
+    adminBalance -= amount;
+    localStorage.setItem('admin_source_money', adminBalance.toString());
+
+    let userBalances = JSON.parse(localStorage.getItem('user_balances')) || {};
+    userBalances[customerName] = (userBalances[customerName] || 0) + amount;
+    localStorage.setItem('user_balances', JSON.stringify(userBalances));
+
+    // 3. Lưu vào lịch sử
+    refundHistory.push({
+        orderId, 
+        customer: customerName, 
+        amount, 
+        reason, 
+        date: new Date().toLocaleString('vi-VN'),
+        status: 'COMPLETED' // Đánh dấu trạng thái
+    });
+    localStorage.setItem('admin_refunds', JSON.stringify(refundHistory));
+
+    // 4. Cập nhật giao diện
+    closeRefundModal();
+    loadRefundData(); // Vẽ lại bảng để nút biến mất
+    
+    if (typeof addNotification === 'function') {
+        addNotification("Thành công", `Đã hoàn ${amount.toLocaleString()}đ cho đơn ${orderId}`, "SUCCESS");
+    }
+}
+
+// 1. Hàm đóng/mở Modal chờ duyệt
+function openPendingRefundsModal() {
+    const modal = document.getElementById('pending-refund-modal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    
+    // Gọi hàm render danh sách khách hàng đang chờ (nếu bạn có dữ liệu chờ)
+    // renderPendingList(); 
+}
+
+function closePendingRefundsModal() {
+    const modal = document.getElementById('pending-refund-modal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+}
+
+// 2. Logic tìm kiếm (Gắn vào ô input)
+document.getElementById('refund-search')?.addEventListener('input', function(e) {
+    const term = e.target.value.toLowerCase();
+    const rows = document.querySelectorAll('#refund-table-body tr');
+    
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(term) ? '' : 'none';
+    });
+});
+
 /* --- 10. KHỞI CHẠY --- */
 document.addEventListener('DOMContentLoaded', () => {
     initChart();
@@ -1945,6 +2567,7 @@ document.addEventListener('DOMContentLoaded', () => {
     startAutomation();
     startStatusAutomation();
     setupSupportSearch();
+    updateUserBalanceDisplay();
 });
 
 
