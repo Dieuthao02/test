@@ -13,7 +13,6 @@ window.onload = () => {
         loggedInUser = null;
     }
     
-    // SỬA Ở ĐÂY: Nếu không có user, đá về index ngay lập tức
     if (!loggedInUser || !loggedInUser.name) {
         alert("Bạn cần đăng nhập trước nhé!");
         window.location.href = "index.html"; 
@@ -63,7 +62,6 @@ function showPage(pageId) {
     }
 }
 
-        // Hiệu ứng FadeIn
         target.style.animation = 'none';
         target.offsetHeight; 
         target.style.animation = 'fadeIn 0.4s ease-in-out';
@@ -134,6 +132,27 @@ function removeImg(inputId, previewId, wrapId, uiId) {
 }
 
 // --- 4. LOGIC NGHIỆP VỤ VÉ (TICKET LOGIC) ---
+
+function addTimeSlot() {
+    const list = document.getElementById('timeslot-list');
+    const newSlot = document.createElement('div');
+    newSlot.className = 'timeslot-item grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-white/5 rounded-lg border border-white/5 relative group animate-fade-in';
+    newSlot.innerHTML = `
+        <div class="absolute -right-2 -top-2 hidden group-hover:flex w-6 h-6 bg-red-500 text-white rounded-full items-center justify-center cursor-pointer z-10" onclick="this.parentElement.remove()">
+            <i class="fa-solid fa-xmark text-[10px]"></i>
+        </div>
+        <div>
+            <label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Bắt đầu</label>
+            <input type="datetime-local" class="start-time-input w-full bg-white/10 border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-[#00d2ff]">
+        </div>
+        <div>
+            <label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Kết thúc</label>
+            <input type="datetime-local" class="end-time-input w-full bg-white/10 border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-[#00d2ff]">
+        </div>
+    `;
+    list.appendChild(newSlot);
+}
+
 function addTicketRow() {
     const list = document.getElementById('ticket-list');
     if (!list) return;
@@ -161,85 +180,142 @@ div.innerHTML = `
 
 // --- 5. LƯU TRỮ & XỬ LÝ DỮ LIỆU (STORAGE & CRUD) ---
 function finishCreateEvent(isDraft = false) {
-    const rawName = document.getElementById('event-name-input')?.value.trim() || "";
-    
-    if (!isDraft && (rawName === "" || rawName === "Diệu Thảo")) { 
-        alert("Tên sự kiện không được để trống nhé!");
-        return;
-    }
-    const getFinalImg = (id) => {
-        const imgEl = document.getElementById(id);
-        if (imgEl && imgEl.src && imgEl.src.startsWith('data:image')) {
-            return imgEl.src;
+    try {
+        const rawName = document.getElementById('event-name-input')?.value.trim() || "";
+        
+        // Kiểm tra tên sự kiện
+        if (!isDraft && (rawName === "" || rawName === "Diệu Thảo")) { 
+            alert("Tên sự kiện không được để trống nhé!");
+            return;
         }
-        return "";
-    };
+        
+        // --- HÀM ĐỌC FILE PHÁP LÝ SANG BASE64 ---
+        const getFilesAsBase64 = async () => {
+            // selectedFiles là mảng chứa các File object từ bước handleFileSelect
+            if (typeof selectedFiles !== 'undefined' && selectedFiles.length > 0) {
+                const promises = selectedFiles.map(file => {
+                    return new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => resolve({
+                            name: file.name,
+                            type: file.type,
+                            data: e.target.result
+                        });
+                        reader.readAsDataURL(file);
+                    });
+                });
+                return await Promise.all(promises);
+            }
+            return [];
+        };
 
-    const posterImg = document.getElementById('poster-prev');
-    let imgPath = (posterImg && posterImg.src && posterImg.src.includes('data:image')) ? posterImg.src : "";
+        // Hàm nội bộ để lấy dữ liệu Base64 từ thẻ IMG preview
+        const getBase64FromImg = (id) => {
+            const imgEl = document.getElementById(id);
+            if (imgEl && imgEl.src && imgEl.src.startsWith('data:image')) {
+                return imgEl.src;
+            }
+            return "";
+        };
 
-    const btcLogoImg = document.getElementById('logo-prev');
-    let btcLogoPath = (btcLogoImg && btcLogoImg.src && btcLogoImg.src.includes('data:image')) ? btcLogoImg.src : "";
-    
-    const mapImg = document.getElementById('map-prev');
-    let mapPath = (mapImg && mapImg.src && mapImg.src.includes('data:image')) ? mapImg.src : "";
+     
 
+        // Gom dữ liệu sự kiện
+        const newEvent = {
+            id: (isEditing && currentEditCard) ? currentEditCard.dataset.id : 'ev-' + Date.now(),
+            title: rawName,
+            // Bước 1 & 2: Media
+            img: getBase64FromImg('poster-prev'),       
+            banner: getBase64FromImg('cover-prev'),     
+            type: document.getElementById('event-type-input')?.value || "",
+            mode: document.getElementById('event-mode-input')?.value || "Online",
+            trailer: document.getElementById('event-trailer')?.value || "",
+            locname: document.getElementById('event-location-name')?.value || "",
+            locdetail: document.getElementById('event-location-detail')?.value || "",
+            desc: document.getElementById('event-description')?.value || "",
+            
+            // Ban tổ chức
+            btclogo: getBase64FromImg('logo-prev'),
+            btcname: document.getElementById('btc-name')?.value.trim() || "", 
+            btcemail: document.getElementById('btc-email')?.value.trim() || "",
+            btcphone: document.getElementById('btc-phone')?.value.trim() || "",
+            btcinfo: document.getElementById('btc-info')?.value.trim() || "",
 
-    const qrImg = document.getElementById('qr-prev');
-    let qrPath = (qrImg && qrImg.src && qrImg.src.includes('data:image')) ? qrImg.src : "";
-    
-    const newEvent = {
-    id: isEditing && currentEditCard ? currentEditCard.dataset.id : 'ev-' + Date.now(),
-    title: rawName || "Sự kiện chưa đặt tên",
-    name: rawName || "Sự kiện chưa đặt tên", 
-    type: formatNA('event-type-input'),
-    locname: formatNA('event-location-name'),
-    locdetail: formatNA('event-location-detail'),
-    start: formatNA('start-time'),
-    end: formatNA('end-time'),
-    desc: formatNA('event-description'),
-    btcname: formatNA('btc-name'),         
-    btcemail: formatNA('btc-email'),
-    btcphone: formatNA('btc-phone'),          
-    btcinfo: formatNA('btc-info'),
-    bankname: formatNA('bank-name'),
-    bankuser: formatNA('bank-user'),
-    bankacc: formatNA('bank-acc'),
-    img: imgPath,
-    btclogo: btcLogoPath,
-    map: mapPath, 
-    bankqr: qrPath,
-    status: isDraft ? 'draft' : 'pending',
-    timeCreate: new Date().toLocaleString(),
-    tickets: Array.from(document.querySelectorAll('#ticket-list > div')).map(row => ({
-        name: row.querySelector('.ticket-name-input')?.value.trim() || "Vé thường",
-        price: row.querySelector('.ticket-price-input')?.value.trim() || "0",
-        qty: row.querySelector('.ticket-qty-input')?.value.trim() || "0"
-    }))
-};
+            // Thời gian (Lấy từ danh sách động)
+            timeSlots: Array.from(document.querySelectorAll('#timeslot-list .timeslot-item')).map(slot => ({
+                start: slot.querySelector('.start-time-input')?.value,
+                end: slot.querySelector('.end-time-input')?.value
+            })),
 
-    let allData = JSON.parse(localStorage.getItem('ticket_events')) || [];
-    if (isEditing && currentEditCard) {
-        const index = allData.findIndex(ev => ev.id === newEvent.id);
-        if (index !== -1) allData[index] = newEvent;
-    } else {
-        allData.unshift(newEvent);
-    }
+            // Vé (Lấy từ danh sách động)
+            tickets: Array.from(document.querySelectorAll('#ticket-list > div')).map(row => ({
+                name: row.querySelector('.ticket-name-input')?.value || "",
+                price: row.querySelector('.ticket-price-input')?.value || "0",
+                qty: row.querySelector('.ticket-qty-input')?.value || "0"
+            })),
+            
+            map: getBase64FromImg('map-prev'), 
 
-    localStorage.setItem('ticket_events', JSON.stringify(allData));
-    if (typeof closeConfirmModal === "function") closeConfirmModal();
+            // Bước 3: Pháp lý
+            orgType: document.querySelector('input[name="org-type"]:checked')?.value || "", 
+            taxId: document.getElementById('tax-id-input')?.value.trim() || "",
+            legalId: document.getElementById('legal-id-input')?.value.trim() || "",
+            rules: document.getElementById('event-rules')?.value.trim() || "",
+            refundPolicy: document.getElementById('refund-policy')?.value || "none",
+            compensation: document.getElementById('det-compensation')?.value || "",
+            filesData: typeof selectedFiles !== 'undefined' ? selectedFiles : [],
+        
+            // Bước 4: Tài khoản
+            bankname: document.getElementById('bank-name')?.value.trim() || "",
+            bankuser: document.getElementById('bank-user')?.value.trim() || "",
+            bankacc: document.getElementById('bank-acc')?.value.trim() || "",
+            bankbranch: document.getElementById('bank-branch')?.value.trim() || "", 
+            billingEmail: document.getElementById('billing-email')?.value.trim() || "",
+            bankqr: getBase64FromImg('qr-prev'),
+            
+            status: isDraft ? 'draft' : 'pending',
+            timeCreate: new Date().toLocaleString()
+        };
 
-    if (isDraft) {
-    alert("Đã lưu bản nháp thành công!");
+        // Lưu vào LocalStorage
+        let allData = JSON.parse(localStorage.getItem('ticket_events')) || [];
+        
+        if (isEditing && currentEditCard) {
+            const index = allData.findIndex(ev => ev.id === newEvent.id);
+            if (index !== -1) {
+                allData[index] = newEvent;
+            } else {
+                allData.unshift(newEvent);
+            }
+        } else {
+            allData.unshift(newEvent);
+        }
 
-    } else {
-        openSuccessModal();
+        localStorage.setItem('ticket_events', JSON.stringify(allData));
+
+        // Xử lý hậu kỳ
+        if (typeof closeConfirmModal === "function") closeConfirmModal();
+
+        if (isDraft) {
+            alert("Đã lưu bản nháp thành công!");
+        } else {
+            openSuccessModal();
+        }
+        
+        // Reset trạng thái và chuyển trang
+        isEditing = false;
+        currentEditCard = null;
+        selectedFiles = [];
+        cancelCreate(); 
+        showPage('my-events'); 
+        if(typeof loadMyEvents === "function") loadMyEvents(); 
+
+    } catch (error) {
+        console.error("Lỗi khi lưu sự kiện:", error);
+        alert("Có lỗi xảy ra khi lưu. Vui lòng kiểm tra Console (F12)");
     }
-    
-    isEditing = false;
-    cancelCreate(); 
-    showPage('my-events'); 
 }
+
 
 function cancelCreate() {
     isEditing = false;
@@ -312,86 +388,136 @@ function closeSuccessModal() {
 
 function editEvent(btn) {
     isEditing = true;
-    // 1. Lấy ID từ card
     currentEditCard = btn.closest('.event-item-card');
     const eventId = currentEditCard.dataset.id; 
 
-    // 2. Tìm dữ liệu gốc trong localStorage thay vì dùng dataset
     let allData = JSON.parse(localStorage.getItem('ticket_events')) || [];
     const ev = allData.find(item => item.id === eventId);
 
     if (!ev) {
-        alert("Không tìm thấy dữ liệu sự kiện!");
-        return;
+        alert("Không tìm thấy dữ liệu!"); return;
     }
 
-    // 3. Chuyển trang
     showPage('create-event');
-    goToStep(1);
+    if (typeof goToStep === "function") goToStep(1);
 
-    // 4. Đổ dữ liệu vào Form (Dùng chính xác tên biến bạn đã lưu ở hàm finishCreateEvent)
-    document.getElementById('event-name-input').value = cleanData(ev.name || ev.title);
-    document.getElementById('event-type-input').value = cleanData(ev.type);
-    document.getElementById('event-location-name').value = cleanData(ev.locname);
-    document.getElementById('event-location-detail').value = cleanData(ev.locdetail);
-    document.getElementById('start-time').value = cleanData(ev.start);
-    document.getElementById('end-time').value = cleanData(ev.end);
-    document.getElementById('event-description').value = cleanData(ev.desc);
-    document.getElementById('btc-name').value = cleanData(ev.btcname);
-    document.getElementById('btc-email').value = cleanData(ev.btcemail);
-    document.getElementById('btc-phone').value = cleanData(ev.btcphone);
-    document.getElementById('btc-info').value = cleanData(ev.btcinfo); 
-    document.getElementById('bank-name').value = cleanData(ev.bankname);
-    document.getElementById('bank-user').value = cleanData(ev.bankuser);
-    document.getElementById('bank-acc').value = cleanData(ev.bankacc);
+    const setVal = (id, value) => {
+        const el = document.getElementById(id);
+        if (el) el.value = value || "";
+    };
 
-    // --- 5. HIỂN THỊ LẠI CÁC LOẠI ẢNH ---
-    const renderImagePreview = (data, prevId, wrapId, uiId) => {
-    const prev = document.getElementById(prevId);
-    const wrap = document.getElementById(wrapId);
-    const ui = document.getElementById(uiId);
+    // --- BƯỚC 1: THÔNG TIN CHUNG ---
+    setVal('event-name-input', ev.title || ev.name);
+    setVal('event-type-input', ev.type);
+    setVal('event-mode-input', ev.mode);
+    setVal('event-location-name', ev.locname || ev.locationName);
+    setVal('event-location-detail', ev.locdetail || ev.locationDetail);
+    setVal('event-description', ev.desc || ev.description);
+    setVal('event-trailer', ev.trailer);
 
-    if (data && data.length > 10 && data.includes('data:image')) {
-        if (prev) {
-            prev.src = data; // Hiển thị ảnh cũ lên
-            prev.style.display = 'block';
-            prev.style.width = '100%';
-            prev.style.height = '100%';
-            prev.style.objectFit = 'cover';
-        }
-        if (wrap) wrap.classList.remove('hidden');
-        if (ui) ui.classList.add('hidden');
-        
-        // QUAN TRỌNG: Lưu lại vào localStorage tạm để hàm finishCreateEvent có cái mà lấy
-        localStorage.setItem('temp_img_' + prevId, data); 
-    } else {
-        if (wrap) wrap.classList.add('hidden');
-        if (ui) ui.classList.remove('hidden');
-        if (prev) prev.src = "";
-        localStorage.removeItem('temp_img_' + prevId);
+    // --- BƯỚC 2: THỜI GIAN & GIÁ VÉ ---
+    const timeslotList = document.getElementById('timeslot-list');
+    const slots = ev.timeSlots || ev.timeslots; 
+    if (timeslotList && slots) {
+        timeslotList.innerHTML = ''; 
+        slots.forEach(slot => {
+            if (typeof addTimeSlot === "function") {
+                addTimeSlot(); 
+                const lastRow = timeslotList.lastElementChild;
+                if (lastRow) {
+                    lastRow.querySelector('.start-time-input').value = slot.start || "";
+                    lastRow.querySelector('.end-time-input').value = slot.end || "";
+                }
+            }
+        });
     }
-};
 
-renderImagePreview(ev.img, 'poster-prev', 'poster-wrap', 'poster-prev-ui');
-renderImagePreview(ev.map, 'map-prev', 'map-wrap', 'map-prev-ui');
-renderImagePreview(ev.bankqr, 'qr-prev', 'qr-wrap', 'qr-prev-ui');
-renderImagePreview(ev.btclogo, 'logo-prev', 'logo-wrap', 'logo-prev-ui');
+    const ticketList = document.getElementById('ticket-list');
+    if (ticketList && ev.tickets) {
+        ticketList.innerHTML = ''; 
+        ev.tickets.forEach(t => {
+            if (typeof addTicketRow === "function") {
+                addTicketRow();
+                const lastRow = ticketList.lastElementChild;
+                if (lastRow) {
+                    lastRow.querySelector('.ticket-name-input').value = t.name || "";
+                    lastRow.querySelector('.ticket-price-input').value = t.price || "";
+                    lastRow.querySelector('.ticket-qty-input').value = t.qty || "";
+                }
+            }
+        });
+    }
+    renderImagePreview(ev.map, 'map-prev', 'map-wrap', 'map-prev-ui');
+
+    // --- BƯỚC 3: PHÁP LÝ (So khớp theo Value) ---
+const orgRadios = document.querySelectorAll('input[name="org-type"]');
+if (orgRadios.length > 0 && ev.orgType) {
+    orgRadios.forEach(radio => {
+        if (radio.value === ev.orgType) {
+            radio.checked = true;
+        }
+    });
+}
+
+    // --- File ---
+// 1. Reset mảng tạm và giao diện list file
+selectedFiles = []; 
+const fileListContainer = document.getElementById('file-list');
+if (fileListContainer) fileListContainer.innerHTML = '';
+
+// 2. Nếu có dữ liệu file cũ, đổ lại vào
+if (ev.filesData && Array.isArray(ev.filesData)) {
+    ev.filesData.forEach(fileObj => {
+        selectedFiles.push(fileObj); 
+
+        // Hiển thị ra giao diện
+        const fileItem = document.createElement('div');
+        fileItem.className = "flex items-center gap-2 bg-white/10 px-3 py-2 rounded-xl border border-white/5 animate-fade-in";
+        const icon = fileObj.type.includes('pdf') ? 'fa-file-pdf text-red-400' : 'fa-image text-green-400';
+
+        fileItem.innerHTML = `
+            <i class="fa-solid ${icon} text-xs"></i>
+            <span class="text-[10px] text-gray-300 truncate max-w-[150px]">${fileObj.name}</span>
+            <button type="button" class="ml-1 text-gray-500 hover:text-red-400 transition-colors" 
+                onclick="removeFile(this, '${fileObj.name}')">
+                <i class="fa-solid fa-xmark text-[10px]"></i>
+            </button>
+        `;
+        fileListContainer.appendChild(fileItem);
+    });
+}
+    setVal('legal-id-input', ev.legalId || ev.legalid);
+    setVal('tax-id-input', ev.taxId || ev.taxid);
+    setVal('event-rules', ev.rules);
+    
+    // Đổ lại dữ liệu Select cho Chính sách & Bồi thường
+    const refundEl = document.getElementById('refund-policy');
+    if (refundEl) refundEl.value = ev.refundPolicy || ev.refundpolicy || "none";
+    
+    // Lưu ý: Đảm bảo Select "Trách nhiệm bồi thường" trong HTML có id="compensation-policy"
+    const compEl = document.getElementById('compensation-policy');
+    if (compEl) compEl.value = ev.compensation || "Hoàn tiền 100% nếu sự kiện bị hủy";
+
+    // --- BƯỚC 4: BAN TỔ CHỨC & NGÂN HÀNG (Sửa lỗi mất dữ liệu ở đây) ---
+    setVal('btc-name', ev.btcname || ev.btcName);
+    setVal('btc-email', ev.btcemail || ev.btcEmail);
+    setVal('btc-phone', ev.btcphone || ev.btcPhone);
+    setVal('btc-info', ev.btcinfo || ev.btcInfo);
+    
+    setVal('bank-name', ev.bankname || ev.bankName);
+    setVal('bank-user', ev.bankuser || ev.bankUser);
+    setVal('bank-acc', ev.bankacc || ev.bankAcc);
+    setVal('bank-branch', ev.bankbranch || ev.bankBranch); 
+    setVal('billing-email', ev.billingEmail || ev.billingemail);
+
+    // --- ẢNH ---
+    renderImagePreview(ev.banner || ev.cover, 'cover-prev', 'cover-wrap', 'cover-prev-ui');
+    renderImagePreview(ev.img || ev.poster, 'poster-prev', 'poster-wrap', 'poster-prev-ui');
+    renderImagePreview(ev.bankqr || ev.qr, 'qr-prev', 'qr-wrap', 'qr-prev-ui');
+    renderImagePreview(ev.btclogo || ev.logo, 'logo-prev', 'logo-wrap', 'logo-prev-ui');
 
     const mainFinishBtn = document.querySelector('button[onclick="showConfirmModal()"]');
     if(mainFinishBtn) mainFinishBtn.innerText = "CẬP NHẬT SỰ KIỆN";
-
-    // Đổ lại danh sách vé
-const list = document.getElementById('ticket-list');
-if (list && ev.tickets) {
-    list.innerHTML = ''; // Xóa trắng
-    ev.tickets.forEach(t => {
-        addTicketRow(); // Tạo row mới
-        const lastRow = list.lastElementChild;
-        lastRow.querySelector('.ticket-name-input').value = t.name;
-        lastRow.querySelector('.ticket-price-input').value = t.price;
-        lastRow.querySelector('.ticket-qty-input').value = t.qty;
-    });
-}
 }
 
 // --- 6. MODAL XÁC NHẬN (CONFIRMATION) ---
@@ -407,11 +533,25 @@ function showConfirmModal() {
             const img = document.getElementById(id);
             return (img && img.src && img.src.includes('data:image')) ? img.src : null;
         };
-
+     
         const posterSrc = getImgSrc('poster-prev') || 'https://via.placeholder.com/400x600?text=No+Poster';
+        const bannerSrc = getImgSrc('cover-prev') || posterSrc;
         const seatingSrc = getImgSrc('map-prev');
         const qrSrc = getImgSrc('qr-prev');           
         const btcLogoSrc = getImgSrc('logo-prev');     
+        const selectedRadio = document.querySelector('input[name="org-type"]:checked');
+        let legalTypeVal = 'N/A';
+        if (selectedRadio) {legalTypeVal = selectedRadio.nextElementSibling.innerText.trim(); }
+        let timeSlotsHTML = "";
+        document.querySelectorAll('#timeslot-list .timeslot-item').forEach((row, index) => {
+            const start = row.querySelector('.start-time-input')?.value.replace('T', ' ') || '...';
+            const end = row.querySelector('.end-time-input')?.value.replace('T', ' ') || '...';
+            timeSlotsHTML += `
+                <div class="flex justify-between items-center text-[10px] border-b border-gray-50 py-2">
+                    <span class="font-bold text-gray-700">Khung giờ ${index + 1}</span>
+                    <span class="text-gray-500">${start} <i class="fa-solid fa-arrow-right mx-1 text-[8px]"></i> ${end}</span>
+                </div>`;
+        });
 
         let ticketInfo = "";
         document.querySelectorAll('#ticket-list > div').forEach((row, index) => {
@@ -430,88 +570,191 @@ function showConfirmModal() {
             }
         });
 
-        const content = `
-    <div class="space-y-6 pb-4 text-left w-full">
-        <div class="relative w-full h-32 rounded-3xl overflow-hidden border border-gray-100 shadow-sm bg-gray-200">
-            <img src="${posterSrc}" class="w-full h-full object-cover blur-[2px] opacity-40">
-            <div class="absolute inset-0 flex items-center p-4 gap-4 bg-gradient-to-r from-white via-white/80 to-transparent">
-                <img src="${posterSrc}" class="w-20 h-28 object-cover rounded-xl shadow-lg border-2 border-white shrink-0">
-                <div class="flex-1 min-w-0">
-                    <p class="text-[9px] text-gray-500 uppercase font-black tracking-widest">Xem trước sự kiện</p>
-                    <h4 class="font-black text-lg text-gray-900 uppercase truncate leading-tight">${getVal('event-name-input')}</h4>
-                    <span class="inline-block mt-1 px-3 py-0.5 bg-blue-50 text-[#00d2ff] text-[9px] font-bold rounded-full border border-blue-100 uppercase">${getVal('event-type-input')}</span>
-                </div>
-            </div>
-        </div>
+        const trailerLink = document.getElementById('event-trailer')?.value.trim();
+        const trailerHTML = trailerLink ? `
+            <div class="p-4 bg-red-50 rounded-2xl border border-red-100 mb-4">
+                <p class="text-[9px] text-red-600 uppercase font-black mb-2 tracking-widest"><i class="fa-brands fa-youtube"></i> Trailer Sự kiện</p>
+                <a href="${trailerLink}" target="_blank" class="text-[11px] text-blue-600 font-bold underline break-all inline-block">
+                    <i class="fa-solid fa-link mr-1"></i> ${trailerLink}
+                </a>
+            </div>` : `
+            <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100 mb-4 italic text-gray-400 text-[10px]">
+                <i class="fa-solid fa-video-slash mr-1"></i> Chưa có link video trailer
+            </div>`;
 
-        <div class="w-full">
-            <p class="text-[10px] text-gray-400 uppercase font-black mb-2 tracking-widest"><i class="fa-solid fa-align-left"></i> Mô tả chi tiết</p>
-            <div class="bg-gray-50 border border-gray-100 rounded-2xl p-3 text-[11px] text-gray-600 leading-relaxed max-h-32 overflow-y-auto">
-                ${getVal('event-description').replace(/\n/g, '<br>')}
-            </div>
-        </div>
+        const eventRules = getVal('event-rules'); 
+        const rulesHTML = `
+            <div class="mt-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                <p class="text-[9px] text-gray-400 uppercase font-bold mb-2"><i class="fa-solid fa-gavel"></i> Nội quy sự kiện</p>
+                <div class="relative overflow-hidden" style="max-height: 80px;" id="rules-container">
+                    <p class="text-[10px] text-gray-600 whitespace-pre-line leading-relaxed">${eventRules}</p>
+                    <div class="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-gray-50 to-transparent" id="rules-fade"></div>
+                </div>
+                <button onclick="this.parentElement.querySelector('#rules-container').style.maxHeight='none'; this.style.display='none'; this.parentElement.querySelector('#rules-fade').style.display='none';" 
+                        class="mt-2 text-[10px] font-bold text-blue-600 hover:text-blue-800">
+                    Xem thêm...
+                </button>
+            </div>`;
 
-        <div class="grid grid-cols-1 gap-3 bg-gray-50 p-4 rounded-3xl border border-gray-100 w-full">
-            <div class="flex items-center gap-3 w-full">
-                <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-blue-500 shadow-sm shrink-0"><i class="fa-regular fa-calendar"></i></div>
-                <div class="flex-1">
-                    <p class="text-[9px] text-gray-400 uppercase font-bold leading-none">Thời gian</p>
-                    <p class="text-[11px] font-bold text-gray-800 mt-1">${getVal('start-time').replace('T', ' ')} → ${getVal('end-time').replace('T', ' ')}</p>
-                </div>
-            </div>
-            <div class="flex items-center gap-3 w-full">
-                <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-red-500 shadow-sm shrink-0"><i class="fa-solid fa-location-dot"></i></div>
-                <div class="flex-1">
-                    <p class="text-[9px] text-gray-400 uppercase font-bold leading-none">Địa điểm</p>
-                    <p class="text-[11px] font-bold text-gray-800 mt-1">${getVal('event-location-name')}</p>
-                    <p class="text-[9px] text-gray-500 italic">${getVal('event-location-detail')}</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="w-full">
-            <p class="text-[10px] text-gray-400 uppercase font-black mb-2 tracking-widest"><i class="fa-solid fa-ticket"></i> Thông tin vé</p>
-            <div class="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm w-full">
-                <div class="grid grid-cols-1 gap-1 mb-3">
-                    ${ticketInfo || '<span class="text-gray-400 text-xs italic text-center">Chưa có thông tin vé</span>'}
-                </div>
-                ${seatingSrc ? `<p class="text-[9px] text-gray-400 mb-1 uppercase font-bold">Sơ đồ:</p><img src="${seatingSrc}" class="w-full rounded-lg border border-gray-100">` : ''}
-            </div>
-        </div>
-
-        <div class="space-y-3 w-full">
-            <div class="p-3 bg-purple-50 rounded-2xl border border-purple-100 w-full flex gap-3 items-center">
-                ${btcLogoSrc ? `<img src="${btcLogoSrc}" class="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm">` : '<div class="w-12 h-12 rounded-full bg-purple-200 flex items-center justify-center text-purple-500"><i class="fa-solid fa-user-tie"></i></div>'}
-                <div class="flex-1 min-w-0">
-                    <p class="text-[9px] text-purple-400 uppercase font-black mb-1">Ban tổ chức</p>
-                    <p class="text-[11px] font-bold text-purple-900 truncate">${getVal('btc-name')}</p>
-                    <p class="text-[10px] text-purple-700 font-medium truncate">${getVal('btc-email')} | ${getVal('btc-phone')}</p>
-                    <p class="text-[10px] text-purple-600 mt-1 italic leading-tight">${getVal('btc-info').replace(/\n/g, '<br>')}</p>
-                </div>
-            </div>
+        const fileList = document.getElementById('file-list');
+        let filesHTML = "";
+        
+        if (selectedFiles.length > 0) {
+            // Tạo danh sách các link để bấm xem được
+            let links = selectedFiles.map((file, index) => {
+                const fileURL = URL.createObjectURL(file); 
+                const icon = file.type.includes('pdf') ? 'fa-file-pdf' : 'fa-image';
+                return `
+                    <a href="${fileURL}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1">
+                        <i class="fa-solid ${icon} text-[8px]"></i> Xem tệp ${index + 1}
+                    </a>`;
+            }).join(', ');
             
-            <div class="p-3 bg-green-50 rounded-2xl border border-green-100 w-full">
-                <p class="text-[9px] text-green-600 uppercase font-black mb-1">Tài khoản nhận tiền</p>
-                <div class="flex justify-between items-center w-full gap-4">
-                    <div class="flex-1">
-                        <p class="text-[11px] font-bold text-green-900 uppercase">${getVal('bank-name')}</p>
-                        <p class="text-[10px] text-green-700 font-medium">Chủ TK: ${getVal('bank-user')}</p>
-                        <p class="text-[14px] text-green-600 font-black tracking-tight mt-1">${getVal('bank-acc')}</p>
+            filesHTML = `<div class="flex flex-wrap gap-2 text-[9px] font-bold">${links}</div>`;
+        } else {
+            filesHTML = '<span class="text-red-400 italic">Chưa có hồ sơ đính kèm</span>';
+        }
+
+
+        // --- TỔNG HỢP NỘI DUNG ---
+        const content = `
+    <div class="space-y-6 pb-4 text-left w-full overflow-x-hidden animate-fade-in">
+        <div class="w-full rounded-3xl overflow-hidden border border-gray-100 shadow-sm bg-gray-900 p-2 space-y-3">
+          
+        <div class="grid grid-cols-1 md:grid-cols-[1.8fr_1fr] gap-4 items-start"> 
+    <div class="flex flex-col w-full">
+        <p class="mb-2 font-medium text-[10px] text-gray-400 uppercase tracking-widest w-full text-left ml-2">* Ảnh nền (Gốc)</p>
+        <div class="w-full rounded-2xl border border-dashed border-white/20 bg-white/5 min-h-[150px] flex items-center justify-center">
+            <img src="${bannerSrc}" class="w-full h-auto block rounded-2xl shadow-2xl" style="display: block; width: 100%; height: auto;">
+        </div>
+    </div>
+    
+    <div class="flex flex-col w-full">
+        <p class="mb-2 font-medium text-[10px] text-gray-400 uppercase tracking-widest w-full text-left ml-2">* Ảnh sự kiện</p>
+        <div class="w-full rounded-2xl border border-dashed border-white/20 bg-white/5 min-h-[150px] flex items-center justify-center">
+            <img src="${posterSrc}" class="w-full h-auto block rounded-2xl shadow-2xl" style="display: block; width: 100%; height: auto;">
+        </div>
+    </div>
+</div>
+
+            <div class="bg-gray-800 p-4 rounded-xl border border-white/5 space-y-2">
+                <p class="text-[9px] text-[#00d2ff] uppercase font-black tracking-widest">Xem trước bản đăng ký</p>
+                
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-1 border-t border-white/5">
+                    <h4 class="flex-1 font-black text-xl md:text-2xl text-white uppercase truncate">${getVal('event-name-input')}</h4>
+                    
+                    <div class="shrink-0 flex flex-wrap gap-2">
+                        <span class="px-2.5 py-1.5 bg-white/10 text-white text-[9px] font-bold rounded-lg uppercase border border-white/10 whitespace-nowrap">
+                            <i class="fa-solid fa-tag mr-1 text-[#00d2ff]"></i> ${getVal('event-type-input')}
+                        </span>
+                        <span class="px-2.5 py-1.5 bg-[#00d2ff] text-black text-[9px] font-bold rounded-lg uppercase whitespace-nowrap">
+                            <i class="fa-solid fa-bolt mr-1"></i> ${getVal('event-mode-input')}
+                        </span>
                     </div>
-                    ${qrSrc ? `<img src="${qrSrc}" class="w-16 h-16 bg-white p-1 rounded border border-green-200 object-contain">` : ''}
                 </div>
             </div>
         </div>
 
-        <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200 mt-4">
-            <p class="text-[10px] text-amber-600 font-black uppercase mb-1 flex items-center gap-2">
-                <i class="fa-solid fa-circle-exclamation"></i> Quy trình xét duyệt
-            </p>
-            <ul class="text-[11px] text-amber-800 space-y-1 font-bold leading-tight">
-                <li>• Thời gian chờ duyệt: 5 - 7 ngày làm việc.</li>
-                <li>• Thời gian hiển thị: Cần thêm 5 - 7 ngày để lên trang chủ.</li>
-            </ul>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                <p class="text-[9px] text-gray-400 uppercase font-bold mb-2"><i class="fa-solid fa-align-left"></i> Mô tả sự kiện</p>
+                <div class="text-[10px] text-gray-700 leading-relaxed line-clamp-6 whitespace-pre-line font-medium">
+                    ${getVal('event-description')}
+                </div>
+            </div>
+            <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100">
+                <p class="text-[9px] text-gray-400 uppercase font-bold mb-2"><i class="fa-solid fa-location-dot"></i> Địa điểm tổ chức</p>
+                <p class="text-[11px] font-bold text-gray-800 uppercase">${getVal('event-location-name')}</p>
+                <p class="text-[10px] text-gray-500 mt-1 leading-tight italic">${getVal('event-location-detail')}</p>
+            </div>
         </div>
+
+        ${trailerHTML}
+
+        <div class="w-full">
+            <p class="text-[10px] text-gray-400 uppercase font-black mb-2 tracking-widest"><i class="fa-solid fa-calendar-check"></i> Lịch diễn & Cơ cấu vé</p>
+            <div class="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm space-y-4">
+                <div>
+                    <p class="text-[9px] text-gray-400 uppercase font-bold mb-2">Thời gian:</p>
+                    ${timeSlotsHTML || '<p class="text-[10px] text-gray-400 italic">Chưa thiết lập</p>'}
+                </div>
+                <div>
+                    <p class="text-[9px] text-gray-400 uppercase font-bold mb-2">Hạng vé:</p>
+                    ${ticketInfo || '<span class="text-gray-400 text-xs italic">Chưa có vé</span>'}
+                </div>
+                ${seatingSrc ? `<img src="${seatingSrc}" class="w-full rounded-xl border border-gray-50 mt-2 bg-gray-50">` : ''}
+            </div>
+        </div>
+
+        <div class="p-5 bg-gray-50 rounded-2xl border border-gray-200">
+            <p class="text-[9px] text-gray-400 uppercase font-bold mb-3 tracking-widest"><i class="fa-solid fa-id-card"></i> Chi tiết Ban Tổ Chức</p>
+            <div class="flex items-start gap-4">
+                ${btcLogoSrc ? `<img src="${btcLogoSrc}" class="w-16 h-16 rounded-2xl object-contain bg-white border border-gray-200 p-1 shadow-sm">` : ''}
+                <div class="flex-1 min-w-0">
+                    <p class="text-[12px] font-black text-gray-900 uppercase">${getVal('btc-name')}</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-y-1 gap-x-4 mt-2 text-[10px] text-gray-600 italic">
+                        <p><i class="fa-solid fa-envelope w-4 text-blue-400"></i> ${getVal('btc-email')}</p>
+                        <p><i class="fa-solid fa-phone w-4 text-green-400"></i> ${getVal('btc-phone')}</p>
+                        <p class="col-span-2"><i class="fa-solid fa-globe w-4 text-amber-400"></i> Thông tin thêm: ${getVal('btc-info') || 'Chưa cập nhật'}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-5 bg-blue-50/50 rounded-2xl border border-blue-100">
+            <p class="text-[10px] text-blue-600 uppercase font-black mb-3 tracking-widest flex justify-between">
+                <span><i class="fa-solid fa-shield-halved"></i> Hồ sơ pháp lý & Quy định</span>
+                <span><i class="fa-solid fa-shield-halved text-[7px]"></i><span>${legalTypeVal}</span></span>
+            </p>
+            <div class="grid grid-cols-2 gap-4 text-[10px] mb-2 border-b border-blue-100 pb-3 font-bold">
+                <div><span class="text-gray-500 block font-normal">Mã số thuế:</span> <span class="text-gray-800">${getVal('tax-id-input')}</span></div>
+                <div><span class="text-gray-500 block font-normal">Số GP/CMND:</span> <span class="text-gray-800">${getVal('legal-id-input')}</span></div>
+            </div>
+            <div class="flex justify-between text-[10px] mt-2 italic">
+                <span class="text-gray-600 font-medium">Chính sách hoàn tiền:</span>
+                <b class="text-gray-800">${document.getElementById('refund-policy')?.options[document.getElementById('refund-policy').selectedIndex]?.text || 'N/A'}</b>
+            </div>
+            <div class="flex justify-between text-[10px] mt-2 italic">
+                <span class="text-gray-600 font-medium">Trách nhiệm bồi thường:</span>
+                <b class="text-gray-800">${document.getElementById('det-compensation')?.options[document.getElementById('det-compensation').selectedIndex]?.text || 'N/A'}</b>
+            </div>
+            <div class="flex justify-between text-[10px] mt-1 italic border-b border-blue-100 pb-2">
+                <span class="text-gray-600 font-medium">Tệp hồ sơ:</span>
+                ${filesHTML}
+            </div>
+            ${rulesHTML}
+        </div>
+
+        <div class="p-5 bg-green-50 rounded-2xl border border-green-100">
+            <p class="text-[10px] text-green-600 uppercase font-black mb-3 tracking-widest"><i class="fa-solid fa-wallet"></i> Tài khoản nhận doanh thu</p>
+            <div class="flex justify-between items-center gap-4">
+                <div class="flex-1 min-w-0">
+                    <p class="text-[10px] text-green-700 font-bold uppercase">Chủ TK: ${getVal('bank-user')}</p>
+                    <p class="text-[10px] text-green-700 font-bold uppercase">STK: ${getVal('bank-acc')}</p>
+                    <p class="text-[10px] text-green-700 font-bold uppercase">Tên ngân hàng: ${getVal('bank-name')}</p>
+                    <p class="text-[10px] text-green-700 font-bold uppercase">Chi nhánh: ${getVal('bank-branch')}</p>
+                    <p class="text-[9px] text-green-500 mt-1 italic leading-tight">Mọi báo cáo đối soát sẽ gửi về: <br> ${getVal('billing-email')}</p>
+                </div>
+                ${qrSrc ? `<img src="${qrSrc}" class="w-20 h-20 bg-white p-1.5 rounded-xl border border-green-200 shadow-sm">` : ''}
+            </div>
+        </div>
+
+    <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200">
+
+            <p class="text-[10px] text-amber-600 font-black uppercase mb-1 flex items-center gap-2">
+
+                <i class="fa-solid fa-circle-exclamation"></i> Lưu ý quan trọng
+
+            </p>
+
+            <ul class="text-[10px] text-amber-800/80 space-y-1 font-medium leading-tight">
+                <li>• Sự kiện sẽ được kiểm duyệt trong vòng 5-7 ngày làm việc.</li>
+                <li>• Doanh thu được chuyển từ 3-5 ngày sau khi sự kiện kết thúc thành công.</li>
+                <li>• Vui lòng kiểm tra kỹ STK, chúng tôi không hỗ trợ sai sót thông tin ngân hàng.</li>
+            </ul>
+
+        </div>
+
     </div>`;
 
         const modalContent = document.getElementById('confirm-content');
@@ -520,8 +763,11 @@ function showConfirmModal() {
             modalContent.innerHTML = content;
             modal.classList.remove('hidden');
             modal.classList.add('flex');
+            modalContent.scrollTop = 0;
         }
-    } catch (e) { console.error(e); }
+    } catch (e) { 
+        console.error("Lỗi showConfirmModal:", e); 
+    }
 }
 
 function closeConfirmModal() {
@@ -529,80 +775,154 @@ function closeConfirmModal() {
 }
 
 
+let selectedFiles = [];
+
+function handleFileSelect(input) {
+    const fileListContainer = document.getElementById('file-list');
+    const files = Array.from(input.files);
+
+    files.forEach(file => {
+        // Kiểm tra dung lượng (10MB = 10 * 1024 * 1024 bytes)
+        if (file.size > 10 * 1024 * 1024) {
+            alert(`File ${file.name} quá lớn (tối đa 10MB)`);
+            return;
+        }
+
+        selectedFiles.push(file);
+
+        // Tạo giao diện hiển thị file đã chọn
+        const fileItem = document.createElement('div');
+        fileItem.className = "flex items-center gap-2 bg-white/10 px-3 py-2 rounded-xl border border-white/5 animate-fade-in";
+        
+        // Icon dựa trên định dạng file
+        const icon = file.type.includes('pdf') ? 'fa-file-pdf text-red-400' : 'fa-image text-green-400';
+
+        fileItem.innerHTML = `
+            <i class="fa-solid ${icon} text-xs"></i>
+            <span class="text-[10px] text-gray-300 truncate max-w-[150px]">${file.name}</span>
+            <button type="button" class="ml-1 text-gray-500 hover:text-red-400 transition-colors" onclick="removeFile(this, '${file.name}')">
+                <i class="fa-solid fa-xmark text-[10px]"></i>
+            </button>
+        `;
+
+        fileListContainer.appendChild(fileItem);
+    });
+
+    // Reset input để có thể chọn lại cùng 1 file nếu đã xóa
+    input.value = "";
+}
+
+function removeFile(element, fileName) {
+    // Xóa khỏi mảng lưu trữ
+    selectedFiles = selectedFiles.filter(f => f.name !== fileName);
+    // Xóa giao diện
+    element.parentElement.remove();
+}
+
 // --- 7. HIỂN THỊ DANH SÁCH ---
 function loadMyEvents() {
-    const container = document.getElementById('events-container');
-    if (!container) return;
+    const container = document.getElementById('events-container');
+    if (!container) return;
 
-    const allEvents = JSON.parse(localStorage.getItem('ticket_events')) || [];
+    // Lấy dữ liệu từ localStorage
+    const allEvents = JSON.parse(localStorage.getItem('ticket_events')) || [];
 
-    if (allEvents.length === 0) {
-        container.innerHTML = `
-            <div id="empty-state" class="flex flex-col items-center justify-center py-20 animate-fade-in">
-                <div class="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10">
-                    <i class="fa-solid fa-calendar-plus text-2xl text-[#00d2ff]"></i>
-                </div>
-                <p class="text-gray-400 italic mb-6">Bạn chưa tạo sự kiện nào đâu!</p>
-                <button onclick="showPage('create-event')" class="px-8 py-3 bg-black text-white rounded-xl border border-white/10 hover:bg-[#00d2ff] hover:text-black transition-all font-bold uppercase tracking-widest text-xs">
-                    Tạo sự kiện ngay
-                </button>
-            </div>`;
-        return;
-    }
+    // Kiểm tra nếu rỗng
+    if (allEvents.length === 0) {
+        container.innerHTML = `
+            <div id="empty-state" class="flex flex-col items-center justify-center py-20 animate-fade-in text-center">
+                <div class="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 border border-white/10 shadow-inner">
+                    <i class="fa-solid fa-calendar-plus text-2xl text-[#00d2ff]"></i>
+                </div>
+                <p class="text-gray-400 italic mb-6 px-10 leading-relaxed">Bạn chưa có sự kiện nào. Hãy bắt đầu tạo sự kiện đầu tiên của mình!</p>
+                <button onclick="showPage('create-event')" class="px-8 py-3 bg-gradient-to-r from-[#00d2ff] to-[#3a7bd5] text-white rounded-xl hover:shadow-[0_0_20px_rgba(0,210,255,0.3)] transition-all font-bold uppercase tracking-widest text-xs">
+                    Tạo sự kiện ngay
+                </button>
+            </div>`;
+        return;
+    }
 
-    container.innerHTML = ""; 
-    allEvents.forEach(ev => {
-        // --- LOGIC BADGE TRẠNG THÁI MỚI ---
-        let statusBadge = "";
-        if (ev.status === 'active') {
-            statusBadge = '<span class="text-[10px] text-green-400 bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20 font-bold uppercase">✅ Đã được duyệt</span>';
-        } else if (ev.status === 'rejected') {
-            statusBadge = '<span class="text-[10px] text-red-400 bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20 font-bold uppercase">❌ Bị từ chối</span>';
-        } else if (ev.status === 'draft') {
-            statusBadge = '<span class="text-[10px] text-gray-400 bg-gray-500/10 px-2 py-0.5 rounded border border-gray-500/20 font-bold uppercase">📝 Bản nháp</span>';
-        } else {
-            statusBadge = '<span class="text-[10px] text-yellow-400 bg-yellow-500/10 px-2 py-0.5 rounded border border-yellow-500/20 font-bold uppercase italic">⏳ Đang chờ duyệt</span>';
-        }
+    // Xóa trắng container trước khi render lại
+    container.innerHTML = ""; 
 
-        const card = `
-<div class="event-item-card w-full flex items-center justify-between p-6 bg-white/5 border border-white/10 rounded-3xl mb-4 animate-fade-in" 
-    data-id="${ev.id}"
-    data-name="${ev.name || ev.title}"
-    data-type="${ev.type}"
-    data-locname="${ev.locname || ev.location}"
-    data-locdetail="${ev.locdetail}"
-    data-start="${ev.start}"
-    data-end="${ev.end}"
-    data-desc="${ev.desc}"
-    data-btcname="${ev.btcname || ev.organizer}"
-    data-btcemail="${ev.btcemail}"
-    data-btcphone="${ev.btcphone}"
-    data-btcinfo="${ev.btcinfo}"
-    data-bankname="${ev.bankname}"
-    data-bankuser="${ev.bankuser}"
-    data-bankacc="${ev.bankacc}"
-    data-img="${ev.img}"
-    data-tickets='${JSON.stringify(ev.tickets || [])}'
->
+    allEvents.forEach(ev => {
+        // Xử lý Badge trạng thái
+        let statusBadge = "";
+        switch(ev.status) {
+            case 'active':
+                statusBadge = '<span class="text-[9px] text-green-400 bg-green-500/10 px-2 py-0.5 rounded border border-green-500/20 font-bold uppercase tracking-tighter">✅ Đã duyệt</span>';
+                break;
+            case 'rejected':
+                statusBadge = `<button onclick="showRejectReason('${ev.id}')" class="text-[9px] text-red-400 bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20 font-bold uppercase tracking-tighter hover:bg-red-500 hover:text-white transition flex items-center gap-1"> ❌ Từ chối </button>`;
+                break;
+            case 'draft':
+                statusBadge = '<span class="text-[9px] text-gray-400 bg-white/5 px-2 py-0.5 rounded border border-white/10 font-bold uppercase tracking-tighter">📝 Bản nháp</span>';
+                break;
+            default:
+                statusBadge = '<span class="text-[9px] text-yellow-400 bg-yellow-500/10 px-2 py-0.5 rounded border border-yellow-500/20 font-bold uppercase tracking-tighter italic">⏳ Chờ duyệt</span>';
+        }
 
-    <div class="flex items-center gap-4">
-        <img src="${ev.img || 'https://via.placeholder.com/50'}" 
-             class="w-14 h-14 rounded-xl object-cover bg-gray-800 border border-white/5">
+        const card = `
+<div class="event-item-card w-full flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-3xl mb-4 hover:bg-white/[0.08] transition-all group animate-fade-in" 
+    data-id="${ev.id}">
 
-        <div>
-            <h4 class="font-bold text-white mb-1">${ev.title}</h4>
-            ${statusBadge}
+    <div class="flex items-center gap-4 min-w-0">
+        <div class="relative w-14 h-14 shrink-0">
+            <img src="${ev.img || 'https://via.placeholder.com/50'}" 
+                 class="w-full h-full rounded-xl object-cover bg-gray-800 border border-white/10 shadow-lg">
+            ${ev.status === 'draft' ? '<div class="absolute inset-0 bg-black/40 rounded-xl flex items-center justify-center"><i class="fa-solid fa-pen-nib text-[10px] text-white"></i></div>' : ''}
+        </div>
+
+        <div class="min-w-0">
+            <h4 class="font-bold text-white mb-1 truncate text-sm leading-tight pr-4">${ev.title || ev.name}</h4>
+            <div class="flex items-center gap-2">
+                ${statusBadge}
+                <span class="text-[10px] text-gray-500 font-medium">• ${ev.timeCreate?.split(',')[0] || ''}</span>
+            </div>
         </div>
     </div>
 
-    <div class="flex gap-4">
-        <button onclick="editEvent(this)" class="text-gray-400 hover:text-[#00d2ff] text-[10px] font-black uppercase">Sửa</button>
-        <button onclick="deleteEvent(this)" class="text-red-500/40 hover:text-red-500 text-[10px] font-black uppercase">Xóa</button>
+    <div class="flex gap-3 shrink-0 ml-2">
+        <button onclick="editEvent(this)" 
+            class="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-gray-400 hover:text-[#00d2ff] hover:bg-[#00d2ff]/10 transition-all">
+            <i class="fa-solid fa-pen-to-square text-xs"></i>
+        </button>
+        <button onclick="deleteEvent(this)" 
+            class="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-gray-400 hover:text-red-500 hover:bg-red-500/10 transition-all">
+            <i class="fa-solid fa-trash-can text-xs"></i>
+        </button>
     </div>
 
 </div>`;
-        container.insertAdjacentHTML('beforeend', card);
-    });
+        container.insertAdjacentHTML('beforeend', card);
+    });
+}
+
+function showRejectReason(eventId) {
+    const allEvents = JSON.parse(localStorage.getItem('ticket_events')) || [];
+    const ev = allEvents.find(item => item.id === eventId);
+
+    if (ev && ev.rejectReason) {
+        document.getElementById('reject-reason-text').innerText = ev.rejectReason;
+        const modal = document.getElementById('reject-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+
+        // Gán sự kiện cho nút "Sửa lỗi ngay"
+        document.getElementById('btn-fix-event').onclick = function() {
+            closeRejectModal();
+            // Tìm nút edit tương ứng trong card để giả lập click
+            const card = document.querySelector(`.event-item-card[data-id="${eventId}"]`);
+            const editBtn = card.querySelector('button[onclick="editEvent(this)"]');
+            editEvent(editBtn);
+        };
+    } else {
+        alert("Không tìm thấy thông tin từ chối!");
+    }
+}
+
+function closeRejectModal() {
+    document.getElementById('reject-modal').classList.add('hidden');
 }
 
 function deleteEvent(btn) {
@@ -660,6 +980,7 @@ function loadEventsForUser() {
 
 document.addEventListener('DOMContentLoaded', loadEventsForUser);
 
+
 // --- 8. ADMIN RENDER LOGIC (Trang 1.html) ---
 function loadEventsAdmin() {
     const container = document.getElementById('admin-events-container');
@@ -687,6 +1008,11 @@ function loadEventsAdmin() {
                 <span class="text-[11px] text-[#00d2ff] font-bold">${Number(t.price).toLocaleString()}đ</span>
                 <span class="text-[10px] text-gray-500">SL: ${t.qty}</span>
             </div>`).join('');
+
+        // 3. Render file hồ sơ (nếu có)
+        let filesHtml = (ev.files || []).map((f, idx) => 
+            `<a href="${f.url}" target="_blank" class="text-[10px] text-blue-400 underline mr-2">Tệp ${idx + 1}</a>`
+        ).join('') || '<span class="text-gray-600">Không có hồ sơ</span>';
 
         const card = `
             <div class="bg-[#121212] border border-white/10 rounded-[32px] p-6 mb-6 hover:border-[#00d2ff]/40 transition-all group animate-fade-in">

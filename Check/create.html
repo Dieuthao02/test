@@ -108,12 +108,13 @@
         <div class="flex items-center justify-between mb-8 overflow-x-auto gap-4 py-2 border-b border-white/10">
             <span id="step-1-tab" class="step-item active pb-2 whitespace-nowrap font-bold border-b-2 border-[#00d2ff] text-[#00d2ff]">1. Thông tin sự kiện</span>
             <span id="step-2-tab" class="step-item text-gray-500 pb-2 whitespace-nowrap">2. Thời gian & Loại vé</span>
-            <span id="step-3-tab" class="step-item text-gray-500 pb-2 whitespace-nowrap">3. Cài đặt</span>
+            <span id="step-3-tab" class="step-item text-gray-500 pb-2 whitespace-nowrap">3. Quy định & Chính sách</span>
             <span id="step-4-tab" class="step-item text-gray-500 pb-2 whitespace-nowrap">4. Thanh toán</span>
         </div>
 
         <div id="create-step-1" class="step-content space-y-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
                 <div class="md:col-span-1">
                     <p class="mb-2 font-medium text-sm text-gray-400">* Ảnh sự kiện (720x958)</p>
                     <div class="upload-box aspect-[720/958] rounded-lg border border-dashed border-white/20 bg-white/5">
@@ -164,6 +165,20 @@
                 </div>
             </div>
 
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+        <label class="text-sm font-medium text-gray-400">* Hình thức</label>
+        <select id="event-mode-input" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 mt-1 text-white focus:border-[#00d2ff] outline-none" onchange="toggleLocation(this.value)">
+            <option value="offline" class="bg-[#0a0a0a]">Sự kiện Offline</option>
+            <option value="online" class="bg-[#0a0a0a]">Sự kiện Online</option>
+        </select>
+    </div>
+    <div>
+        <label class="text-sm font-medium text-gray-400">Link Trailer (YouTube/TikTok)</label>
+        <input type="url" id="event-trailer" placeholder="https://..." class="w-full bg-white/5 border border-white/10 rounded-lg p-3 mt-1 text-white focus:border-[#00d2ff] outline-none">
+    </div>
+</div>
+
             <div class="bg-white/5 p-6 rounded-xl border border-white/10 space-y-6">
                 <h3 class="font-bold border-b border-white/10 pb-2 text-[#00d2ff] uppercase text-sm tracking-wider">Địa điểm sự kiện</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -207,116 +222,240 @@
         </div>
 
         <div id="create-step-2" class="step-content hidden space-y-8">
-            <div class="bg-white/5 p-6 rounded-xl border border-white/10 space-y-6">
-                <h3 class="font-bold border-b border-white/10 pb-2 text-[#00d2ff]">THỜI GIAN DIỄN RA</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div><label class="text-xs text-gray-500 italic">Bắt đầu</label><input type="datetime-local" id="start-time" class="w-full bg-white/10 border border-white/10 rounded-lg p-3 mt-1 text-white outline-none"></div>
-                    <div><label class="text-xs text-gray-500 italic">Kết thúc</label><input type="datetime-local" id="end-time" class="w-full bg-white/10 border border-white/10 rounded-lg p-3 mt-1 text-white outline-none"></div>
+    <div class="bg-white/5 p-6 rounded-xl border border-white/10 space-y-6">
+        <div class="flex justify-between items-center pb-2"> <h3 class="font-bold text-[#00d2ff] uppercase tracking-wider text-sm">Thời gian diễn ra</h3>
+            <button type="button" onclick="addTimeSlot()" class="text-[10px] font-bold bg-[#00d2ff]/10 text-[#00d2ff] px-3 py-1 rounded-lg border border-[#00d2ff]/20 hover:bg-[#00d2ff] hover:text-black transition-all">
+                + THÊM KHUNG GIỜ
+            </button>
+        </div>
+        
+        <div id="timeslot-list" class="space-y-3">
+            <div class="timeslot-item grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-white/5 rounded-lg border border-white/5 relative group">
+                <div>
+                    <label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Bắt đầu</label>
+                    <input type="datetime-local" class="start-time-input w-full bg-white/10 border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-[#00d2ff]">
+                </div>
+                <div>
+                    <label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Kết thúc</label>
+                    <input type="datetime-local" class="end-time-input w-full bg-white/10 border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-[#00d2ff]">
                 </div>
             </div>
-                         <div class="bg-white/5 p-6 rounded-xl border border-white/10 space-y-6">
-    <div class="flex justify-between items-center mb-2">
-        <h3 class="font-bold text-[#00d2ff] uppercase tracking-wider text-sm">
-            Danh sách loại vé
-        </h3>
-        <button type="button" onclick="addTicketRow()" 
-            class="text-xs font-bold hover:text-[#00d2ff] text-gray-500 transition-all flex items-center gap-1 bg-white/5 px-3 py-1.5 rounded-lg border border-white/10 hover:border-[#00d2ff]/30">
-            <i class="fa-solid fa-plus text-[10px]"></i> THÊM LOẠI VÉ
-        </button>
+        </div>
+        <p class="text-[10px] text-gray-500 italic">* Nếu sự kiện diễn ra nhiều ngày, hãy thêm các khung giờ tương ứng.</p>
     </div>
+
+    <div class="bg-white/5 p-6 rounded-xl border border-white/10 space-y-6">
+        <div class="flex justify-between items-center mb-2"> <h3 class="font-bold text-[#00d2ff] uppercase tracking-wider text-sm">Danh sách loại vé</h3>
+            <button type="button" onclick="addTicketRow()" class="text-[10px] font-bold bg-[#00d2ff]/10 text-[#00d2ff] px-3 py-1 rounded-lg border border-[#00d2ff]/20 hover:bg-[#00d2ff] hover:text-black transition-all">
+                + THÊM LOẠI VÉ
+            </button>
+        </div>
            
-           <div id="ticket-list" class="space-y-4">
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-white/5 rounded-lg border border-white/10">
-
-                        <input type="text" placeholder="Tên vé (Vd: Vé VIP)" class="ticket-name-input bg-transparent border border-white/10 rounded p-2 text-white">
-
-                        <input type="number" placeholder="Giá vé (VNĐ)" class="ticket-price-input bg-transparent border border-white/10 rounded p-2 text-white">
-
-                        <input type="number" placeholder="Số lượng" class="ticket-qty-input bg-transparent border border-white/10 rounded p-2 text-white">
-
-                    </div>
-
-                </div>
-                
-                <div class="mt-8">
-                    <h3 class="font-bold border-b border-white/10 pb-2 mb-4 uppercase text-sm text-[#00d2ff]">Sơ đồ chỗ ngồi (Không bắt buộc)</h3>
-                    <div class="upload-box w-full h-48 rounded-lg border border-dashed border-white/20 bg-white/5 relative">
-                        <input type="file" id="input-map" class="hidden" accept="image/*" onchange="previewImg(this, 'map-prev')">
-                        <div id="map-prev-ui" class="flex flex-col items-center justify-center h-full cursor-pointer" onclick="document.getElementById('input-map').click()">
-                            <i class="fa-solid fa-map-location-dot text-3xl mb-2 text-gray-500"></i>
-                            <p class="text-xs text-gray-500">Tải lên sơ đồ khán đài hoặc sơ đồ vị trí</p>
-                        </div>
-                        <div id="map-wrap" class="hidden h-full relative p-2">
-                            <div class="remove-btn absolute top-2 right-2 bg-red-500 text-white w-6 h-6 flex items-center justify-center rounded-full cursor-pointer" onclick="removeImg('input-map', 'map-prev', 'map-wrap', 'map-prev-ui')"><i class="fa-solid fa-xmark"></i></div>
-                            <img id="map-prev" class="w-full h-full object-contain">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex gap-4 mt-8">
-                <button type="button" onclick="goToStep(1)" class="flex-1 bg-white/10 hover:bg-white/20 text-white py-4 rounded-xl font-bold transition">QUAY LẠI</button>
-                <button type="button" onclick="goToStep(3)" class="flex-1 bg-[#00d2ff] text-black font-bold py-4 rounded-xl transition hover:bg-white">TIẾP TỤC</button>
-            </div>
-        </div>
-
-                <div id="create-step-3" class="step-content hidden space-y-8 animate-fade-in">
-    <div class="bg-white/5 p-10 rounded-3xl border border-white/10 max-w-lg mx-auto text-center shadow-2xl">
+        <div id="ticket-list" class="space-y-3">
+    <div class="ticket-item grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-white/5 rounded-lg border border-white/5 relative group">
         
-        <div class="w-20 h-20 bg-[#00d2ff]/10 rounded-full flex items-center justify-center mx-auto mb-6 shrink-0 relative">
-            
-            <i class="fa-solid fa-gear text-4xl text-[#00d2ff] leading-none m-0 p-0 block animate-spin-slow"></i>
-        
+        <button type="button" onclick="this.parentElement.remove()" class="absolute -top-2 -right-2 bg-red-500 text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px] opacity-0 group-hover:opacity-100 transition-opacity z-10">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div>
+            <label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Tên vé</label>
+            <input type="text" placeholder="Vd: Vé VIP" class="ticket-name-input w-full bg-white/10 border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-[#00d2ff]">
         </div>
-                <h3 class="text-xl font-bold mb-8 text-white">Cài đặt hiển thị</h3>
-                <div class="text-left space-y-4">
-                    <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10">
-                        <span class="text-gray-300">Công khai sự kiện</span>
-                        <input type="checkbox" checked class="w-5 h-5 accent-[#00d2ff]">
-                    </div>
-                    <div class="flex items-center justify-between p-4 bg-white/5 rounded-xl border border-white/10">
-                        <span class="text-gray-300">Yêu cầu thông tin người mua</span>
-                        <input type="checkbox" class="w-5 h-5 accent-[#00d2ff]">
-                    </div>
-                </div>
-
-
-                <div class="flex gap-4 mt-10">
-    <button type="button" onclick="goToStep(2)" 
-        class="flex-1 bg-white/5 border border-white/10 hover:bg-white/10 text-gray-400 hover:text-white py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2">
-        <i class="fa-solid fa-arrow-left text-xs"></i> QUAY LẠI
-    </button>
-    
-    <button type="button" onclick="goToStep(4)" 
-        class="flex-1 bg-[#00d2ff] hover:bg-white text-black font-black py-4 rounded-2xl shadow-[0_0_20px_rgba(0,210,255,0.3)] transition-all flex items-center justify-center gap-2 uppercase tracking-widest text-sm">
-        TIẾP TỤC <i class="fa-solid fa-arrow-right text-xs"></i>
-    </button>
+        <div>
+            <label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Giá (VNĐ)</label>
+            <input type="number" placeholder="0" class="ticket-price-input w-full bg-white/10 border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-[#00d2ff]">
+        </div>
+        <div>
+            <label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Số lượng</label>
+            <input type="number" placeholder="0" class="ticket-qty-input w-full bg-white/10 border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-[#00d2ff]">
+        </div>
+    </div>
 </div>
+        
+        <div class="mt-8">
+            <h3 class="font-bold pb-2 mb-4 uppercase text-sm text-[#00d2ff]">Sơ đồ chỗ ngồi (Không bắt buộc)</h3>
+            <div class="upload-box w-full h-48 rounded-lg border border-dashed border-white/20 bg-white/5 relative">
+                <input type="file" id="input-map" class="hidden" accept="image/*" onchange="previewImg(this, 'map-prev')">
+                <div id="map-prev-ui" class="flex flex-col items-center justify-center h-full cursor-pointer" onclick="document.getElementById('input-map').click()">
+                    <i class="fa-solid fa-map-location-dot text-3xl mb-2 text-gray-500"></i>
+                    <p class="text-xs text-gray-500">Tải lên sơ đồ khán đài hoặc sơ đồ vị trí</p>
+                </div>
+                <div id="map-wrap" class="hidden h-full relative p-2">
+                    <div class="remove-btn absolute top-2 right-2 bg-red-500 text-white w-6 h-6 flex items-center justify-center rounded-full cursor-pointer" onclick="removeImg('input-map', 'map-prev', 'map-wrap', 'map-prev-ui')"><i class="fa-solid fa-xmark"></i></div>
+                    <img id="map-prev" class="w-full h-full object-contain">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex gap-4 mt-8">
+        <button type="button" onclick="goToStep(1)" class="flex-1 bg-white/10 hover:bg-white/20 text-white py-4 rounded-xl font-bold transition">QUAY LẠI</button>
+        <button type="button" onclick="goToStep(3)" class="flex-1 bg-[#00d2ff] text-black font-bold py-4 rounded-xl transition hover:bg-white">TIẾP TỤC</button>
+    </div>
+</div>
+
+
+              <div id="create-step-3" class="step-content hidden space-y-8 animate-fade-in">
+    <div class="bg-white/5 p-8 rounded-3xl border border-white/10 max-w-3xl mx-auto shadow-2xl">
+        
+        <div class="flex items-center gap-5 mb-8 border-b border-white/10 pb-6">
+            <div class="relative">
+                <div class="w-14 h-14 bg-gradient-to-tr from-[#00d2ff] to-[#3a7bd5] rounded-2xl flex items-center justify-center shadow-[0_0_15px_rgba(0,210,255,0.4)]">
+                    <i class="fa-solid fa-gavel text-2xl text-white"></i>
+                </div>
+                <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-4 border-[#121212] flex items-center justify-center">
+                    <i class="fa-solid fa-check text-[10px] text-white"></i>
+                </div>
+            </div>
+            <div>
+                <h3 class="text-2xl font-black text-white tracking-tight">PHÁP LÝ & CHÍNH SÁCH</h3>
+                <p class="text-gray-400 text-xs uppercase tracking-widest font-medium">Đảm bảo quyền lợi BTC và Khách hàng</p>
             </div>
         </div>
 
-        <div id="create-step-4" class="step-content hidden space-y-8">
-    <div class="bg-white/5 p-10 rounded-3xl border border-white/10 max-w-lg mx-auto text-center">
-        <div class="w-20 h-20 bg-[#00d2ff]/10 rounded-full flex items-center justify-center mx-auto mb-6">
+        <div class="space-y-8">
+            <div class="space-y-4">
+                <h4 class="text-[#00d2ff] text-sm font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-address-card"></i> THÔNG TIN ĐƠN VỊ TỔ CHỨC
+                </h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-2 md:col-span-2">
+                        <label class="text-xs text-gray-400 ml-1">Loại hình tổ chức</label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="cursor-pointer">
+                                <input type="radio" name="org-type" value="organization" class="hidden peer" checked>
+                                <div class="p-3 rounded-xl border border-white/10 bg-white/5 text-center text-sm text-gray-400 peer-checked:border-[#00d2ff] peer-checked:text-[#00d2ff] peer-checked:bg-[#00d2ff]/5 transition-all">
+                                    Doanh nghiệp / Tổ chức
+                                </div>
+                            </label>
+                            <label class="cursor-pointer">
+                                <input type="radio" name="org-type" value="individual" class="hidden peer">
+                                <div class="p-3 rounded-xl border border-white/10 bg-white/5 text-center text-sm text-gray-400 peer-checked:border-[#00d2ff] peer-checked:text-[#00d2ff] peer-checked:bg-[#00d2ff]/5 transition-all">
+                                    Cá nhân đại diện
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+    <label class="text-xs text-gray-400 ml-1">Số giấy phép tổ chức / CMND</label>
+    <input type="text" id="legal-id-input" placeholder="Số hiệu văn bản pháp lý" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#00d2ff]">
+</div>
+<div class="space-y-2">
+    <label class="text-xs text-gray-400 ml-1">Mã số thuế (để xuất hóa đơn)</label>
+    <input type="text" id="tax-id-input" placeholder="Mã số thuế 10 hoặc 13 số" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#00d2ff]">
+</div>
+                </div>
+            </div>
+
+            <div class="space-y-4 pt-4 border-t border-white/10">
+                <h4 class="text-[#00d2ff] text-sm font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-shield-halved"></i> QUY ĐỊNH VÀ MIỄN TRỪ
+                </h4>
+                <div class="space-y-2">
+                    <label class="text-xs text-gray-400 ml-1">Nội quy sự kiện (Standard Terms)</label>
+                    <textarea id="event-rules" placeholder="1. Đối tượng tham gia... &#10;2. Vật dụng cấm mang theo... &#10;3. Quy định về bản quyền ghi hình..." 
+                        class="w-full bg-white/5 border border-white/10 rounded-xl p-4 h-32 text-sm text-white focus:outline-none focus:border-[#00d2ff] resize-none"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label class="text-xs text-gray-400 ml-1">Chính sách hoàn tiền</label>
+                        <select id="refund-policy" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#00d2ff]">
+                            <option value="none">Không hỗ trợ hoàn trả</option>
+                            <option value="strict">Chặt chẽ (Hoàn trước 7 ngày, phí 30%)</option>
+                            <option value="flexible">Linh hoạt (Hoàn trước 3 ngày, phí 10%)</option>
+                            <option value="custom">Tùy chỉnh theo thỏa thuận riêng</option>
+                        </select>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs text-gray-400 ml-1">Trách nhiệm bồi thường</label>
+                        <select id="det-compensation" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#00d2ff]">
+                            <option value="refund_100">Hoàn tiền 100% nếu sự kiện bị hủy</option>
+                            <option value="reschedule">Dời ngày và bảo lưu giá trị vé</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-2">
+                <label class="text-xs text-gray-400 ml-1 uppercase tracking-tighter">Bản scan giấy phép / Hợp đồng địa điểm (Bắt buộc)</label>
+                <div class="relative group">
+                    <input type="file" multiple id="legal-files" class="hidden" onchange="handleFileSelect(this)">
+                    <label for="legal-files" class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/10 rounded-2xl bg-white/5 hover:bg-[#00d2ff]/5 hover:border-[#00d2ff]/50 cursor-pointer transition-all">
+                        <div class="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                            <i class="fa-solid fa-upload text-[#00d2ff]"></i>
+                        </div>
+                        <span class="text-xs text-gray-400 font-medium">Nhấn để tải lên hồ sơ pháp lý (.pdf, .jpg, .png)</span>
+                        <span class="text-[10px] text-gray-500 mt-1">Dung lượng tối đa 10MB/file</span>
+                    </label>
+                </div>
+                <div id="file-list" class="flex flex-wrap gap-2 mt-2"></div>
+            </div>
+
+            <div class="p-4 bg-yellow-500/5 border border-yellow-500/20 rounded-2xl space-y-4">
+                <label class="flex items-start gap-3 cursor-pointer group">
+                    <input type="checkbox" id="legal-confirm" class="w-5 h-5 mt-0.5 rounded border-white/10 bg-white/5 text-[#00d2ff] focus:ring-0">
+                    <span class="text-xs text-gray-400 group-hover:text-gray-300 leading-relaxed">
+                        Tôi xác nhận rằng đơn vị tổ chức đã có đầy đủ giấy phép từ các cơ quan chức năng (Sở Văn hóa, Thể thao...). Nền tảng có quyền gỡ bỏ sự kiện nếu phát hiện vi phạm mà không cần báo trước.
+                    </span>
+                </label>
+                <label class="flex items-start gap-3 cursor-pointer group">
+                    <input type="checkbox" id="tax-confirm" class="w-5 h-5 mt-0.5 rounded border-white/10 bg-white/5 text-[#00d2ff] focus:ring-0">
+                    <span class="text-xs text-gray-400 group-hover:text-gray-300 leading-relaxed">
+                        BTC cam kết tự chịu trách nhiệm kê khai và nộp các loại thuế (GTGT, TNCN cho nghệ sĩ...) liên quan đến doanh thu bán vé theo quy định pháp luật.
+                    </span>
+                </label>
+            </div>
+        </div>
+
+        <div class="flex gap-4 mt-10">
+            <button type="button" onclick="goToStep(2)" class="px-8 bg-white/5 border border-white/10 hover:bg-white/10 text-gray-400 py-4 rounded-2xl font-bold transition-all uppercase text-xs tracking-widest">Quay lại</button>
+            <button type="button" onclick="goToStep(4)" class="flex-1 bg-[#00d2ff] hover:bg-white text-black font-black py-4 rounded-2xl shadow-[0_10px_30px_rgba(0,210,255,0.3)] transition-all uppercase tracking-widest text-sm">Xác nhận và Chuyển bước cuối</button>
+        </div>
+    </div>
+</div>
+
+
+        <div id="create-step-4" class="step-content hidden space-y-8 animate-fade-in">
+    <div class="bg-white/5 p-10 rounded-3xl border border-white/10 max-w-lg mx-auto text-center shadow-2xl">
+        <div class="relative w-20 h-20 bg-[#00d2ff]/10 rounded-full flex items-center justify-center mx-auto mb-6">
             <i class="fa-solid fa-wallet text-4xl text-[#00d2ff]"></i>
+            <div class="absolute -top-1 -right-1 w-6 h-6 bg-yellow-500 rounded-full border-4 border-[#121212] flex items-center justify-center">
+                <i class="fa-solid fa-dollar-sign text-[10px] text-black font-bold"></i>
+            </div>
         </div>
         
         <h3 class="text-xl font-bold mb-2 text-white uppercase tracking-wider">Tài khoản nhận tiền</h3>
-        <p class="text-gray-500 text-xs mb-8 italic">Thông tin này dùng để chúng tôi đối soát doanh thu vé</p>
+        <p class="text-gray-500 text-[10px] mb-8 italic leading-relaxed px-4">Thông tin này dùng để chúng tôi đối soát và quyết toán doanh thu vé sau khi sự kiện kết thúc thành công.</p>
 
         <div class="space-y-4 text-left">
-          
             <div>
                 <label class="text-[10px] font-bold text-gray-400 uppercase ml-2 mb-1 block">Tên chủ tài khoản</label>
                 <input type="text" id="bank-user" placeholder="NHU THI DIEU THAO" 
                     class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-[#00d2ff] transition uppercase font-medium">
             </div>
 
-            <div>
-                <label class="text-[10px] font-bold text-gray-400 uppercase ml-2 mb-1 block">Ngân hàng</label>
-                <input type="text" id="bank-name" placeholder="Vd: Vietcombank, MB Bank..." 
-                    class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-[#00d2ff] transition">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-2 mb-1 block">Ngân hàng</label>
+                    <input type="text" id="bank-name" list="bank-list" placeholder="Chọn ngân hàng..." 
+                        class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-[#00d2ff] transition text-sm">
+                    <datalist id="bank-list">
+                        <option value="Vietcombank">
+                        <option value="Techcombank">
+                        <option value="MB Bank">
+                        <option value="ACB">
+                        <option value="Vietinbank">
+                        <option value="BIDV">
+                        <option value="TPBank">
+                    </datalist>
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-2 mb-1 block">Chi nhánh</label>
+                    <input type="text" id="bank-branch" placeholder="Vd: Chi nhánh TP.HCM" 
+                        class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-[#00d2ff] transition text-sm">
+                </div>
             </div>
 
             <div>
@@ -325,14 +464,28 @@
                     class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-[#00d2ff] transition">
             </div>
 
+            <div>
+                <label class="text-[10px] font-bold text-gray-400 uppercase ml-2 mb-1 block">Email nhận thông báo thanh toán</label>
+                <input type="email" id="billing-email" placeholder="example@gmail.com" 
+                    class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-[#00d2ff] transition text-sm">
+            </div>
+
+            <div class="p-3 bg-white/5 rounded-xl border border-white/5">
+                <label class="text-[10px] font-bold text-[#00d2ff] uppercase mb-1 block">Thời gian nhận tiền dự kiến</label>
+                <div class="flex items-center gap-3 text-gray-400">
+                    <i class="fa-solid fa-clock-rotate-left text-sm"></i>
+                    <p class="text-[11px]">Từ 03 - 05 ngày làm việc sau khi sự kiện kết thúc thành công.</p>
+                </div>
+            </div>
+
             <div class="mt-4">
-                <label class="text-[10px] font-bold text-gray-400 uppercase ml-2 mb-2 block">Mã QR nhận tiền (Tùy chọn)</label>
-                <div class="upload-box aspect-square w-full max-w-[200px] mx-auto rounded-2xl border border-dashed border-white/20 bg-white/5 relative group hover:border-[#00d2ff] transition cursor-pointer">
+                <label class="text-[10px] font-bold text-gray-400 uppercase ml-2 mb-2 block">Mã QR nhận tiền (VietQR)</label>
+                <div class="upload-box aspect-square w-full max-w-[180px] mx-auto rounded-2xl border border-dashed border-white/20 bg-white/5 relative group hover:border-[#00d2ff] transition cursor-pointer">
                     <input type="file" id="input-qr" class="hidden" accept="image/*" onchange="previewImg(this, 'qr-prev')">
                     
                     <div id="qr-prev-ui" class="flex flex-col items-center justify-center h-full p-4 text-center" onclick="document.getElementById('input-qr').click()">
                         <i class="fa-solid fa-qrcode text-3xl mb-2 text-gray-500 group-hover:text-[#00d2ff]"></i>
-                        <p class="text-[10px] text-gray-500 font-medium">Tải ảnh QR</p>
+                        <p class="text-[10px] text-gray-500 font-medium italic">Tải ảnh QR để đối soát nhanh hơn</p>
                     </div>
 
                     <div id="qr-wrap" class="hidden absolute inset-0 p-2 bg-[#0a0a0a] rounded-2xl">
@@ -346,10 +499,19 @@
             </div>
         </div>
 
-        <div class="flex gap-4 mt-10">
+        <div class="mt-6 space-y-3">
+            <label class="flex items-start gap-3 cursor-pointer group text-left">
+                <input type="checkbox" id="confirm-bank" class="w-4 h-4 mt-0.5 rounded border-white/10 bg-white/5 text-[#00d2ff] focus:ring-0">
+                <span class="text-[10px] text-gray-500 group-hover:text-gray-400 leading-relaxed">
+                    Tôi xác nhận thông tin tài khoản trên là chính xác. Nền tảng không chịu trách nhiệm nếu tiền được gửi sai do sai sót thông tin từ phía BTC.
+                </span>
+            </label>
+        </div>
+
+        <div class="flex gap-4 mt-8">
             <button type="button" onclick="goToStep(3)" 
-                class="flex-1 bg-white/5 border border-white/10 hover:bg-white/10 text-gray-400 hover:text-white py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2">
-                SỬA
+                class="flex-1 bg-white/5 border border-white/10 hover:bg-white/10 text-gray-400 hover:text-white py-4 rounded-2xl font-bold transition-all flex items-center justify-center gap-2 text-xs tracking-widest">
+                QUAY LẠI
             </button>
             
             <button type="button" onclick="showConfirmModal()" 
@@ -486,6 +648,29 @@
         <button onclick="closeSuccessModal()" class="w-full py-4 bg-black text-white rounded-2xl font-bold uppercase tracking-widest hover:bg-[#00d2ff] hover:text-black transition-all shadow-lg">
             Đã hiểu, cảm ơn!
         </button>
+    </div>
+</div>
+
+<div id="reject-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+    <div class="bg-[#1a1a1a] border border-red-500/30 w-full max-w-md rounded-3xl overflow-hidden shadow-2xl">
+        <div class="p-6 text-center">
+            <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20">
+                <i class="fa-solid fa-circle-exclamation text-2xl text-red-500"></i>
+            </div>
+            <h3 class="text-xl font-black text-white uppercase tracking-tighter mb-2">Lí do từ chối kiểm duyệt</h3>
+            <p class="text-gray-400 text-sm mb-6">Ban quản trị đã xem xét và phản hồi về sự kiện của bạn:</p>
+            
+            <div class="bg-white/5 border border-white/10 p-4 rounded-2xl mb-6">
+                <p id="reject-reason-text" class="text-red-400 text-sm italic font-medium leading-relaxed">
+                    Nội dung lí do sẽ hiển thị ở đây...
+                </p>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="closeRejectModal()" class="flex-1 py-3 rounded-xl bg-white/5 text-gray-400 font-bold text-xs uppercase hover:bg-white/10 transition">Đóng</button>
+                <button id="btn-fix-event" class="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold text-xs uppercase hover:bg-red-600 transition shadow-lg shadow-red-500/20">Sửa lỗi ngay</button>
+            </div>
+        </div>
     </div>
 </div>
 
