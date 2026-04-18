@@ -454,9 +454,22 @@ function addEventCardToGrid(ev, isReal) {
 
     const displayLocation = ev.location || ev.city || ev.locname || 'N/A';
     const displayOrganizer = ev.organizer || ev.btcname || 'N/A';
-    const formattedPrice = parseInt(ev.price || 0).toLocaleString();
+    let minPrice = 0;
+    let tickets = [];
+    if (typeof ev.tickets === 'string') {
+    try { tickets = JSON.parse(ev.tickets); } catch(e) { tickets = []; }
+} else {
+    tickets = ev.tickets || [];
+}
+if (tickets.length > 0) {
+    minPrice = Math.min(...tickets.map(t => Number(t.price) || 0));
+} else {
+    minPrice = Number(ev.price) || 0;
+}
 
-    // 4. Vẽ card - Chèn biến buttonsHTML vào đúng chỗ
+    const formattedPrice = minPrice.toLocaleString();
+
+    // 4. Vẽ card 
     const html = `
         <div id="event-card-${ev.id}" class="glass p-5 rounded-3xl group hover:border-blue-500/50 transition-all border ${cardBorder} relative">
             <div class="flex items-center gap-4 mb-4">
@@ -693,6 +706,7 @@ function undoReject(eventId) {
    4. MODAL CHI TIẾT
    ========================================================================== */
 function viewEventDetails(eventId) {
+
     const allEvents = JSON.parse(localStorage.getItem('ticket_events')) || [];
     const ev = allEvents.find(item => String(item.id) === String(eventId));
 
@@ -702,11 +716,38 @@ function viewEventDetails(eventId) {
     }
 
     // --- 1. TIÊU ĐỀ & ẢNH ---
-    document.getElementById('det-title').innerText = ev.title || ev.name || 'Sự kiện';
-    const finalImg = ev.img || ev.image || 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?q=80&w=2070';
-    document.getElementById('det-cover').src = finalImg;
-    document.getElementById('det-thumb').src = finalImg;
+    const titleElem = document.getElementById('det-title');
+    if (titleElem) titleElem.innerText = ev.title || ev.name || 'Sự kiện';
+    
+    // Lấy link ảnh an toàn
+    const posterImg = ev.img || ev.image || 'https://via.placeholder.com/400x600?text=No+Poster';
+    const bannerImg = ev.banner || ev.img || ev.image || 'https://via.placeholder.com/1200x400?text=No+Banner';
+    
+    const coverElem = document.getElementById('det-cover');
+    const thumbElem = document.getElementById('det-thumb');
 
+    if (coverElem) {
+        coverElem.src = bannerImg; 
+        coverElem.style.cursor = 'zoom-in'; 
+        coverElem.style.position = 'relative'; 
+        coverElem.style.zIndex = '10';       
+        coverElem.onclick = (e) => {
+            e.stopPropagation();
+            openLightbox(bannerImg);
+        };
+    }
+
+    if (thumbElem) {
+        thumbElem.src = posterImg; 
+        thumbElem.style.cursor = 'zoom-in';
+        thumbElem.style.position = 'relative';
+        thumbElem.style.zIndex = '20';        
+        thumbElem.onclick = (e) => {
+            e.stopPropagation();
+            openLightbox(posterImg);
+        };
+    }
+    
     // --- 2. ĐỊA ĐIỂM CHI TIẾT & THỜI GIAN ---
 
     const locNameElem = document.getElementById('det-loc-name');
@@ -715,64 +756,140 @@ function viewEventDetails(eventId) {
     const locDetailElem = document.getElementById('det-loc-detail');
     if (locDetailElem) locDetailElem.innerText = ev.locdetail || 'N/A';
 
-    // Thay vì chỉ hiện start - end, hãy kiểm tra nếu có timeslots
-if (document.getElementById('det-time-full')) {
-    document.getElementById('det-time-full').innerHTML = ev.timeslots || `${ev.start || 'N/A'} - ${ev.end || 'N/A'}`;
-}
-    // --- 3. TRAILER & NỘI QUY (Bổ sung mới) ---
-    const trailerContainer = document.getElementById('det-trailer-area');
-    if (ev.trailer && ev.trailer.trim() !== "") {
-    let embedLink = ev.trailer;
-    if (embedLink.includes("watch?v=")) embedLink = embedLink.replace("watch?v=", "embed/");
-    else if (embedLink.includes("youtu.be/")) embedLink = embedLink.replace("youtu.be/", "youtube.com/embed/");
 
+    if (document.getElementById('det-time-full')) {
+    const timeSlots = ev.timeSlots || ev.timeslots || [];
+    let timeHTML = "";
+
+    if (Array.isArray(timeSlots) && timeSlots.length > 0) {
+        timeSlots.forEach((slot, index) => {
+            const start = slot.start ? slot.start.replace('T', ' ') : 'N/A';
+            const end = slot.end ? slot.end.replace('T', ' ') : 'N/A';
+            
+            timeHTML += `
+                <div class="mb-2 last:mb-0 pb-1 border-b border-white/5 last:border-0">
+                    <span class="text-blue-400 font-bold">#${index + 1}:</span> ${start} 
+                    <i class="fa-solid fa-arrow-right mx-1 text-[8px] opacity-50"></i> 
+                    ${end}
+                </div>`;
+        });
+    } else {
+        timeHTML = "N/A";
+    }
+
+    document.getElementById('det-time-full').innerHTML = timeHTML;}
+
+
+    const trailerContainer = document.getElementById('det-trailer-area');
+
+if (ev.trailer && ev.trailer.trim() !== "") {
     trailerContainer.innerHTML = `
         <h3 class="text-[10px] text-red-500 font-black uppercase mb-3 tracking-widest flex items-center gap-2">
-            <i class="fa-brands fa-youtube"></i> Trailer Sự kiện
+            <i class="fa-brands fa-youtube"></i> Link Trailer
         </h3>
-        <div class="relative w-full aspect-video rounded-2xl overflow-hidden border border-white/5 bg-black">
-            <iframe src="${embedLink}" class="absolute inset-0 w-full h-full" frameborder="0" allowfullscreen></iframe>
-        </div>`;
+        <a href="${ev.trailer}" target="_blank" 
+           class="flex items-center justify-between p-4 bg-red-500/10 border border-red-500/20 rounded-2xl group hover:bg-red-500 transition-all duration-300">
+            <div class="flex items-center gap-3">
+                <i class="fa-brands fa-youtube text-red-500 text-xl group-hover:text-white"></i>
+                <span class="text-white font-bold text-xs uppercase group-hover:text-white">Bấm vào để xem chi tiết</span>
+            </div>
+            <i class="fa-solid fa-arrow-up-right-from-square text-red-500 group-hover:text-white text-xs"></i>
+        </a>`;
 } else {
     trailerContainer.innerHTML = '';
 }
+
     // --- 3. HỒ SƠ PHÁP LÝ  ---
-// 1. Mã số thuế
-const taxElem = document.getElementById('det-tax-id-input');
+const legalTypeElem = document.getElementById('det-legal-type');
+if (legalTypeElem) {
+    // Bản đồ dịch dữ liệu
+    const orgMap = {
+        'organization': 'Doanh nghiệp / Tổ chức',
+        'individual': 'Cá nhân đại diện'
+    };
+    const rawValue = ev.orgType || ev.orgtype || 'organization';
+    const finalName = orgMap[rawValue] || rawValue;
+
+    legalTypeElem.innerText = finalName.toUpperCase();
+}
+
+const modeElem = document.getElementById('event-mode-input');
+if (modeElem) {
+    const mVal = ev.mode || ev.eventMode || 'offline';
+    const mNames = { 'online': 'SỰ KIỆN ONLINE', 'offline': 'SỰ KIỆN OFFLINE' };
+    modeElem.innerText = mNames[mVal] || mVal.toUpperCase();
+}
+
+// Mã số thuế
+const taxElem = document.getElementById('tax-id-input');
 if (taxElem) {
-    taxElem.innerText = ev.taxid || ev.tax_id || ev['tax-id'] || 'N/A';
+    taxElem.innerText = ev.taxid || ev.tax_id || ev['tax-id'] || ev.taxId || 'N/A';
 }
 
-// 2. Số GP/CMND
-const legalElem = document.getElementById('det-legal-id-input');
+// Số GP/CMND
+const legalElem = document.getElementById('legal-id-input');
 if (legalElem) {
-    legalElem.innerText = ev.legalid || ev.legal_id || ev['legal-id'] || 'N/A';
+    legalElem.innerText = ev.legalid || ev.legal_id || ev['legal-id'] || ev.legalId || 'N/A';
 }
 
-// 3. Chính sách hoàn tiền
-const refundElem = document.getElementById('det-refund-policy');
+// Chính sách hoàn tiền
+const refundElem = document.getElementById('refund-policy');
 if (refundElem) {
-    refundElem.innerText = ev.refund || ev.refund_policy || 'Theo quy định';
+    const policyMap = {
+        'none': 'Không hỗ trợ hoàn trả',
+        'strict': 'Chặt chẽ (Hoàn trước 7 ngày, phí 30%)',
+        'flexible': 'Linh hoạt (Hoàn trước 3 ngày, phí 10%)',
+        'custom': 'Tùy chỉnh theo thỏa thuận riêng'
+    };
+    const policyValue = ev.refundPolicy || ev.refund || "none";
+    refundElem.innerText = policyMap[policyValue] || policyValue;
 }
 
-// 4. Trách nhiệm bồi thường
+// Trách nhiệm bồi thường
 const compenElem = document.getElementById('det-compensation');
 if (compenElem) {
-    compenElem.innerText = ev.compensation || ev.compensation_input || 'N/A';
+    const compenMap = {
+        'refund_100': 'Hoàn tiền 100% nếu sự kiện bị hủy',
+        'reschedule': 'Dời ngày và bảo lưu giá trị vé'
+    };
+    const compenValue = ev.compensation || "";
+    compenElem.innerText = compenMap[compenValue] || compenValue || 'N/A';
 }
 
-// 5. Tệp đính kèm
+// Tệp đính kèm
 const filesElem = document.getElementById('det-files-list');
+
 if (filesElem) {
-    if (ev.files && ev.files !== "Không có tệp đính kèm") {
-        filesElem.innerHTML = ev.files; 
+    let filesArray = [];
+    
+    if (ev.filesData) filesArray = ev.filesData;
+    else if (typeof ev.files === 'string') {
+        try { filesArray = JSON.parse(ev.files); } catch(e) { filesArray = []; }
+    } else if (Array.isArray(ev.files)) filesArray = ev.files;
+
+    if (filesArray.length > 0) {
+        let linksHTML = filesArray.map((file, index) => {
+            // Xác định icon
+            const isPDF = (file.type && file.type.includes('pdf')) || file.name?.endsWith('.pdf');
+            const icon = isPDF ? 'fa-file-pdf text-red-400' : 'fa-image text-green-400';
+            const fileData = file.data || file.base64 || "#";
+            
+            return `
+                <a href="${fileData}" download="${file.name}" 
+                   class="text-blue-400 hover:text-blue-300 flex items-center gap-1.5 bg-white/5 px-3 py-1.5 rounded-xl border border-white/10 transition-all hover:bg-white/10 group">
+                    <i class="fa-solid ${icon} text-[12px]"></i> 
+                    <span class="text-[10px] font-medium">${file.name || 'Tệp ' + (index + 1)}</span>
+                    <i class="fa-solid fa-download text-[8px] opacity-0 group-hover:opacity-100 ml-1"></i>
+                </a>`;
+        }).join('');
+
+        filesElem.innerHTML = `<div class="flex flex-wrap gap-2 mt-1">${linksHTML}</div>`;
     } else {
-        filesElem.innerText = 'Không có tệp đính kèm';
+        filesElem.innerHTML = '<span class="text-gray-500 italic text-[10px]">Không có tệp đính kèm</span>';
     }
 }
 
-
-// 6. Nội quy
+// Nội quy
 if (document.getElementById('det-rules')) {
     document.getElementById('det-rules').innerText = ev.rules || ev.event_rules || 'Chưa có nội quy cụ thể.';
 }
@@ -814,6 +931,8 @@ if (document.getElementById('det-rules')) {
     if (qrElem && ev.bankqr) {
         qrElem.src = ev.bankqr;
         qrElem.classList.remove('hidden');
+        qrElem.classList.add('cursor-zoom-in');
+        qrElem.onclick = () => openLightbox(ev.bankqr);
     }
 
     // --- 5. CÁC THÔNG TIN KHÁC ---
@@ -853,8 +972,8 @@ if (document.getElementById('det-rules')) {
     if (ev.map) {
             ticketContainer.innerHTML += `
                 <div class="mt-4">
-                    <p class="text-[10px] text-gray-500 uppercase font-black mb-2">Sơ đồ chỗ ngồi:</p>
-                    <img src="${ev.map}" class="w-full rounded-2xl border border-white/10 shadow-lg">
+                    <p class="text-[10px] text-gray-500 uppercase font-black mb-2">Sơ đồ chỗ ngồi (Bấm để xem rõ):</p>
+                    <img src="${ev.map}" onclick="openLightbox('${ev.map}')" class="w-full rounded-2xl border border-white/10 shadow-lg cursor-zoom-in hover:opacity-80 transition">
                 </div>`;
         }
     }
@@ -862,9 +981,17 @@ if (document.getElementById('det-rules')) {
     const favContainer = document.getElementById('fav-btn-container');
     if (favContainer) favContainer.remove(); 
 
-    // --- 7. HIỆN MODAL ---
+    // --- 7. HIỆN MODAL (Sửa lỗi hiển thị) ---
     const modal = document.getElementById('detail-modal');
-    modal.classList.remove('hidden');
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex'); 
+        const modalContent = modal.querySelector('div');
+        if (modalContent) {
+            modalContent.classList.remove('scale-95');
+            modalContent.classList.add('scale-100');
+        }
+    }
 }
 
 function closeDetailModal() {
@@ -895,24 +1022,46 @@ document.body.insertAdjacentHTML('beforeend', `
         </div>
     </div>
 
-   <div id="detail-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[1000] hidden flex items-center justify-center p-4">
+  
+ <div id="detail-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[1000] hidden flex items-center justify-center p-4">
     <div class="bg-[#121212] border border-white/10 w-full max-w-2xl max-h-[90vh] rounded-[2.5rem] overflow-hidden flex flex-col shadow-2xl scale-95 transition-all">
-        <div class="relative h-48 w-full flex-shrink-0">
-            <img id="det-cover" src="" class="w-full h-full object-cover opacity-50">
-            <div class="absolute inset-0 bg-gradient-to-t from-[#121212] to-transparent"></div>
-            <button onclick="closeDetailModal()" class="absolute top-6 right-6 w-10 h-10 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-red-500 transition"><i class="fa-solid fa-xmark"></i></button>
-            <div class="absolute bottom-4 left-8 flex items-end gap-6">
-                <img id="det-thumb" src="" class="w-24 h-24 rounded-2xl object-cover border-4 border-[#121212] shadow-xl bg-gray-800">
-                <div class="mb-2">
-                    <span id="det-category" class="text-[10px] bg-blue-500 text-white px-2 py-0.5 rounded-md font-black uppercase">N/A</span>
-                    <span id="det-mode" class="text-[10px] bg-emerald-500 text-white px-2 py-0.5 rounded-md font-black uppercase flex items-center gap-1">
-            <i class="fa-solid fa-circle text-[6px]"></i>
-            <span id="det-mode-text">N/A</span>
-        </span>
-                    <h2 id="det-title" class="text-2xl font-black text-white mt-1 uppercase">N/A</h2>
-                </div>
+      
+   <div class="relative h-48 w-full flex-shrink-0">
+    <img id="det-cover" src="" class="w-full h-full object-cover opacity-50 relative z-0">
+    
+    <div class="absolute inset-0 bg-gradient-to-t from-[#121212] to-transparent z-10 pointer-events-none"></div>
+
+    <button onclick="closeDetailModal()" class="absolute top-6 right-6 z-50 w-10 h-10 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-red-500 transition">
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <div class="absolute bottom-4 left-8 flex items-end gap-6 z-20">
+        <img id="det-thumb" src="" class="w-24 h-24 rounded-2xl object-cover border-4 border-[#121212] shadow-xl bg-gray-800 cursor-zoom-in">
+        
+        <div class="mb-2">
+            <div class="flex gap-2 mb-1.5">
+                <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[9px] font-black uppercase tracking-wider shadow-sm">
+                    <i class="fa-solid fa-circle text-[5px] animate-pulse"></i>
+                    <span id="event-mode-input">N/A</span>
+                </span>
+
+                <span class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[9px] font-black uppercase tracking-wider shadow-sm">
+                    <i class="fa-solid fa-shield-halved text-[8px]"></i>
+                    <span id="det-legal-type">N/A</span>
+                </span>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <h2 id="det-title" class="text-3xl font-black text-white uppercase tracking-tighter truncate drop-shadow-md">
+                    CONCERT
+                </h2>
+                <span id="det-category" class="text-[11px] bg-blue-600 text-white px-3 py-1 rounded-lg font-black uppercase whitespace-nowrap shadow-md">
+                    MUSIC
+                </span>
             </div>
         </div>
+    </div>
+</div>
 
         <div class="p-8 overflow-y-auto custom-scroll space-y-8">
             <div class="grid grid-cols-2 gap-4">
@@ -994,7 +1143,42 @@ document.body.insertAdjacentHTML('beforeend', `
         </div>
     </div>
 </div>
+
+<div id="image-lightbox" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-[2000] hidden flex items-center justify-center p-4 cursor-zoom-out" onclick="closeLightbox()">
+        <button class="absolute top-10 right-10 text-white text-4xl hover:text-red-500 transition-all">&times;</button>
+        <img id="lightbox-img" src="" class="max-w-full max-h-full rounded-lg shadow-2xl scale-90 transition-transform duration-300">
+    </div>
+
+    <style>
+        #image-lightbox.active { display: flex; }
+        #image-lightbox.active img { scale: 1; }
+        .cursor-zoom-in { cursor: zoom-in; }
+    </style>
 `);
+
+function openLightbox(src) {
+    const lb = document.getElementById('image-lightbox');
+    const lbImg = document.getElementById('lightbox-img');
+    if (!lb || !lbImg || !src) return;
+
+    lbImg.src = src;
+    lb.classList.remove('hidden');
+    lb.classList.add('flex');
+    setTimeout(() => {
+        lb.classList.add('active');
+    }, 10);
+}
+
+function closeLightbox() {
+    const lb = document.getElementById('image-lightbox');
+    if (!lb) return;
+
+    lb.classList.remove('active');
+    setTimeout(() => {
+        lb.classList.add('hidden');
+        lb.classList.remove('flex');
+    }, 300);
+}
 
 /* QUẢN LÝ ĐƠN HÀNG */
 function seedOrders() {

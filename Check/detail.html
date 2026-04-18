@@ -444,7 +444,6 @@ if (ev.time) {
     const rawDate = ev.time.split(' ')[0]; // Lấy "16/04/2026"
     const parts = rawDate.split('/');
     if (parts.length === 3) {
-        // Chuyển thành 2026-04-16 (Định dạng chuẩn ISO)
         eventDate = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
     }
 }

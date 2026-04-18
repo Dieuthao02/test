@@ -19,10 +19,8 @@ window.onload = () => {
         return;
     }
 
-    // Nếu ok thì chạy tiếp
     syncUserInterface(loggedInUser);
-    
-    // Kiểm tra thông báo
+ 
     if (!sessionStorage.getItem('hasSeenNotice')) {
         openNoticeModal();
     } else {
@@ -35,7 +33,7 @@ window.onload = () => {
 };
 
 
-// --- 1. TIỆN ÍCH HỆ THỐNG (UTILITIES) ---
+// --- 1. TIỆN ÍCH HỆ THỐNG ---
 function getTimeAgo() { return "Vừa xong"; }
 
 const formatNA = (id) => {
@@ -45,7 +43,7 @@ const formatNA = (id) => {
 
 const cleanData = (val) => (val === "N/A" || !val || val === "undefined") ? "" : val;
 
-// --- 2. ĐIỀU HƯỚNG & GIAO DIỆN CHÍNH (NAVIGATION) ---
+// --- 2. ĐIỀU HƯỚNG & GIAO DIỆN CHÍNH ---
 function showPage(pageId) {
     const sections = document.querySelectorAll('main section');
     sections.forEach(sec => sec.classList.add('hidden'));
@@ -1128,4 +1126,3 @@ function handleLogout() {
         window.location.href = "index.html"; 
     }
 } 
-

@@ -2,12 +2,13 @@ let cart = [];
 let tempSelection = null;
 let isFirstTime = true;
 let scale = 1;
-let currentMethod = 'EventPay'; // Mặc định
+let currentMethod = 'ElysiumPay';
 const MAP_TEMPLATES = {
-    // SƠ ĐỒ ID 26: BTS (Đã fix cứng tiêu đề BTS)
     26: {
-        eventName: "BTS WORLD TOUR",
+        eventName: "BTS WORLD TOUR ARIRANG",
         hasDiagram: true,
+        themeColor: "#fa1a1a", 
+        accentColor: "#FF4D94",
         time: "19:00 - 08/05/2026",
         location: "GILLETTE STADIUM, FOXBOROUGH, MA",
         currency: "COP",
@@ -125,11 +126,130 @@ const MAP_TEMPLATES = {
             </div>`
     },
 
+48: {
+    eventName: "CONCERT QUỐC GIA 30/4-1/5",
+    hasDiagram: true,
+    time: "20:00 - 22:30, 30/04/2026",
+    location: "QUẢNG TRƯỜNG BA ĐÌNH, HÀ NỘI",
+    currency: "VND",
+    priceList: [
+        { name: 'HÀO KHÍ ĐÔNG ĐÔ', price: 3500000 },
+        { name: 'TINH HOA', price: 1200000 },
+        { name: 'GA KÝ ỨC', price: 800000 },
+        { name: 'TRƯỜNG SƠN BAJA', price: 1000000 },
+        { name: 'TRƯỜNG SƠN ALTA', price: 700000 },
+        { name: 'CỬU LONG BAJA', price: 950000 },
+        { name: 'CỬU LONG ALTA', price: 600000 },
+        { name: 'PHÙ SA', price: 1800000 },
+        { name: 'CHÂN TRỜI', price: 450000 }
+    ],
+    html: `
+<div style="color: #ffffff; font-family: 'Inter', 'Segoe UI', sans-serif; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; min-height: 800px; overflow-x: hidden;">
+    
+    <div style="margin-bottom: 30px; text-align: center;">
+        <div style="background-color: rgba(255, 60, 65, 0.1); border: 1.5px solid #ff3c41; color: #ff3c41; font-size: 18px; font-weight: 800; text-transform: uppercase; padding: 8px 25px; border-radius: 50px; letter-spacing: 3px; box-shadow: 0 0 15px rgba(255, 60, 65, 0.3);">
+            CONCERT QUỐC GIA - RẠNG RỠ VIỆT NAM
+        </div>
+    </div>
+
+    <div style="width: 100%; max-width: 950px; display: flex; flex-direction: column; align-items: center; position: relative; perspective: 2000px;">
+        
+        <div style="margin-bottom: 10px; transform: rotateX(15deg) translateZ(10px); position: relative; z-index: 10;">
+            <div style="width: 340px; height: 90px; background-color: #1a1e26; border-radius: 10px 10px 50% 50%; border: 2px solid #333; display: flex; justify-content: center; align-items: flex-start; padding-top: 12px; box-shadow: 0 15px 35px rgba(0,0,0,0.8);">
+                <div style="font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 4px; color: rgba(255,255,255,0.8); border-bottom: 2px solid #555; padding-bottom: 3px;">SÂN KHẤU CHÍNH</div>
+            </div>
+        </div>
+
+        <div style="width: 100%; display: flex; flex-direction: column; align-items: center; transform: rotateX(8deg); transform-style: preserve-3d;">
+            
+            <div style="display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: -10px; position: relative; z-index: 5;">
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="width: 55px; height: 30px; background-color: #37474f; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 9px; color: rgba(255,255,255,0.6); border: 1px solid #444;">LỐI RA</div>
+                    <div style="width: 55px; height: 30px; background-color: #37474f; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 9px; color: rgba(255,255,255,0.6); border: 1px solid #444;">DỊCH VỤ</div>
+                </div>
+                
+                <div onclick="handleBlockClick('TINH HOA (TRÁI)', 1200000)" style="width: 180px; height: 130px; background: linear-gradient(180deg, #81d4fa, #4fc3f7); border-radius: 60% 0% 0% 60% / 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; box-shadow: 0 12px 25px rgba(0,0,0,0.5); color: #000;">
+                    <div style="font-weight: 800; font-size: 10px; text-transform: uppercase;">TINH HOA</div>
+                </div>
+
+                <div onclick="handleBlockClick('HÀO KHÍ ĐÔNG ĐÔ', 3500000)" style="width: 220px; height: 110px; background: linear-gradient(180deg, #ec407a, #d81b60); border-radius: 50% / 30%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; box-shadow: 0 10px 25px rgba(236, 64, 122, 0.4); border: 1px solid rgba(255,255,255,0.1);">
+                    <div style="font-weight: 800; font-size: 10px; text-transform: uppercase;">HÀO KHÍ ĐÔNG ĐÔ</div>
+                </div>
+
+                <div onclick="handleBlockClick('TINH HOA (PHẢI)', 1200000)" style="width: 180px; height: 130px; background: linear-gradient(180deg, #81d4fa, #4fc3f7); border-radius: 0% 60% 60% 0% / 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; box-shadow: 0 12px 25px rgba(0,0,0,0.5); color: #000;">
+                    <div style="font-weight: 800; font-size: 10px; text-transform: uppercase;">TINH HOA</div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div style="width: 55px; height: 30px; background-color: #37474f; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 9px; color: rgba(255,255,255,0.6); border: 1px solid #444;">DỊCH VỤ</div>
+                    <div style="width: 55px; height: 30px; background-color: #37474f; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 9px; color: rgba(255,255,255,0.6); border: 1px solid #444;">LỐI RA</div>
+                </div>
+            </div>
+
+            <div onclick="handleBlockClick('GA KÝ ỨC', 800000)" style="width: 620px; height: 35px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; margin-top: 10px; display: flex; justify-content: center; align-items: center; cursor: pointer;">
+                <div style="font-weight: 700; font-size: 9px; letter-spacing: 2px; color: #90a4ae; text-transform: uppercase;">GA KÝ ỨC </div>
+            </div>
+
+            <div style="width: 100%; margin-top: 15px; display: flex; justify-content: center; align-items: flex-start; gap: 15px;">
+                
+                <div style="width: 170px; display: flex; flex-direction: column; gap: 10px; align-items: center;">
+                    <div onclick="handleBlockClick('TRƯỜNG SƠN (ALTA)', 700000)" style="width: 100%; height: 110px; background: linear-gradient(180deg, #3f51b5, #303f9f); border-top: 3px solid rgba(255,255,255,0.2); border-radius: 10px 10px 25px 25px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.5);">
+                        <div style="font-weight: 800; font-size: 10px; text-transform: uppercase;">TRƯỜNG SƠN (ALTA)</div>
+                    </div>
+                    <div onclick="handleBlockClick('TRƯỜNG SƠN (BAJA)', 1000000)" style="width: 100%; height: 90px; background: linear-gradient(180deg, #ff69b4, #e91e63); border-radius: 25px 25px 10px 10px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.5);">
+                        <div style="font-weight: 800; font-size: 10px; text-transform: uppercase;">TRƯỜNG SƠN (BAJA)</div>
+                    </div>
+                </div>
+
+                <div style="width: 480px; display: flex; flex-direction: column; gap: 15px; align-items: center;">
+                    <div onclick="handleBlockClick('PHÙ SA (HẠ LƯU)', 1800000)" style="width: 100%; height: 40px; background: linear-gradient(180deg, #92d050, #76b93f); border-radius: 30px; display: flex; justify-content: center; align-items: center; box-shadow: 0 10px 20px rgba(0,0,0,0.5); color: #000; cursor: pointer;">
+                        <div style="font-weight: 800; font-size: 10px; text-transform: uppercase;">PHÙ SA (HẠ LƯU)</div>
+                    </div>
+                    <div onclick="handleBlockClick('PHÙ SA (THƯỢNG NGUỒN)', 1800000)" style="width: 100%; height: 40px; background: linear-gradient(180deg, #f08080, #cd5c5c); border-radius: 30px; display: flex; justify-content: center; align-items: center; box-shadow: 0 10px 20px rgba(0,0,0,0.5); cursor: pointer;">
+                        <div style="font-weight: 800; font-size: 10px; text-transform: uppercase;">PHÙ SA (THƯỢNG NGUỒN)</div>
+                    </div>
+                    
+                    <div style="width: 100%; display: flex; gap: 15px; align-items: center; justify-content: center; margin-top: 5px;">
+                        <div style="width: 110px; height: 55px; background-color: rgba(100,212,210,0.05); border: 1.5px dashed rgba(100,212,210,0.3); border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: rgba(100,212,210,0.6);">
+                            <span style="font-size: 16px;">🎥</span>
+                            <div style="font-weight: 800; font-size: 8px; color: white;">LIVE CAM (1)</div>
+                        </div>
+                        <div style="flex: 1; height: 55px; background-color: rgba(255,255,255,0.02); border: 1.5px dashed rgba(255,255,255,0.2); border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: rgba(255,255,255,0.3);">
+                            <div style="font-weight: 800; font-size: 10px; color: white;">TRẠM ĐIỀU PHỐI</div>
+                            <div style="font-size: 7px;">KỸ THUẬT</div>
+                        </div>
+                        <div style="width: 110px; height: 55px; background-color: rgba(100,212,210,0.05); border: 1.5px dashed rgba(100,212,210,0.3); border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: rgba(100,212,210,0.6);">
+                            <span style="font-size: 16px;">🎥</span>
+                            <div style="font-weight: 800; font-size: 8px; color: white;">LIVE CAM (2)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="width: 170px; display: flex; flex-direction: column; gap: 10px; align-items: center;">
+                    <div onclick="handleBlockClick('CỬU LONG (ALTA)', 600000)" style="width: 100%; height: 110px; background: linear-gradient(180deg, #6a5acd, #5c6bc0); border-top: 3px solid rgba(255,255,255,0.2); border-radius: 10px 10px 25px 25px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.5);">
+                        <div style="font-weight: 800; font-size: 10px; text-transform: uppercase;">CỬU LONG (ALTA)</div>
+                    </div>
+                    <div onclick="handleBlockClick('CỬU LONG (BAJA)', 950000)" style="width: 100%; height: 90px; background: linear-gradient(180deg, #9c27b0, #7b1fa2); border-radius: 25px 25px 10px 10px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.5);">
+                        <div style="font-weight: 800; font-size: 10px; text-transform: uppercase;">CỬU LONG (BAJA)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div onclick="handleBlockClick('KHÁN ĐÀI CHÂN TRỜI', 450000)" style="width: 420px; height: 60px; background: linear-gradient(180deg, #ff9900, #e68a00); border-radius: 40px; margin-top: -20px; color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; cursor: pointer; box-shadow: 0 8px 30px rgba(230, 138, 0, 0.4);">
+                <div style="font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 2px;">KHÁN ĐÀI CHÂN TRỜI</div>
+               
+            </div>
+        </div>
+    </div>
+</div>
+`
+},
+
     // SƠ ĐỒ ID 53: STANDARD 
     53: {
         eventName: "GREENGREEN CORTIS ",
         hasDiagram: true,
-        time: "18:00 - 20/04/2026",
+        time: "20:00 - 20/04/2026",
         location: "VINCOM CENTER, HÀ NỘI",
         currency: "đ",
         priceList: [
@@ -186,8 +306,10 @@ const MAP_TEMPLATES = {
 174: {
         eventName: "G-DRAGON WORLD TOUR",
         hasDiagram: true,
+        themeColor: "#e00e0e", 
+        accentColor: "#A0A0A0",
         time: "20:00 - 11/08/2026",
-        location: "Vinhomes Ocean Park 3, Hà Nội",
+        location: "Vinhomes Ocean Park 3, Hưng Yên",
         currency: "đ",
         priceList: [
             { name: 'VIP', price: 8000000 },
@@ -352,8 +474,10 @@ const MAP_TEMPLATES = {
     52: {
     eventName: "OCEAN WHISPER 2026",
     hasDiagram: true,
+    themeColor: "#0a87a3", 
+    accentColor: "#0a90ad",
     time: "08:00 - 16/04/2026",
-    location: "LOTTE MALL TÂY HỒ, HÀ NỘI",
+    location: "LOTTE WORLD AQUARIUM HÀ NỘI",
     currency: "đ",
     priceList: [
         { name: 'Trải nghiệm cho cá ăn', price: 150000 },
@@ -409,10 +533,13 @@ allEventsData.forEach(item => {
 });
 
 function generateTicketListHTML(config) {
+    const theme = config.themeColor || "#26bc4e";
+    const accent = config.accentColor || theme;
+
     if (!config || !config.priceList || config.priceList.length === 0) {
-        console.error("Dữ liệu priceList trống:", config);
         return `<div class="text-gray-400 text-center mt-10">Hiện chưa có thông tin giá vé.</div>`;
     }
+
     return `
     <style>
         .ticket-scroll-container { 
@@ -437,13 +564,12 @@ function generateTicketListHTML(config) {
             align-items: center; 
             background: rgba(24, 24, 27, 0.4); 
             border: 1px solid rgba(63, 63, 70, 0.4); 
-            border-left: 6px solid #26bc4e; 
+            border-left: 6px solid ${theme} !important; 
             border-radius: 2px;
             padding: 0 20px;
             box-sizing: border-box;
         }
 
-        /* FIX ĐƯỜNG GẠCH NGANG KHÔNG BỊ TRÀN */
         .ticket-divider-container {
             margin-top: 64px;
             width: 100%;
@@ -451,12 +577,12 @@ function generateTicketListHTML(config) {
             display: flex;
             align-items: center;
             overflow: hidden;
-            opacity: 0.2; /* Độ mờ cho giống Ticketbox */
+            opacity: 0.2; 
         }
 
         .dash-line {
             width: 100%;
-            border-top: 2px dashed #ffffff; /* Dùng border dashed để tạo dấu gạch ngang */
+            border-top: 2px dashed #ffffff; 
             height: 0;
         }
 
@@ -464,26 +590,28 @@ function generateTicketListHTML(config) {
             transition: none !important;
             transform: none !important;
         }
+
+        .ticket-accent-text { color: ${accent}; }
+        .ticket-theme-text { color: ${theme}; }
     </style>
     
  <div class="w-full flex flex-col bg-[#0a0a0a] text-white">
         <div class="sticky top-0 z-20 bg-[#0a0a0a] py-8 border-b border-zinc-800/30 px-[30px] flex justify-center">
-            <div class="text-[#26bc4e] font-bold text-xl uppercase tracking-[0.4em]">Chọn vé</div>
+            <div class="font-bold text-xl uppercase tracking-[0.4em]" style="color: ${theme}">Chọn vé</div>
         </div>
 
         <div class="ticket-scroll-container">
             <div class="ticket-content-wrapper p-8 space-y-12">
                 ${config.priceList.map(t => {
-                    // Tạo ID an toàn: Loại bỏ dấu tiếng Việt và khoảng trắng
                     const safeId = t.name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-');
-                    const currentQty = cart.find(i => i.name === t.name)?.qty || 0;
+                    const currentQty = (typeof cart !== 'undefined') ? (cart.find(i => i.name === t.name)?.qty || 0) : 0;
                     
                     return `
                     <div class="ticket-row w-full">
                         <div class="flex justify-between items-center mb-6">
                             <div class="flex-1">
                                 <h3 class="font-black text-white text-[20px] uppercase">${t.name}</h3>
-                                <div class="text-[#26bc4e] font-black mt-1 text-[18px]">${t.price.toLocaleString()} đ</div>
+                                <div class="font-black mt-1 text-[18px]" style="color: ${accent}">${t.price.toLocaleString()} đ</div>
                             </div>
                             
                             <div class="flex items-center bg-white rounded-full shrink-0 overflow-hidden">
@@ -492,7 +620,7 @@ function generateTicketListHTML(config) {
                                 <span id="qty-${safeId}" class="w-10 h-10 flex items-center justify-center text-black font-bold">
                                     ${currentQty}
                                 </span>
-                                <button class="w-10 h-10 flex items-center justify-center text-[#26bc4e]" 
+                                <button class="w-10 h-10 flex items-center justify-center" style="color: ${theme}" 
                                         onclick="handleBlockClick('${t.name}', ${t.price})">＋</button>
                             </div>
                         </div>
@@ -510,8 +638,8 @@ function generateTicketListHTML(config) {
     </div>`;
 }
 
-// 1. URL API của Google Sheet
-const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwU6IlGKSnqlc9xtBsBrH_aT5ttJJvbIkgXChprCgiEV9JLRQN4yj9GSDaXnCrOqzh1YQ/exec';
+
+const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbytvTdE3-iDkpBQddYPLERHzjQoFW6xu8GaKGVSr3NqD-jWLayb40KtCCrI2GvNgyBg2A/exec';
 
 let currentEventConfig = null;
 
@@ -521,65 +649,70 @@ async function initMap() {
     
     let config = null;
 
-    // --- BƯỚC 1: KIỂM TRA TRONG CODE TRƯỚC ---
+    // --- BƯỚC 1 & 2: LẤY CONFIG (Giữ nguyên logic fetch của bạn) ---
     if (typeof MAP_TEMPLATES !== 'undefined' && MAP_TEMPLATES[eventId]) {
         config = MAP_TEMPLATES[eventId];
-        console.log("Dùng data trong MAP_TEMPLATES");
     } 
 
-    // --- BƯỚC 2: NẾU CHƯA CÓ THÌ LOAD TỪ SHEET ---
     if (!config) {
         try {
             const response = await fetch(SHEET_API_URL);
             const allEvents = await response.json();
-            
-            const sheetRow = allEvents.find(item => {
-                const rowId = (item.id || item.ID || item.Id || "").toString();
-                return rowId === eventId;
-            });
+            const sheetRow = allEvents.find(item => (item.id || item.ID || "").toString() === eventId);
 
             if (sheetRow) {
-                // Dò tìm tên cột (phòng trường hợp ông đặt Title hay title)
-                const rawName = sheetRow.title || sheetRow.Title || sheetRow.eventName || "Sự kiện mới";
-                const rawTime = sheetRow.time || sheetRow.Time || "Đang cập nhật";
-                const rawLoc = sheetRow.location || sheetRow.Location || "Đang cập nhật";
-                const rawPriceData = sheetRow.priceList || sheetRow.prices || sheetRow.Prices || sheetRow.price || "";
-
-                console.log("Dữ liệu thô lấy được từ cột priceList:", rawPriceData);
-
                 config = {
-                    eventName: rawName,
-                    time: rawTime,
-                    location: rawLoc,
+                    eventName: sheetRow.title || sheetRow.eventName || "Sự kiện mới",
+                    time: sheetRow.time || "Đang cập nhật",
+                    location: sheetRow.location || "Đang cập nhật",
                     currency: "đ",
                     hasDiagram: false,
-                    priceList: parsePriceList(rawPriceData)
+                    priceList: parsePriceList(sheetRow.priceList || ""),
+                    themeColor: "#26bc4e", // Mặc định cho sheet
+                    accentColor: "#26bc4e"
                 };
-                console.log("Đã lấy data từ Sheet:", config);
             }
-        } catch (error) {
-            console.error("Lỗi Fetch Sheet:", error);
-        }
+        } catch (error) { console.error("Lỗi Fetch:", error); }
     }
 
-    // --- BƯỚC 3: DỰ PHÒNG CUỐI CÙNG ---
-    if (!config) {
-        config = (typeof MAP_TEMPLATES !== 'undefined') ? MAP_TEMPLATES['21'] : null;
-    }
-
+    if (!config) config = (typeof MAP_TEMPLATES !== 'undefined') ? MAP_TEMPLATES['21'] : null;
     if (!config) return; 
 
     currentEventConfig = config;
 
-    // --- BƯỚC 4: ĐỔ DỮ LIỆU LÊN GIAO DIỆN ---
+    // --- BƯỚC 3: KHAI BÁO CÁC PHẦN TỬ GIAO DIỆN ---
     const sidebarTitle = document.querySelector('.right-panel h2') || document.querySelector('aside h2');
-    if (sidebarTitle) sidebarTitle.innerText = config.eventName;
-
     const sideTime = document.getElementById('side-time') || document.querySelector('.fa-calendar-days')?.parentElement;
     const sideLoc = document.getElementById('side-loc') || document.querySelector('.fa-location-dot')?.parentElement;
+    const totalDisplay = document.querySelector('.total-price-class') || document.getElementById('total-price');
+
+    // --- BƯỚC 4: ĐỔI MÀU THEO THEME  ---
+    const theme = config.themeColor || "#26bc4e";
+    const accent = config.accentColor || theme;
+    setTimeout(() => {
+        document.querySelectorAll('.fa-calendar-days, .fa-location-dot, i').forEach(icon => {
+            icon.style.setProperty('color', theme, 'important');
+        });
+        const textSelectors = '#side-time, #side-loc,  .right-panel p, .fa-calendar-days + span, .fa-location-dot + span';
+    document.querySelectorAll(textSelectors).forEach(el => {
+        el.style.setProperty('color', theme, 'important');
+    });
+
+    }, 100);
+
+
+    const totalLabel = document.querySelector('.total-label-class')
+    if (totalLabel) totalLabel.style.color = theme;
+
+    if (sidebarTitle) {
+        sidebarTitle.innerText = config.eventName;
+        sidebarTitle.style.color = theme; 
+    }
+
+    if (totalDisplay) totalDisplay.style.color = accent; // Đổi màu tổng tiền
+
     if (sideTime) sideTime.innerHTML = `<i class="fa-solid fa-calendar-days mr-2"></i> ${config.time}`;
     if (sideLoc) sideLoc.innerHTML = `<i class="fa-solid fa-location-dot mr-2"></i> ${config.location}`;
-
     // --- BƯỚC 5: RENDER SƠ ĐỒ HOẶC LIST VÉ CHÍNH ---
     const mapContainer = document.getElementById('map-container');
     const viewport = document.getElementById('viewport');
@@ -638,6 +771,10 @@ function parsePriceList(priceData) {
 
 // HÀM HỖ TRỢ 2: Render bảng giá nhanh
 function renderPriceListSidebar(config) {
+    // 1. Lấy màu từ config, nếu không có thì để mặc định (ví dụ xanh lá của Ticketbox)
+    const theme = config.themeColor || "#26bc4e"; 
+    const accent = config.accentColor || theme;
+    
     const priceListDiv = document.querySelector('#price-list-default .space-y-4') || document.getElementById('ticket-list-container');
     if (!priceListDiv) return;
 
@@ -647,10 +784,14 @@ function renderPriceListSidebar(config) {
             return `
                 <div class="flex justify-between items-center group cursor-pointer p-2 hover:bg-white/5 rounded-lg" 
                      onclick="handleBlockClick('${safeName}', ${item.price})">
-                    <span class="text-[11px] font-bold text-gray-300 group-hover:text-green-400 transition uppercase flex-1">
+                    
+                    <span class="text-[11px] font-bold text-gray-300 transition uppercase flex-1"
+                          onmouseover="this.style.color='${theme}'" 
+                          onmouseout="this.style.color=''">
                         ${item.name}
                     </span>
-                    <span class="text-[11px] font-bold text-green-500 ml-2">
+
+                    <span class="text-[11px] font-bold ml-2" style="color: ${accent}">
                         ${item.price.toLocaleString()} đ
                     </span>
                 </div>`;
@@ -884,7 +1025,6 @@ function closeErrorModal() {
 
 // --- XỬ LÝ CLICK SƠ ĐỒ ---
 function handleBlockClick(name, price) {
-    // LUẬT: Chỉ được chọn 1 khu vực duy nhất
     if (cart.length > 0) {
         const currentArea = cart[0].name;
         if (currentArea !== name) {
@@ -894,8 +1034,6 @@ function handleBlockClick(name, price) {
     }
 
     tempSelection = { name, price, qty: 1 };
-
-    // Nếu đã chọn khu này rồi, bấm vào chỉ để chọn thêm số lượng
     if (cart.find(i => i.name === name)) {
         showQtySelection();
         return;
@@ -969,52 +1107,70 @@ function renderCart() {
     const totalQtyDisplay = document.getElementById('total-qty-display');
     let total = 0;
 
+    // Lấy màu theme để dùng cho các chi tiết
+    const theme = currentEventConfig?.themeColor || "#26bc4e";
+
     // --- PHẦN 1: CẬP NHẬT GIAO DIỆN BÊN PHẢI (CART) ---
     if (cart.length === 0) {
         list.innerHTML = `<p class="text-gray-700 text-xs italic text-center py-20 uppercase font-bold">Chưa có vé nào</p>`;
         list.classList.add('hidden');
         priceListDefault.classList.remove('hidden');
-        document.getElementById('btn-next').classList.add('hidden');
-        totalQtyDisplay.classList.add('hidden');
+        
+        const btnNext = document.getElementById('btn-next');
+        if(btnNext) btnNext.classList.add('hidden');
+        
+        if(totalQtyDisplay) totalQtyDisplay.classList.add('hidden');
         isFirstTime = true;
     } else {
         priceListDefault.classList.add('hidden');
         list.classList.remove('hidden');
+
+        // SỬA TẠI ĐÂY: Giữ nguyên cấu trúc nút bấm để updateCart hoạt động
         list.innerHTML = cart.map(i => {
             total += i.price * i.qty;
             return `
             <div class="bg-white/5 p-5 rounded-xl flex justify-between items-center border border-white/5 mb-4">
                 <div>
                     <p class="font-black text-sm uppercase text-white">${i.name}</p>
-                    <p class="text-green-400 text-xs font-bold">${i.price.toLocaleString()} đ</p>
+                    <p class="text-xs font-bold" style="color: ${theme}">${i.price.toLocaleString()} đ</p>
                 </div>
                 <div class="flex items-center gap-4 bg-black p-2 rounded-lg border border-white/10 font-bold text-white">
-                    <button onclick="updateCart('${i.name}',-1)">-</button>
+                    <button onclick="updateCart('${i.name}', -1)" class="hover:text-gray-400">-</button>
                     <span>${i.qty}</span>
-                    <button onclick="updateCart('${i.name}',1)">+</button>
+                    <button onclick="updateCart('${i.name}', 1)" class="hover:text-gray-400" style="color: ${theme}">+</button>
                 </div>
             </div>`;
         }).join('');
         
-        document.getElementById('btn-next').classList.remove('hidden');
-        document.getElementById('btn-total-val').innerText = total.toLocaleString();
-        totalQtyDisplay.classList.remove('hidden');
-        document.getElementById('qty-count').innerText = "x" + cart.reduce((a, b) => a + b.qty, 0);
+        const btnNext = document.getElementById('btn-next');
+        if(btnNext) {
+            btnNext.classList.remove('hidden');
+            btnNext.style.backgroundColor = theme; // Ép màu nút TIẾP TỤC
+        }
+
+        const btnTotalVal = document.getElementById('btn-total-val');
+        if(btnTotalVal) btnTotalVal.innerText = total.toLocaleString();
+
+        if(totalQtyDisplay) {
+            totalQtyDisplay.classList.remove('hidden');
+            const qtyCount = document.getElementById('qty-count');
+            if(qtyCount) qtyCount.innerText = "x" + cart.reduce((a, b) => a + b.qty, 0);
+        }
     }
     
     // Cập nhật text tổng tiền ở sidebar
     const totalElem = document.getElementById('total-price');
-    if(totalElem) totalElem.innerText = total.toLocaleString() + " đ";
+    if(totalElem) {
+        totalElem.innerText = total.toLocaleString() + " đ";
+        totalElem.style.color = theme; // Ép luôn màu tổng tiền cho đồng bộ
+    }
 
     // --- PHẦN 2: ÉP SỐ LIỆU SANG BÊN TRÁI (TICKET LIST) ---
-    // Bước A: Reset tất cả các số hiển thị bên trái về 0 trước
     document.querySelectorAll('[id^="qty-left-"]').forEach(el => {
         el.innerText = "0";
     });
 
-    // Bước B: Duyệt qua giỏ hàng, khu nào có vé thì ghi đè số lượng lên bên trái
     cart.forEach(item => {
-        // Chuyển tên khu thành ID chuẩn (Ví dụ: "VIP ZONE" thành "qty-left-VIP-ZONE")
         const leftId = "qty-left-" + item.name.replace(/\s+/g, '-');
         const leftQtyDisplay = document.getElementById(leftId);
         if (leftQtyDisplay) {
@@ -1025,8 +1181,6 @@ function renderCart() {
 
 // --- CHUYỂN STEP ---
 function goToStep2() {
-    // ƯU TIÊN 1: Lấy từ biến toàn cục đã load từ Sheet thành công ở initMap
-    // ƯU TIÊN 2: Nếu chưa có thì mới tìm trong MAP_TEMPLATES hoặc mặc định ID 21
     const eventId = new URLSearchParams(window.location.search).get('id') || '21';
     const config = currentEventConfig || (typeof MAP_TEMPLATES !== 'undefined' ? MAP_TEMPLATES[eventId] : null);
 
@@ -1035,17 +1189,15 @@ function goToStep2() {
         return;
     }
 
-    // Gán tên sự kiện vào tiêu đề của Step 2 (Chỗ 'Đơn hàng của bạn')
     const step2Title = document.querySelector('#step-2 h2') || document.querySelector('.step-2-header');
     if(step2Title) {
-        step2Title.innerText = config.eventName; // Ăn tên từ Sheet ở đây nè
+        step2Title.innerText = config.eventName; 
     }
 
     // Chuyển màn hình
     document.getElementById('step-1').classList.add('hidden');
     document.getElementById('step-2').classList.remove('hidden');
     
-    // Render danh sách vé đã chọn vào bảng thanh toán
     let totalAll = 0;
     const paymentItems = document.getElementById('payment-items');
     if (paymentItems) {
@@ -1065,11 +1217,11 @@ function goToStep2() {
     startTimer();
 }
 
-// Sửa lại hàm này để khớp với nút quay lại ở Step 2 trong HTML của bà
+
 function backToStep1() {
     const cancelModal = document.getElementById('cancel-modal');
     if(cancelModal) {
-        closeModals(); // Đóng các modal khác nếu đang mở
+        closeModals();
         cancelModal.classList.remove('hidden');
         cancelModal.style.setProperty('display', 'flex', 'important');
     }
@@ -1101,13 +1253,12 @@ function selectPay(element) {
 }
 
 function handleFinalCheckout() {
-    // PHẢI ĐIỀN ĐỦ THÔNG TIN MỚI CHO ĐI TIẾP
     if (!validateStep2()) return;
 
     closeModals();
     const method = currentMethod.toUpperCase();
 
-    if (method.includes("EVENTPAY")) {
+    if (method.includes("ELYSIUMPAY")) {
         showInvoice();
     } 
     else if (method.includes("VISA") || method.includes("THẺ")) {
