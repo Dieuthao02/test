@@ -6,87 +6,7 @@
     <title>Elysium Detail</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style> 
-        body { background-color: #0b0b0b; color: #ffffff; font-family: 'Inter', sans-serif; }
-        .category-nav-pastel {
-            background: linear-gradient(90deg, #FFDEE9 0%, #FFFFFF 50%, #B5FFFC 100%);
-            border-radius: 999px;
-        }
-        .ticket-box-style {
-            background: #1a1a1a; position: relative; border-radius: 1.5rem; overflow: hidden;
-        }
-        .ticket-box-style::before, .ticket-box-style::after {
-            content: ""; position: absolute; left: 33.33%; width: 30px; height: 30px;
-            background: #0b0b0b; border-radius: 50%; transform: translateX(-50%); z-index: 10;
-        }
-        .ticket-box-style::before { top: -15px; }
-        .ticket-box-style::after { bottom: -15px; }
-
-        .ticket-detail { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; background: #1a1a1a; }
-        .ticket-item.active .ticket-detail { max-height: 500px; }
-        .ticket-item.active .icon-arrow { transform: rotate(180deg); }
-        .content-collapsed { max-height: 200px; overflow: hidden; position: relative; transition: all 0.5s; }
-        .content-collapsed::after {
-            content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 80px;
-            background: linear-gradient(transparent, #141414);
-        }
-        .content-expanded { max-height: none; }
-        .content-expanded::after { display: none; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-    
-        .description-html-content img {
-            width: 100% !important;
-            max-width: 100%;
-            height: auto !important;
-            display: block;
-            margin: 15px 0;
-            border-radius: 12px;
-        }
-
-        .description-html-content iframe {
-            width: 100% !important;
-            aspect-ratio: 16 / 9;
-            border-radius: 16px;
-            margin: 20px 0;
-        }
-
-        .description-html-content p {
-            margin-bottom: 15px;
-        }
-
-        #event-description {
-            white-space: pre-line;
-        }
-
-        #event-time {
-            position: relative;
-            pointer-events: auto !important; 
-        }
-
-        #event-time a {
-            display: inline-flex;
-            align-items: center;
-            cursor: pointer !important;
-        }
-
-        .content-expanded { 
-            max-height: 20000px !important; 
-        }
-
-        .content-expanded::after { 
-            display: none !important; 
-        }
-
-        .spinner {
-            width: 40px; height: 40px; border: 4px solid #F33B26;
-            border-top: 4px solid transparent; border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        /* Hiệu ứng hover cho card gợi ý */
-        .suggestion-card:hover img { transform: scale(1.05); }
-    </style>
+    <link rel="stylesheet" href="detail.css">
 </head>
 <body class="pb-20">
     
@@ -108,7 +28,53 @@
             <a href="index.html" class="hover:text-white">Trang chủ</a>
             <a href="#" class="text-white border-b-2 border-pink-400">Đặt vé</a>
         </nav>
-        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-300 to-blue-300 border-2 border-white/20"></div>
+        <div class="flex items-center gap-4 font-['Inter']">
+    <div id="auth-buttons" class="hidden flex items-center gap-2">
+        <a href="auth.html?mode=login" class="text-[11px] font-bold text-gray-400 hover:text-white transition-all uppercase tracking-wider px-3 py-2">
+            Đăng nhập
+        </a>
+        <div class="w-[1px] h-3 bg-gray-700"></div>
+        <a href="auth.html?mode=register" class="px-5 py-2 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white text-[11px] font-black rounded-full transition-all shadow-lg shadow-pink-500/20 uppercase tracking-wider">
+            Đăng ký
+        </a>
+    </div>
+
+    <div id="user-profile" class="hidden flex items-center gap-3 group relative cursor-pointer">
+        <div class="text-right hidden md:block">
+            <p id="user-display-name" class="text-[13px] font-black text-white leading-none tracking-tight">
+                DIỆU THẢO
+            </p>
+            <p class="text-[8px] text-pink-400 font-black uppercase tracking-[0.1em] mt-1.5 bg-pink-500/10 px-2 py-0.5 rounded-full inline-block">
+                Platinum Member
+            </p>
+        </div>
+        
+        <div class="relative">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-500 to-violet-500 p-[2px]">
+                <img src="" alt="Avatar" class="w-full h-full rounded-full border-2 border-[#0b0b0b] object-cover">
+            </div>
+            <div class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 border-[3px] border-[#0b0b0b] rounded-full"></div>
+        </div>
+
+        <div class="absolute top-[130%] right-0 w-52 bg-[#141414]/95 backdrop-blur-xl border border-white/10 rounded-2xl hidden group-hover:block overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-[100] animate-in fade-in slide-in-from-top-2 duration-300">
+            <div class="p-2.5 space-y-1">
+                <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-gray-300 hover:bg-white/5 hover:text-pink-400 rounded-xl transition-all">
+                    <i class="fa-solid fa-user-gear w-4"></i> Tài khoản của tôi
+                </a>
+                <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-gray-400 hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                    <i class="fa-solid fa-ticket-simple w-4 text-pink-500"></i> Vé của tôi
+                </a>
+                <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-gray-400 hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                    <i class="fa-solid fa-heart w-4 text-pink-500"></i> Sự kiện của tôi
+                </a>
+                <div class="h-[1px] bg-white/5 my-1.5 mx-2"></div>
+                <button onclick="window.logout()" class="w-full flex items-center gap-3 px-4 py-3 text-[11px] font-black text-rose-400 hover:bg-rose-500/10 rounded-xl transition-all uppercase">
+                    <i class="fa-solid fa-power-off w-4"></i> Đăng xuất
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
     </header>
 
     <main class="max-w-[1200px] mx-auto px-6 space-y-10">
@@ -124,27 +90,59 @@
         </div>
 
         <div class="ticket-box-style flex flex-col md:flex-row border border-white/5 shadow-2xl">
-            <div class="p-10 md:w-1/3 flex flex-col justify-between border-r border-dashed border-gray-700 relative">
-                <div class="space-y-6">
-                    <h2 id="event-title" class="text-2xl font-black uppercase tracking-tight">
-                        Đang tải...<br>
-                        <span class="text-pink-400 italic text-xl">Vui lòng đợi</span>
-                    </h2>
-                    <div class="text-sm text-gray-400 space-y-3">
-                        <p id="event-time"><i class="fa-solid fa-calendar mr-2 text-green-400"></i> --:--</p>
-                        <p id="event-location"><i class="fa-solid fa-location-dot mr-2 text-pink-400"></i> Đang cập nhật địa điểm...</p>
+    <div class="p-8 md:w-1/3 flex flex-col justify-between border-r border-dashed border-gray-700/50 relative">
+        <div class="space-y-4">
+            <h2 id="event-title" class="text-lg md:text-xl font-black uppercase tracking-tight leading-tight text-white">
+                Đang tải...<br>
+                <span class="text-pink-400 italic text-sm font-bold tracking-normal">Vui lòng đợi</span>
+            </h2>
+            
+            <div class="space-y-3"> 
+                <div id="time-container" class="flex flex-wrap items-center gap-2">
+
+        <p id="event-time" class="text-[11px] text-gray-400 font-medium tracking-wide flex items-center">
+            <span class="w-5 flex-shrink-0">
+                <i class="fa-solid fa-calendar text-green-400 text-xs"></i>
+            </span>
+            <span id="first-date-display">--:--</span>
+        </p>
+        <span id="more-days-tag" class="hidden cursor-pointer bg-gray-800 hover:bg-gray-700 text-[9px] text-pink-400 font-bold px-1.5 py-0.5 rounded border border-pink-400/30 transition-all">
+            +0 ngày khác
+        </span>
+    </div>
+    
+             <p id="event-location" class="text-[11px] text-gray-400 font-medium tracking-wide flex items-center">
+        <span class="w-5 flex-shrink-0"> 
+            <i class="fa-solid fa-location-dot text-pink-400 text-xs"></i>
+        </span>
+        <span>Đang cập nhật địa điểm...</span>
+    </p>
+</div>
+        </div>
+
+        <div class="mt-6 pt-5 border-t border-gray-800/50 flex flex-col gap-4">
+            <div class="flex items-center gap-2 cursor-pointer group" onclick="goToBooking()">
+                <div>
+                    <p class="text-[9px] text-gray-500 font-bold uppercase tracking-[0.2em] mb-0.5">Giá từ</p>
+                    <div class="flex items-center gap-2">
+                        <p id="event-min-price" class="text-2xl font-black text-green-400 leading-none">0 Đ</p>
+                        <i class="fa-solid fa-chevron-right text-green-400 text-xs group-hover:translate-x-1 transition-transform"></i>
                     </div>
                 </div>
-                <div class="mt-8 pt-8 border-t border-gray-800">
-                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-1">Giá từ</p>
-                    <p id="event-min-price" class="text-3xl font-black text-green-400 uppercase">0 đ ></p>
-                </div>
             </div>
-            <div class="md:w-2/3 relative group bg-black overflow-hidden aspect-[16/9] md:aspect-auto">
-                <img id="event-banner" src="" class="absolute inset-0 w-full h-full object-cover opacity-80 transition-transform duration-500 group-hover:scale-105">
-                <div class="absolute inset-0 bg-gradient-to-r from-[#1a1a1a] via-transparent to-transparent md:via-[#1a1a1a]/50"></div>
-            </div>
+
+            <button id="main-booking-btn" onclick="goToBooking()" 
+    class="w-full py-3 bg-[#2ecc71] text-white rounded-[1.5rem] font-black uppercase text-[10px] tracking-widest shadow-lg transition-all active:scale-95">
+    Mua vé ngay
+</button>
         </div>
+    </div>
+
+    <div class="md:w-2/3 relative group bg-black overflow-hidden" style="aspect-ratio: 21/9;"> 
+        <img id="event-banner" src="" class="absolute inset-0 w-full h-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-105">
+        <div class="absolute inset-0 bg-gradient-to-r from-[#1a1a1a] via-transparent to-transparent"></div>
+    </div>
+</div>
 
         <section class="bg-[#141414] rounded-[2rem] p-10 border border-white/5 relative">
             <h3 class="text-xl font-bold mb-6 flex items-center">
@@ -153,7 +151,7 @@
             
             <div id="intro-content" class="content-collapsed">
                 <div class="flex flex-col md:flex-row gap-10">
-                    <div id="event-description" class="flex-1 text-gray-400 leading-relaxed text-sm description-html-content"></div>
+                    <div id="event-description" class="flex-1 text-white leading-relaxed text-sm description-html-content"></div>
                     <div class="md:w-1/3 shrink-0">
                         <ul class="space-y-3 p-6 bg-white/5 rounded-2xl border border-white/10 h-fit">
                             <li class="flex items-center text-xs"><i class="fa-solid fa-check text-pink-500 mr-2"></i> Miễn phí nước uống tại khu vực GA</li>
@@ -171,21 +169,30 @@
             </div>
         </section>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-2 bg-[#141414] rounded-[2rem] p-8 border border-white/5 h-fit">
-                <h3 class="text-green-400 font-bold uppercase text-xs tracking-[0.2em] mb-8">Danh sách hạng vé</h3>
-                <div id="ticket-list-container" class="space-y-3">
-                    <p class="text-gray-500 italic text-sm text-center">Đang tìm kiếm hạng vé...</p>
-                </div>
-            </div>
-
-            <div class="space-y-6">
-                <button onclick="goToBooking()" class="w-full py-5 bg-[#2ecc71] text-white rounded-[1.5rem] font-black uppercase text-xs shadow-lg">Mua vé ngay</button>
-                <div class="rounded-[2rem] overflow-hidden border border-white/10">
-                    <img src="https://image.ticketbox.vn/images/mastercard-banner.jpg" class="w-full">
-                </div>
-            </div>
+        <div class="grid grid-cols-10 gap-8">
+    <div class="col-span-10 lg:col-span-8 bg-[#141414] rounded-[2rem] p-8 border border-white/5 h-fit">
+        <div class="flex items-center justify-between mb-8">
+            <h3 class="text-green-400 font-bold uppercase text-xs tracking-[0.2em]">Lịch diễn & Vé</h3>
+            <span class="text-[10px] text-gray-500 italic">* Bấm vào suất diễn để xem chi tiết vé</span>
         </div>
+        
+        <div id="ticket-list-container" class="space-y-4">
+            </div>
+    </div>
+
+    <div class="col-span-10 lg:col-span-2">
+        <div class="p-6 bg-white/5 rounded-[1.5rem] border border-white/5 sticky top-8">
+            <h4 class="text-white font-bold text-xs uppercase mb-4 flex items-center">
+                <i class="fa-solid fa-circle-info mr-2 text-pink-400"></i> Lưu ý
+            </h4>
+            <ul class="space-y-3">
+                <li class="text-[10px] text-gray-400 leading-relaxed">• Kiểm tra kỹ thông tin cá nhân và suất diễn trước khi thanh toán.</li>
+                <li class="text-[10px] text-gray-400 leading-relaxed">• Vé đã mua không thể hoàn trả hoặc thay đổi thông tin.</li>
+                <li class="text-[10px] text-gray-400 leading-relaxed">• Vui lòng có mặt trước ít nhất 15 phút để check-in.</li>
+            </ul>
+        </div>
+    </div>
+</div>
 
         <section class="bg-[#141414] rounded-[2rem] p-10 border border-white/5 shadow-xl">
     <h3 class="text-white font-bold uppercase text-[11px] tracking-[0.2em] flex items-center mb-8">
@@ -376,160 +383,40 @@
 </section>
 
     </main>
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { firebaseConfig } from './firebase-config.js';
 
-    <script>
-        const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbytvTdE3-iDkpBQddYPLERHzjQoFW6xu8GaKGVSr3NqD-jWLayb40KtCCrI2GvNgyBg2A/exec';
-        let currentEventId = ''; 
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
-    async function initEventDetail() {
-    const urlParams = new URLSearchParams(window.location.search);
-    currentEventId = urlParams.get('id');
-
-    const videoMap = {
-        '26': 'video26.mp4',
-        '30': 'videos/loading_30.mp4'
+    // Đưa hàm logout ra ngoài để nút bấm (onclick) có thể gọi được
+    window.logout = async () => {
+        await signOut(auth);
+        window.location.reload();
     };
 
-    const specialLoader = document.getElementById('special-loader');
-    const videoPlayer = document.getElementById('loading-video-player');
-    const loaderIcon = document.getElementById('loader-icon');
+    onAuthStateChanged(auth, (user) => {
+        const authButtons = document.getElementById('auth-buttons');
+        const userProfile = document.getElementById('user-profile');
+        const userNameDisplay = document.getElementById('user-display-name');
+        const userAvatar = document.querySelector('#user-profile img');
 
-    specialLoader.style.display = 'flex';
-    const customVideoPath = videoMap[currentEventId];
-
-    if (customVideoPath) {
-        videoPlayer.src = customVideoPath;
-        videoPlayer.muted = true;
-        videoPlayer.play().then(() => {
-            loaderIcon.classList.add('hidden');
-            const loaderText = document.querySelector('#special-loader h2');
-            if (loaderText) loaderText.style.display = 'none';
-        });
-
-        videoPlayer.onended = () => {
-            specialLoader.style.opacity = '0';
-            setTimeout(() => { specialLoader.style.display = 'none'; }, 700);
-        };
-    } else {
-        setTimeout(() => { specialLoader.style.display = 'none'; }, 2000);
-    }
-
-    try {
-        const response = await fetch(SHEET_API_URL);
-        const allEvents = await response.json();
-        const event = allEvents.find(item => item.id == currentEventId);
-
-        if (event) {
-            renderPage(event);
+        if (user) {
+            if (authButtons) authButtons.classList.add('hidden');
+            if (userProfile) userProfile.classList.remove('hidden');
+            if (userNameDisplay) userNameDisplay.textContent = user.displayName || "Thành viên";
+            if (userAvatar) userAvatar.src = user.photoURL || `https://api.dicebear.com/7.x/adventurer/svg?seed=${user.uid}`;
+            
+            window.currentUser = user; 
+        } else {
+            if (authButtons) authButtons.classList.remove('hidden');
+            if (userProfile) userProfile.classList.add('hidden');
+            window.currentUser = null;
         }
-    } catch (error) {
-        console.error("Lỗi tải Sheet:", error);
-        videoPlayer.onended = () => { specialLoader.style.display = 'none'; };
-    }
-}
-
-      function renderPage(ev) {
-    document.getElementById('event-title').innerHTML = `${ev.eventName}<br><span class="text-pink-400 italic text-xl">${ev.category || ''}</span>`;
-    
-    const bannerImg = ev.eventImage || ev.mapImage;
-    const bannerElement = document.getElementById('event-banner');
-    if (bannerImg && bannerImg !== "No") {
-        bannerElement.src = bannerImg;
-    } else {
-        bannerElement.src = "https://via.placeholder.com/800x400?text=No+Image"; 
-    }
-
-let eventDate = '';
-if (ev.time) {
-    const rawDate = ev.time.split(' ')[0]; // Lấy "16/04/2026"
-    const parts = rawDate.split('/');
-    if (parts.length === 3) {
-        eventDate = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
-    }
-}
-
-document.getElementById('event-time').innerHTML = `
-    <a href="calendar.html?date=${eventDate}" class="relative z-50 flex items-center gap-2 hover:text-pink-400 transition-all">
-        <i class="fa-solid fa-calendar text-green-400"></i>
-        <span>${ev.time || 'Đang cập nhật...'}</span>
-    </a>
-`;
-
-    document.getElementById('event-location').innerHTML = `<i class="fa-solid fa-location-dot mr-2 text-pink-400"></i> ${ev.location}`;
-    const descElement = document.getElementById('event-description');
-    if (ev.description) {
-        descElement.innerHTML = ev.description; 
-        descElement.classList.add('description-html-content');
-    }
-
-    const ticketContainer = document.getElementById('ticket-list-container');
-    let ticketHTML = '';
-    let minPrice = Infinity;
-
-    if (ev.priceList) {
-        const pricesRaw = ev.priceList.split(/,|\n/); 
-        pricesRaw.forEach(p => {
-            if (p.includes(':')) {
-                const parts = p.split(':');
-                const name = parts[0].trim();
-                const priceValue = parseInt(parts[1].replace(/\D/g, ''));
-                if (!isNaN(priceValue)) {
-                    if (priceValue < minPrice) minPrice = priceValue;
-                    ticketHTML += `
-                        <div class="ticket-item border border-white/5 rounded-2xl bg-white/[0.02] overflow-hidden mb-3">
-                            <div onclick="toggleTicket(this)" class="p-5 flex justify-between items-center cursor-pointer hover:bg-white/5 transition">
-                                <div class="flex items-center gap-3">
-                                    <i class="fa-solid fa-chevron-right text-[10px] text-gray-500 icon-arrow transition-transform"></i>
-                                    <span class="font-black uppercase text-xs">${name}</span>
-                                </div>
-                                <span class="text-green-400 font-black text-sm">${priceValue.toLocaleString()} đ</span>
-                            </div>
-                            <div class="ticket-detail">
-                                <div class="ticket-detail-content px-12 pb-6 text-gray-400 text-[11px] pt-4">
-                                    Hạng vé ${name} chính thức từ BTC ${ev.organizerName}.
-                                </div>
-                            </div>
-                        </div>`;
-                }
-            }
-        });
-        ticketContainer.innerHTML = ticketHTML || '<p class="text-gray-500">Đang cập nhật vé...</p>';
-    }
-    
-    const finalMin = (minPrice === Infinity) ? "0" : minPrice.toLocaleString();
-    document.getElementById('event-min-price').innerHTML = `${finalMin} đ >`;
-
-    document.getElementById('org-name').innerText = ev.organizerName || "EventHub Partner";
-    document.getElementById('org-desc').innerText = ev.organizerDesc || "Đơn vị tổ chức sự kiện chuyên nghiệp.";
-
-    const orgLogoContainer = document.getElementById('org-logo');
-    if (ev.organizerLogo && ev.organizerLogo !== "" && ev.organizerLogo !== "No") {
-        orgLogoContainer.innerHTML = `<img src="${ev.organizerLogo}" class="w-full h-full object-cover rounded-full" alt="logo">`;
-        orgLogoContainer.classList.remove('bg-gradient-to-br');
-    } else {
-        orgLogoContainer.innerText = ev.organizerName ? ev.organizerName.substring(0, 2).toUpperCase() : "EH";
-        orgLogoContainer.classList.add('bg-gradient-to-br');
-    }
-}
-        function toggleTicket(el) {
-            const item = el.parentElement;
-            item.classList.toggle('active');
-        }
-
-        function toggleIntro() {
-            const content = document.getElementById('intro-content');
-            const icon = document.getElementById('toggle-icon');
-            content.classList.toggle('content-expanded');
-            icon.classList.toggle('fa-chevron-up');
-            icon.classList.toggle('fa-chevron-down');
-        }
-
-        function goToBooking() {
-            if (!currentEventId) return;
-            window.location.href = `booking.html?id=${currentEventId}`;
-        }
-
-        window.onload = initEventDetail;
-    </script>
+    });
+</script>
+    <script src="detail.js"></script>
 </body>
 </html>

@@ -639,13 +639,14 @@ function generateTicketListHTML(config) {
 }
 
 
-const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbytvTdE3-iDkpBQddYPLERHzjQoFW6xu8GaKGVSr3NqD-jWLayb40KtCCrI2GvNgyBg2A/exec';
+const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbx3vQyakJkFfJxkP5XAQ8fQkjmt5lnls2n4N3zjrEUL4JxYIzMumbGmPIZwOTzbjgO-OA/exec';
 
 let currentEventConfig = null;
 
 async function initMap() {
     const urlParams = new URLSearchParams(window.location.search);
     const eventId = (urlParams.get('id') || '21').toString();
+    const selectedDate = urlParams.get('date');
     
     let config = null;
 
@@ -663,12 +664,12 @@ async function initMap() {
             if (sheetRow) {
                 config = {
                     eventName: sheetRow.title || sheetRow.eventName || "Sự kiện mới",
-                    time: sheetRow.time || "Đang cập nhật",
+                    time: selectedDate || sheetRow.time || "Đang cập nhật",
                     location: sheetRow.location || "Đang cập nhật",
                     currency: "đ",
                     hasDiagram: false,
-                    priceList: parsePriceList(sheetRow.priceList || ""),
-                    themeColor: "#26bc4e", // Mặc định cho sheet
+                    priceList: parsePriceList(sheetRow.priceList || "", sheetRow.ticketQuantity || "", sheetRow.ticketDetail || ""),
+                    themeColor: "#26bc4e",
                     accentColor: "#26bc4e"
                 };
             }
@@ -736,33 +737,50 @@ async function initMap() {
     // --- BƯỚC 6: CẬP NHẬT BẢNG GIÁ BÊN PHẢI ---
     renderPriceListSidebar(config);
 }
-
-// HÀM HỖ TRỢ 1: Parse giá vé
-function parsePriceList(priceData) {
+// HÀM HỖ TRỢ 1: Parse giá vé (Đã sửa lỗi logic và cú pháp)
+function parsePriceList(priceData, quantityData, detailData) {
     if (!priceData) return [];
-    
-    // Nếu là mảng từ code fix cứng thì trả về luôn
     if (Array.isArray(priceData)) return priceData;
 
     try {
-        // Tách theo dấu phẩy hoặc xuống dòng
-        return priceData.split(/,|\n/).map(item => {
-            // Tách Tên và Giá bằng dấu :
+        // Lấy danh sách đơn hàng để tính toán số vé đã bán
+        const orders = JSON.parse(localStorage.getItem('eventOrders')) || [];
+        
+        const quantities = quantityData ? quantityData.split(',').map(q => q.trim()) : [];
+        const details = detailData ? detailData.split('|').map(d => d.trim()) : [];
+        const pricesRaw = priceData.split(/,|\n/).filter(p => p.trim() !== "");
+
+        return pricesRaw.map((item, index) => {
             const parts = item.split(':');
             if (parts.length < 2) return null;
 
             const name = parts[0].trim();
-            
-            // XỬ LÝ GIÁ: Loại bỏ tất cả ký tự không phải số (dấu chấm, phẩy, chữ đ)
             const priceRaw = parts[1].toString().replace(/\D/g, '');
             const price = parseInt(priceRaw) || 0;
+
+            // --- XỬ LÝ SỐ VÉ TỔNG ---
+            let totalStock = (quantities[index] === undefined || quantities[index] === "") ? 1000 : parseInt(quantities[index]);
+            
+            // --- TÍNH SỐ VÉ ĐÃ BÁN ---
+            // Lọc các đơn hàng của đúng sự kiện này và cộng dồn số lượng của hạng vé 'name'
+            const soldCount = orders
+                .filter(order => order.event === currentEventConfig?.eventName)
+                .reduce((sum, order) => {
+                    const ticket = order.tickets.find(t => t.name === name);
+                    return sum + (ticket ? ticket.qty : 0);
+                }, 0);
+
+            // Số vé thực tế còn lại
+            let finalStock = totalStock - soldCount;
 
             return {
                 name: name,
                 price: price,
-                desc: "Vé chính thức từ ban tổ chức."
+                stock: finalStock, 
+                desc: details[index] || ""
             };
-        }).filter(item => item !== null && item.price > 0); // Loại bỏ dòng lỗi hoặc giá = 0
+        }).filter(item => item !== null);
+
     } catch (e) {
         console.error("Lỗi parse giá vé:", e);
         return [];
@@ -1067,10 +1085,16 @@ function changeModalQty(delta) {
 }
 
 function addTicketToCart() {
-    // LUẬT: Tổng tối đa 10 vé
+    // 1. Kiểm tra giới hạn 10 vé
     const currentTotalQty = cart.reduce((sum, item) => sum + item.qty, 0);
     if (currentTotalQty + tempSelection.qty > 10) {
         showError("Mỗi người chỉ được mua tối đa 10 vé thôi bà ơi!");
+        return;
+    }
+    // 2. KIỂM TRA TỒN KHO 
+    const ticketInConfig = currentEventConfig.priceList.find(p => p.name === tempSelection.name);
+    if (ticketInConfig && tempSelection.qty > ticketInConfig.stock) {
+        showError(`Rất tiếc, hạng vé này chỉ còn lại ${ticketInConfig.stock} vé thôi!`);
         return;
     }
 

@@ -239,9 +239,10 @@
     </footer>
 
 <script type="module">
+
 // --- CẤU HÌNH & DỮ LIỆU TĨNH ---
-const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwU6IlGKSnqlc9xtBsBrH_aT5ttJJvbIkgXChprCgiEV9JLRQN4yj9GSDaXnCrOqzh1YQ/exec';
-const fixedEvents = [
+     const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbx3vQyakJkFfJxkP5XAQ8fQkjmt5lnls2n4N3zjrEUL4JxYIzMumbGmPIZwOTzbjgO-OA/exec';
+     const fixedEvents = [
     {
         id: "30", 
         name: "Lễ hội Âm nhạc EventHub 2026",
@@ -256,7 +257,7 @@ const fixedEvents = [
 let events = [...fixedEvents]; 
 let currentDate = new Date(); 
 
-// --- KHU VỰC QUẢN LÝ GIAO DIỆN (Gán vào window để HTML gọi được) ---
+// --- KHU VỰC QUẢN LÝ GIAO DIỆN  ---
 
 window.toggleUserMenu = () => {
     const dropdown = document.getElementById('user-dropdown');
@@ -277,63 +278,69 @@ window.updateClock = () => {
     if (dateEl) dateEl.textContent = now.toLocaleDateString('vi-VN', options);
 };
 
-// --- LOGIC XỬ LÝ DỮ LIỆU ---
-
 async function fetchEventsFromSheet() {
     try {
         const response = await fetch(SHEET_API_URL);
         const rawData = await response.json();
+        const orders = JSON.parse(localStorage.getItem('eventOrders')) || [];
+        const luxuryColors = ["bg-pink-500", "bg-blue-600", "bg-emerald-500", "bg-purple-600", "bg-orange-500"];
+        let allExpandedEvents = [...fixedEvents];
 
-        const priorityColors = {
-            "2026-05-08": "bg-red-600",
-            "2026-05-01": "bg-red-500",
-            "2026-03-21": "bg-yellow-500"
-        };
+        rawData.forEach((ev, index) => {
+            if (!ev.time) return;
 
-        const luxuryColors = [
-            "bg-pink-500", "bg-blue-600", "bg-emerald-500", "bg-purple-600", "bg-orange-500",
-            "bg-cyan-400", "bg-rose-500", "bg-indigo-500", "bg-amber-400", "bg-teal-500"
-        ];
+            const fullTimeStr = ev.time.trim();
+            const dateMatch = fullTimeStr.match(/(\d{1,2})\s+[tT]háng\s+(\d{1,2})[^\d]+(\d{4})/) || 
+                             fullTimeStr.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+            
+            if (dateMatch) {
+                const d = dateMatch[1].padStart(2, '0');
+                const m = dateMatch[2].padStart(2, '0');
+                const y = dateMatch[3];
+                const formattedDate = `${y}-${m}-${d}`;
+                const timeMatch = fullTimeStr.match(/(\d{1,2}:\d{2})/);
+                const eventTime = timeMatch ? timeMatch[1] : "00:00";
 
-        const sheetEvents = rawData.map((ev, index) => {
-            let formattedDate = "";
-            let eventTime = "00:00";
+                console.log(`=> Dòng ${index} khớp thành công:`, formattedDate, eventTime);
 
-            if (ev.time) {
-                eventTime = ev.time.split(',')[0].trim();
-                const dateMatches = ev.time.match(/\d+/g);
-                if (dateMatches && dateMatches.length >= 3) {
-                    // Logic lấy ngày tháng năm từ cuối chuỗi của m
-                    const d = dateMatches[dateMatches.length - 3].padStart(2, '0');
-                    const m = dateMatches[dateMatches.length - 2].padStart(2, '0');
-                    const y = dateMatches[dateMatches.length - 1];
-                    formattedDate = `${y}-${m}-${d}`;
+                // --- LOGIC KIỂM TRA HẾT VÉ ---
+                const quantities = ev.ticketQuantity ? ev.ticketQuantity.split(',').map(q => q.trim()) : [];
+                const pricesRaw = ev.priceList ? ev.priceList.split(/,|\n/).filter(p => p.trim() !== "") : [];
+                
+                let isSoldOutAll = false;
+                if (pricesRaw.length > 0) {
+                    isSoldOutAll = pricesRaw.every((p, pIdx) => {
+                        const name = p.split(':')[0].trim();
+                        const totalStock = (quantities[pIdx] === undefined || quantities[pIdx] === "") ? 1000 : parseInt(quantities[pIdx]);
+                        const soldCount = orders
+                            .filter(o => (o.event === ev.eventName) && o.tickets.some(t => t.name === name))
+                            .reduce((sum, o) => sum + (o.tickets.find(t => t.name === name)?.qty || 0), 0);
+                        return (totalStock - soldCount) <= 0;
+                    });
                 }
+
+                allExpandedEvents.push({
+                    id: ev.id || `sheet-${index}-${d}`, 
+                    name: ev.eventName || "Sự kiện không tên",
+                    date: formattedDate,
+                    time: eventTime,
+                    loc: ev.location || "Đang cập nhật",
+                    color: luxuryColors[index % luxuryColors.length],
+                    isSoldOut: isSoldOutAll,
+                    price: ev.priceList ? "Đã có giá vé" : "Miễn phí"
+                });
+            } else {
+                console.warn(`Dòng ${index} không tìm thấy ngày tháng hợp lệ:`, fullTimeStr);
             }
-
-            return {
-                id: ev.id || `sheet-${index}`,
-                name: ev.eventName,
-                date: formattedDate,
-                time: eventTime,
-                loc: ev.location || "Đang cập nhật",
-                color: priorityColors[formattedDate] || luxuryColors[index % luxuryColors.length],
-                price: ev.priceList ? "Đã có giá vé" : "Miễn phí"
-            };
         });
 
-        // Gộp dữ liệu không trùng ID (Giữ nguyên logic Map của m)
-        const allEventsMap = new Map();
-        fixedEvents.forEach(e => allEventsMap.set(String(e.id), e));
-        sheetEvents.forEach(e => {
-            if (!allEventsMap.has(String(e.id))) allEventsMap.set(String(e.id), e);
-        });
-        
-        events = Array.from(allEventsMap.values());
+        events = allExpandedEvents;
+        console.log("Dữ liệu cuối cùng:", events);
         renderCalendar(); 
+        
     } catch (error) {
-        console.error("Lỗi tải dữ liệu Sheet:", error);
-        renderCalendar(); // Vẫn chạy để hiện sự kiện tĩnh
+        console.error("Lỗi khi tải dữ liệu từ Sheet:", error);
+        renderCalendar();
     }
 }
 
@@ -386,53 +393,72 @@ if (selectedCell && window.location.search.includes('date')) {
 }
 
 window.showEvents = (dateStr) => {
+  
     document.querySelectorAll('.day-cell').forEach(el => el.classList.remove('active-day'));
     const selectedCell = document.getElementById(`day-${dateStr}`);
     if (selectedCell) selectedCell.classList.add('active-day');
 
     const container = document.getElementById('event-list-container');
     const title = document.getElementById('selected-date-title');
+    
     if (title) title.textContent = dateStr.split('-').reverse().join('/');
 
     const dayEvents = events.filter(e => e.date === dateStr);
-    
+    const now = new Date();
+
     if (dayEvents.length === 0) {
         container.innerHTML = `
-            <div class="text-center py-16 opacity-40">
-                <i class="fa-solid fa-calendar-xmark text-4xl mb-4"></i>
-                <p class="text-sm italic font-bold">Không có sự kiện nào.</p>
+            <div class="text-center py-10">
+                <i class="fa-solid fa-calendar-day text-4xl text-gray-200 mb-3"></i>
+                <p class="text-gray-400 font-bold text-sm">Không có sự kiện nào trong ngày này.</p>
             </div>`;
         return;
     }
 
-    container.innerHTML = dayEvents.map(e => `
-        <div class="event-card group p-5 rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500 cursor-pointer overflow-hidden relative mb-4">
-            <div class="flex justify-between items-start mb-4">
-                <span class="text-[10px] font-black text-white px-3 py-1.5 rounded-xl ${e.color} uppercase tracking-widest shadow-md">${e.time}</span>
-                <span class="text-xs font-black text-blue-500 bg-blue-50 px-3 py-1 rounded-lg border border-blue-100">${e.price}</span>
+    container.innerHTML = dayEvents.map(e => {
+        const eventDateTime = new Date(`${e.date}T${e.time}`);
+        const isPast = eventDateTime < now;
+        
+        let statusBadge = `<span class="text-[10px] font-black text-white px-3 py-1.5 rounded-xl ${e.color} uppercase tracking-widest shadow-md">${e.time}</span>`;
+        let btnText = "CHI TIẾT & ĐẶT VÉ";
+        let btnClass = "bg-gray-900 hover:scale-[1.02] active:scale-95";
+
+        if (isPast) {
+            statusBadge = `<span class="text-[10px] font-black text-white px-3 py-1.5 rounded-xl bg-gray-400 uppercase tracking-widest">ĐÃ KẾT THÚC</span>`;
+            btnText = "XEM LẠI SỰ KIỆN";
+            btnClass = "bg-gray-400 opacity-70 cursor-not-allowed";
+        } else if (e.isSoldOut) {
+            statusBadge = `<span class="text-[10px] font-black text-white px-3 py-1.5 rounded-xl bg-red-600 uppercase tracking-widest">HẾT VÉ</span>`;
+            btnText = "HẾT VÉ";
+            btnClass = "bg-red-900 cursor-not-allowed";
+        }
+
+        return `
+            <div class="event-card group p-5 rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500 cursor-pointer overflow-hidden relative mb-4 ${isPast ? 'grayscale-[0.5]' : ''}">
+                <div class="flex justify-between items-start mb-4">
+                    ${statusBadge}
+                    <span class="text-xs font-black text-blue-500 bg-blue-50 px-3 py-1 rounded-lg border border-blue-100">${e.price}</span>
+                </div>
+                <h4 class="text-lg font-black text-gray-800 group-hover:text-blue-500 transition-colors line-clamp-2 leading-tight">${e.name}</h4>
+                <p class="text-xs text-gray-500 mt-3 flex items-center font-bold">
+                    <i class="fa-solid fa-location-dot mr-2 text-blue-500"></i> ${e.loc}
+                </p>
+                <button onclick="${isPast ? '' : `handleBooking('${e.id}')`}" 
+                    class="w-full mt-6 py-4 ${btnClass} text-white rounded-2xl text-xs font-black tracking-widest uppercase transform transition-all shadow-xl">
+                    ${btnText}
+                </button>
             </div>
-            <h4 class="text-lg font-black text-gray-800 group-hover:text-blue-500 transition-colors line-clamp-2 leading-tight">${e.name}</h4>
-            <p class="text-xs text-gray-500 mt-3 flex items-center font-bold">
-                <i class="fa-solid fa-location-dot mr-2 text-blue-500"></i> ${e.loc}
-            </p>
-            <button onclick="handleBooking('${e.id}')" 
-    class="w-full mt-6 py-4 bg-gray-900 text-white rounded-2xl text-xs font-black tracking-widest uppercase transform group-hover:scale-[1.02] transition-all active:scale-95 shadow-xl">
-    CHI TIẾT & ĐẶT VÉ
-</button>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 };
 
+
 window.handleBooking = (eventId) => {
-
-    const user = getAuth().currentUser; 
-
+    const user = auth.currentUser; 
     if (!user) {
         alert("Bạn phải đăng nhập mới xem được chi tiết sự kiện này!");
         return;
     }
-
-    // Nếu đã đăng nhập thì mới cho đi
     window.location.href = `detail.html?id=${eventId}`;
 };
 
@@ -465,45 +491,38 @@ window.logout = async () => {
     try {
         await signOut(auth);
         console.log("Đã đăng xuất thành công");
-        // Load lại chính trang hiện tại để cập nhật giao diện
         window.location.reload(); 
     } catch (error) {
         console.error("Lỗi đăng xuất:", error);
     }
 };
 
-// Tìm window.onload trong calendar.html và thay thế bằng đoạn này:
 window.onload = async () => {
     window.updateClock();
     setInterval(window.updateClock, 1000);
 
     const urlParams = new URLSearchParams(window.location.search);
-    const targetDateStr = urlParams.get('date'); // Sẽ nhận được "2026-04-16"
+    const targetDateStr = urlParams.get('date'); 
 
     if (targetDateStr) {
-        const parts = targetDateStr.split('-'); // Tách theo dấu gạch ngang
+        const parts = targetDateStr.split('-'); 
         if (parts.length === 3) {
             const y = parseInt(parts[0]);
-            const m = parseInt(parts[1]) - 1; // JS Month: 0-11
+            const m = parseInt(parts[1]) - 1; 
             const d = parseInt(parts[2]);
             currentDate = new Date(y, m, d);
         }
     }
 
-    // Tải dữ liệu từ Sheet
     await fetchEventsFromSheet();
-
-    // Vẽ lại lịch
     renderCalendar(); 
     
     if (targetDateStr) {
-        // Đợi 200ms để đảm bảo DOM đã vẽ xong các ô ngày
         setTimeout(() => {
             window.showEvents(targetDateStr);
             const selectedCell = document.getElementById(`day-${targetDateStr}`);
             if (selectedCell) {
                 selectedCell.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                // Thêm hiệu ứng nháy nhẹ để người dùng biết là đang chọn ngày này
                 selectedCell.classList.add('active-day');
                 selectedCell.style.border = "2px solid #ec4899"; 
             }
