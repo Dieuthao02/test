@@ -108,7 +108,7 @@
         descElement.classList.add('description-html-content');
     }
 
-    // --- 4. RENDER SUẤT DIỄN (TIME CONTAINER) ---
+    // --- 4. RENDER SUẤT DIỄN ---
     const timeContainer = document.getElementById('event-time');
     if (timeArray.length > 0) {
         const renderDateLink = (dateText, isMain = false) => {
@@ -146,7 +146,6 @@
 // --- 5. RENDER VÉ (MỖI SUẤT DIỄN CÓ NÚT RIÊNG & ĐỒNG BỘ KHO) ---
 const ticketContainer = document.getElementById('ticket-list-container');
 
-// 1. Lấy danh sách đơn hàng đã mua để tính vé đã bán
 const orders = JSON.parse(localStorage.getItem('eventOrders')) || [];
 
 if (ev.priceList && timeArray.length > 0) {
@@ -157,7 +156,6 @@ if (ev.priceList && timeArray.length > 0) {
     const detailsRaw = ev.ticketDetail ? ev.ticketDetail.split('|').map(d => d.trim()) : [];
     const quantitiesRaw = ev.ticketQuantity ? ev.ticketQuantity.split(',').map(q => q.trim()) : [];
 
-    // 2. Tạo ticketsHTML và kiểm tra tồn kho thực tế
     pricesRaw.forEach((p, index) => {
         if (p.includes(':')) {
             const parts = p.split(':');
@@ -176,7 +174,6 @@ if (ev.priceList && timeArray.length > 0) {
                 let qVal = quantitiesRaw[index];
                 let totalQty = (qVal === undefined || qVal === "") ? 1000 : parseInt(qVal);
                 
-                // SỐ VÉ CÒN LẠI THỰC TẾ
                 let remainingQty = totalQty - soldCount;
                 const isSoldOut = remainingQty <= 0;
 
@@ -198,7 +195,6 @@ if (ev.priceList && timeArray.length > 0) {
         }
     });
 
-    // 3. Render từng dòng suất diễn
     timeArray.forEach((timeStr, idx) => {
         const isPast = parseDate(timeStr).getTime() < now.getTime();
         
@@ -252,11 +248,9 @@ if (ev.priceList && timeArray.length > 0) {
         if (bookingBtn) {
             // KIỂM TRA SỐ LƯỢNG LỊCH DIỄN
             if (timeArray.length === 1) {
-                // Nếu chỉ có 1 lịch: Bấm là đi thẳng tới trang booking kèm ngày đó luôn
                 bookingBtn.innerHTML = "Mua vé ngay";
                 bookingBtn.onclick = () => goToBooking(timeArray[0]);
             } else {
-                // Nếu có từ 2 lịch trở lên: Bấm là cuộn xuống khu vực chọn suất diễn
                 bookingBtn.innerHTML = "Chọn suất diễn";
                 bookingBtn.onclick = () => {
                     if (!window.currentUser) { goToBooking(); return; }
@@ -264,7 +258,7 @@ if (ev.priceList && timeArray.length > 0) {
                         behavior: 'smooth', 
                         block: 'start' 
                     });
-                    // Hiệu ứng nháy nhẹ để người dùng chú ý
+  
                     const container = document.getElementById('ticket-list-container');
                     container.style.transition = "all 0.5s";
                     container.style.transform = "scale(1.02)";
@@ -287,7 +281,6 @@ if (ev.priceList && timeArray.length > 0) {
     }
 }
 
-
         function toggleTicket(el) {
             const item = el.parentElement;
             item.classList.toggle('active');
@@ -302,12 +295,11 @@ if (ev.priceList && timeArray.length > 0) {
         }
 
     function goToBooking(selectedDate) {
-    // 1. Kiểm tra đăng nhập
+
     if (!window.currentUser) {
-        // Tạo thông báo chuyên nghiệp hơn alert
+  
         const authBtn = document.getElementById('auth-buttons');
         
-        // Hiệu ứng nháy đỏ cụm Login để nhắc user
         authBtn.classList.remove('hidden'); 
         authBtn.style.transition = "all 0.3s";
         authBtn.style.transform = "scale(1.2)";
@@ -318,18 +310,14 @@ if (ev.priceList && timeArray.length > 0) {
             authBtn.style.filter = "none";
         }, 500);
 
-        // Hiển thị toast hoặc alert
         alert("🔒 Vui lòng Đăng nhập/Đăng ký để tiếp tục đặt vé!");
         
-        // Cuộn lên đầu trang để user thấy nút đăng nhập
         window.scrollTo({ top: 0, behavior: 'smooth' });
         return;
     }
 
-    // 2. Nếu đã đăng nhập, xử lý chuyển trang cực nhanh
     if (!currentEventId) return;
     
-    // Thêm hiệu ứng loading cho nút vừa bấm để tăng cảm giác "nhạy"
     const btn = event?.target;
     if (btn && btn.tagName === 'BUTTON') {
         btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> ĐANG CHUYỂN...';
