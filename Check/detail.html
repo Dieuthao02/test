@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EventHub - Chi tiết sự kiện</title>
+    <title>Elysium Detail</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style> 
@@ -34,69 +34,74 @@
         .content-expanded::after { display: none; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
     
-.description-html-content img {
-    width: 100% !important;
-    max-width: 100%;
-    height: auto !important;
-    display: block;
-    margin: 15px 0;
-    border-radius: 12px;
-}
+        .description-html-content img {
+            width: 100% !important;
+            max-width: 100%;
+            height: auto !important;
+            display: block;
+            margin: 15px 0;
+            border-radius: 12px;
+        }
 
-.description-html-content iframe {
-    width: 100% !important;
-    aspect-ratio: 16 / 9;
-    border-radius: 16px;
-    margin: 20px 0;
-}
+        .description-html-content iframe {
+            width: 100% !important;
+            aspect-ratio: 16 / 9;
+            border-radius: 16px;
+            margin: 20px 0;
+        }
 
-.description-html-content p {
-    margin-bottom: 15px;
-}
+        .description-html-content p {
+            margin-bottom: 15px;
+        }
 
-#event-description {
-    white-space: pre-line;
-}
+        #event-description {
+            white-space: pre-line;
+        }
 
-.content-expanded { 
-    max-height: 20000px !important; 
-}
+        #event-time {
+            position: relative;
+            pointer-events: auto !important; 
+        }
 
-.content-expanded::after { 
-    display: none !important; 
-}
+        #event-time a {
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer !important;
+        }
 
+        .content-expanded { 
+            max-height: 20000px !important; 
+        }
 
-.spinner {
-    width: 40px; height: 40px; border: 4px solid #F33B26;
-    border-top: 4px solid transparent; border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .content-expanded::after { 
+            display: none !important; 
+        }
+
+        .spinner {
+            width: 40px; height: 40px; border: 4px solid #F33B26;
+            border-top: 4px solid transparent; border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* Hiệu ứng hover cho card gợi ý */
+        .suggestion-card:hover img { transform: scale(1.05); }
     </style>
 </head>
 <body class="pb-20">
     
    <div id="special-loader" class="fixed inset-0 z-[1000] bg-black flex items-center justify-center">
-    
-    <!-- Video đã được fix tỉ lệ -->
     <video id="loading-video-player" 
-           autoplay muted playsinline 
-           class="absolute inset-0 w-full h-full object-cover">
+            autoplay muted playsinline 
+            class="absolute inset-0 w-full h-full object-cover">
     </video>
-
-    <!-- Lớp phủ tối nhẹ để video nhìn sâu hơn và nét hơn -->
     <div class="absolute inset-0 bg-black/30 backdrop-brightness-75 z-10"></div>
-
-    <!-- Spinner và chữ (Sẽ được JS ẩn đi khi video chạy) -->
     <div class="relative z-20 text-center" id="loader-content">
         <div id="loader-icon" class="mb-4 w-12 h-12 border-4 border-pink-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
         <h2 class="text-white text-2xl font-black uppercase tracking-[0.2em]">Loading Experience</h2>
     </div>
 </div>
 
-
-    <!-- HEADER -->
     <header class="p-6 flex justify-between items-center max-w-[1400px] mx-auto">
         <h1 class="text-3xl font-black text-[#F33B26]">EventHub</h1>
         <nav class="hidden md:flex space-x-6 font-bold text-gray-400 text-sm">
@@ -108,7 +113,6 @@
 
     <main class="max-w-[1200px] mx-auto px-6 space-y-10">
         
-        <!-- CATEGORY NAV -->
         <div class="category-nav-pastel p-1">
             <div class="flex justify-between items-center px-8 py-3 overflow-x-auto no-scrollbar whitespace-nowrap">
                 <a href="#" class="text-pink-600 font-black text-xs uppercase">Nhạc sống</a>
@@ -119,11 +123,9 @@
             </div>
         </div>
 
-        <!-- 1. THÔNG TIN VÉ CHÍNH -->
         <div class="ticket-box-style flex flex-col md:flex-row border border-white/5 shadow-2xl">
             <div class="p-10 md:w-1/3 flex flex-col justify-between border-r border-dashed border-gray-700 relative">
                 <div class="space-y-6">
-                    <!-- ID: event-title-container -->
                     <h2 id="event-title" class="text-2xl font-black uppercase tracking-tight">
                         Đang tải...<br>
                         <span class="text-pink-400 italic text-xl">Vui lòng đợi</span>
@@ -139,47 +141,39 @@
                 </div>
             </div>
             <div class="md:w-2/3 relative group bg-black overflow-hidden aspect-[16/9] md:aspect-auto">
-    <img id="event-banner" src="" class="absolute inset-0 w-full h-full object-cover opacity-80 transition-transform duration-500 group-hover:scale-105">
-    <div class="absolute inset-0 bg-gradient-to-r from-[#1a1a1a] via-transparent to-transparent md:via-[#1a1a1a]/50"></div>
-</div>
+                <img id="event-banner" src="" class="absolute inset-0 w-full h-full object-cover opacity-80 transition-transform duration-500 group-hover:scale-105">
+                <div class="absolute inset-0 bg-gradient-to-r from-[#1a1a1a] via-transparent to-transparent md:via-[#1a1a1a]/50"></div>
+            </div>
         </div>
 
-        <!-- 2. GIỚI THIỆU CHI TIẾT -->
         <section class="bg-[#141414] rounded-[2rem] p-10 border border-white/5 relative">
-    <h3 class="text-xl font-bold mb-6 flex items-center">
-        <span class="w-2 h-8 bg-pink-500 rounded-full mr-4"></span> Giới thiệu sự kiện
-    </h3>
-    
-    <div id="intro-content" class="content-collapsed">
-    <div class="flex flex-col md:flex-row gap-10">
-        
-        <div id="event-description" class="flex-1 text-gray-400 leading-relaxed text-sm description-html-content">
+            <h3 class="text-xl font-bold mb-6 flex items-center">
+                <span class="w-2 h-8 bg-pink-500 rounded-full mr-4"></span> Giới thiệu sự kiện
+            </h3>
+            
+            <div id="intro-content" class="content-collapsed">
+                <div class="flex flex-col md:flex-row gap-10">
+                    <div id="event-description" class="flex-1 text-gray-400 leading-relaxed text-sm description-html-content"></div>
+                    <div class="md:w-1/3 shrink-0">
+                        <ul class="space-y-3 p-6 bg-white/5 rounded-2xl border border-white/10 h-fit">
+                            <li class="flex items-center text-xs"><i class="fa-solid fa-check text-pink-500 mr-2"></i> Miễn phí nước uống tại khu vực GA</li>
+                            <li class="flex items-center text-xs"><i class="fa-solid fa-check text-pink-500 mr-2"></i> Nhận quà tặng giới hạn độc quyền</li>
+                            <li class="flex items-center text-xs"><i class="fa-solid fa-check text-pink-500 mr-2"></i> Hỗ trợ an ninh 24/7</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
-        <div class="md:w-1/3 shrink-0">
-            <ul class="space-y-3 p-6 bg-white/5 rounded-2xl border border-white/10 h-fit">
-                <li class="flex items-center text-xs"><i class="fa-solid fa-check text-pink-500 mr-2"></i> Miễn phí nước uống tại khu vực GA</li>
-                <li class="flex items-center text-xs"><i class="fa-solid fa-check text-pink-500 mr-2"></i> Nhận quà tặng giới hạn độc quyền</li>
-                <li class="flex items-center text-xs"><i class="fa-solid fa-check text-pink-500 mr-2"></i> Hỗ trợ an ninh 24/7</li>
-            </ul>
-        </div>
-        
-    </div>
-</div>
+            <div class="text-center mt-4">
+                <button onclick="toggleIntro()" class="text-gray-500 hover:text-white transition-colors">
+                    <i class="fa-solid fa-chevron-down" id="toggle-icon"></i>
+                </button>
+            </div>
+        </section>
 
-    <div class="text-center mt-4">
-        <button onclick="toggleIntro()" class="text-gray-500 hover:text-white transition-colors">
-            <i class="fa-solid fa-chevron-down" id="toggle-icon"></i>
-        </button>
-    </div>
-</section>
-
-        <!-- 3. KHỐI VÉ -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="lg:col-span-2 bg-[#141414] rounded-[2rem] p-8 border border-white/5 h-fit">
                 <h3 class="text-green-400 font-bold uppercase text-xs tracking-[0.2em] mb-8">Danh sách hạng vé</h3>
-                
-                <!-- ID: ticket-list-container (Quan trọng để JS đổ vé vào đây) -->
                 <div id="ticket-list-container" class="space-y-3">
                     <p class="text-gray-500 italic text-sm text-center">Đang tìm kiếm hạng vé...</p>
                 </div>
@@ -193,25 +187,198 @@
             </div>
         </div>
 
-        <!-- 4. BAN TỔ CHỨC -->
         <section class="bg-[#141414] rounded-[2rem] p-10 border border-white/5 shadow-xl">
-            <h3 class="text-white font-bold uppercase text-[11px] tracking-[0.2em] mb-8 flex items-center">
-                <span class="w-2 h-6 bg-pink-500 rounded-full mr-4"></span> Ban tổ chức
-            </h3>
-            <div class="flex flex-col md:flex-row items-center gap-8">
-                <div id="org-logo" class="w-24 h-24 rounded-3xl bg-gradient-to-br from-indigo-600 to-pink-500 flex items-center justify-center text-white text-4xl font-black shadow-2xl transform -rotate-3">
-                    EH
-                </div>
-                <div class="text-center md:text-left flex-1">
-                    <h4 id="org-name" class="text-2xl font-black text-white tracking-tight">Đang tải...</h4>
-                    <p id="org-desc" class="text-gray-400 text-sm mt-2 max-w-xl">Thông tin về đơn vị tổ chức đang được cập nhật.</p>
+    <h3 class="text-white font-bold uppercase text-[11px] tracking-[0.2em] flex items-center mb-8">
+        <span class="w-2 h-6 bg-pink-500 rounded-full mr-4"></span> Ban tổ chức
+    </h3>
+    
+    <div class="flex flex-row items-center justify-between gap-4 md:gap-8">
+        <div class="flex items-center gap-4 md:gap-8 flex-1">
+            <div id="org-logo" class="w-16 h-16 md:w-24 md:h-24 rounded-full overflow-hidden bg-gradient-to-br from-indigo-600 to-pink-500 flex items-center justify-center text-white text-xl md:text-4xl font-black shadow-2xl shrink-0">
+                EH
+            </div>
+            <div class="flex-1">
+                <h4 id="org-name" class="text-lg md:text-2xl font-black text-white tracking-tight leading-tight">Đang tải...</h4>
+                <p id="org-desc" class="hidden md:block text-gray-400 text-sm mt-2 max-w-xl line-clamp-2">Thông tin về đơn vị tổ chức đang được cập nhật.</p>
+            </div>
+        </div>
+        
+        <button class="px-5 py-2 md:px-8 md:py-2.5 border border-pink-500 text-pink-500 rounded-full text-xs font-bold hover:bg-pink-500 hover:text-white transition-all whitespace-nowrap">
+            Theo dõi
+        </button>
+    </div>
+    <p class="md:hidden text-gray-400 text-xs mt-4">Thông tin về đơn vị tổ chức đang được cập nhật.</p>
+</section>
+<section class="space-y-8">
+    <h3 class="text-center text-xl font-bold uppercase tracking-widest text-gray-400">Có thể bạn cũng thích</h3>
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <div class="suggestion-card group cursor-pointer bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/5 hover:border-white/20 transition-all">
+            <div class="relative aspect-video overflow-hidden">
+                <img src="https://via.placeholder.com/600x400/1a1a1a/ffffff?text=Event+1" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-lg">
+                    <p class="text-[10px] font-bold text-white uppercase"><i class="fa-solid fa-location-dot text-pink-500 mr-1"></i> Hà Nội</p>
                 </div>
             </div>
-        </section>
+            <div class="p-4 space-y-2">
+                <h5 class="font-bold text-sm text-white line-clamp-2 group-hover:text-pink-400 transition-colors h-10">Tên sự kiện hấp dẫn 01</h5>
+                <div class="flex justify-between items-end pt-2">
+                    <div>
+                        <p class="text-gray-500 text-[10px] uppercase font-bold tracking-wider">Từ</p>
+                        <p class="text-green-400 font-black text-sm">200.000 đ</p>
+                    </div>
+                    <p class="text-gray-500 text-[10px]"><i class="fa-solid fa-calendar-day mr-1"></i> 18/04/2026</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="suggestion-card group cursor-pointer bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/5 hover:border-white/20 transition-all">
+            <div class="relative aspect-video overflow-hidden">
+                <img src="https://via.placeholder.com/600x400/1a1a1a/ffffff?text=Event+2" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-lg">
+                    <p class="text-[10px] font-bold text-white uppercase"><i class="fa-solid fa-location-dot text-pink-500 mr-1"></i> TP.HCM</p>
+                </div>
+            </div>
+            <div class="p-4 space-y-2">
+                <h5 class="font-bold text-sm text-white line-clamp-2 group-hover:text-pink-400 transition-colors h-10">Tên sự kiện hấp dẫn 02</h5>
+                <div class="flex justify-between items-end pt-2">
+                    <div>
+                        <p class="text-gray-500 text-[10px] uppercase font-bold tracking-wider">Từ</p>
+                        <p class="text-green-400 font-black text-sm">500.000 đ</p>
+                    </div>
+                    <p class="text-gray-500 text-[10px]"><i class="fa-solid fa-calendar-day mr-1"></i> 20/04/2026</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="suggestion-card group cursor-pointer bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/5 hover:border-white/20 transition-all">
+            <div class="relative aspect-video overflow-hidden">
+                <img src="https://via.placeholder.com/600x400/1a1a1a/ffffff?text=Event+3" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-lg">
+                    <p class="text-[10px] font-bold text-white uppercase"><i class="fa-solid fa-location-dot text-pink-500 mr-1"></i> Đà Nẵng</p>
+                </div>
+            </div>
+            <div class="p-4 space-y-2">
+                <h5 class="font-bold text-sm text-white line-clamp-2 group-hover:text-pink-400 transition-colors h-10">Tên sự kiện hấp dẫn 03</h5>
+                <div class="flex justify-between items-end pt-2">
+                    <div>
+                        <p class="text-gray-500 text-[10px] uppercase font-bold tracking-wider">Từ</p>
+                        <p class="text-green-400 font-black text-sm">Miễn phí</p>
+                    </div>
+                    <p class="text-gray-500 text-[10px]"><i class="fa-solid fa-calendar-day mr-1"></i> 25/04/2026</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="suggestion-card group cursor-pointer bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/5 hover:border-white/20 transition-all">
+            <div class="relative aspect-video overflow-hidden">
+                <img src="https://via.placeholder.com/600x400/1a1a1a/ffffff?text=Event+4" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-lg">
+                    <p class="text-[10px] font-bold text-white uppercase"><i class="fa-solid fa-location-dot text-pink-500 mr-1"></i> Online</p>
+                </div>
+            </div>
+            <div class="p-4 space-y-2">
+                <h5 class="font-bold text-sm text-white line-clamp-2 group-hover:text-pink-400 transition-colors h-10">Tên sự kiện hấp dẫn 04</h5>
+                <div class="flex justify-between items-end pt-2">
+                    <div>
+                        <p class="text-gray-500 text-[10px] uppercase font-bold tracking-wider">Từ</p>
+                        <p class="text-green-400 font-black text-sm">150.000 đ</p>
+                    </div>
+                    <p class="text-gray-500 text-[10px]"><i class="fa-solid fa-calendar-day mr-1"></i> 30/04/2026</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="suggestion-card group cursor-pointer bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/5 hover:border-white/20 transition-all">
+            <div class="relative aspect-video overflow-hidden">
+                <img src="https://via.placeholder.com/600x400/1a1a1a/ffffff?text=Event+5" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-lg">
+                    <p class="text-[10px] font-bold text-white uppercase"><i class="fa-solid fa-location-dot text-pink-500 mr-1"></i> Hà Nội</p>
+                </div>
+            </div>
+            <div class="p-4 space-y-2">
+                <h5 class="font-bold text-sm text-white line-clamp-2 group-hover:text-pink-400 transition-colors h-10">Tên sự kiện hấp dẫn 05</h5>
+                <div class="flex justify-between items-end pt-2">
+                    <div>
+                        <p class="text-gray-500 text-[10px] uppercase font-bold tracking-wider">Từ</p>
+                        <p class="text-green-400 font-black text-sm">300.000 đ</p>
+                    </div>
+                    <p class="text-gray-500 text-[10px]"><i class="fa-solid fa-calendar-day mr-1"></i> 01/05/2026</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="suggestion-card group cursor-pointer bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/5 hover:border-white/20 transition-all">
+            <div class="relative aspect-video overflow-hidden">
+                <img src="https://via.placeholder.com/600x400/1a1a1a/ffffff?text=Event+6" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-lg">
+                    <p class="text-[10px] font-bold text-white uppercase"><i class="fa-solid fa-location-dot text-pink-500 mr-1"></i> TP.HCM</p>
+                </div>
+            </div>
+            <div class="p-4 space-y-2">
+                <h5 class="font-bold text-sm text-white line-clamp-2 group-hover:text-pink-400 transition-colors h-10">Tên sự kiện hấp dẫn 06</h5>
+                <div class="flex justify-between items-end pt-2">
+                    <div>
+                        <p class="text-gray-500 text-[10px] uppercase font-bold tracking-wider">Từ</p>
+                        <p class="text-green-400 font-black text-sm">450.000 đ</p>
+                    </div>
+                    <p class="text-gray-500 text-[10px]"><i class="fa-solid fa-calendar-day mr-1"></i> 05/05/2026</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="suggestion-card group cursor-pointer bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/5 hover:border-white/20 transition-all">
+            <div class="relative aspect-video overflow-hidden">
+                <img src="https://via.placeholder.com/600x400/1a1a1a/ffffff?text=Event+7" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-lg">
+                    <p class="text-[10px] font-bold text-white uppercase"><i class="fa-solid fa-location-dot text-pink-500 mr-1"></i> Đà Lạt</p>
+                </div>
+            </div>
+            <div class="p-4 space-y-2">
+                <h5 class="font-bold text-sm text-white line-clamp-2 group-hover:text-pink-400 transition-colors h-10">Tên sự kiện hấp dẫn 07</h5>
+                <div class="flex justify-between items-end pt-2">
+                    <div>
+                        <p class="text-gray-500 text-[10px] uppercase font-bold tracking-wider">Từ</p>
+                        <p class="text-green-400 font-black text-sm">1.000.000 đ</p>
+                    </div>
+                    <p class="text-gray-500 text-[10px]"><i class="fa-solid fa-calendar-day mr-1"></i> 10/05/2026</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="suggestion-card group cursor-pointer bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/5 hover:border-white/20 transition-all">
+            <div class="relative aspect-video overflow-hidden">
+                <img src="https://via.placeholder.com/600x400/1a1a1a/ffffff?text=Event+8" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-lg">
+                    <p class="text-[10px] font-bold text-white uppercase"><i class="fa-solid fa-location-dot text-pink-500 mr-1"></i> Vũng Tàu</p>
+                </div>
+            </div>
+            <div class="p-4 space-y-2">
+                <h5 class="font-bold text-sm text-white line-clamp-2 group-hover:text-pink-400 transition-colors h-10">Tên sự kiện hấp dẫn 08</h5>
+                <div class="flex justify-between items-end pt-2">
+                    <div>
+                        <p class="text-gray-500 text-[10px] uppercase font-bold tracking-wider">Từ</p>
+                        <p class="text-green-400 font-black text-sm">250.000 đ</p>
+                    </div>
+                    <p class="text-gray-500 text-[10px]"><i class="fa-solid fa-calendar-day mr-1"></i> 15/05/2026</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="text-center pt-6">
+        <a href="event.html" class="inline-block px-10 py-4 border-2 border-white/10 rounded-full text-xs font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">
+            Xem thêm sự kiện
+        </a>
+    </div>
+</section>
+
     </main>
 
     <script>
-        const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwU6IlGKSnqlc9xtBsBrH_aT5ttJJvbIkgXChprCgiEV9JLRQN4yj9GSDaXnCrOqzh1YQ/exec';
+        const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbytvTdE3-iDkpBQddYPLERHzjQoFW6xu8GaKGVSr3NqD-jWLayb40KtCCrI2GvNgyBg2A/exec';
         let currentEventId = ''; 
 
     async function initEventDetail() {
@@ -227,7 +394,6 @@
     const videoPlayer = document.getElementById('loading-video-player');
     const loaderIcon = document.getElementById('loader-icon');
 
-    // 1. HIỆN LOADER & CHẠY VIDEO NGAY
     specialLoader.style.display = 'flex';
     const customVideoPath = videoMap[currentEventId];
 
@@ -235,28 +401,19 @@
         videoPlayer.src = customVideoPath;
         videoPlayer.muted = true;
         videoPlayer.play().then(() => {
-            // Ẩn spinner và chữ để xem video cho nét
             loaderIcon.classList.add('hidden');
             const loaderText = document.querySelector('#special-loader h2');
             if (loaderText) loaderText.style.display = 'none';
-            const overlay = document.querySelector('#special-loader .bg-black\\/40');
-            if (overlay) overlay.style.display = 'none';
         });
 
-        // CHỈ CÓ THẰNG NÀY ĐƯỢC QUYỀN TẮT LOADER
         videoPlayer.onended = () => {
-            console.log("Video kết thúc -> Mở màn hình chính");
             specialLoader.style.opacity = '0';
-            setTimeout(() => {
-                specialLoader.style.display = 'none';
-            }, 700);
+            setTimeout(() => { specialLoader.style.display = 'none'; }, 700);
         };
     } else {
-        // Nếu không có video định sẵn, tự động tắt loader sau 2s để vào web
         setTimeout(() => { specialLoader.style.display = 'none'; }, 2000);
     }
 
-    // 2. TẢI DATA (CHẠY NGẦM)
     try {
         const response = await fetch(SHEET_API_URL);
         const allEvents = await response.json();
@@ -264,25 +421,16 @@
 
         if (event) {
             renderPage(event);
-            console.log("Data đã load xong và nằm chờ dưới video");
         }
     } catch (error) {
         console.error("Lỗi tải Sheet:", error);
-        // Nếu lỗi mạng, vẫn phải tắt loader để người dùng không kẹt ở màn hình đen
         videoPlayer.onended = () => { specialLoader.style.display = 'none'; };
     }
 }
 
       function renderPage(ev) {
-    console.log("Dữ liệu nhận được:", ev);
-
-    // 1. Cập nhật Tiêu đề và Ảnh sự kiện (Banner)
-    document.getElementById('event-title').innerHTML = `
-        ${ev.eventName}<br>
-        <span class="text-pink-400 italic text-xl">${ev.category || ''}</span>
-    `;
+    document.getElementById('event-title').innerHTML = `${ev.eventName}<br><span class="text-pink-400 italic text-xl">${ev.category || ''}</span>`;
     
-    // Cập nhật Banner từ cột eventImage
     const bannerImg = ev.eventImage || ev.mapImage;
     const bannerElement = document.getElementById('event-banner');
     if (bannerImg && bannerImg !== "No") {
@@ -291,34 +439,43 @@
         bannerElement.src = "https://via.placeholder.com/800x400?text=No+Image"; 
     }
 
-    // 2. Cập nhật Thông tin thời gian & Địa điểm
-    document.getElementById('event-time').innerHTML = `<i class="fa-solid fa-calendar mr-2 text-green-400"></i> ${ev.time || 'Đang cập nhật...'}`;
+let eventDate = '';
+if (ev.time) {
+    const rawDate = ev.time.split(' ')[0]; // Lấy "16/04/2026"
+    const parts = rawDate.split('/');
+    if (parts.length === 3) {
+        // Chuyển thành 2026-04-16 (Định dạng chuẩn ISO)
+        eventDate = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+    }
+}
+
+document.getElementById('event-time').innerHTML = `
+    <a href="calendar.html?date=${eventDate}" class="relative z-50 flex items-center gap-2 hover:text-pink-400 transition-all">
+        <i class="fa-solid fa-calendar text-green-400"></i>
+        <span>${ev.time || 'Đang cập nhật...'}</span>
+    </a>
+`;
+
     document.getElementById('event-location').innerHTML = `<i class="fa-solid fa-location-dot mr-2 text-pink-400"></i> ${ev.location}`;
     const descElement = document.getElementById('event-description');
     if (ev.description) {
-        // Dùng innerHTML mới ra được ảnh/video nhé
         descElement.innerHTML = ev.description; 
         descElement.classList.add('description-html-content');
-        }
+    }
 
-    // 3. Xử lý Danh sách vé & Tìm giá thấp nhất
     const ticketContainer = document.getElementById('ticket-list-container');
     let ticketHTML = '';
     let minPrice = Infinity;
 
     if (ev.priceList) {
-        // Tách vé theo dấu phẩy hoặc xuống dòng (\n)
         const pricesRaw = ev.priceList.split(/,|\n/); 
-
         pricesRaw.forEach(p => {
             if (p.includes(':')) {
                 const parts = p.split(':');
                 const name = parts[0].trim();
                 const priceValue = parseInt(parts[1].replace(/\D/g, ''));
-
                 if (!isNaN(priceValue)) {
                     if (priceValue < minPrice) minPrice = priceValue;
-
                     ticketHTML += `
                         <div class="ticket-item border border-white/5 rounded-2xl bg-white/[0.02] overflow-hidden mb-3">
                             <div onclick="toggleTicket(this)" class="p-5 flex justify-between items-center cursor-pointer hover:bg-white/5 transition">
@@ -340,22 +497,17 @@
         ticketContainer.innerHTML = ticketHTML || '<p class="text-gray-500">Đang cập nhật vé...</p>';
     }
     
-    // Đổ giá thấp nhất lên UI
     const finalMin = (minPrice === Infinity) ? "0" : minPrice.toLocaleString();
     document.getElementById('event-min-price').innerHTML = `${finalMin} đ >`;
 
-    // 4. Xử lý Ban tổ chức (Organizer)
     document.getElementById('org-name').innerText = ev.organizerName || "EventHub Partner";
     document.getElementById('org-desc').innerText = ev.organizerDesc || "Đơn vị tổ chức sự kiện chuyên nghiệp.";
 
-    // Xử lý Logo BTC (Cột organizerLogo)
     const orgLogoContainer = document.getElementById('org-logo');
     if (ev.organizerLogo && ev.organizerLogo !== "" && ev.organizerLogo !== "No") {
-        // Nếu có link ảnh thì chèn thẻ img
         orgLogoContainer.innerHTML = `<img src="${ev.organizerLogo}" class="w-full h-full object-cover rounded-full" alt="logo">`;
-        orgLogoContainer.classList.remove('bg-gradient-to-br'); // Xóa nền màu nếu có ảnh
+        orgLogoContainer.classList.remove('bg-gradient-to-br');
     } else {
-        // Nếu không có ảnh thì hiện 2 chữ cái đầu
         orgLogoContainer.innerText = ev.organizerName ? ev.organizerName.substring(0, 2).toUpperCase() : "EH";
         orgLogoContainer.classList.add('bg-gradient-to-br');
     }
@@ -381,5 +533,4 @@
         window.onload = initEventDetail;
     </script>
 </body>
-
 </html>
