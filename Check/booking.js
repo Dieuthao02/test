@@ -7,8 +7,6 @@ const MAP_TEMPLATES = {
     26: {
         eventName: "BTS WORLD TOUR ARIRANG",
         hasDiagram: true,
-        themeColor: "#fa1a1a", 
-        accentColor: "#FF4D94",
         time: "19:00 - 08/05/2026",
         location: "GILLETTE STADIUM, FOXBOROUGH, MA",
         currency: "COP",
@@ -245,7 +243,7 @@ const MAP_TEMPLATES = {
 `
 },
 
-    // SƠ ĐỒ ID 53: STANDARD 
+    // SƠ ĐỒ ID 53:
     53: {
         eventName: "GREENGREEN CORTIS ",
         hasDiagram: true,
@@ -306,8 +304,6 @@ const MAP_TEMPLATES = {
 174: {
         eventName: "G-DRAGON WORLD TOUR",
         hasDiagram: true,
-        themeColor: "#e00e0e", 
-        accentColor: "#A0A0A0",
         time: "20:00 - 11/08/2026",
         location: "Vinhomes Ocean Park 3, Hưng Yên",
         currency: "đ",
@@ -474,8 +470,6 @@ const MAP_TEMPLATES = {
     52: {
     eventName: "OCEAN WHISPER 2026",
     hasDiagram: true,
-    themeColor: "#0a87a3", 
-    accentColor: "#0a90ad",
     time: "08:00 - 16/04/2026",
     location: "LOTTE WORLD AQUARIUM HÀ NỘI",
     currency: "đ",
@@ -502,13 +496,13 @@ const MAP_TEMPLATES = {
 
 };
 
-// 1. Dữ liệu thô (Ông chỉ cần thêm show mới vào đây)
+// 1. Dữ liệu thô 
 const allEventsData = [
     { id: 21, title: "RAP VIỆT STAR", prices: [{name: 'VVIP PRESIDENT', price: 8000000}, {name: 'CAT 1', price: 1000000}] },
     { id: 22, title: "SHOW CỦA ĐEN", prices: [{name: 'GA STANDING', price: 1500000}] }
 ];
 
-// 2. Hàm đúc khuôn (Converter)
+// 2. Hàm đúc khuôn =
 function createEventConfig(sourceData) {
     return {
         eventName: sourceData.title || sourceData.eventName,
@@ -526,8 +520,6 @@ function createEventConfig(sourceData) {
 
 // Khởi tạo đối tượng chứa cấu trúc config
 const eventConfigs = {};
-
-// Chạy vòng lặp để tự động tạo 100 cái
 allEventsData.forEach(item => {
     eventConfigs[item.id] = createEventConfig(item);
 });
@@ -559,7 +551,8 @@ function generateTicketListHTML(config) {
         .fixed-desc-box {
             width: 100%;       
             max-width: 600px;  
-            height: 90px;      
+            min-height: 120px;      
+            height: auto;
             display: flex;
             align-items: center; 
             background: rgba(24, 24, 27, 0.4); 
@@ -650,7 +643,7 @@ async function initMap() {
     
     let config = null;
 
-    // --- BƯỚC 1 & 2: LẤY CONFIG (Giữ nguyên logic fetch của bạn) ---
+    // --- BƯỚC 1 & 2: LẤY CONFIG ---
     if (typeof MAP_TEMPLATES !== 'undefined' && MAP_TEMPLATES[eventId]) {
         config = MAP_TEMPLATES[eventId];
     } 
@@ -691,7 +684,7 @@ async function initMap() {
     const theme = config.themeColor || "#26bc4e";
     const accent = config.accentColor || theme;
     setTimeout(() => {
-        document.querySelectorAll('.fa-calendar-days, .fa-location-dot, i').forEach(icon => {
+        document.querySelectorAll('.fa-calendar-days, .fa-location-dot').forEach(icon => {
             icon.style.setProperty('color', theme, 'important');
         });
         const textSelectors = '#side-time, #side-loc,  .right-panel p, .fa-calendar-days + span, .fa-location-dot + span';
@@ -762,7 +755,6 @@ function parsePriceList(priceData, quantityData, detailData) {
             let totalStock = (quantities[index] === undefined || quantities[index] === "") ? 1000 : parseInt(quantities[index]);
             
             // --- TÍNH SỐ VÉ ĐÃ BÁN ---
-            // Lọc các đơn hàng của đúng sự kiện này và cộng dồn số lượng của hạng vé 'name'
             const soldCount = orders
                 .filter(order => order.event === currentEventConfig?.eventName)
                 .reduce((sum, order) => {

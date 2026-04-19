@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EventHub - Lịch Sự Kiện Real-time (Pro Edition)</title>
+    <title>Elysium Calendar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -14,8 +14,8 @@
             --card-bg: rgba(255, 255, 255, 0.8);
             --text-main: #1f2937;
             --border-color: rgba(0, 0, 0, 0.05);
-            --primary-color: #3b82f6; /* Blue-500 */
-            --accent-color: #ec4899;  /* Pink-500 */
+            --primary-color: #3b82f6; 
+            --accent-color: #ec4899; 
         }
 
         body { 
@@ -62,6 +62,19 @@
         .calendar-header-bg {
             background: linear-gradient(to right, var(--primary-color), var(--accent-color));
         }
+
+        .event-card {
+  
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); 
+        }
+
+        .event-card:hover {
+            transform: translateY(-8px); 
+            box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.15), 
+                0 10px 10px -5px rgba(59, 130, 246, 0.04); 
+            border-color: rgba(59, 130, 246, 0.3); 
+        }
     </style>
 </head>
 <body>
@@ -74,9 +87,11 @@
                     <a href="#" class="hover:text-blue-500 transition">Sự kiện</a>
                     <a href="calendar.html" class="text-pink-500 relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-0.5 after:bg-pink-500">Lịch</a>
                     <a href="contact.html" class="hover:text-blue-500 transition">Liên hệ</a>
-                    <button onclick="location.href='create.html'" class="btn-create px-5 py-2 rounded-full text-white text-sm font-black flex items-center gap-2 hover:scale-105 transition active:scale-95">
-                        <i class="fa-solid fa-plus text-[10px]"></i> Tạo sự kiện
-                    </button>
+                   <button id="btn-create-event" 
+        onclick="handleCreateEventClick()" 
+        class="btn-create px-5 py-2 rounded-full text-white text-sm font-black flex items-center gap-2 hover:scale-105 transition active:scale-95">
+    <i class="fa-solid fa-plus text-[10px]"></i> Tạo sự kiện
+</button>
                 </nav>
             </div>
 
@@ -434,7 +449,7 @@ window.showEvents = (dateStr) => {
         }
 
         return `
-            <div class="event-card group p-5 rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500 cursor-pointer overflow-hidden relative mb-4 ${isPast ? 'grayscale-[0.5]' : ''}">
+            <div class="event-card group p-5 rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-2 transition-all duration-300 cursor-pointerdiv class="event-card group p-5 rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500 cursor-pointer overflow-hidden relative mb-4 ${isPast ? 'grayscale-[0.5]' : ''}">
                 <div class="flex justify-between items-start mb-4">
                     ${statusBadge}
                     <span class="text-xs font-black text-blue-500 bg-blue-50 px-3 py-1 rounded-lg border border-blue-100">${e.price}</span>
@@ -454,12 +469,16 @@ window.showEvents = (dateStr) => {
 
 
 window.handleBooking = (eventId) => {
-    const user = auth.currentUser; 
-    if (!user) {
-        alert("Bạn phải đăng nhập mới xem được chi tiết sự kiện này!");
-        return;
+       window.location.href = `detail.html?id=${eventId}`;   
+};
+
+window.handleCreateEventClick = () => {
+    const user = auth.currentUser;
+    if (user) {
+        window.location.href = 'create.html';
+    } else {
+        alert("Vui lòng đăng nhập để thực hiện chức năng tạo sự kiện!");
     }
-    window.location.href = `detail.html?id=${eventId}`;
 };
 
 // --- AUTHENTICATION ---
@@ -471,12 +490,14 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 onAuthStateChanged(auth, (user) => {
+    const btnCreate = document.getElementById('btn-create-event');
     const authButtons = document.getElementById('auth-buttons');
     const userProfile = document.getElementById('user-profile');
     const userNameDisplay = document.getElementById('user-display-name');
     const userAvatar = document.querySelector('#user-profile img');
 
     if (user) {
+        if (btnCreate) { btnCreate.style.opacity = "1"; btnCreate.style.cursor = "pointer";}
         if (authButtons) authButtons.classList.add('hidden');
         if (userProfile) userProfile.classList.remove('hidden');
         if (userNameDisplay) userNameDisplay.textContent = user.displayName || "Thành viên";
@@ -484,6 +505,7 @@ onAuthStateChanged(auth, (user) => {
     } else {
         if (authButtons) authButtons.classList.remove('hidden');
         if (userProfile) userProfile.classList.add('hidden');
+        if (btnCreate) { btnCreate.style.opacity = "0.6"; btnCreate.style.cursor = "not-allowed";}
     }
 });
 
@@ -529,7 +551,6 @@ window.onload = async () => {
         }, 200);
     }
 };
-
 
 </script>
 
