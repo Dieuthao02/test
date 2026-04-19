@@ -8,144 +8,157 @@ let globalTimerInterval = null;
 let currentOrderCode = ""; 
 
 const MAP_TEMPLATES = {
-    26: {
-        eventName: "BTS WORLD TOUR ARIRANG",
-        hasDiagram: true,
-        time: "19:00 - 08/05/2026",
-        location: "GILLETTE STADIUM, FOXBOROUGH, MA",
-        currency: "COP",
+    // SƠ ĐỒ ID 21
+    21: {
+        eventName: "RAP VIỆT STAR",
+        hasDiagram: false,
+        time: "19:00 - 28/03/2026",
+        location: "SECC, QUẬN 7, TP.HCM",
+        currency: "đ",
         priceList: [
-            { name: 'PAQUETE VIP | SOUND CHECK', price: 2953000 },
-            { name: 'VIP GENERAL', price: 1081000 },
-            { name: 'SUR / NORTE BAJA', price: 300000 },
-            { name: 'SUR / NORTE ALTA', price: 396000 },
-            { name: 'ORIENTAL ALTA', price: 588000 },
-            { name: 'OCCIDENTAL ALTA', price: 661000 },
-            { name: 'ORIENTAL BAJA', price: 961000 },
-            { name: 'OCCIDENTAL BAJA', price: 1009000 }
-            
+            { name: 'VVIP PRESIDENT', price: 8000000 },
+            { name: 'SVIP STAR', price: 4500000 },
+            { name: 'VIP ZONE', price: 3000000 },
+            { name: 'FANZONE', price: 2200000 },
+            { name: 'GA STANDARD', price: 1500000 },
+            { name: 'CAT 1', price: 1000000 },
+            { name: 'CAT 2', price: 700000 }
         ],
-        html: `
-            <div class="text-center mb-6">
-    <h1 class="text-red-600 font-black text-3xl uppercase tracking-tighter italic">BTS WORLD TOUR - BOGOTÁ</h1>
-    <p class="text-gray-500 text-[10px] uppercase tracking-[0.3em] mt-2 font-bold">Sơ đồ sân vận động El Campín</p>
-</div>
-
-<div class="stage w-full block bg-zinc-800 text-zinc-400 py-6 mb-8 text-center font-black text-sm rounded-b-3xl shadow-[0_10px_30px_rgba(220,20,60,0.2)] border-b-4 border-red-700 uppercase tracking-[1em] mx-auto">
-    MAIN STAGE
-</div>
-
-<div class="flex flex-col items-center gap-10 **mx-auto** ">
-    
-    <div class="flex items-center justify-center gap-12 w-full relative">
-        
-        <div class="hidden md:block w-1.5 h-64 bg-gradient-to-b from-red-600 via-zinc-800 to-transparent rounded-full opacity-40 shadow-[0_0_20px_rgba(220,20,60,0.4)]"></div>
-
-        <div class="flex flex-col items-center gap-4 border-2 border-zinc-800 p-8 rounded-[3rem] bg-zinc-900/50 backdrop-blur-sm shadow-2xl">
-            <div class="block color-soundcheck w-80 text-center py-4 rounded-xl font-black text-xs cursor-pointer transition hover:scale-105 shadow-lg shadow-pink-500/20" 
-                 style="background-color: #EC407A; color: #FFFFFF;"
-                 onclick="handleBlockClick('PAQUETE VIP | SOUND CHECK', 2953000)">
-                PAQUETE VIP | SOUND CHECK
-            </div>
-            
-            <div class="block color-vip-bts w-56 h-56 flex items-center justify-center text-center rounded-full font-black text-sm cursor-pointer transition hover:scale-105 shadow-inner" 
-                 style="background-color: #B2EBF2; color: #000000;"
-                 onclick="handleBlockClick('VIP (ACCESO GENERAL)', 1081000)">
-                VIP GENERAL
-            </div>
-        </div>
-
-        <div class="hidden md:block w-1.5 h-64 bg-gradient-to-b from-red-600 via-zinc-800 to-transparent rounded-full opacity-40 shadow-[0_0_20px_rgba(220,20,60,0.4)]"></div>
-    </div>
-
-    <div class="flex flex-wrap justify-center gap-4 max-w-4xl">
-    
-    </div>
-</div>
-
-<div class="grid grid-cols-3 gap-8 w-full max-w-5xl mx-auto">
-    <div class="flex flex-col gap-4">
-        <div class="block p-6 text-center rounded-2xl font-bold text-xs h-24 flex items-center justify-center cursor-pointer" 
-             style="background-color: #FF69B4; color: white;" 
-             onclick="handleBlockClick('OCCIDENTAL BAJA', 1009000)">OCCIDENTAL BAJA</div>
-        
-        <div class="block p-6 text-center rounded-2xl font-bold text-xs h-24 flex items-center justify-center cursor-pointer" 
-             style="background-color: #F08080; color: white;" 
-             onclick="handleBlockClick('OCCIDENTAL ALTA', 661000)">OCCIDENTAL ALTA</div>
-    </div>
-
-    <div class="flex flex-col gap-4">
-        <div class="grid grid-cols-2 gap-2">
-            <div class="block p-4 text-center rounded-lg font-bold text-[10px] cursor-pointer" 
-                 style="background-color: #8B0000; color: white;" 
-                 onclick="handleBlockClick('SUR BAJA', 300000)">SUR BAJA</div>
-            
-            <div class="block p-4 text-center rounded-lg font-bold text-[10px]" 
-                 style="background-color: #778899; color: white;" 
-                 onclick="handleBlockClick('ORIENTAL NORTE BAJA', 300000)">OR. NORTE BAJA</div>
-        </div>
-        
-        <div class="block p-6 text-center rounded-2xl font-bold text-xs h-20 flex items-center justify-center" 
-             style="background-color: #DC143C; color: white;" 
-             onclick="handleBlockClick('SUR ALTA', 396000)">SUR ALTA</div>
-        
-        <div class="w-full h-16 flex items-center justify-center border-2 border-dashed border-zinc-700 rounded-xl bg-zinc-900/30">
-            <span class="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Control Tower</span>
-        </div>
-    </div>
-
-    <div class="flex flex-col gap-4">
-        <div class="block p-6 text-center rounded-2xl font-bold text-xs h-24 flex items-center justify-center" 
-             style="background-color: #6A5ACD; color: white;" 
-             onclick="handleBlockClick('ORIENTAL BAJA', 961000)">ORIENTAL BAJA</div>
-        
-        <div class="block p-6 text-center rounded-2xl font-bold text-xs h-24 flex items-center justify-center" 
-             style="background-color: #3F51B5; color: white;" 
-             onclick="handleBlockClick('ORIENTAL ALTA', 588000)">ORIENTAL ALTA</div>
-    </div>
-</div>
-
-<div class="grid grid-cols-2 gap-6 w-full max-w-2xl pb-10 mx-auto mt-4">
-    <div class="flex flex-col gap-3">
-        <div class="block py-4 text-center rounded-xl font-bold text-xs" 
-             style="background-color: #FF7F50; color: white;" 
-             onclick="handleBlockClick('NORTE BAJA', 300000)">NORTE BAJA</div>
-        
-        <div class="block py-4 text-center rounded-xl font-bold text-xs" 
-             style="background-color: #D2691E; color: white;" 
-             onclick="handleBlockClick('NORTE ALTA', 396000)">NORTE ALTA</div>
-    </div>
-    
-    <div class="flex flex-col gap-3">
-        <div class="block py-4 text-center rounded-xl font-bold text-xs" 
-             style="background-color: #483D8B; color: white;" 
-             onclick="handleBlockClick('ORIENTAL NORTE ALTA', 396000)">OR. NORTE ALTA</div>
-        
-        <div class="block py-4 text-center rounded-xl font-bold text-xs" 
-             style="background-color: #2F4F4F; color: white;" 
-             onclick="handleBlockClick('ORIENTAL SUR ALTA', 396000)">OR. SUR ALTA</div>
-    </div>
-            </div>`
     },
 
-48: {
-    eventName: "CONCERT QUỐC GIA 30/4-1/5",
+    // SƠ ĐỒ ID 26
+    26: {
+    eventName: "BTS WORLD TOUR ARIRANG",
     hasDiagram: true,
-    time: "20:00 - 22:30, 30/04/2026",
-    location: "QUẢNG TRƯỜNG BA ĐÌNH, HÀ NỘI",
-    currency: "VND",
+    time: "19:00 - 08/05/2026",
+    location: "GILLETTE STADIUM, FOXBOROUGH, MA",
+    currency: "COP",
     priceList: [
-        { name: 'HÀO KHÍ ĐÔNG ĐÔ', price: 3500000 },
-        { name: 'TINH HOA', price: 1200000 },
-        { name: 'GA KÝ ỨC', price: 800000 },
-        { name: 'TRƯỜNG SƠN BAJA', price: 1000000 },
-        { name: 'TRƯỜNG SƠN ALTA', price: 700000 },
-        { name: 'CỬU LONG BAJA', price: 950000 },
-        { name: 'CỬU LONG ALTA', price: 600000 },
-        { name: 'PHÙ SA', price: 1800000 },
-        { name: 'CHÂN TRỜI', price: 450000 }
+        { name: 'PAQUETE VIP | SOUND CHECK', price: 2953000 },
+        { name: 'VIP GENERAL', price: 1081000 },
+        { name: 'SUR / NORTE BAJA', price: 300000 },
+        { name: 'SUR / NORTE ALTA', price: 396000 },
+        { name: 'ORIENTAL ALTA', price: 588000 },
+        { name: 'OCCIDENTAL ALTA', price: 661000 },
+        { name: 'ORIENTAL BAJA', price: 961000 },
+        { name: 'OCCIDENTAL BAJA', price: 1009000 }
     ],
     html: `
+        <div class="text-center mb-6">
+            <h1 class="text-red-600 font-black text-3xl uppercase tracking-tighter italic">BTS WORLD TOUR - BOGOTÁ</h1>
+            <p class="text-gray-500 text-[10px] uppercase tracking-[0.3em] mt-2 font-bold">Sơ đồ sân vận động El Campín</p>
+        </div>
+
+        <div class="stage w-full block bg-zinc-800 text-zinc-400 py-6 mb-8 text-center font-black text-sm rounded-b-3xl shadow-[0_10px_30px_rgba(220,20,60,0.2)] border-b-4 border-red-700 uppercase tracking-[1em] mx-auto">
+            MAIN STAGE
+        </div>
+
+        <div class="flex flex-col items-center gap-10 mx-auto">
+            <div class="flex items-center justify-center gap-12 w-full relative">
+                <div class="hidden md:block w-1.5 h-64 bg-gradient-to-b from-red-600 via-zinc-800 to-transparent rounded-full opacity-40 shadow-[0_0_20px_rgba(220,20,60,0.4)]"></div>
+                
+                <div class="flex flex-col items-center gap-4 border-2 border-zinc-800 p-8 rounded-[3rem] bg-zinc-900/50 backdrop-blur-sm shadow-2xl">
+                    <div class="block color-soundcheck w-80 text-center py-4 rounded-xl font-black text-xs cursor-pointer transition hover:scale-105 shadow-lg shadow-pink-500/20" 
+                         style="background-color: #EC407A; color: #FFFFFF;"
+                         onclick="handleBlockClick('PAQUETE VIP | SOUND CHECK', 2953000)">
+                        PAQUETE VIP | SOUND CHECK
+                    </div>
+                    
+                    <div class="block color-vip-bts w-56 h-56 flex items-center justify-center text-center rounded-full font-black text-sm cursor-pointer transition hover:scale-105 shadow-inner" 
+                         style="background-color: #B2EBF2; color: #000000;"
+                         onclick="handleBlockClick('VIP (ACCESO GENERAL)', 1081000)">
+                        VIP GENERAL
+                    </div>
+                </div>
+
+                <div class="hidden md:block w-1.5 h-64 bg-gradient-to-b from-red-600 via-zinc-800 to-transparent rounded-full opacity-40 shadow-[0_0_20px_rgba(220,20,60,0.4)]"></div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-8 w-full max-w-5xl mx-auto mt-10">
+            <div class="flex flex-col gap-4">
+                <div class="block p-6 text-center rounded-2xl font-bold text-xs h-24 flex items-center justify-center cursor-pointer" 
+                     style="background-color: #FF69B4; color: white;" 
+                     onclick="handleBlockClick('OCCIDENTAL BAJA', 1009000)">OCCIDENTAL BAJA</div>
+                
+                <div class="block p-6 text-center rounded-2xl font-bold text-xs h-24 flex items-center justify-center cursor-pointer" 
+                     style="background-color: #F08080; color: white;" 
+                     onclick="handleBlockClick('OCCIDENTAL ALTA', 661000)">OCCIDENTAL ALTA</div>
+            </div>
+
+            <div class="flex flex-col gap-4">
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="block p-4 text-center rounded-lg font-bold text-[10px] cursor-pointer" 
+                         style="background-color: #8B0000; color: white;" 
+                         onclick="handleBlockClick('SUR BAJA', 300000)">SUR BAJA</div>
+                    
+                    <div class="block p-4 text-center rounded-lg font-bold text-[10px]" 
+                         style="background-color: #778899; color: white;" 
+                         onclick="handleBlockClick('ORIENTAL NORTE BAJA', 300000)">OR. NORTE BAJA</div>
+                </div>
+                
+                <div class="block p-6 text-center rounded-2xl font-bold text-xs h-20 flex items-center justify-center cursor-pointer" 
+                     style="background-color: #DC143C; color: white;" 
+                     onclick="handleBlockClick('SUR ALTA', 396000)">SUR ALTA</div>
+                
+                <div class="w-full h-16 flex items-center justify-center border-2 border-dashed border-zinc-700 rounded-xl bg-zinc-900/30">
+                    <span class="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">Control Tower</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-4">
+                <div class="block p-6 text-center rounded-2xl font-bold text-xs h-24 flex items-center justify-center cursor-pointer" 
+                     style="background-color: #6A5ACD; color: white;" 
+                     onclick="handleBlockClick('ORIENTAL BAJA', 961000)">ORIENTAL BAJA</div>
+                
+                <div class="block p-6 text-center rounded-2xl font-bold text-xs h-24 flex items-center justify-center cursor-pointer" 
+                     style="background-color: #3F51B5; color: white;" 
+                     onclick="handleBlockClick('ORIENTAL ALTA', 588000)">ORIENTAL ALTA</div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-6 w-full max-w-2xl pb-10 mx-auto mt-4">
+            <div class="flex flex-col gap-3">
+                <div class="block py-4 text-center rounded-xl font-bold text-xs cursor-pointer" 
+                     style="background-color: #FF7F50; color: white;" 
+                     onclick="handleBlockClick('NORTE BAJA', 300000)">NORTE BAJA</div>
+                
+                <div class="block py-4 text-center rounded-xl font-bold text-xs cursor-pointer" 
+                     style="background-color: #D2691E; color: white;" 
+                     onclick="handleBlockClick('NORTE ALTA', 396000)">NORTE ALTA</div>
+            </div>
+            
+            <div class="flex flex-col gap-3">
+                <div class="block py-4 text-center rounded-xl font-bold text-xs cursor-pointer" 
+                     style="background-color: #483D8B; color: white;" 
+                     onclick="handleBlockClick('ORIENTAL NORTE ALTA', 396000)">OR. NORTE ALTA</div>
+                
+                <div class="block py-4 text-center rounded-xl font-bold text-xs cursor-pointer" 
+                     style="background-color: #2F4F4F; color: white;" 
+                     onclick="handleBlockClick('ORIENTAL SUR ALTA', 396000)">OR. SUR ALTA</div>
+            </div>
+        </div>`
+},
+
+    // SƠ ĐỒ ID 48
+    48: {
+        eventName: "CONCERT QUỐC GIA 30/4-1/5",
+        hasDiagram: true,
+        time: "20:00 - 22:30, 30/04/2026",
+        location: "QUẢNG TRƯỜNG BA ĐÌNH, HÀ NỘI",
+        currency: "VND",
+        priceList: [
+            { name: 'HÀO KHÍ ĐÔNG ĐÔ', price: 3500000 },
+            { name: 'TINH HOA', price: 1200000 },
+            { name: 'GA KÝ ỨC', price: 800000 },
+            { name: 'TRƯỜNG SƠN BAJA', price: 1000000 },
+            { name: 'TRƯỜNG SƠN ALTA', price: 700000 },
+            { name: 'CỬU LONG BAJA', price: 950000 },
+            { name: 'CỬU LONG ALTA', price: 600000 },
+            { name: 'PHÙ SA', price: 1800000 },
+            { name: 'CHÂN TRỜI', price: 450000 }
+        ],
+        html: `
 <div style="color: #ffffff; font-family: 'Inter', 'Segoe UI', sans-serif; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; min-height: 800px; overflow-x: hidden;">
     
     <div style="margin-bottom: 30px; text-align: center;">
@@ -245,9 +258,9 @@ const MAP_TEMPLATES = {
     </div>
 </div>
 `
-},
+    },
 
-    // SƠ ĐỒ ID 53:
+    // SƠ ĐỒ ID 53
     53: {
         eventName: "GREENGREEN CORTIS ",
         hasDiagram: true,
@@ -305,7 +318,8 @@ const MAP_TEMPLATES = {
 </div> `
     },
 
-174: {
+    // SƠ ĐỒ ID 174
+    174: {
         eventName: "G-DRAGON WORLD TOUR",
         hasDiagram: true,
         time: "20:00 - 11/08/2026",
@@ -314,11 +328,13 @@ const MAP_TEMPLATES = {
         priceList: [
             { name: 'VIP', price: 8000000 },
             { name: 'PREMIUM', price: 6500000 },
+            { name: 'SKY LOUNGE', price: 6000000 },
             { name: 'CAT 1A, 1B', price: 6000000 },
             { name: 'CAT 2A, 2B', price: 5000000 },
             { name: 'CAT 3A, 3B', price: 4000000 },
             { name: 'CAT 4A, 4B', price: 3800000 },
             { name: 'CAT 5A, 5B', price: 5000000 },
+            { name: 'CAT 6A, 6B', price: 4000000 },
             { name: 'GA 1A, 1B', price: 3300000 },
             { name: 'GA 2A, 2B', price: 3800000 },
             { name: 'GA 3A, 3B', price: 3300000 },
@@ -454,27 +470,11 @@ const MAP_TEMPLATES = {
 `
     },
 
-   21: {
-    eventName: "RAP VIỆT STAR",
-    hasDiagram: false,
-    time: "19:00 - 28/03/2026",
-    location: "SECC, QUẬN 7, TP.HCM",
-    currency: "đ",
-    priceList: [
-        { name: 'VVIP PRESIDENT', price: 8000000 },
-        { name: 'SVIP STAR', price: 4500000 },
-        { name: 'VIP ZONE', price: 3000000 },
-        { name: 'FANZONE', price: 2200000 },
-        { name: 'GA STANDARD', price: 1500000 },
-        { name: 'CAT 1', price: 1000000 },
-        { name: 'CAT 2', price: 700000 }
-    ],
-},
 
     52: {
     eventName: "OCEAN WHISPER 2026",
     hasDiagram: true,
-    time: "08:00 - 16/04/2026",
+    time: "08:00 - 16/05/2026",
     location: "LOTTE WORLD AQUARIUM HÀ NỘI",
     currency: "đ",
     priceList: [
@@ -482,19 +482,19 @@ const MAP_TEMPLATES = {
         { name: 'Vé tham quan cơ bản', price: 300000 },
         { name: 'Tour đường hầm', price: 350000 },
         { name: 'Quầy vé trọn gói', price: 500000 }
-      ],
-      html: `
-    <div id="whale" style="position: absolute; inset: 0; width: 100%; height: 100vh; z-index: 1; pointer-events: none; overflow: hidden; opacity: 0.3;"></div>
+    ],
+    html: `
+        <div id="whale" style="position: absolute; inset: 0; width: 100%; height: 100vh; z-index: 1; pointer-events: none; overflow: hidden; opacity: 0.3;"></div>
 
-    <div style="width: 100%; height: 100vh; position: relative; z-index: 10; overflow: hidden; background: transparent;">
-        <div id="map-wrapper" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
-            <img src="map.png" 
-                 alt="Aquarium Map" 
-                 id="map-img" 
-                 style="max-width: 100%; max-height: 100%; object-fit: contain; display: block;"
-                 onerror="this.src='https://via.placeholder.com/800x600?text=KHONG+TIM+THAY+ANH+MAP.PNG'">
+        <div style="width: 100%; height: 100vh; position: relative; z-index: 10; overflow: hidden; background: transparent;">
+            <div id="map-wrapper" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
+                <img src="map.png" 
+                     alt="Aquarium Map" 
+                     id="map-img" 
+                     style="max-width: 100%; max-height: 100%; object-fit: contain; display: block;"
+                     onerror="this.src='https://via.placeholder.com/800x600?text=KHONG+TIM+THAY+ANH+MAP.PNG'">
+            </div>
         </div>
-    </div>
     `
 },
 
