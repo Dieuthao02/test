@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,51 +9,56 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="booking.css">
 </head>
+
 <body>
 
     <div id="step-1" class="flex h-screen w-full overflow-hidden">
         <main class="flex-1 relative">
             <div class="absolute top-8 left-8 z-50 flex flex-col gap-4">
-               <a href="index.html" class="text-gray-500 hover:text-white font-bold text-xs uppercase tracking-widest transition inline-flex items-center">
-    <i class="fa-solid fa-arrow-left mr-2"></i> QUAY LẠI
-</a>
+                <a href="index.html"
+                    class="text-gray-500 hover:text-white font-bold text-xs uppercase tracking-widest transition inline-flex items-center">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> QUAY LẠI
+                </a>
             </div>
 
             <div class="map-viewport" id="viewport">
-        <div class="map-container" id="map-container"></div>
-    </div>
+                <div class="map-container" id="map-container"></div>
+            </div>
         </main>
 
         <aside class="sidebar p-8 flex flex-col h-screen w-[400px] bg-black border-l border-white/10">
-    <div class="flex-shrink-0 mb-8">
-        <h2 id="event-title" class="text-xl font-black uppercase leading-tight text-white tracking-tighter"></h2>
-        
-        <div class="mt-3 space-y-1">
-            <p id="side-time" class="text-gray-500 text-[11px] font-bold uppercase tracking-wider"></p>
-            
-            <p id="side-loc" class="text-gray-500 text-[11px] font-medium uppercase tracking-wider"></p>
-        </div>
-    </div>
-            
-            <div id="price-list-default" class="flex-1 overflow-hidden flex flex-col min-h-0">
-        <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-white/10 pb-2 mb-4 flex-shrink-0">Giá vé</h3>
-        <div id="price-list-container" class="space-y-4 pr-2 overflow-y-auto custom-scroll max-h-[250px]">
-        </div>
-    </div>
-
-    <div id="cart-list" class="flex-1 overflow-y-auto space-y-4 no-scrollbar hidden"></div>
-            <div class="border-t border-white/10 pt-6 mt-auto flex-shrink-0">
-        <div class="flex justify-between items-end mb-4">
-            <div>
-                <p class="text-gray-500 text-[10px] uppercase font-bold mb-1">Tổng cộng</p>
-                <p id="total-price" class="text-3xl font-black text-green-400 tracking-tighter">0 đ</p>
+            <div class="flex-shrink-0 mb-8">
+                <h2 id="event-title" class="text-xl font-black uppercase leading-tight text-white tracking-tighter"></h2>
+                <div class="mt-3 space-y-1">
+                    <p id="side-time" class="text-gray-500 text-[11px] font-bold uppercase tracking-wider"></p>
+                    <p id="side-loc" class="text-gray-500 text-[11px] font-medium uppercase tracking-wider"></p>
+                </div>
             </div>
-                    <div id="total-qty-display" class="hidden items-center gap-2 text-white bg-white/10 px-3 py-1 rounded-lg">
+
+            <div id="price-list-default" class="flex-1 overflow-hidden flex flex-col min-h-0">
+                <h3
+                    class="text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-white/10 pb-2 mb-4 flex-shrink-0">
+                    Giá vé</h3>
+                <div id="price-list-container" class="space-y-4 pr-2 overflow-y-auto custom-scroll max-h-[250px]">
+                </div>
+            </div>
+
+            <div id="cart-list" class="flex-1 overflow-y-auto space-y-4 no-scrollbar hidden"></div>
+
+            <div class="border-t border-white/10 pt-6 mt-auto flex-shrink-0">
+                <div class="flex justify-between items-end mb-4">
+                    <div>
+                        <p class="text-gray-500 text-[10px] uppercase font-bold mb-1">Tổng cộng</p>
+                        <p id="total-price" class="text-3xl font-black text-green-400 tracking-tighter">0 đ</p>
+                    </div>
+                    <div id="total-qty-display"
+                        class="hidden items-center gap-2 text-white bg-white/10 px-3 py-1 rounded-lg">
                         <i class="fa-solid fa-ticket text-[10px]"></i>
                         <span id="qty-count" class="font-bold text-sm">x0</span>
                     </div>
                 </div>
-                <button id="btn-next" onclick="goToStep2()" class="hidden w-full py-5 bg-green-500 text-white rounded-full font-black uppercase text-xs tracking-widest shadow-lg active:scale-95 transition-all">
+                <button id="btn-next" onclick="goToStep2()"
+                    class="hidden w-full py-5 bg-green-500 text-white rounded-full font-black uppercase text-xs tracking-widest shadow-lg active:scale-95 transition-all">
                     Tiếp tục - <span id="btn-total-val">0</span> đ
                 </button>
             </div>
@@ -68,23 +74,30 @@
                 <p class="mb-2">• Khán giả được tự do lựa chọn vị trí đứng trong khu vực đã chọn.</p>
                 <p>• Quà tặng đi kèm: Vòng tay, bộ stickers kỷ niệm.</p>
             </div>
-            <button onclick="showQtySelection()" class="w-full py-4 bg-green-500 text-white rounded-xl font-bold uppercase text-xs tracking-widest">Tôi đã hiểu & Chọn số lượng</button>
+            <button onclick="showQtySelection()"
+                class="w-full py-4 bg-green-500 text-white rounded-xl font-bold uppercase text-xs tracking-widest">Tôi đã
+                hiểu & Chọn số lượng</button>
         </div>
     </div>
 
     <div id="qty-modal" class="modal-overlay">
         <div class="modal-box">
-            <button onclick="closeModals()" class="absolute top-6 right-6 text-gray-400"><i class="fa-solid fa-x"></i></button>
+            <button onclick="closeModals()" class="absolute top-6 right-6 text-gray-400"><i
+                    class="fa-solid fa-x"></i></button>
             <h3 id="qty-title" class="font-black text-xl mb-8 uppercase text-center">CHỌN SỐ LƯỢNG VÉ</h3>
             <div class="flex justify-between items-center p-6 border-2 border-gray-100 rounded-2xl mb-8">
                 <span class="font-black text-sm uppercase">Số lượng</span>
                 <div class="flex items-center gap-6">
-                    <button onclick="changeModalQty(-1)" class="w-10 h-10 border-2 rounded-xl font-bold hover:bg-gray-50 transition">-</button>
+                    <button onclick="changeModalQty(-1)"
+                        class="w-10 h-10 border-2 rounded-xl font-bold hover:bg-gray-50 transition">-</button>
                     <span id="qty-val" class="font-black text-xl">1</span>
-                    <button onclick="changeModalQty(1)" class="w-10 h-10 border-2 border-green-500 text-green-500 rounded-xl font-bold hover:bg-green-50 transition">+</button>
+                    <button onclick="changeModalQty(1)"
+                        class="w-10 h-10 border-2 border-green-500 text-green-500 rounded-xl font-bold hover:bg-green-50 transition">+</button>
                 </div>
             </div>
-            <button onclick="addTicketToCart()" class="w-full py-5 bg-black text-white rounded-2xl font-black uppercase text-xs tracking-widest">Thêm vào giỏ hàng</button>
+            <button onclick="addTicketToCart()"
+                class="w-full py-5 bg-black text-white rounded-2xl font-black uppercase text-xs tracking-widest">Thêm vào
+                giỏ hàng</button>
         </div>
     </div>
 
@@ -94,90 +107,90 @@
         </div>
         <div class="max-w-6xl mx-auto px-10 py-16 grid grid-cols-12 gap-12">
             <div class="col-span-12 mb-4">
-    <button onclick="backToStep1()" class="text-gray-500 font-bold text-[10px] uppercase hover:text-white transition">
-        <i class="fa-solid fa-chevron-left mr-2"></i> QUAY LẠI SỬA 
-    </button>
-</div>
+                <button onclick="backToStep1()"
+                    class="text-gray-500 font-bold text-[10px] uppercase hover:text-white transition">
+                    <i class="fa-solid fa-chevron-left mr-2"></i> QUAY LẠI SỬA
+                </button>
+            </div>
 
-<div class="col-span-12 grid grid-cols-12 gap-8 items-start">
-    
-    <div class="col-span-7 space-y-8">
-        <div class="q-card">
-            <h2 class="text-green-500 font-black uppercase text-sm mb-10">BẢNG CÂU HỎI</h2>
-            <div class="space-y-6">
-                <div>
-                    <label class="text-[10px] text-gray-500 font-bold uppercase">Họ và tên *</label>
-                    <input type="text" id="checkout-name" placeholder="Nhập câu trả lời..." class="q-input">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-[10px] text-gray-500 font-bold uppercase">Số điện thoại *</label>
-                        <input type="tel"id="checkout-phone" placeholder="090..." class="q-input">
+            <div class="col-span-12 grid grid-cols-12 gap-8 items-start">
+                <div class="col-span-7 space-y-8">
+                    <div class="q-card">
+                        <h2 class="text-green-500 font-black uppercase text-sm mb-10">BẢNG CÂU HỎI</h2>
+                        <div class="space-y-6">
+                            <div>
+                                <label class="text-[10px] text-gray-500 font-bold uppercase">Họ và tên *</label>
+                                <input type="text" id="checkout-name" placeholder="Nhập câu trả lời..." class="q-input">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-[10px] text-gray-500 font-bold uppercase">Số điện thoại *</label>
+                                    <input type="tel" id="checkout-phone" placeholder="090..." class="q-input">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] text-gray-500 font-bold uppercase">Địa chỉ Email *</label>
+                                    <input type="email" id="checkout-email" placeholder="email@example.com"
+                                        class="q-input">
+                                </div>
+                            </div>
+                            <div class="pt-6 flex items-center gap-4">
+                                <input type="checkbox" id="c" class="w-5 h-5 accent-green-500 cursor-pointer">
+                                <label for="c" class="text-xs text-gray-500 cursor-pointer">
+                                    Tôi xác nhận đã đọc và đồng ý với các điều khoản tham gia sự kiện.
+                                </label>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label class="text-[10px] text-gray-500 font-bold uppercase">Địa chỉ Email *</label>
-                        <input type="email" id="checkout-email"placeholder="email@example.com" class="q-input">
+
+                    <div class="q-card">
+                        <h2 class="text-white font-black uppercase text-sm mb-8">PHƯƠNG THỨC THANH TOÁN</h2>
+
+                        <div class="pay-method active group" onclick="selectPay(this)">
+                            <div
+                                class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center shadow-lg shadow-green-500/20">
+                                <i class="fa-solid fa-wallet text-white text-xs"></i>
+                            </div>
+                            <div class="flex flex-col ml-3">
+                                <span class="text-xs font-bold uppercase">ElysiumPay</span>
+                            </div>
+                            <i class="fa-solid fa-circle-check ml-auto text-green-500"></i>
+                        </div>
+
+                        <div class="pay-method group" onclick="selectPay(this)" data-method="zalopay">
+                            <img src="zalopay.png" class="w-8 rounded-lg">
+                            <span class="text-xs font-bold uppercase ml-3">ZaloPay</span>
+                        </div>
+
+                        <div class="pay-method group" onclick="selectPay(this)">
+                            <img src="https://img.icons8.com/color/48/000000/visa.png" class="w-8">
+                            <span class="text-xs font-bold uppercase ml-3">Thẻ Visa / Mastercard</span>
+                        </div>
+
+                        <div class="pay-method group" onclick="selectPay(this)" data-method="vietqr">
+                            <img src="https://img.icons8.com/color/48/000000/qr-code.png" class="w-8">
+                            <span class="text-xs font-bold uppercase ml-3">VietQR Ngân hàng</span>
+                        </div>
                     </div>
                 </div>
-                <div class="pt-6 flex items-center gap-4">
-    <input type="checkbox" id="c" class="w-5 h-5 accent-green-500 cursor-pointer">
-    <label for="c" class="text-xs text-gray-500 cursor-pointer">
-        Tôi xác nhận đã đọc và đồng ý với các điều khoản tham gia sự kiện.
-    </label>
-</div>
-            </div>
-        </div>
 
-        <div class="q-card">
-            <h2 class="text-white font-black uppercase text-sm mb-8">PHƯƠNG THỨC THANH TOÁN</h2>
-            
-            <div class="pay-method active group" onclick="selectPay(this)">
-                <div class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center shadow-lg shadow-green-500/20">
-                    <i class="fa-solid fa-wallet text-white text-xs"></i>
-                </div>
-                <div class="flex flex-col ml-3">
-                    <span class="text-xs font-bold uppercase">ElysiumPay</span>
-                </div>
-                <i class="fa-solid fa-circle-check ml-auto text-green-500"></i>
-            </div>
-
-          <div class="pay-method group" onclick="selectPay(this)">
-    <img src="zalopay.png" class="w-8 rounded-lg"> 
-    <span class="text-xs font-bold uppercase ml-3">ZaloPay</span>
-</div>
-
-            <div class="pay-method group" onclick="selectPay(this)">
-                <img src="https://img.icons8.com/color/48/000000/visa.png" class="w-8"> 
-                <span class="text-xs font-bold uppercase ml-3">Thẻ Visa / Mastercard</span>
-            </div>
-
-            <div class="pay-method group" onclick="selectPay(this)">
-                <img src="https://img.icons8.com/color/48/000000/qr-code.png" class="w-8"> 
-                <span class="text-xs font-bold uppercase ml-3">VietQR Ngân hàng</span>
+                <aside class="col-span-5 sticky top-24">
+                    <div class="checkout-summary shadow-2xl bg-white rounded-[32px] p-8">
+                        <h3 class="font-black text-sm border-b pb-6 mb-6 uppercase tracking-widest text-black">Tóm tắt
+                            đơn hàng</h3>
+                        <div id="payment-items" class="space-y-5 mb-10 text-black"></div>
+                        <div class="flex justify-between items-center pt-6 border-t border-gray-100">
+                            <span class="font-bold text-gray-400 uppercase text-[10px]">Tổng tiền thanh toán</span>
+                            <span id="pay-total" class="text-3xl font-black text-green-600 tracking-tighter">0 đ</span>
+                        </div>
+                        <button onclick="handleFinalCheckout()"
+                            class="w-full mt-10 py-5 bg-green-500 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-green-600 transition-all shadow-xl shadow-green-500/20">
+                            XÁC NHẬN ĐẶT VÉ
+                        </button>
+                    </div>
+                </aside>
             </div>
         </div>
     </div>
-
-    <aside class="col-span-5 sticky top-24">
-        <div class="checkout-summary shadow-2xl bg-white rounded-[32px] p-8">
-            <h3 class="font-black text-sm border-b pb-6 mb-6 uppercase tracking-widest text-black">Tóm tắt đơn hàng</h3>
-            
-            <div id="payment-items" class="space-y-5 mb-10 text-black">
-                </div>
-            
-            <div class="flex justify-between items-center pt-6 border-t border-gray-100">
-                <span class="font-bold text-gray-400 uppercase text-[10px]">Tổng tiền thanh toán</span>
-                <span id="pay-total" class="text-3xl font-black text-green-600 tracking-tighter">0 đ</span>
-            </div>
-            
-            <button onclick="handleFinalCheckout()" class="w-full mt-10 py-5 bg-green-500 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-green-600 transition-all shadow-xl shadow-green-500/20">
-    XÁC NHẬN ĐẶT VÉ
-</button>
-        </div>
-    </aside>
-</div>
-    </div>
-
 
     <div id="cancel-modal" class="modal-overlay" style="z-index: 300;">
         <div class="modal-box text-center">
@@ -188,215 +201,220 @@
                 <p>• Đơn hàng đang trong quá trình thanh toán cũng có thể bị huỷ.</p>
             </div>
             <div class="flex gap-4">
-                <button onclick="confirmCancelOrder()" class="flex-1 py-3 border-2 border-red-500 text-red-500 rounded-xl font-bold uppercase text-[10px]">Hủy đơn</button>
-                <button onclick="closeCancelModal()" class="flex-1 py-3 bg-green-500 text-white rounded-xl font-bold uppercase text-[10px]">Ở lại</button>
+                <button onclick="confirmCancelOrder()"
+                    class="flex-1 py-3 border-2 border-red-500 text-red-500 rounded-xl font-bold uppercase text-[10px]">Hủy
+                    đơn</button>
+                <button onclick="closeCancelModal()"
+                    class="flex-1 py-3 bg-green-500 text-white rounded-xl font-bold uppercase text-[10px]">Ở lại</button>
             </div>
         </div>
     </div>
 
-    <div id="qr-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-    <div class="bg-white w-full max-w-2xl rounded-xl overflow-hidden shadow-2xl">
-        <div class="flex justify-between items-center p-4 border-b">
-            <div class="flex items-center gap-2">
-                <h2 id="qr-title" class="font-bold text-gray-800">Thanh toán</h2>
+    <div id="qr-modal" 
+    class="fixed inset-0 z-[999] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-2xl rounded-xl overflow-hidden shadow-2xl">
+            <div class="flex justify-between items-center p-4 border-b">
+                <div class="flex items-center gap-2">
+                    <h2 id="qr-title" class="font-bold text-gray-800">Thanh toán</h2>
+                </div>
+                <button onclick="closeModals()" class="text-green-600 text-sm font-bold hover:underline">Đổi phương thức
+                    khác</button>
             </div>
-            <button onclick="closeModals()" class="text-green-600 text-sm font-bold hover:underline">Đổi phương thức khác</button>
-        </div>
 
-        <div id="vietqr-tabs" class="flex border-b hidden">
-            <button onclick="switchTab('qr')" id="tab-qr" class="flex-1 py-3 text-sm font-bold border-b-2 border-green-500 text-green-600">Thanh toán bằng VietQR</button>
-            <button onclick="switchTab('bank')" id="tab-bank" class="flex-1 py-3 text-sm font-bold border-b-2 border-transparent text-gray-500">Chuyển khoản ngân hàng</button>
-        </div>
+            <div id="vietqr-tabs" class="flex border-b hidden">
+                <button onclick="switchTab('qr')" id="tab-qr"
+                    class="flex-1 py-3 text-sm font-bold border-b-2 border-green-500 text-green-600">Thanh toán bằng
+                    VietQR</button>
+                <button onclick="switchTab('bank')" id="tab-bank"
+                    class="flex-1 py-3 text-sm font-bold border-b-2 border-transparent text-gray-500">Chuyển khoản ngân
+                    hàng</button>
+            </div>
 
-        <div class="flex flex-col md:flex-row p-8 gap-8 items-start">
-            <div class="w-full md:w-1/2 flex flex-col items-center bg-gray-50 p-6 rounded-xl border border-gray-100 min-h-[320px]">
-                
-                <div id="view-qr" class="w-full flex flex-col items-center">
-                    <div class="bg-white p-3 rounded-lg shadow-sm border mb-4">
-                        <img id="qr-image-main" src="" alt="QR" class="w-48 h-48 object-contain">
+            <div class="flex flex-col md:flex-row p-8 gap-8 items-start">
+                <div
+                    class="w-full md:w-1/2 flex flex-col items-center bg-gray-50 p-6 rounded-xl border border-gray-100 min-h-[320px]">
+                    <div id="view-qr" class="w-full flex flex-col items-center">
+                        <div class="bg-white p-3 rounded-lg shadow-sm border mb-4">
+                            <img id="qr-image-main" src="" alt="QR" class="w-48 h-48 object-contain">
+                        </div>
+                        <div class="text-center">
+                            <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Tổng tiền</p>
+                            <p id="qr-amount-display" class="text-xl font-black text-gray-900">0 đ</p>
+                        </div>
                     </div>
-                    <div class="text-center">
-                        <p class="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Tổng tiền</p>
-                        <p id="qr-amount-display" class="text-xl font-black text-gray-900">0 đ</p>
+
+                    <div id="view-bank" class="w-full hidden space-y-3">
+                        <div class="text-xs space-y-3">
+                            <div class="bg-gray-50 p-3 rounded border flex justify-between items-center">
+                                <div>
+                                    <p class="text-gray-400">Ngân hàng</p>
+                                    <p class="text-black font-bold uppercase">MB BANK</p>
+                                </div>
+                                <button class="text-blue-500 font-bold" onclick="copyText('MB BANK')">Copy</button>
+                            </div>
+                            <div class="bg-gray p-3 rounded border flex justify-between items-center">
+                                <div>
+                                    <p class="text-gray-400">Số tài khoản</p>
+                                    <p class="text-black font-bold">0378217462</p>
+                                </div>
+                                <button class="text-blue-500 font-bold" onclick="copyText('0378217462')">Copy</button>
+                            </div>
+                            <div class="bg-gray p-3 rounded border flex justify-between items-center">
+                                <div>
+                                    <p class="text-gray-400">Chủ tài khoản</p>
+                                    <p class="text-black font-bold uppercase">NHU THI DIEU THAO</p>
+                                </div>
+                            </div>
+                            <div class="bg-gray p-3 rounded border flex justify-between items-center">
+                                <div>
+                                    <p class="text-gray-400">Nội dung</p>
+                                    <p id="bank-content" class="font-bold text-red-600"></p>
+                                </div>
+                                <button class="text-blue-500 font-bold"
+                                    onclick="copyText(document.getElementById('bank-content').innerText)">Copy</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div id="view-bank" class="w-full hidden space-y-3">
-                    <div class="text-xs space-y-3">
-                        <div class="bg-gray-50 p-3 rounded border flex justify-between items-center">
-                            <div><p class="text-gray-400">Ngân hàng</p><p class="text-black font-bold uppercase">MB BANK</p></div>
-                            <button class="text-blue-500 font-bold" onclick="copyText('MB BANK')">Copy</button>
-                        </div>
-                        <div class="bg-gray p-3 rounded border flex justify-between items-center">
-                            <div><p class="text-gray-400">Số tài khoản</p><p class="text-black font-bold">0378217462</p></div>
-                            <button class="text-blue-500 font-bold" onclick="copyText('0378217462')">Copy</button>
-                        </div>
-                        <div class="bg-gray p-3 rounded border flex justify-between items-center">
-                            <div><p class="text-gray-400">Chủ tài khoản</p><p class="text-black font-bold uppercase">NHU THI DIEU THAO</p></div>
-                        </div>
-                        <div class="bg-gray p-3 rounded border flex justify-between items-center">
-                            <div><p class="text-gray-400">Nội dung</p><p id="bank-content" class="font-bold text-red-600"></p></div>
-                            <button class="text-blue-500 font-bold" onclick="copyText(document.getElementById('bank-content').innerText)">Copy</button>
-                        </div>
-                    </div>
+                <div id="qr-instructions" class="w-full md:w-1/2 space-y-6">
+                    <h3 id="instr-title" class="font-bold text-lg text-gray-800">Quét mã QR để thanh toán</h3>
+                    <ul id="instr-list" class="space-y-4"></ul>
+                    <button onclick="showInvoice()"
+                        class="w-full py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg font-bold transition-colors mt-4">
+                        XÁC NHẬN ĐÃ CHUYỂN KHOẢN
+                    </button>
                 </div>
             </div>
 
-            <div id="qr-instructions" class="w-full md:w-1/2 space-y-6">
-                <h3 id="instr-title" class="font-bold text-lg text-gray-800">Quét mã QR để thanh toán</h3>
-                <ul id="instr-list" class="space-y-4">
-                    </ul>
-                <button onclick="showInvoice()" class="w-full py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg font-bold transition-colors mt-4">
-                    XÁC NHẬN ĐÃ CHUYỂN KHOẢN
-                </button>
+            <div class="bg-blue-50/50 p-4 text-center border-t">
+                <p class="text-xs text-gray-500">Giao dịch sẽ kết thúc sau <span class="font-bold text-orange-500"
+                        id="qr-countdown">14 : 59</span></p>
             </div>
-        </div>
-        
-        <div class="bg-blue-50/50 p-4 text-center border-t">
-            <p class="text-xs text-gray-500">Giao dịch sẽ kết thúc sau <span class="font-bold text-orange-500" id="qr-countdown">14 : 59</span></p>
         </div>
     </div>
-</div>
-    
-<div id="visa-modal" class="modal-overlay hidden" style="z-index: 400;">
-    <div class="modal-box max-w-md">
-        <h3 class="font-black text-xl mb-6 uppercase text-center">Chi tiết Thanh toán</h3>
-        <div class="space-y-4">
-            <div>
-                <label class="text-[10px] font-bold text-gray-500 uppercase">Loại Thẻ *</label>
-                <select class="q-input w-full"><option>Visa</option><option>Mastercard</option><option>JCB</option></select>
-            </div>
-            <div>
-                <label class="text-[10px] font-bold text-gray-500 uppercase">Số Thẻ *</label>
-                <input type="text" placeholder="XXXX XXXX XXXX XXXX" class="q-input">
-            </div>
-            <div class="grid grid-cols-3 gap-4">
+
+    <div id="visa-modal" class="modal-overlay hidden" style="z-index: 400;">
+        <div class="modal-box max-w-md">
+            <h3 class="font-black text-xl mb-6 uppercase text-center">Chi tiết Thanh toán</h3>
+            <div class="space-y-4">
                 <div>
-                    <label class="text-[10px] font-bold text-gray-500 uppercase">Tháng *</label>
-                    <input type="text" placeholder="MM" class="q-input">
+                    <label class="text-[10px] font-bold text-gray-500 uppercase">Loại Thẻ *</label>
+                    <select class="q-input w-full">
+                        <option>Visa</option>
+                        <option>Mastercard</option>
+                        <option>JCB</option>
+                    </select>
                 </div>
                 <div>
-                    <label class="text-[10px] font-bold text-gray-500 uppercase">Năm *</label>
-                    <input type="text" placeholder="YY" class="q-input">
+                    <label class="text-[10px] font-bold text-gray-500 uppercase">Số Thẻ *</label>
+                    <input type="text" placeholder="XXXX XXXX XXXX XXXX" class="q-input">
                 </div>
-                <div>
-                    <label class="text-[10px] font-bold text-gray-500 uppercase">CVN *</label>
-                    <input type="text" placeholder="123" class="q-input">
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="text-[10px] font-bold text-gray-500 uppercase">Tháng *</label>
+                        <input type="text" placeholder="MM" class="q-input">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-gray-500 uppercase">Năm *</label>
+                        <input type="text" placeholder="YY" class="q-input">
+                    </div>
+                    <div>
+                        <label class="text-[10px] font-bold text-gray-500 uppercase">CVN *</label>
+                        <input type="text" placeholder="123" class="q-input">
+                    </div>
                 </div>
+                <p class="text-[9px] text-gray-400 italic">Mã này là số có ba hoặc bốn chữ số được in ở mặt trước hoặc
+                    mặt sau của thẻ.</p>
+                <button onclick="showInvoice()"
+                    class="w-full py-4 bg-black text-white rounded-xl font-bold uppercase text-xs mt-4">Tiếp tục</button>
+                <button onclick="closeVisaModal()" class="w-full py-2 text-gray-400 text-[10px] uppercase font-bold">Hủy
+                    thanh toán</button>
             </div>
-            <p class="text-[9px] text-gray-400 italic">Mã này là số có ba hoặc bốn chữ số được in ở mặt trước hoặc mặt sau của thẻ.</p>
-            <button onclick="showInvoice()" class="w-full py-4 bg-black text-white rounded-xl font-bold uppercase text-xs mt-4">Tiếp tục</button>
-            <button onclick="closeVisaModal()" class="w-full py-2 text-gray-400 text-[10px] uppercase font-bold">Hủy thanh toán</button>
         </div>
     </div>
-</div>
 
-<div id="qr-modal" class="modal-overlay hidden" style="z-index: 400; display: none; align-items: center; justify-content: center;">
-    <div class="modal-box text-center max-w-sm overflow-hidden bg-white rounded-3xl p-6">
-        
-        <h3 id="qr-title" class="font-black text-lg mb-4 uppercase text-gray-800">
-            Thanh toán chuyển khoản
-        </h3>
-        
-        <div class="bg-white p-4 rounded-2xl mb-4 border-2 border-dashed border-gray-100 flex items-center justify-center min-h-[200px]">
-            <img id="qr-image" 
-                 src="" 
-                 alt="Mã QR thanh toán"
-                 class="mx-auto w-52 h-52 object-contain transition-opacity duration-300">
-        </div>
+    <div id="invoice-modal" class="modal-overlay hidden" style="z-index: 500;">
+        <div class="modal-box max-w-sm">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-file-invoice-dollar text-2xl"></i>
+                </div>
+                <h3 class="font-black text-xl">XÁC NHẬN HÓA ĐƠN</h3>
+                <p class="text-[10px] text-gray-400 uppercase tracking-widest mt-1">Vui lòng kiểm tra kỹ thông tin</p>
+            </div>
 
-        <div id="qr-instructions" class="text-left text-[12px] space-y-2 bg-blue-50 p-3 rounded-lg mb-6 border border-blue-100">
-            <p class="text-center text-gray-400 italic">Đang tạo mã thanh toán...</p>
-        </div>
+            <div class="space-y-3 border-t border-b py-4 border-dashed text-sm">
+                <div class="bg-gray-50 p-3 rounded-lg mb-2 space-y-1">
+                    <div class="flex justify-between text-[11px]"><span class="text-gray-500">Người mua:</span><span
+                            id="inv-user-name" class="font-bold text-black uppercase">---</span></div>
+                    <div class="flex justify-between text-[11px]"><span class="text-gray-500">Email:</span><span
+                            id="inv-user-email" class="font-medium text-black">---</span></div>
+                    <div class="flex justify-between text-[11px]"><span class="text-gray-500">SĐT:</span><span
+                            id="inv-user-phone" class="font-medium text-black">---</span></div>
+                </div>
 
-        <div class="space-y-2">
-            <button onclick="showInvoice()" 
-                    class="w-full py-4 bg-green-500 text-white rounded-xl font-black uppercase text-xs shadow-lg shadow-green-500/20 active:scale-95 transition-all">
-                Xác nhận đã chuyển khoản
+                <div class="flex justify-between"><span>Sự kiện:</span><span id="inv-event-name"
+                        class="font-bold text-right ml-4">BTS WORLD TOUR</span></div>
+                <div class="flex justify-between"><span>Vị trí:</span><span
+                        id="inv-seats" class="font-bold text-green-600 uppercase">VIP (GA)</span></div>
+                <div class="flex justify-between"><span>Số vé:</span><span id="inv-qty" class="font-bold text-lg">x1</span>
+                </div>
+                <div class="flex justify-between pt-2 border-t border-gray-100">
+                    <span class="font-bold">Tổng tiền:</span>
+                    <span id="inv-total" class="font-black text-xl text-red-600">0 đ</span>
+                </div>
+                <div class="flex justify-between text-[10px] pt-2 text-gray-400 italic">
+                    <span>Thời gian đặt:</span>
+                    <span id="inv-order-time">--:-- --/--/----</span>
+                </div>
+            </div>
+
+            <button onclick="finishPayment()"
+                class="w-full mt-6 py-4 bg-green-500 text-white rounded-xl font-black uppercase text-xs shadow-lg shadow-green-500/20 hover:scale-[1.02] transition-transform">
+                XÁC NHẬN THANH TOÁN
             </button>
-            
-            <button onclick="closeQRModal()" 
-                    class="w-full py-2 text-gray-400 text-[10px] uppercase font-bold hover:text-red-500 transition-colors">
-                Hủy thanh toán
+            <button onclick="backToStep1()"
+                class="w-full mt-2 py-3 text-gray-400 font-bold uppercase text-[10px] hover:text-red-500 transition-all">
+                HỦY THANH TOÁN
             </button>
         </div>
-        
     </div>
-</div>
 
-<div id="invoice-modal" class="modal-overlay hidden" style="z-index: 500;">
-    <div class="modal-box max-w-sm">
-        <div class="text-center mb-6">
-            <div class="w-16 h-16 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="fa-solid fa-file-invoice-dollar text-2xl"></i>
+    <div id="error-modal" class="modal-overlay hidden" style="z-index: 1000;">
+        <div class="modal-box max-w-[320px] p-6 text-center shadow-2xl border border-red-500/20">
+            <div class="w-12 h-12 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-triangle-exclamation text-xl"></i>
             </div>
-            <h3 class="font-black text-xl">XÁC NHẬN HÓA ĐƠN</h3>
-            <p class="text-[10px] text-gray-400 uppercase tracking-widest mt-1">Vui lòng kiểm tra kỹ thông tin</p>
+            <h3 class="font-black text-lg mb-2 uppercase text-gray-800">Thông báo</h3>
+            <p id="error-message" class="text-gray-500 text-xs leading-relaxed mb-6">
+                Nội dung thông báo sẽ hiện ở đây...
+            </p>
+            <button onclick="closeErrorModal()"
+                class="w-full py-3 bg-black text-white rounded-xl font-bold uppercase text-[10px] tracking-widest hover:bg-gray-800 transition-all">
+                Đã hiểu
+            </button>
         </div>
-
-        <div class="space-y-3 border-t border-b py-4 border-dashed text-sm">
-            <div class="bg-gray-50 p-3 rounded-lg mb-2 space-y-1">
-                <div class="flex justify-between text-[11px]"><span class="text-gray-500">Người mua:</span><span id="inv-user-name" class="font-bold text-black uppercase">---</span></div>
-                <div class="flex justify-between text-[11px]"><span class="text-gray-500">Email:</span><span id="inv-user-email" class="font-medium text-black">---</span></div>
-                <div class="flex justify-between text-[11px]"><span class="text-gray-500">SĐT:</span><span id="inv-user-phone" class="font-medium text-black">---</span></div>
-            </div>
-
-            <div class="flex justify-between"><span>Sự kiện:</span><span id="inv-event-name" class="font-bold text-right ml-4">BTS WORLD TOUR</span></div>
-            <div class="flex justify-between"><span>Vị trí:</span><span id="inv-seats" class="font-bold text-green-600 uppercase">VIP (GA)</span></div>
-            <div class="flex justify-between"><span>Số vé:</span><span id="inv-qty" class="font-bold text-lg">x1</span></div>
-            <div class="flex justify-between pt-2 border-t border-gray-100">
-                <span class="font-bold">Tổng tiền:</span>
-                <span id="inv-total" class="font-black text-xl text-red-600">0 đ</span>
-            </div>
-            
-            <div class="flex justify-between text-[10px] pt-2 text-gray-400 italic">
-                <span>Thời gian đặt:</span>
-                <span id="inv-order-time">--:-- --/--/----</span>
-            </div>
-        </div>
-
-        <button onclick="finishPayment()" class="w-full mt-6 py-4 bg-green-500 text-white rounded-xl font-black uppercase text-xs shadow-lg shadow-green-500/20 hover:scale-[1.02] transition-transform">
-            XÁC NHẬN THANH TOÁN
-        </button>
-        
-        <button onclick="backToStep1()" class="w-full mt-2 py-3 text-gray-400 font-bold uppercase text-[10px] hover:text-red-500 transition-all">
-            HỦY THANH TOÁN
-        </button>
     </div>
-</div>
 
-<div id="error-modal" class="modal-overlay hidden" style="z-index: 1000;">
-    <div class="modal-box max-w-[320px] p-6 text-center shadow-2xl border border-red-500/20">
-        <div class="w-12 h-12 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
-            <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+    <div id="success-modal" class="modal-overlay hidden" style="z-index: 2000;">
+        <div class="modal-box max-w-[340px] p-8 text-center shadow-2xl border border-green-500/20">
+            <div class="w-16 h-16 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                <i class="fa-solid fa-circle-check text-3xl"></i>
+            </div>
+            <h3 class="font-black text-xl mb-3 uppercase text-gray-800">Đặt vé thành công!</h3>
+            <p class="text-gray-500 text-xs leading-relaxed mb-8">
+                Hệ thống đã xác nhận đơn hàng của bạn.<br>
+                Vui lòng kiểm tra <b>Gmail</b> và mục <b>Vé của tôi</b> để nhận vé QR nhé. <br><br>
+            </p>
+            <button onclick="redirectToDashboard()"
+                class="w-full py-4 bg-green-500 text-white rounded-xl font-bold uppercase text-[11px] tracking-widest hover:bg-green-600 transition-all shadow-lg shadow-green-500/20">
+                Xem vé ngay
+            </button>
         </div>
-        <h3 class="font-black text-lg mb-2 uppercase text-gray-800">Thông báo</h3>
-        <p id="error-message" class="text-gray-500 text-xs leading-relaxed mb-6">
-            Nội dung thông báo sẽ hiện ở đây...
-        </p>
-        <button onclick="closeErrorModal()" class="w-full py-3 bg-black text-white rounded-xl font-bold uppercase text-[10px] tracking-widest hover:bg-gray-800 transition-all">
-            Đã hiểu
-        </button>
     </div>
-</div>
-
-<div id="success-modal" class="modal-overlay hidden" style="z-index: 2000;">
-    <div class="modal-box max-w-[340px] p-8 text-center shadow-2xl border border-green-500/20">
-        <div class="w-16 h-16 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
-            <i class="fa-solid fa-circle-check text-3xl"></i>
-        </div>
-        <h3 class="font-black text-xl mb-3 uppercase text-gray-800">Đặt vé thành công!</h3>
-        <p class="text-gray-500 text-xs leading-relaxed mb-8">
-            Hệ thống đã xác nhận đơn hàng của bạn.<br>
-            Vui lòng kiểm tra <b>Gmail</b> và mục <b>Vé của tôi</b> để nhận vé QR nhé. <br><br>
-
-        </p>
-        <button onclick="redirectToDashboard()" class="w-full py-4 bg-green-500 text-white rounded-xl font-bold uppercase text-[11px] tracking-widest hover:bg-green-600 transition-all shadow-lg shadow-green-500/20">
-            Xem vé ngay
-        </button>
-    </div>
-</div>
 
     <script src="booking.js"></script>
 </body>
+
 </html>

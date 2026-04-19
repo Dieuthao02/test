@@ -6,6 +6,7 @@ let currentMethod = 'ElysiumPay';
 let globalTimeLeft = 15 * 60; 
 let globalTimerInterval = null; 
 let currentOrderCode = ""; 
+
 const MAP_TEMPLATES = {
     26: {
         eventName: "BTS WORLD TOUR ARIRANG",
@@ -966,7 +967,7 @@ function finishPayment() {
     }
 }
 
-// --- HÀM THÔNG BÁO LỖI (Dùng cho error-modal trong HTML) ---
+// --- HÀM THÔNG BÁO LỖI  ---
 function showError(msg) {
     const modal = document.getElementById('error-modal');
     const message = document.getElementById('error-message');
@@ -1206,18 +1207,21 @@ function confirmCancelOrder() {
 
 // --- THANH TOÁN ---
 function selectPay(element) {
+    // Xóa active cũ
     document.querySelectorAll('.pay-method').forEach(el => {
         el.classList.remove('active');
         const check = el.querySelector('.fa-circle-check');
         if (check) check.remove();
     });
 
+    // Thêm active mới
     element.classList.add('active');
     const checkIcon = document.createElement('i');
     checkIcon.className = 'fa-solid fa-circle-check ml-auto text-green-500';
     element.appendChild(checkIcon);
 
-    currentMethod = element.querySelector('span').innerText.trim();
+    currentMethod = element.getAttribute('data-method') || element.querySelector('span').innerText.trim();
+    console.log("Phương thức đã chọn:", currentMethod);
 }
 
 function handleFinalCheckout() {
@@ -1225,6 +1229,8 @@ function handleFinalCheckout() {
 
     closeModals();
     const method = currentMethod.toUpperCase();
+
+    console.log("Đang xử lý thanh toán cho:", method);
 
     if (method.includes("ELYSIUMPAY")) {
         showInvoice();
@@ -1237,6 +1243,7 @@ function handleFinalCheckout() {
         }
     } 
     else {
+        // Nếu là ZALOPAY hoặc VIETQR (hoặc bất kỳ cái gì khác)
         setupQRModal(currentMethod);
     }
 }
