@@ -1,19 +1,23 @@
-// Khởi tạo hoặc lấy số liệu cũ từ localStorage
+const BASE_TICKETS = 15402;
+const BASE_REVENUE = 2840000000;
+const BASE_USERS = 8920;
+const MAX_VISIBLE_DUMMY_ORDERS = 50;
+
 let totalTickets = parseInt(localStorage.getItem('total_tickets'));
 let totalRevenue = parseFloat(localStorage.getItem('total_revenue'));
 let totalUsers = parseInt(localStorage.getItem('total_users'));
+const processedOrderIdsKey = 'admin_processed_order_ids';
 
 
-// fallback chuẩn
-if (isNaN(totalTickets)) totalTickets = 15402;
-if (isNaN(totalRevenue)) totalRevenue = 2840000000; 
-if (isNaN(totalUsers)) totalUsers = 8920;
+if (isNaN(totalTickets) || totalTickets < BASE_TICKETS) totalTickets = BASE_TICKETS;
+if (isNaN(totalRevenue) || totalRevenue < BASE_REVENUE) totalRevenue = BASE_REVENUE; 
+if (isNaN(totalUsers) || totalUsers < BASE_USERS) totalUsers = BASE_USERS;
 
 function getDashboardStats() {
     return JSON.parse(localStorage.getItem('admin_stats')) || {
-        tickets: 15402,
-        revenue: 2840000000,
-        users: 8920
+        tickets: BASE_TICKETS,
+        revenue: BASE_REVENUE,
+        users: BASE_USERS
     };
 }
 
@@ -21,7 +25,69 @@ function saveDashboardStats(stats) {
     localStorage.setItem('admin_stats', JSON.stringify(stats));
 }
 
+function getOrderSortTime(order = {}, isReal = false) {
+    if (Number.isFinite(order.createdAt)) return order.createdAt;
+
+    const rawTime = String(order.time || '').trim();
+    const rawDate = String(order.date || '').trim();
+
+    if (!isReal && rawDate && rawTime) {
+        const isoDate = rawDate.split('/').reverse().join('-');
+        const parsedDummy = new Date(`${isoDate} ${rawTime}`).getTime();
+        if (Number.isFinite(parsedDummy)) return parsedDummy;
+    }
+
+    const timeParts = rawTime.split(' ').filter(Boolean);
+    const hms = timeParts[0] || "00:00:00";
+    const dmy = rawDate || timeParts[1] || "14/04/2026";
+    const isoDate = dmy.split('/').reverse().join('-');
+    const parsed = new Date(`${isoDate} ${hms}`).getTime();
+
+    return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function getMergedOrdersForAdmin() {
+    const real = JSON.parse(localStorage.getItem('eventOrders')) || [];
+    const dummy = JSON.parse(localStorage.getItem('admin_orders')) || [];
+
+    const realOrders = real
+        .filter(order => !order._isRefund)
+        .map(order => {
+            const rawTime = String(order.time || '').trim();
+            const timeParts = rawTime.split(' ').filter(Boolean);
+            const hms = timeParts[0] || "00:00:00";
+            const dmy = String(order.date || timeParts[1] || "14/04/2026").trim();
+
+            return {
+                ...order,
+                id: order.id,
+                name: order.customer,
+                event: order.event,
+                price: Number(String(order.total).replace(/\D/g, '')) || 0,
+                time: hms,
+                date: dmy,
+                _isReal: true,
+                sortTime: getOrderSortTime(order, true)
+            };
+        });
+
+    const dummyOrders = dummy
+        .map(order => ({
+            ...order,
+            _isReal: false,
+            sortTime: getOrderSortTime(order, false)
+        }))
+        .sort((a, b) => b.sortTime - a.sortTime)
+        .slice(0, MAX_VISIBLE_DUMMY_ORDERS);
+
+    return [...realOrders, ...dummyOrders].sort((a, b) => b.sortTime - a.sortTime);
+}
+
 function syncDashboard() {
+    if (!Number.isFinite(totalTickets) || totalTickets < BASE_TICKETS) totalTickets = BASE_TICKETS;
+    if (!Number.isFinite(totalRevenue) || totalRevenue < BASE_REVENUE) totalRevenue = BASE_REVENUE;
+    if (!Number.isFinite(totalUsers) || totalUsers < BASE_USERS) totalUsers = BASE_USERS;
+
     const tEl = document.getElementById('stat-tickets');
     const rEl = document.getElementById('stat-revenue');
     const uEl = document.getElementById('stat-users'); 
@@ -34,24 +100,85 @@ function syncDashboard() {
     localStorage.setItem('total_tickets', totalTickets);
     localStorage.setItem('total_revenue', totalRevenue);
     localStorage.setItem('total_users', totalUsers);
+    localStorage.setItem('dashboard_stats', JSON.stringify({
+        tickets: totalTickets.toLocaleString('vi-VN'),
+        revenue: (totalRevenue / 1_000_000_000).toFixed(3) + " tỷ",
+        users: totalUsers.toLocaleString('vi-VN')
+    }));
 }
 
 function loadDashboardStats() {
     const data = JSON.parse(localStorage.getItem('dashboard_stats'));
-    if (!data) return;
+    if (data?.tickets || data?.revenue || data?.users) {
+        const parsedTickets = parseInt(String(data.tickets).replace(/\D/g, ''));
+        const parsedUsers = parseInt(String(data.users).replace(/\D/g, ''));
+        const revenueText = String(data.revenue);
+        const parsedRevenue = revenueText.includes('T')
+            ? (parseFloat(revenueText.replace(/[^0-9.]/g, '')) || 0) * 1_000_000_000
+            : revenueText.includes('tỷ')
+                ? (parseFloat(revenueText.replace(/[^0-9.]/g, '')) || 0) * 1_000_000_000
+                : parseInt(revenueText.replace(/\D/g, ''));
 
-    if (document.getElementById('stat-tickets')) {
-        document.getElementById('stat-tickets').innerText = data.tickets;
+        if (!isNaN(parsedTickets) && parsedTickets > 0) totalTickets = Math.max(BASE_TICKETS, parsedTickets);
+        if (!isNaN(parsedRevenue) && parsedRevenue > 0) totalRevenue = Math.max(BASE_REVENUE, parsedRevenue);
+        if (!isNaN(parsedUsers) && parsedUsers > 0) totalUsers = Math.max(BASE_USERS, parsedUsers);
     }
-    if (document.getElementById('stat-revenue')) {
-        document.getElementById('stat-revenue').innerText = data.revenue;
-    }
-    if (document.getElementById('stat-users')) {
-        document.getElementById('stat-users').innerText = data.users;
-    }
+    syncDashboard();
 }
 
 document.addEventListener('DOMContentLoaded', loadDashboardStats);
+
+function getProcessedOrderIds() {
+    try {
+        return JSON.parse(localStorage.getItem(processedOrderIdsKey)) || [];
+    } catch {
+        return [];
+    }
+}
+
+function saveProcessedOrderIds(ids) {
+    localStorage.setItem(processedOrderIdsKey, JSON.stringify(ids));
+}
+
+function parseOrderAmount(order) {
+    return Number(String(order?.total ?? order?.price ?? 0).replace(/\D/g, '')) || 0;
+}
+
+function parseOrderQuantity(order) {
+    return Number(order?.quantity) || 1;
+}
+
+function seedProcessedOrdersFromCurrentData() {
+    if (localStorage.getItem(processedOrderIdsKey)) return;
+
+    const existingOrders = (JSON.parse(localStorage.getItem('eventOrders')) || [])
+        .filter(order => !order._isRefund)
+        .map(order => String(order.id))
+        .filter(Boolean);
+
+    saveProcessedOrderIds(existingOrders);
+}
+
+function reconcileDashboardFromOrders() {
+    const orders = (JSON.parse(localStorage.getItem('eventOrders')) || []).filter(order => !order._isRefund);
+    const seenIds = new Set(getProcessedOrderIds());
+    let changed = false;
+
+    orders.forEach(order => {
+        const orderId = String(order.id || '');
+        if (!orderId || seenIds.has(orderId)) return;
+
+        totalTickets += parseOrderQuantity(order);
+        totalRevenue += parseOrderAmount(order);
+        seenIds.add(orderId);
+        changed = true;
+    });
+
+    if (!changed) return;
+
+    saveProcessedOrderIds([...seenIds]);
+    syncDashboard();
+}
 
 
 function getAdminLogs() {
@@ -77,7 +204,6 @@ function logAdminAction(type, message, extra = {}) {
         time: new Date().toLocaleString()
     });
 
-    // giới hạn tránh nặng
     if (logs.length > 200) logs.pop();
 
     saveAdminLogs(logs);
@@ -86,99 +212,94 @@ function logAdminAction(type, message, extra = {}) {
 function loadAllAdminData() {
     try {
         const grid = document.getElementById('event-grid');
-        if (grid) grid.innerHTML = '';
-
-        // ===== USERS =====
-        let users = JSON.parse(localStorage.getItem('admin_dummy_users')) || [];
-        if (typeof addUserCardToGrid === "function") {
-            users.forEach(u => addUserCardToGrid(u, false));
+        const userGrid = document.getElementById('user-grid');
+        
+        // ===== 1. USERS SECTION =====
+        if (userGrid && typeof seedUsers === "function") {
+            seedUsers();
         }
 
-       // ===== EVENTS =====
-let realEvents = JSON.parse(localStorage.getItem('ticket_events')) || [];
-let dummyEvents = JSON.parse(localStorage.getItem('admin_dummy_events')) || [];
+        // ===== 2. EVENTS  =====
+        let realEvents = JSON.parse(localStorage.getItem('ticket_events')) || [];
+        let dummyEvents = JSON.parse(localStorage.getItem('admin_dummy_events')) || [];
 
-const markedReal = realEvents.map(ev => ({ 
-    ...ev, 
-    _isReal: true, 
-    _sortKey: ev.createdAt || parseInt(String(ev.id).replace(/\D/g, '')) || Date.now() 
-}));
+        const markedReal = realEvents.map(ev => ({ 
+            ...ev, 
+            _isReal: true, 
+            _sortKey: ev.createdAt || parseInt(String(ev.id).replace(/\D/g, '')) || Date.now() 
+        }));
 
-const markedDummy = dummyEvents.map(ev => ({ 
-    ...ev, 
-    _isReal: false, 
-    _sortKey: ev.createdAt || parseInt(String(ev.id).replace(/\D/g, '')) || 0 
-}));
+        const markedDummy = dummyEvents.map(ev => ({ 
+            ...ev, 
+            _isReal: false, 
+            _sortKey: ev.createdAt || parseInt(String(ev.id).replace(/\D/g, '')) || 0 
+        }));
 
-let allEvents = [...markedReal, ...markedDummy];
+        let allEvents = [...markedReal, ...markedDummy];
 
-// SẮP XẾP
-allEvents.sort((a, b) => {
-    if (a._isReal !== b._isReal) return a._isReal ? -1 : 1;
-    return b._sortKey - a._sortKey; 
-});
+        // Sắp xếp chung theo thời gian tạo để event thật và ảo trộn lẫn
+        allEvents.sort((a, b) => b._sortKey - a._sortKey);
 
+        if (grid) {
+            grid.innerHTML = '';
+            if (typeof addEventCardToGrid === "function") {
+                allEvents.forEach(ev => addEventCardToGrid(ev, ev._isReal));
+            }
+        }
 
-if (grid) {
-    grid.innerHTML = ''; 
-    if (typeof addEventCardToGrid === "function") {
-        allEvents.forEach(ev => addEventCardToGrid(ev, ev._isReal));
-    }
-}
-
-if (grid) {
-    grid.innerHTML = ''; 
-    if (typeof addEventCardToGrid === "function") {
-        allEvents.forEach(ev => addEventCardToGrid(ev, ev._isReal));
-    }
-}
- 
-        // ===== ORDERS =====
-           const body = document.getElementById('live-order-body');
-           if (body) {
+        // ===== 3. ORDERS =====
+        const body = document.getElementById('live-order-body');
+        if (body) {
             body.innerHTML = ''; 
-    let real = JSON.parse(localStorage.getItem('eventOrders')) || [];
-    let dummy = JSON.parse(localStorage.getItem('admin_orders')) || [];
+            let real = JSON.parse(localStorage.getItem('eventOrders')) || [];
+            let dummy = JSON.parse(localStorage.getItem('admin_orders')) || [];
 
-    let allOrders = [
-        ...dummy.map(o => ({
-            ...o, 
-            _isReal: false,
-            sortTime: o.createdAt || new Date(`${o.date.split('/').reverse().join('-')} ${o.time}`).getTime()
-        })),
-        ...real.filter(o => !o._isRefund).map(o => {
-            const timeParts = o.time ? o.time.split(' ') : ["00:00:00", "14/04/2026"];
-            const hms = timeParts[0]; 
-            const dmy = timeParts[1] || "14/04/2026";
-            const isoDate = dmy.split('/').reverse().join('-');
-            const finalSortTime = o.createdAt || new Date(`${isoDate} ${hms}`).getTime();
+            let allOrders = [
+                // Map dữ liệu
+                ...dummy.map(o => ({
+                    ...o, 
+                    _isReal: false,
+                    sortTime: o.createdAt || new Date(`${o.date.split('/').reverse().join('-')} ${o.time}`).getTime()
+                })),
+                // Map dữ liệu 
+                ...real.filter(o => !o._isRefund).map(o => {
+                    const timeParts = o.time ? o.time.split(' ') : ["00:00:00", "14/04/2026"];
+                    const hms = timeParts[0]; 
+                    const dmy = timeParts[1] || "14/04/2026";
+                    const isoDate = dmy.split('/').reverse().join('-');
+                    const finalSortTime = o.createdAt || new Date(`${isoDate} ${hms}`).getTime();
 
-            return {
-                ...o,
-                id: o.id,
-                name: o.customer, 
-                event: o.event, 
-                price: Number(String(o.total).replace(/\D/g, '')), 
-                time: hms,
-                date: dmy,
-                _isReal: true,
-                sortTime: finalSortTime 
-            };
-        })
-    ];
+                    return {
+                        ...o,
+                        id: o.id,
+                        name: o.customer, 
+                        event: o.event, 
+                        price: Number(String(o.total).replace(/\D/g, '')), 
+                        time: hms,
+                        date: dmy,
+                        _isReal: true,
+                        sortTime: finalSortTime 
+                    };
+                })
+            ];
 
-    allOrders.sort((a, b) => b.sortTime - a.sortTime);
-    allOrders.forEach(o => renderOrderRow(o));
-}
-    
-        // ===== SUPPORT =====
+            // Sắp xếp 
+            allOrders.sort((a, b) => b.sortTime - a.sortTime);
+            allOrders.forEach(o => renderOrderRow(o));
+            body.innerHTML = '';
+            getMergedOrdersForAdmin().forEach(o => renderOrderRow(o));
+        }
+
+        // ===== 4. SUPPORT  =====
         let supports = JSON.parse(localStorage.getItem('admin_support')) || [];
-        if (window.allSupportData) {
+        if (window.allSupportData !== undefined) {
             window.allSupportData = supports;
             if (typeof renderSupportList === "function") {
                 renderSupportList(supports);
             }
         }
+
+        reconcileDashboardFromOrders();
 
     } catch (err) {
         console.error("Load data lỗi:", err);
@@ -194,6 +315,7 @@ const replyTemplates = {
     "cancel": "Chào {name}, về yêu cầu hủy vé, bạn vui lòng gửi kèm ảnh chụp hóa đơn để chúng tôi tiến hành hoàn tiền theo quy định.",
     "default": "Chào {name}, AI đã nhận được yêu cầu của bạn và đang chuyển cho bộ phận hỗ trợ. Chúng tôi sẽ phản hồi bạn sớm nhất! "
 };
+
 const names = ["Minh Quân", "Huyền My", "Quốc Anh", "Thu Trang", "Hoàng Long", "Bảo Ngọc", "Thành Nam", "Ánh Tuyết", "Diệu Nhi", "Gia Bách"];
 const eventNames = ["Những Thành Phố Mơ Màng", "Lululola Show", "Fintech GenZ 2026", "WorkShop Nến thơm", "Đà Lạt Mộng Mơ", "Tech Expo VNU", "Music Festival 2026"];
 const locations = ["Hà Nội", "TP. Hồ Chí Minh", "Đà Nẵng", "Cần Thơ", "Hải Phòng"];
@@ -250,30 +372,32 @@ function showTab(tabId, el) {
         document.getElementById('tab-title').innerText = titles[tabId] || 'Hệ thống';
     }
 
-    // 4. Chạy hàm Hỗ trợ nếu là tab support
     if (tabId === 'support') {
         if (typeof seedSupportTickets === 'function') {
             seedSupportTickets();
         }
     }
+
     if (tabId === 'activity') {
     if (typeof initLiveFeed === 'function') {
         initLiveFeed();
+        }
     }
-}
-if (tabId === 'deposits') {
+
+    if (tabId === 'deposits') {
         console.log("Đang mở tab Nạp tiền - Tiến hành load dữ liệu...");
         loadDeposits(); 
     }
+
     if (tabId === 'refund') {
         console.log("Đang mở tab Hoàn tiền...");
         if (typeof loadRefundData === 'function') {
             loadRefundData(); 
         }
-        }
+    }
 }
 
-/* --- QUẢN LÝ KHÁCH HÀNG (Gộp 2 trong 1) --- */
+/* --- QUẢN LÝ KHÁCH HÀNG --- */
 function seedUsers() {
     const userContainer = document.getElementById('users');
     if (!userContainer) return;
@@ -301,11 +425,22 @@ function seedUsers() {
     }
 
     // LẤY DỮ LIỆU
-    const realUsers = JSON.parse(localStorage.getItem('ticket_users')) || [];
-    realUsers.forEach(u => {
-        u.isReal = true;
-        u.name = u.fullName || u.name; 
-    });
+    const getUserSortKey = (u, idx, arrLength) => {
+        const createdAt = Number(u.createdAt);
+        if (Number.isFinite(createdAt) && createdAt > 0) return createdAt;
+
+        const parsedTime = new Date(u.time || '').getTime();
+        if (Number.isFinite(parsedTime) && parsedTime > 0) return parsedTime;
+
+        return arrLength - idx;
+    };
+
+    const realUsers = (JSON.parse(localStorage.getItem('ticket_users')) || []).map((u, idx, arr) => ({
+        ...u,
+        isReal: true,
+        name: u.fullName || u.name,
+        _sortKey: getUserSortKey(u, idx, arr.length)
+    }));
 
     let dummyUsers = JSON.parse(localStorage.getItem('admin_dummy_users'));
     if (!dummyUsers) {
@@ -321,15 +456,19 @@ function seedUsers() {
         localStorage.setItem('admin_dummy_users', JSON.stringify(dummyUsers));
     }
 
-    const allUsers = [...dummyUsers, ...realUsers];
+    const normalizedDummyUsers = dummyUsers.map((u, idx, arr) => ({
+        ...u,
+        _sortKey: getUserSortKey(u, idx, arr.length)
+    }));
 
-    // CHỈ ĐỔ DỮ LIỆU VÀO GRID
+    const allUsers = [...realUsers, ...normalizedDummyUsers].sort((a, b) => b._sortKey - a._sortKey);
+
     const grid = document.getElementById('user-grid');
     if (grid) {
         grid.innerHTML = "";
         allUsers.forEach(user => {
             if (typeof addUserCardToGrid === 'function') {
-                addUserCardToGrid(user, user.isReal);
+                addUserCardToGrid(user, user.isReal, false);
             }
         });
     }
@@ -353,7 +492,7 @@ function filterUsers() {
     });
 }
 
-function addUserCardToGrid(user, isReal) {
+function addUserCardToGrid(user, isReal, prepend = true) {
     const grid = document.getElementById('user-grid');
     if (!grid) return;
     const existingCard = document.getElementById(`user-card-${user.id}`);
@@ -385,10 +524,10 @@ function addUserCardToGrid(user, isReal) {
         </div>
     `;
     
-    grid.insertAdjacentHTML('afterbegin', html); 
+    grid.insertAdjacentHTML(prepend ? 'afterbegin' : 'beforeend', html); 
 }
 
-/*KHAI BÁO BIẾN TOÀN CỤC & KHỞI TẠO (SEED DATA) */
+/*KHAI BÁO BIẾN TOÀN CỤC & KHỞI TẠO  */
 function seedEvents() {
     const eventContainer = document.getElementById('events');
     if (!eventContainer) return;
@@ -421,17 +560,13 @@ function seedEvents() {
 function addEventCardToGrid(ev, isReal) {
     const grid = document.getElementById('event-grid');
     if (!grid) return;
-
-    // 1. Lấy trạng thái từ dữ liệu (quan trọng nhất)
     const status = ev.status || 'pending';
-    
-    // 2. Chuẩn bị biến để chứa HTML cho các nút bấm
+   
     let buttonsHTML = '';
     let statusText = 'ĐANG CHỜ DUYỆT';
     let statusClass = 'text-blue-500';
     let cardBorder = 'border-white/5';
 
-    // 3. Tùy biến nút dựa trên trạng thái đã lưu
     if (status === 'active') {
         statusText = 'ĐÃ PHÊ DUYỆT';
         statusClass = 'text-green-500';
@@ -458,18 +593,17 @@ function addEventCardToGrid(ev, isReal) {
     let tickets = [];
     if (typeof ev.tickets === 'string') {
     try { tickets = JSON.parse(ev.tickets); } catch(e) { tickets = []; }
-} else {
+    } else {
     tickets = ev.tickets || [];
-}
-if (tickets.length > 0) {
+    }
+    if (tickets.length > 0) {
     minPrice = Math.min(...tickets.map(t => Number(t.price) || 0));
-} else {
+    } else {
     minPrice = Number(ev.price) || 0;
-}
+    }
 
     const formattedPrice = minPrice.toLocaleString();
 
-    // 4. Vẽ card 
     const html = `
         <div id="event-card-${ev.id}" class="glass p-5 rounded-3xl group hover:border-blue-500/50 transition-all border ${cardBorder} relative">
             <div class="flex items-center gap-4 mb-4">
@@ -544,18 +678,16 @@ function approveEvent(eventId, btnElement) {
 
 /**
  * HÀM GỘP: CẬP NHẬT TRẠNG THÁI SỰ KIỆN VÀO LOCALSTORAGE
- * @param {string|number} eventId - ID của sự kiện cần sửa
- * @param {string} newStatus - Trạng thái mới ('active', 'pending', 'rejected')
- * @param {string} reason - Lý do (thường dùng khi từ chối)
+ * @param {string|number} eventId 
+ * @param {string} newStatus 
+ * @param {string} reason 
  */
 function updateEventStatus(eventId, newStatus, reason = "") {
-    // 1. Lấy dữ liệu hiện tại ra
+
     let realEvents = JSON.parse(localStorage.getItem('ticket_events')) || [];
     let dummyEvents = JSON.parse(localStorage.getItem('admin_dummy_events')) || [];
-
     let updated = false;
 
-    // 2. Hàm phụ để cập nhật trong mảng
     const updateInArray = (arr) => {
         return arr.map(ev => {
             if (String(ev.id) === String(eventId)) {
@@ -566,11 +698,9 @@ function updateEventStatus(eventId, newStatus, reason = "") {
         });
     };
 
-    // 3. Cập nhật cả 2 nguồn 
     const newReal = updateInArray(realEvents);
     const newDummy = updateInArray(dummyEvents);
 
-    // 4. LƯU NGƯỢC LẠI VÀO MÁY
     localStorage.setItem('ticket_events', JSON.stringify(newReal));
     localStorage.setItem('admin_dummy_events', JSON.stringify(newDummy));
 
@@ -598,12 +728,10 @@ function closeRejectModal() {
     
     if (modal) {
         modal.classList.add('hidden');
-        // Gỡ bỏ hiệu ứng phóng to
         const content = modal.querySelector('div');
         if (content) content.classList.remove('scale-100');
     }
     
-    // Reset ID đang được chọn về null
     currentRejectingId = null;
 }
 
@@ -613,11 +741,9 @@ function confirmReject(reason) {
     const card = document.getElementById(`event-card-${currentRejectingId}`);
     
     if (card) {
-        // 1. Hiệu ứng card
         card.style.opacity = '0.7';
         card.classList.add('border-red-500/30'); 
         
-        // 2. Cập nhật Badge trạng thái phía trên
         const badge = card.querySelector('.status-badge');
         if(badge) {
             badge.innerText = "● BỊ TỪ CHỐI";
@@ -625,7 +751,6 @@ function confirmReject(reason) {
             badge.classList.add('text-red-500');
         }
 
-        // 3. Cập nhật vùng Action Area
         const actionArea = card.querySelector('.action-area');
         if (actionArea) {
             const priceText = actionArea.querySelector('p')?.innerText || '0 đ';
@@ -645,26 +770,21 @@ function confirmReject(reason) {
             `;
         }
 
-        // 4. Lưu dữ liệu
         updateEventStatus(currentRejectingId, 'rejected', reason);
-        
         if (typeof addNotification === 'function') {
             addNotification("Hệ thống", `Đã từ chối sự kiện với lý do: ${reason}`);
         }
-        
         closeRejectModal();
     }
 }
 
-// --- 4. HÀM HOÀN TÁC (QUAY LẠI CHỜ DUYỆT) ---
+// --- 4. HÀM HOÀN TÁC  ---
 function undoReject(eventId) {
     const card = document.getElementById(`event-card-${eventId}`);
     if (card) {
-        // 1. Khôi phục giao diện card
         card.style.opacity = '1';
         card.classList.remove('grayscale', 'border-red-500/30');
-        
-        // 2. Cập nhật Badge 
+
         const badge = card.querySelector('.status-badge');
         if(badge) {
             badge.innerText = "● ĐANG CHỜ DUYỆT";
@@ -672,7 +792,6 @@ function undoReject(eventId) {
             badge.classList.add('text-blue-500');
         }
 
-        // 3. Vẽ lại nút 
         const actionArea = card.querySelector('.action-area');
         if (actionArea) {
             const priceText = actionArea.querySelector('p')?.innerText || '0 đ';
@@ -692,7 +811,6 @@ function undoReject(eventId) {
             `;
         }
 
-        // 4. Cập nhật dữ liệu 
         updateEventStatus(eventId, 'pending', '');
 
         if (typeof addNotification === 'function') {
@@ -700,7 +818,6 @@ function undoReject(eventId) {
         }
     }
 }
-
 
 /* ==========================================================================
    4. MODAL CHI TIẾT
@@ -779,10 +896,9 @@ function viewEventDetails(eventId) {
 
     document.getElementById('det-time-full').innerHTML = timeHTML;}
 
-
     const trailerContainer = document.getElementById('det-trailer-area');
 
-if (ev.trailer && ev.trailer.trim() !== "") {
+    if (ev.trailer && ev.trailer.trim() !== "") {
     trailerContainer.innerHTML = `
         <h3 class="text-[10px] text-red-500 font-black uppercase mb-3 tracking-widest flex items-center gap-2">
             <i class="fa-brands fa-youtube"></i> Link Trailer
@@ -795,46 +911,44 @@ if (ev.trailer && ev.trailer.trim() !== "") {
             </div>
             <i class="fa-solid fa-arrow-up-right-from-square text-red-500 group-hover:text-white text-xs"></i>
         </a>`;
-} else {
+    } else {
     trailerContainer.innerHTML = '';
-}
+    }
 
     // --- 3. HỒ SƠ PHÁP LÝ  ---
-const legalTypeElem = document.getElementById('det-legal-type');
-if (legalTypeElem) {
-    // Bản đồ dịch dữ liệu
+    const legalTypeElem = document.getElementById('det-legal-type');
+    if (legalTypeElem) {
     const orgMap = {
         'organization': 'Doanh nghiệp / Tổ chức',
         'individual': 'Cá nhân đại diện'
     };
     const rawValue = ev.orgType || ev.orgtype || 'organization';
     const finalName = orgMap[rawValue] || rawValue;
-
     legalTypeElem.innerText = finalName.toUpperCase();
-}
+    }
 
-const modeElem = document.getElementById('event-mode-input');
-if (modeElem) {
+    const modeElem = document.getElementById('event-mode-input');
+    if (modeElem) {
     const mVal = ev.mode || ev.eventMode || 'offline';
     const mNames = { 'online': 'SỰ KIỆN ONLINE', 'offline': 'SỰ KIỆN OFFLINE' };
     modeElem.innerText = mNames[mVal] || mVal.toUpperCase();
-}
+    }
 
-// Mã số thuế
-const taxElem = document.getElementById('tax-id-input');
-if (taxElem) {
+    // Mã số thuế
+    const taxElem = document.getElementById('tax-id-input');
+    if (taxElem) {
     taxElem.innerText = ev.taxid || ev.tax_id || ev['tax-id'] || ev.taxId || 'N/A';
-}
+    }
 
-// Số GP/CMND
-const legalElem = document.getElementById('legal-id-input');
-if (legalElem) {
+    // Số GP/CMND
+    const legalElem = document.getElementById('legal-id-input');
+    if (legalElem) {
     legalElem.innerText = ev.legalid || ev.legal_id || ev['legal-id'] || ev.legalId || 'N/A';
-}
+    }
 
-// Chính sách hoàn tiền
-const refundElem = document.getElementById('refund-policy');
-if (refundElem) {
+    // Chính sách hoàn tiền
+    const refundElem = document.getElementById('refund-policy');
+    if (refundElem) {
     const policyMap = {
         'none': 'Không hỗ trợ hoàn trả',
         'strict': 'Chặt chẽ (Hoàn trước 7 ngày, phí 30%)',
@@ -843,23 +957,22 @@ if (refundElem) {
     };
     const policyValue = ev.refundPolicy || ev.refund || "none";
     refundElem.innerText = policyMap[policyValue] || policyValue;
-}
+    }
 
-// Trách nhiệm bồi thường
-const compenElem = document.getElementById('det-compensation');
-if (compenElem) {
+    // Trách nhiệm bồi thường
+    const compenElem = document.getElementById('det-compensation');
+    if (compenElem) {
     const compenMap = {
         'refund_100': 'Hoàn tiền 100% nếu sự kiện bị hủy',
         'reschedule': 'Dời ngày và bảo lưu giá trị vé'
     };
     const compenValue = ev.compensation || "";
     compenElem.innerText = compenMap[compenValue] || compenValue || 'N/A';
-}
+    }
 
-// Tệp đính kèm
-const filesElem = document.getElementById('det-files-list');
-
-if (filesElem) {
+    // Tệp đính kèm
+    const filesElem = document.getElementById('det-files-list');
+    if (filesElem) {
     let filesArray = [];
     
     if (ev.filesData) filesArray = ev.filesData;
@@ -869,7 +982,6 @@ if (filesElem) {
 
     if (filesArray.length > 0) {
         let linksHTML = filesArray.map((file, index) => {
-            // Xác định icon
             const isPDF = (file.type && file.type.includes('pdf')) || file.name?.endsWith('.pdf');
             const icon = isPDF ? 'fa-file-pdf text-red-400' : 'fa-image text-green-400';
             const fileData = file.data || file.base64 || "#";
@@ -886,13 +998,13 @@ if (filesElem) {
         filesElem.innerHTML = `<div class="flex flex-wrap gap-2 mt-1">${linksHTML}</div>`;
     } else {
         filesElem.innerHTML = '<span class="text-gray-500 italic text-[10px]">Không có tệp đính kèm</span>';
+           }
     }
-}
 
-// Nội quy
-if (document.getElementById('det-rules')) {
+    // Nội quy
+    if (document.getElementById('det-rules')) {
     document.getElementById('det-rules').innerText = ev.rules || ev.event_rules || 'Chưa có nội quy cụ thể.';
-}
+    }
     
     // --- 3. BAN TỔ CHỨC  ---
   
@@ -955,7 +1067,6 @@ if (document.getElementById('det-rules')) {
         let tickets = (typeof ev.tickets === 'string') ? JSON.parse(ev.tickets) : (ev.tickets || []);
         
         tickets.forEach(t => {
-            // Layout đẩy sang 2 bên cực đẹp
             ticketContainer.innerHTML += `
                 <div class="flex justify-between items-center p-4 bg-white/5 rounded-2xl border border-white/10 mb-3 hover:bg-white/10 transition-all">
                     <div class="flex flex-col">
@@ -981,7 +1092,7 @@ if (document.getElementById('det-rules')) {
     const favContainer = document.getElementById('fav-btn-container');
     if (favContainer) favContainer.remove(); 
 
-    // --- 7. HIỆN MODAL (Sửa lỗi hiển thị) ---
+    // --- 7. HIỆN MODAL  ---
     const modal = document.getElementById('detail-modal');
     if (modal) {
         modal.classList.remove('hidden');
@@ -1357,11 +1468,11 @@ function startAutomation() {
                 // Giới hạn 50 đơn cho nhẹ máy
                 if (adminOrders.length > 50) adminOrders.pop();
                 localStorage.setItem('admin_orders', JSON.stringify(adminOrders));
-                syncRefundFromOrders();
             } catch (e) { console.error("Lưu đơn ảo lỗi:", e); }
             
             // 4. Vẽ ngay lên bảng hiển thị
             addLiveOrder(buyer, event, originalPrice, true, salesOrder);
+            updateDashboardStats(1, originalPrice, 0);
 
             // Ghi log hoạt động
             logAdminAction('ORDER', `Đơn hàng mới: ${buyer} mua vé ${event}`);
@@ -1376,7 +1487,8 @@ function startAutomation() {
                 name: buyer,
                 email: `${buyer.toLowerCase().replace(/\s/g, '')}${Math.floor(Math.random()*99)}@gmail.com`,
                 avatar: `https://i.pravatar.cc/150?u=${Math.random()}`,
-                spend: "0"
+                spend: "0",
+                createdAt: Date.now()
             };
 
             // Cập nhật Dashboard 
@@ -1388,7 +1500,7 @@ function startAutomation() {
              // ✅ LƯU USER
             try {
                 let users = JSON.parse(localStorage.getItem('admin_dummy_users')) || [];
-                users.push(dummyUser);
+                users.unshift(dummyUser);
                 localStorage.setItem('admin_dummy_users', JSON.stringify(users));
             } catch {}
 
@@ -1463,69 +1575,18 @@ else if (randomAction > 0.2) {
 }
 
 /* --- TIỆN ÍCH (NOTIF, SEARCH, STATS) --- */
-function addNotification(type, message, dataId = null) {
-    console.log(`[Hệ thống]: ${type} - ${message}`);
-}
-
 function updateDashboardStats(ticketIncr, revenueIncr, userIncr = 0) {
-    const tEl = document.getElementById('stat-tickets');
-    const rEl = document.getElementById('stat-revenue');
-    const uEl = document.getElementById('stat-users');
+    if (ticketIncr > 0) totalTickets += ticketIncr;
+    if (revenueIncr > 0) totalRevenue += revenueIncr;
+    if (userIncr > 0) totalUsers += userIncr;
 
-    // 1. Vé
-    if (tEl && ticketIncr > 0) {
-        let currentTickets = parseInt(tEl.innerText.replace(/[^0-9]/g, '')) || 0;
-        tEl.innerText = (currentTickets + ticketIncr).toLocaleString('vi-VN');
-    }
+    syncDashboard();
 
-    // 2. DOANH THU (FIX CHUẨN)
-    if (rEl && revenueIncr > 0) {
-        let text = rEl.innerText;
-        let currentRevenue = 0;
-
-        // 👉 Convert text về số thật
-        if (text.includes('T')) {
-            let billions = parseFloat(text.replace(/[^0-9.]/g, '')) || 0;
-            currentRevenue = billions * 1_000_000_000;
-        } else {
-            currentRevenue = parseInt(text.replace(/[^0-9]/g, '')) || 0;
-        }
-
-        // 👉 Convert increment về VND
-        let addedRevenue = revenueIncr < 1000 
-            ? revenueIncr * 1_000_000   
-            : revenueIncr;             
-
-        let total = currentRevenue + addedRevenue;
-
-        // 👉 Format lại
-        if (total >= 1_000_000_000) {
-            let billions = total / 1_000_000_000;
-            rEl.innerText = billions.toFixed(1).replace('.0','') + "T";
-        } else {
-            rEl.innerText = total.toLocaleString('vi-VN') + "đ";
-        }
-    }
-
-    // 3. Users
-    if (uEl && userIncr > 0) {
-        let currentUsers = parseInt(uEl.innerText.replace(/[^0-9]/g, '')) || 0;
-        uEl.innerText = (currentUsers + userIncr).toLocaleString('vi-VN');
-    }
-
-    // 4. Lưu lại (QUAN TRỌNG)
     localStorage.setItem('dashboard_stats', JSON.stringify({
-        tickets: tEl?.innerText || "0",
-        revenue: rEl?.innerText || "0",
-        users: uEl?.innerText || "0"
+        tickets: totalTickets.toLocaleString('vi-VN'),
+        revenue: (totalRevenue / 1_000_000_000).toFixed(3) + " tỷ",
+        users: totalUsers.toLocaleString('vi-VN')
     }));
-}
-
-function exportToCSV() {
-    addNotification("Hệ thống", "Đang xuất file CSV...");
-    setTimeout(() => {
-        alert("Tính năng xuất dữ liệu đang được xử lý.");
-    }, 1000);
 }
 
 // Quản lý trạng thái panel thông báo
@@ -1543,6 +1604,7 @@ function addNotification(title, message, type = 'EVENT') {
 }
 
 let currentRejectingId = null;
+let currentRefundData = null;
 
 //ai vừa đăng ký thật
 function checkRealRegistrations() {
@@ -1550,16 +1612,10 @@ function checkRealRegistrations() {
     
     if (newRegs.length > 0) {
         newRegs.forEach(reg => {
-            totalTickets += 1;
-            totalRevenue += parseFloat(reg.price || 0.5); 
-            
-            addLiveOrder(reg.fullName, reg.eventName, reg.price, true);
-            
             addNotification("Giao dịch thực", `${reg.fullName} vừa mua vé thành công!`);
         });
    
         localStorage.removeItem('new_registrations');
-        syncDashboard();
     }
 }
 
@@ -1759,39 +1815,41 @@ function initDummySupport() {
 /* --- 5. HÀM TÌM KIẾM HỖ TRỢ (SEARCH SUPPORT) --- */
 function setupSupportSearch() {
     const searchInput = document.querySelector('input[placeholder*="Tìm kiếm"]') || 
-                        document.querySelector('#support input') || 
                         document.querySelector('.support-search-input');
 
-    if (searchInput) {
-        console.log("Đã kết nối thanh Tìm kiếm thành công!"); 
-        
-        searchInput.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase().trim();
-    
-            const allCards = document.querySelectorAll('#support-list > div');
+    const listContainer = document.getElementById('support-list');
 
-            allCards.forEach(card => {
-                const cardText = card.innerText.toLowerCase();
-                
-                if (cardText.includes(searchTerm)) {
-                    card.style.display = 'block'; 
-                    card.style.animation = 'fadeIn 0.3s ease'; 
-                } else {
-                    card.style.display = 'none'; 
-                }
-            });
-
-            const found = Array.from(allCards).filter(c => c.style.display !== 'none').length;
-            console.log(`Tìm thấy: ${found} yêu cầu khớp với "${searchTerm}"`);
-        });
-    } else {
-        console.error("Không tìm thấy ô Input nào có placeholder 'Tìm kiếm'. Thảo kiểm tra lại HTML nhé!");
+    if (!searchInput) {
+        console.error("Lỗi: Không tìm thấy ô nhập tìm kiếm!");
+        return;
     }
+    if (!listContainer) {
+        console.error("Lỗi: Không tìm thấy vùng chứa danh sách (#support-list)!");
+        return;
+    }
+
+    console.log("Đã kết nối thanh Tìm kiếm thành công!"); 
+
+    searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase().trim();
+        const allCards = listContainer.children;
+
+        Array.from(allCards).forEach(card => {
+            const cardText = card.innerText.toLowerCase();
+            
+            if (cardText.includes(searchTerm)) {
+                card.style.display = ''; 
+                card.style.animation = 'fadeIn 0.3s ease'; 
+            } else {
+                card.style.display = 'none'; 
+            }
+        });
+    });
 }
+
 
 /* --- HỆ THỐNG ACTIVITY FEED THỜI GIAN THỰC --- */
 
-// 1. Cấu hình các loại thông báo
 const feedTypes = {
     USER: { icon: 'fa-user-plus', color: 'blue', label: 'Khách hàng mới' },
     TICKET: { icon: 'fa-ticket', color: 'green', label: 'Mua vé thành công' },
@@ -1821,7 +1879,6 @@ function syncRealActivity() {
     }
 }
 
-// 2. Hàm thêm một dòng thông báo vào Feed
 function pushToFeed(type, title, time, content, isReal = false) {
     const container = document.getElementById('live-feed-container');
     if (!container) return;
@@ -1863,7 +1920,6 @@ function pushToFeed(type, title, time, content, isReal = false) {
     container.insertAdjacentHTML('afterbegin', html);
 }
 
-// 3. Hàm lấy dữ liệu THỰC từ LocalStorage
 function syncRealDataToFeed() {
     const messages = JSON.parse(localStorage.getItem('contact_messages')) || [];
     const container = document.getElementById('live-feed-container');
@@ -1881,12 +1937,10 @@ function syncRealDataToFeed() {
     sessionStorage.setItem('last_feed_msg', msgId);
 }
 
-// 5. Khởi chạy
 function initLiveFeed() {
     const container = document.getElementById('live-feed-container');
     if (!container) return;
 
-    // Chỉ hiện tin nhắn chào mừng hệ thống khi mới mở
     if (container.children.length === 0) {
         const now = new Date();
         const timeStr = `${now.getHours()}:${now.getMinutes()} - ${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()}`;
@@ -1899,98 +1953,6 @@ function clearFeed() {
     document.getElementById('live-feed-container').innerHTML = '';
     pushToFeed('EVENT', 'Hệ thống', 'Vừa xong', 'Đã dọn dẹp dòng thời gian.');
 }
-
-function loadEventsAdmin() {
-    const container = document.getElementById('admin-events-list');
-    const allEvents = JSON.parse(localStorage.getItem('ticket_events')) || [];
-    
-    if (!container) return;
-    container.innerHTML = "";
-
-    allEvents.forEach(ev => {
-  
-        const isRejected = ev.status === 'rejected';
-        const isActive = ev.status === 'active';
-
-    
-        let actionHTML = "";
-        if (isRejected) {
-            actionHTML = `
-                <div class="flex items-center gap-3 animate-fade-in">
-                    <span class="text-[9px] font-black text-red-500 uppercase bg-red-500/10 px-3 py-1 rounded-lg border border-red-500/20">
-                        Lý do: ${ev.rejectReason || 'Vi phạm chính sách'}
-                    </span>
-                    <button onclick="undoReject('${ev.id}')" class="h-8 w-8 flex items-center justify-center rounded-full bg-white/5 text-blue-400 hover:bg-blue-400 hover:text-white transition-all shadow-lg" title="Hoàn tác">
-                        <i class="fa-solid fa-rotate-left text-[10px]"></i>
-                    </button>
-                </div>`;
-        } else if (isActive) {
-            actionHTML = `<span class="text-[10px] font-black text-green-500 uppercase bg-green-500/10 px-4 py-2 rounded-xl">● ĐÃ PHÊ DUYỆT</span>`;
-        } else {
-            actionHTML = `
-                <button onclick="approveEvent('${ev.id}', this)" class="px-6 py-2 bg-[#00d2ff] text-black text-[10px] font-black rounded-xl hover:scale-105 transition-all uppercase">Duyệt ngay</button>
-                <button onclick="openRejectModal('${ev.id}')" class="px-6 py-2 bg-red-500/10 text-red-500 text-[10px] font-black rounded-xl hover:bg-red-500 hover:text-white transition-all uppercase">Từ chối</button>`;
-        }
-      
-        const card = `
-            <div id="event-card-${ev.id}" class="bg-white/5 border border-white/10 rounded-3xl p-6 mb-6 animate-fade-in transition-all">
-                <div class="flex flex-col md:flex-row gap-6">
-                    <div class="w-full md:w-48 h-48 shrink-0">
-                        <img src="${ev.img || 'https://via.placeholder.com/200'}" class="w-full h-full object-cover rounded-2xl border border-white/10">
-                    </div>
-
-                    <div class="flex-1">
-                        <div class="flex justify-between items-start mb-2">
-                            <div>
-                                <span class="status-badge text-[10px] font-bold ${ev.status === 'active' ? 'text-green-500' : 'text-blue-500'} uppercase tracking-widest">
-                                    ${ev.status === 'active' ? '● Đã phê duyệt' : '● Đang chờ duyệt'}
-                                </span>
-                                <h4 class="text-xl font-black text-white mt-1 uppercase">${ev.title || ev.name}</h4>
-                            </div>
-                            <span class="text-[10px] text-gray-500 font-mono">ID: ${ev.id}</span>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 text-sm">
-                            <div class="space-y-2">
-                                <p class="text-gray-400"><i class="fa-solid fa-tag w-5"></i> Loại: <span class="text-white">${ev.type || 'N/A'}</span></p>
-                                <p class="text-gray-400"><i class="fa-solid fa-location-dot w-5"></i> Địa điểm: <span class="text-white">${ev.locname} (${ev.locdetail})</span></p>
-                                <p class="text-gray-400"><i class="fa-solid fa-calendar w-5"></i> Thời gian: <span class="text-white">${ev.start} - ${ev.end}</span></p>
-                            </div>
-                            <div class="space-y-2 border-l border-white/5 pl-4">
-                                <p class="text-gray-400"><i class="fa-solid fa-user-tie w-5"></i> BTC: <span class="text-white">${ev.btcname}</span></p>
-                                <p class="text-gray-400"><i class="fa-solid fa-envelope w-5"></i> Email: <span class="text-white">${ev.btcemail}</span></p>
-                                <p class="text-gray-400"><i class="fa-solid fa-phone w-5"></i> SĐT: <span class="text-white">${ev.btcphone}</span></p>
-                            </div>
-                        </div>
-
-                        <div class="mt-4 p-4 bg-black/20 rounded-xl">
-                            <p class="text-xs text-gray-500 uppercase font-bold mb-2">Mô tả sự kiện:</p>
-                            <p class="text-gray-300 text-sm line-clamp-3">${ev.desc || 'Không có mô tả'}</p>
-                            
-                            <p class="text-xs text-gray-500 uppercase font-bold mt-4 mb-2">Phân loại vé:</p>
-                            <div class="flex flex-wrap gap-2">
-                                ${ticketsHTML || '<span class="text-gray-600">Chưa tạo vé</span>'}
-                            </div>
-                        </div>
-
-                        <div class="action-area mt-6 flex justify-end gap-3 pt-4 border-t border-white/5">
-                            <button onclick="approveEvent('${ev.id}', this)" 
-                                class="px-6 py-2 bg-[#00d2ff] text-black text-[10px] font-black rounded-xl hover:scale-105 transition-all uppercase">
-                                Duyệt ngay
-                            </button>
-                            <button onclick="openRejectModal('${ev.id}')" 
-                                class="px-6 py-2 bg-red-500/10 text-red-500 text-[10px] font-black rounded-xl hover:bg-red-500 hover:text-white transition-all uppercase">
-                                Từ chối
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-        container.insertAdjacentHTML('beforeend', card);
-    });
-}
-
 
 window.onfocus = function() {
     if (document.getElementById('deposits') && !document.getElementById('deposits').classList.contains('hidden')) {
@@ -2005,7 +1967,11 @@ function loadDeposits() {
         console.error("Không tìm thấy ID 'admin-deposit-list' trong HTML!");
         return;
     }
-    const logs = JSON.parse(localStorage.getItem('admin_deposit_logs')) || [];
+    const rawLogs = JSON.parse(localStorage.getItem('admin_deposit_logs')) || [];
+    const logs = rawLogs.filter(log => Number(log?.amount) > 0);
+    if (logs.length !== rawLogs.length) {
+        localStorage.setItem('admin_deposit_logs', JSON.stringify(logs));
+    }
     
     if (logs.length === 0) {
         listContainer.innerHTML = `
@@ -2053,7 +2019,7 @@ function loadDeposits() {
 }
 
 
-/* --- HỆ THỐNG LẮNG NGHE DỮ LIỆU ĐA KÊNH (GỘP) --- */
+/* --- HỆ THỐNG LẮNG NGHE DỮ LIỆU ĐA KÊNH  --- */
 window.addEventListener('storage', (e) => {
     if (!e.newValue) return;
 
@@ -2062,14 +2028,18 @@ window.addEventListener('storage', (e) => {
 
         /*1. NẠP TIỀN / ĐĂNG KÝ  */
         if (e.key === 'new_registrations') {
-            let currentLogs = JSON.parse(localStorage.getItem('admin_deposit_logs')) || [];
-            const updatedLogs = [...data, ...currentLogs];
-
-            localStorage.setItem('admin_deposit_logs', JSON.stringify(updatedLogs));
+            const validDepositLogs = data.filter(item => Number(item?.amount) > 0);
+            if (validDepositLogs.length > 0) {
+                let currentLogs = JSON.parse(localStorage.getItem('admin_deposit_logs')) || [];
+                const updatedLogs = [...validDepositLogs, ...currentLogs];
+                localStorage.setItem('admin_deposit_logs', JSON.stringify(updatedLogs));
+            }
 
             loadDeposits?.();
 
-            addNotification("Hệ thống", `Có yêu cầu nạp tiền từ ${data[0]?.user || 'Khách'}!`, 'TICKET');
+            if (validDepositLogs.length > 0) {
+                addNotification("Hệ thống", `Có yêu cầu nạp tiền từ ${validDepositLogs[0]?.user || 'Khách'}!`, 'TICKET');
+            }
         }
 
         if (e.key === 'admin_deposit_logs') {
@@ -2085,9 +2055,13 @@ window.addEventListener('storage', (e) => {
         /* 2. ĐƠN HÀNG */
         if (e.key === 'eventOrders') {
     renderAdminTable?.();
+    reconcileDashboardFromOrders();
 
     const lastOrder = data[data.length - 1];
     if (lastOrder) {
+        if (!lastOrder._isRefund) {
+            updateDashboardStats(Number(lastOrder.quantity) || 1, Number(String(lastOrder.total || 0).replace(/\D/g, '')) || 0, 0);
+        }
         addActivity?.(
             'TICKET',
             lastOrder.customer || "Khách",
@@ -2107,12 +2081,19 @@ window.addEventListener('storage', (e) => {
             addNotification("Thành viên", `Chào mừng ${userName}!`, 'USER');
             addActivity?.('USER', userName, "Đã đăng ký tài khoản");
 
-            let stats = JSON.parse(localStorage.getItem('admin_stats')) || { users: 0, tickets: 0, revenue: 0 };
-            stats.users += 1;
-            localStorage.setItem('admin_stats', JSON.stringify(stats));
+            totalUsers += 1;
+            syncDashboard();
 
-            const userStat = document.getElementById('stat-users');
-            if (userStat) userStat.innerText = stats.users.toLocaleString('vi-VN');
+            if (typeof addUserCardToGrid === 'function') {
+                addUserCardToGrid({
+                    ...lastUser,
+                    name: userName,
+                    avatar: lastUser.avatar || `https://i.pravatar.cc/150?u=${lastUser.email || userName}`,
+                    spend: lastUser.spend || 0,
+                    createdAt: lastUser.createdAt || Date.now(),
+                    isReal: true
+                }, true, true);
+            }
         }
 
         /* 4. SUPPORT */
@@ -2130,12 +2111,10 @@ window.addEventListener('storage', (e) => {
                 priority: Math.random() > 0.5 ? "Cao" : "Trung bình"
             };
 
-            // ✅ LƯU CHUẨN
             let supports = JSON.parse(localStorage.getItem('admin_support')) || [];
             supports.unshift(newTicket);
             localStorage.setItem('admin_support', JSON.stringify(supports));
 
-            // ✅ UPDATE UI
             if (window.allSupportData) {
                 window.allSupportData.unshift(newTicket);
                 renderSupportList?.(window.allSupportData);
@@ -2169,7 +2148,7 @@ if (e.key === 'ticket_events') {
 });
 
 
-/* --- BIỂU ĐỒ (CHART.JS) --- */
+/* --- BIỂU ĐỒ --- */
 function initChart() {
     const canvas = document.getElementById('mainChart');
     if (!canvas) return;
@@ -2306,7 +2285,6 @@ function exportToExcel() {
     }
 }
 
-// Lắng nghe nội bộ
 window.addEventListener('storage_updated', () => {
     if (typeof loadDeposits === 'function') loadDeposits();
 });
@@ -2332,31 +2310,72 @@ function replayAdminLogs() {
     });
 }
 
-function syncRefundFromOrders() {
-    let allOrders = JSON.parse(localStorage.getItem('eventOrders')) || [];
-    let updated = false;
+function getPendingRefundOrders() {
+    const allOrders = JSON.parse(localStorage.getItem('eventOrders')) || [];
+    const refundHistory = JSON.parse(localStorage.getItem('admin_refunds')) || [];
+    const completedIds = new Set(refundHistory.map(item => String(item.orderId)));
 
+    return allOrders
+        .filter(order => order._isRefund && !completedIds.has(String(order.id)))
+        .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+}
 
-    const salesOrders = allOrders.filter(o => !o._isRefund);
-    const refundIds = new Set(allOrders.filter(o => o._isRefund).map(o => o.id));
+function renderPendingRefundList() {
+    const listEl = document.getElementById('pending-refund-list');
+    if (!listEl) return;
 
-    salesOrders.forEach(sale => {
-        if (!refundIds.has(sale.id)) {
-            const refundEntry = {
-                ...sale,
-                total: (Number(String(sale.total).replace(/\D/g, '')) * 0.9),
-                _isRefund: true,
-                requestDate: (sale.date || '') + ' ' + (sale.time || ''),
-                status: 'pending' 
-            };
-            allOrders.push(refundEntry);
-            updated = true;
-        }
-    });
+    const pendingOrders = getPendingRefundOrders();
 
-    if (updated) {
-        localStorage.setItem('eventOrders', JSON.stringify(allOrders));
+    if (pendingOrders.length === 0) {
+        listEl.innerHTML = `
+            <div class="p-8 text-center text-gray-500 text-[10px] font-bold uppercase tracking-widest">
+                Không có yêu cầu chờ duyệt
+            </div>
+        `;
+        return;
     }
+
+    listEl.innerHTML = pendingOrders.map(order => {
+        const customerName = order.customer || order.name || 'Khách hàng';
+        const amount = Number(String(order.total || 0).replace(/\D/g, '')) || 0;
+        const initials = customerName
+            .split(' ')
+            .filter(Boolean)
+            .slice(0, 2)
+            .map(part => part[0].toUpperCase())
+            .join('');
+
+        return `
+            <div class="p-4 rounded-3xl hover:bg-white/[0.02] transition-all flex items-center justify-between group">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500 font-bold text-xs">
+                        ${initials || 'RF'}
+                    </div>
+                    <div>
+                        <div class="text-white text-xs font-bold">${customerName}</div>
+                        <div class="text-[10px] text-gray-500">Đơn: #${order.id} | ${amount.toLocaleString()}đ</div>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="openRefundModal('${order.id}', '${customerName.replace(/'/g, "\\'")}', ${amount})" class="px-3 py-1.5 rounded-lg bg-green-500/20 text-green-500 text-[9px] font-black hover:bg-green-500 hover:text-white transition-all">
+                        XỬ LÝ
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function updatePendingRefundUI() {
+    const badge = document.getElementById('pending-count-badge');
+    const pendingOrders = getPendingRefundOrders();
+
+    if (badge) {
+        badge.innerText = pendingOrders.length.toString();
+        badge.classList.toggle('hidden', pendingOrders.length === 0);
+    }
+
+    renderPendingRefundList();
 }
 
 // 1. Hàm load danh sách hoàn tiền 
@@ -2401,88 +2420,10 @@ function loadRefundData() {
             </tr>
         `;
     }).join('');
+
+    updatePendingRefundUI();
 }
 
-function processRefund(orderId, customerName, amount) {
-
-    let adminBalance = parseInt(localStorage.getItem('admin_source_money')) || 1000000000;
-    if (adminBalance < amount) {
-        alert("Nguồn tiền hệ thống không đủ để thực hiện hoàn tiền!");
-        return;
-    }
-    const reason = prompt(`Lý do hoàn tiền cho đơn ${orderId} của khách ${customerName}:`, "Khách yêu cầu hủy vé");
-    if (reason === null) return; // Nếu bấm Cancel thì dừng
-
-    if (!confirm(`Xác nhận rút ${amount.toLocaleString()}đ từ kho để hoàn cho ${customerName}?`)) return;
-
-    try {
-        // --- BƯỚC A: TRỪ TIỀN KHO ADMIN ---
-        adminBalance -= amount;
-        localStorage.setItem('admin_source_money', adminBalance.toString());
-
-        // --- BƯỚC B: CỘNG TIỀN VÀO VÍ KHÁCH ---
-        let userBalances = JSON.parse(localStorage.getItem('user_balances')) || {};
-        userBalances[customerName] = (userBalances[customerName] || 0) + amount;
-        localStorage.setItem('user_balances', JSON.stringify(userBalances));
-
-        // --- BƯỚC C: LƯU LỊCH SỬ HOÀN TIỀN ---
-        let refundHistory = JSON.parse(localStorage.getItem('admin_refunds')) || [];
-        refundHistory.push({
-            orderId: orderId,
-            customer: customerName,
-            amount: amount,
-            reason: reason,
-            type: 'OUT',
-            date: new Date().toLocaleString('vi-VN')
-        });
-        localStorage.setItem('admin_refunds', JSON.stringify(refundHistory));
-
-        // --- BƯỚC D: TẠO LOG GIAO DỊCH  ---
-        let depositLogs = JSON.parse(localStorage.getItem('admin_deposit_logs')) || [];
-        depositLogs.unshift({
-            user: customerName,
-            amount: amount,
-            type: 'REFUND',
-            time: "Vừa xong",
-            status: 'Thành công'
-        });
-        localStorage.setItem('admin_deposit_logs', JSON.stringify(depositLogs));
-
-        // --- BƯỚC E: CẬP NHẬT GIAO DIỆN ---
-        const adminDisplay = document.getElementById('admin-balance-display');
-        if (adminDisplay) adminDisplay.innerText = adminBalance.toLocaleString();
-
-        if (typeof addNotification === 'function') {
-            addNotification("Thành công", `Đã trừ kho và hoàn ${amount.toLocaleString()}đ cho khách`, "SUCCESS");
-        }
-
-        loadRefundData();
-
-        if (typeof loadDeposits === 'function') loadDeposits();
-
-    } catch (e) {
-        console.error("Lỗi hệ thống hoàn tiền:", e);
-        alert("Có lỗi xảy ra khi xử lý dữ liệu!");
-    }
-}
-
-function updateUserBalanceDisplay() {
-    // 1. Lấy tên người dùng đang đăng nhập
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    if (!currentUser) return;
-
-    // 2. Tìm số dư
-    const allBalances = JSON.parse(localStorage.getItem('user_balances')) || {};
-    const userMoney = allBalances[currentUser.name] || 0;
-
-    // 3. Dán con số này lên giao diện trang User
-    const balanceEl = document.getElementById('user-wallet-balance');
-    if (balanceEl) {
-        balanceEl.innerText = userMoney.toLocaleString() + 'đ';
-    }
-}
-
-// 1. Mở bảng nhập tiền
 function rechargeAdminMoney() {
     const inputModal = document.getElementById('recharge-input-modal');
     if (inputModal) {
@@ -2618,6 +2559,7 @@ function executeRefund(reason) {
     // 4. Cập nhật giao diện
     closeRefundModal();
     loadRefundData(); 
+    updatePendingRefundUI();
     
     if (typeof addNotification === 'function') {
         addNotification("Thành công", `Đã hoàn ${amount.toLocaleString()}đ cho đơn ${orderId}`, "SUCCESS");
@@ -2630,8 +2572,7 @@ function openPendingRefundsModal() {
     modal.classList.remove('hidden');
     modal.classList.add('flex');
     
-    // Gọi hàm render danh sách khách hàng đang chờ
-    // renderPendingList(); 
+    renderPendingRefundList();
 }
 
 function closePendingRefundsModal() {
@@ -2653,6 +2594,9 @@ document.getElementById('refund-search')?.addEventListener('input', function(e) 
 
 /* --- 10. KHỞI CHẠY --- */
 document.addEventListener('DOMContentLoaded', () => {
+    seedProcessedOrdersFromCurrentData();
+    reconcileDashboardFromOrders();
+    updatePendingRefundUI();
     initChart();
     seedUsers();
     seedEvents();
@@ -2664,7 +2608,6 @@ document.addEventListener('DOMContentLoaded', () => {
     startAutomation();
     startStatusAutomation();
     setupSupportSearch();
-    updateUserBalanceDisplay();
 });
 
 

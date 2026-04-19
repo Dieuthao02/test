@@ -53,7 +53,7 @@
     let isAllPast = false;
     let minPrice = Infinity;
 
-    // --- 1. HÀM PARSE DATE CHUẨN ---
+    // --- 1. HÀM PARSE DATE---
     const parseDate = (dateStr) => {
     if (!dateStr) return new Date(0);
     try {
@@ -96,7 +96,7 @@
         isAllPast = maxTime < now.getTime();
     }
 
-    // --- 3. HIỂN THỊ THÔNG TIN CHUNG (Title, Banner, Loc) ---
+    // --- 3. HIỂN THỊ THÔNG TIN CHUNG ---
     document.getElementById('event-title').innerHTML = `${ev.eventName}<br><span class="text-pink-400 italic text-xl">${ev.category || ''}</span>`;
     const bannerImg = ev.eventImage || ev.mapImage;
     document.getElementById('event-banner').src = (bannerImg && bannerImg !== "No") ? bannerImg : "https://via.placeholder.com/800x400?text=No+Image";
@@ -143,7 +143,7 @@
         } else { timeHTML += `</div>`; }
         timeContainer.innerHTML = timeHTML + `</div>`;
     }
-// --- 5. RENDER VÉ (MỖI SUẤT DIỄN CÓ NÚT RIÊNG & ĐỒNG BỘ KHO) ---
+// --- 5. RENDER VÉ ---
 const ticketContainer = document.getElementById('ticket-list-container');
 
 const orders = JSON.parse(localStorage.getItem('eventOrders')) || [];
@@ -173,6 +173,12 @@ if (ev.priceList && timeArray.length > 0) {
 
                 let qVal = quantitiesRaw[index];
                 let totalQty = (qVal === undefined || qVal === "") ? 1000 : parseInt(qVal);
+
+                if (qVal && qVal.toLowerCase() === "sold out") {
+                totalQty = 0;
+                } else {
+                totalQty = (qVal === undefined || qVal === "") ? 1000 : parseInt(qVal);
+                }
                 
                 let remainingQty = totalQty - soldCount;
                 const isSoldOut = remainingQty <= 0;

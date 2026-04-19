@@ -4,16 +4,13 @@
 function switchPage(pageId) {
     const hero = document.querySelector('.hero');
     const container = document.querySelector('.container');
-    
-    // Chỉ chọn các trang chi tiết bài viết, KHÔNG chọn nhầm Section trang chủ
     const detailPages = document.querySelectorAll('[id^="post-detail-"], [id^="offer-"]');
 
     if (pageId === 'home') {
         // Hiện trang chủ
         if(hero) hero.style.display = 'block';
         if(container) container.style.display = 'block';
-        
-        // Ẩn tất cả trang chi tiết
+
         detailPages.forEach(page => {
             page.classList.add('hidden-page');
             page.style.display = 'none';

@@ -33,7 +33,7 @@ const MAP_TEMPLATES = {
     26: {
     eventName: "BTS WORLD TOUR ARIRANG",
     hasDiagram: true,
-    time: "19:00 - 08/05/2026",
+    time: "19:00 - 18/05/2026",
     location: "GILLETTE STADIUM, FOXBOROUGH, MA",
     currency: "COP",
     priceList: [
@@ -938,6 +938,7 @@ function finishPayment() {
             total: document.getElementById('pay-total') ? document.getElementById('pay-total').innerText : "0đ",
             time: now.toLocaleString('vi-VN'),
             status: "Thành công"
+            ,createdAt: now.getTime()
         };
 
         let orders = JSON.parse(localStorage.getItem('eventOrders')) || [];
@@ -1244,21 +1245,21 @@ function validateStep2() {
     const isAgreed = document.getElementById('c').checked;
 
     if (!fullName) {
-        showError("Bà ơi, nhập Họ và tên để tụi tui in lên vé nhé!");
+        showError("Nhập Họ và tên để tụi tui in lên vé nhé!");
         return false;
     }
     if (!phone || phone.length < 10) {
-        showError("Số điện thoại không hợp lệ nè, bà kiểm tra lại nha.");
+        showError("Số điện thoại không hợp lệ nè, kiểm tra lại nha.");
         return false;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-        showError("Email có vẻ sai sai, bà nhập lại chính xác để nhận vé điện tử nhé!");
+        showError("Email có vẻ sai sai, nhập lại chính xác để nhận vé điện tử nhé!");
         return false;
     }
     if (!isAgreed) {
-        showError("Bà cần tích chọn đồng ý với điều khoản tham gia để tiếp tục thanh toán.");
+        showError("Cần tích chọn đồng ý với điều khoản tham gia để tiếp tục thanh toán.");
         return false;
     }
 
@@ -1385,7 +1386,7 @@ function closeQRModal() { closeModals(); }
 function closeCancelModal() { closeModals(); }
 
 function startGlobalTimer() {
-    // Nếu có timer đang chạy thì xóa đi trước khi tạo mới
+
     if (globalTimerInterval) clearInterval(globalTimerInterval);
 
     globalTimerInterval = setInterval(() => {
@@ -1398,18 +1399,15 @@ function startGlobalTimer() {
 
         globalTimeLeft--;
 
-        // Cập nhật lên giao diện chính (nếu có)
         const mainTimer = document.getElementById('timer');
         if (mainTimer) mainTimer.innerText = formatTime(globalTimeLeft);
 
-        // Cập nhật lên Modal (nếu modal đang mở)
         const modalTimer = document.getElementById('qr-countdown');
         if (modalTimer) modalTimer.innerText = formatTime(globalTimeLeft);
 
     }, 1000);
 }
 
-// Hàm hỗ trợ định dạng mm : ss
 function formatTime(seconds) {
     let m = Math.floor(seconds / 60);
     let s = seconds % 60;

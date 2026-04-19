@@ -196,24 +196,10 @@ const redirectTarget = urlParams.get('redirect') || 'index.html';
                 email: email, 
                 phone: phone, 
                 isReal: true, 
-                time: new Date().toLocaleString('vi-VN') 
+                time: new Date().toLocaleString('vi-VN'),
+                createdAt: Date.now()
             });
             localStorage.setItem('ticket_users', JSON.stringify(listUsers));
-
-            const newLog = {
-                id: 'GD' + Math.floor(Math.random() * 10000),
-                user: name,
-                amount: 0,
-                content: "Đăng ký Elysium",
-                time: new Date().toLocaleString('vi-VN')
-            };
-            
-         const adminLogs = JSON.parse(localStorage.getItem('admin_deposit_logs')) || [];
-            adminLogs.push(newLog);
-            localStorage.setItem('admin_deposit_logs', JSON.stringify(adminLogs));
-
-            // Bắn tín hiệu cho tab Admin nhận ngay
-            localStorage.setItem('new_registrations', JSON.stringify([newLog]));
 
         } catch (e) { console.error("Lỗi lưu dữ liệu:", e); }
     }
