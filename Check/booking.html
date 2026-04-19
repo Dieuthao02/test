@@ -19,115 +19,34 @@
             </div>
 
             <div class="map-viewport" id="viewport">
-                <div class="map-container" id="map-container">
-                    <div class="text-center mb-6">
-                        <h1 class="text-green-500 font-black text-2xl uppercase tracking-tighter">SƠ ĐỒ KHU VỰC</h1>
-                        <p class="text-gray-500 text-[10px] uppercase tracking-[0.3em] mt-2">Bấm vào khu vực để chọn vé</p>
-                    </div>
-
-                    <div class="stage">SÂN KHẤU</div>
-
-                    <div class="flex flex-col items-center gap-6">
-                        <div class="flex items-end gap-4">
-                            <div class="block color-ga" onclick="handleBlockClick('GA 1A', 2000000)">GA 1A</div>
-                            <div class="block color-fan" onclick="handleBlockClick('FANZONE A', 2500000)">FANZONE A</div>
-                            <div class="w-40 flex flex-col items-center justify-center border-2 border-dashed border-gray-800 rounded-lg p-4">
-                                <span class="text-[10px] text-gray-700 font-black uppercase">FOH</span>
-                            </div>
-                            <div class="block color-fan" onclick="handleBlockClick('FANZONE B', 2500000)">FANZONE B</div>
-                            <div class="block color-ga" onclick="handleBlockClick('GA 1B', 2000000)">GA 1B</div>
-                        </div>
-
-                        <div class="flex gap-3">
-                            <div class="block color-vip" onclick="handleBlockClick('VIP A', 4000000)">VIP A</div>
-                            <div class="block color-svip" onclick="handleBlockClick('SVIP A', 5000000)">SVIP A</div>
-                            <div class="block color-sky" onclick="handleBlockClick('SKY LOUNGE', 10000000)">SKY LOUNGE</div>
-                            <div class="block color-svip" onclick="handleBlockClick('SVIP B', 5000000)">SVIP B</div>
-                            <div class="block color-vip" onclick="handleBlockClick('VIP B', 4000000)">VIP B</div>
-                        </div>
-
-                        <div class="flex gap-4">
-                            <div class="block color-cat" onclick="handleBlockClick('CAT 1A', 1500000)">CAT 1A</div>
-                            <div class="block color-cat" onclick="handleBlockClick('CAT 1B', 1500000)">CAT 1B</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="map-container" id="map-container"></div>
+    </div>
         </main>
 
         <aside class="sidebar p-8 flex flex-col h-screen w-[400px] bg-black border-l border-white/10">
-            <div class="flex-shrink-0 mb-8">
-        <h2 class="text-xl font-black uppercase leading-tight text-white tracking-tighter">
-            ARIRANG WORLD TOUR
-        </h2>
+    <div class="flex-shrink-0 mb-8">
+        <h2 id="event-title" class="text-xl font-black uppercase leading-tight text-white tracking-tighter"></h2>
+        
         <div class="mt-3 space-y-1">
-            <p id="side-time" class="text-green-500 text-[11px] font-bold uppercase tracking-wider">
-    <i class="fa-regular fa-calendar-check mr-2"></i>20:00 - 15/06/2026
-</p>
-            <p class="text-gray-500 text-[11px] font-medium uppercase tracking-wider">
-                <i class="fa-solid fa-location-dot mr-2"></i> Gillette Stadium, Foxborough, MA
-            </p>
+            <p id="side-time" class="text-gray-500 text-[11px] font-bold uppercase tracking-wider"></p>
+            
+            <p id="side-loc" class="text-gray-500 text-[11px] font-medium uppercase tracking-wider"></p>
         </div>
     </div>
             
             <div id="price-list-default" class="flex-1 overflow-hidden flex flex-col min-h-0">
-                <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-white/10 pb-2 mb-4 flex-shrink-0">Giá vé</h3>
-                
-                <div class="space-y-4 pr-2 overflow-y-auto custom-scroll max-h-[250px]">
-                    <div class="flex justify-between items-center group">
-                        <span class="text-xs font-bold text-gray-300 group-hover:text-white transition">GA 1A</span>
-                        <span class="text-xs font-bold text-green-500">2.000.000 đ</span>
-                    </div>
-                    <div class="flex justify-between items-center group">
-                        <span class="text-xs font-bold text-gray-300 group-hover:text-white transition">GA 1B</span>
-                        <span class="text-xs font-bold text-green-500">2.000.000 đ</span>
-                    </div>
-                    <div class="flex justify-between items-center group">
-                        <span class="text-xs font-bold text-gray-300 group-hover:text-white transition">FANZONE A</span>
-                        <span class="text-xs font-bold text-green-500">2.500.000 đ</span>
-                    </div>
-                    <div class="flex justify-between items-center group">
-                        <span class="text-xs font-bold text-gray-300 group-hover:text-white transition">FANZONE B</span>
-                        <span class="text-xs font-bold text-green-500">2.500.000 đ</span>
-                    </div>
-                    <div class="flex justify-between items-center group">
-                        <span class="text-xs font-bold text-gray-300 group-hover:text-white transition">VIP A</span>
-                        <span class="text-xs font-bold text-green-500">4.000.000 đ</span>
-                    </div>
-                    <div class="flex justify-between items-center group">
-                        <span class="text-xs font-bold text-gray-300 group-hover:text-white transition">VIP B</span>
-                        <span class="text-xs font-bold text-green-500">4.000.000 đ</span>
-                    </div>
-                    <div class="flex justify-between items-center group">
-                        <span class="text-xs font-bold text-gray-300 group-hover:text-white transition">SVIP A</span>
-                        <span class="text-xs font-bold text-green-500">5.000.000 đ</span>
-                    </div>
-                    <div class="flex justify-between items-center group">
-                        <span class="text-xs font-bold text-gray-300 group-hover:text-white transition">SVIP B</span>
-                        <span class="text-xs font-bold text-green-500">5.000.000 đ</span>
-                    </div>
-                    <div class="flex justify-between items-center group">
-                        <span class="text-xs font-bold text-gray-300 group-hover:text-white transition">SKY LOUNGE</span>
-                        <span class="text-xs font-bold text-green-500">10.000.000 đ</span>
-                    </div>
-                    <div class="flex justify-between items-center group">
-                        <span class="text-xs font-bold text-gray-300 group-hover:text-white transition">CAT 1A</span>
-                        <span class="text-xs font-bold text-green-500">1.500.000 đ</span>
-                    </div>
-                    <div class="flex justify-between items-center group">
-                        <span class="text-xs font-bold text-gray-300 group-hover:text-white transition">CAT 1B</span>
-                        <span class="text-xs font-bold text-green-500">1.500.000 đ</span>
-                    </div>
-                </div>
-            </div>
+        <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-white/10 pb-2 mb-4 flex-shrink-0">Giá vé</h3>
+        <div id="price-list-container" class="space-y-4 pr-2 overflow-y-auto custom-scroll max-h-[250px]">
+        </div>
+    </div>
 
-             <div id="cart-list" class="flex-1 overflow-y-auto space-y-4 no-scrollbar hidden"></div>
+    <div id="cart-list" class="flex-1 overflow-y-auto space-y-4 no-scrollbar hidden"></div>
             <div class="border-t border-white/10 pt-6 mt-auto flex-shrink-0">
-                <div class="flex justify-between items-end mb-4">
-                    <div>
-                        <p class="text-gray-500 text-[10px] uppercase font-bold mb-1">Tổng cộng</p>
-                        <p id="total-price" class="text-3xl font-black text-green-400 tracking-tighter">0 đ</p>
-                    </div>
+        <div class="flex justify-between items-end mb-4">
+            <div>
+                <p class="text-gray-500 text-[10px] uppercase font-bold mb-1">Tổng cộng</p>
+                <p id="total-price" class="text-3xl font-black text-green-400 tracking-tighter">0 đ</p>
+            </div>
                     <div id="total-qty-display" class="hidden items-center gap-2 text-white bg-white/10 px-3 py-1 rounded-lg">
                         <i class="fa-solid fa-ticket text-[10px]"></i>
                         <span id="qty-count" class="font-bold text-sm">x0</span>

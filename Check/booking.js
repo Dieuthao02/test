@@ -687,7 +687,7 @@ async function initMap() {
         document.querySelectorAll('.fa-calendar-days, .fa-location-dot').forEach(icon => {
             icon.style.setProperty('color', theme, 'important');
         });
-        const textSelectors = '#side-time, #side-loc,  .right-panel p, .fa-calendar-days + span, .fa-location-dot + span';
+        const textSelectors = '#side-time,  .right-panel p, .fa-calendar-days + span, .fa-location-dot + span';
     document.querySelectorAll(textSelectors).forEach(el => {
         el.style.setProperty('color', theme, 'important');
     });
@@ -964,54 +964,6 @@ function finishPayment() {
         console.error("Lỗi khi lưu đơn hàng:", error);
         showError("Có lỗi xảy ra khi lưu đơn: " + error.message);
     }
-}
-
-
-let zoomHandler = null;
-
-function enableZoom() {
-    const viewport = document.getElementById('viewport');
-    const container = document.getElementById('map-container');
-    let scale = 0.6;
-
-    // Reset lại style cho container về dạng sơ đồ
-    container.style.transform = `scale(${scale})`;
-    container.style.transformOrigin = "center top";
-    container.style.transition = "transform 0.1s ease-out";
-    
-    // Định nghĩa hàm xử lý wheel
-    zoomHandler = function(e) {
-        e.preventDefault();
-        const delta = e.deltaY * -0.001;
-        scale = Math.min(Math.max(0.3, scale + delta), 3);
-        
-        const rect = viewport.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        container.style.transformOrigin = `${x}px ${y}px`;
-        container.style.transform = `scale(${scale})`;
-    };
-
-    viewport.addEventListener('wheel', zoomHandler, { passive: false });
-    console.log("Zoom enabled for diagram");
-}
-
-function disableZoom() {
-    const viewport = document.getElementById('viewport');
-    const container = document.getElementById('map-container');
-
-    // Gỡ bỏ sự kiện zoom nếu có
-    if (zoomHandler) {
-        viewport.removeEventListener('wheel', zoomHandler);
-        zoomHandler = null;
-    }
-
-    // Trả container về trạng thái bình thường để lướt (Scroll)
-    container.style.transform = "none";
-    container.style.transformOrigin = "unset";
-    container.style.transition = "none";
-    console.log("Zoom disabled for ticket list");
 }
 
 // --- HÀM THÔNG BÁO LỖI (Dùng cho error-modal trong HTML) ---
