@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Law-Buddy Mini App Flow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .phone-frame {
+            width: 320px;
+            height: 600px;
+            background: #fff;
+            border-radius: 35px;
+            border: 7px solid #333;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        /* Giao diện Zalo */
+        #zalo-screen {
+            height: 100%;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .zalo-header {
+            background: #0068ff;
+            color: white;
+            padding: 30px 15px 10px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .chat-item {
+            display: flex;
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            align-items: center;
+        }
+
+        /* Giao diện Law-Buddy (Mini App) */
+        #lawbuddy-screen {
+            display: none;
+            height: 100%;
+            background: #050505;
+            color: white;
+            flex-direction: column;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .scan-line {
+            height: 3px;
+            background: #00e5ff;
+            box-shadow: 0 0 15px #00e5ff;
+            position: absolute;
+            width: 100%;
+            top: 0;
+            animation: scan 1.5s ease-in-out infinite;
+            z-index: 30;
+        }
+        @keyframes scan { 0% { top: 0%; } 50% { top: 100%; } 100% { top: 0%; } }
+
+        .message-bubble {
+            max-width: 85%;
+            border-radius: 15px;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            font-size: 12px;
+            line-height: 1.4;
+            animation: fadeInUp 0.3s ease-out;
+        }
+        @keyframes fadeInUp { from { opacity:0; transform: translateY(5px); } to { opacity:1; transform: translateY(0); } }
+
+        .radar-pulse {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0,104,255,0.1) 0%, transparent 70%);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0% { transform: scale(0.8); opacity: 0.5; } 100% { transform: scale(1.2); opacity: 0; } }
+    </style>
+</head>
+<body>
+
+    <div class="phone-frame">
+        <div id="zalo-screen">
+            <div class="zalo-header">
+                <span>Zalo</span>
+                <span class="text-lg">🔍 +</span>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto">
+                <div class="chat-item bg-blue-50 cursor-pointer" onclick="openMiniApp()">
+                    <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold mr-3 text-xs">LB</div>
+                    <div class="flex-1">
+                        <div class="flex justify-between"><span class="font-bold text-sm text-blue-800">Law-Buddy AI</span> <span class="text-[10px] text-gray-400">Vừa xong</span></div>
+                        <p class="text-xs text-gray-500 truncate italic">Bấm để mở Mini App kiểm tra hợp đồng...</p>
+                    </div>
+                </div>
+
+                <div class="chat-item opacity-40">
+                    <div class="w-10 h-10 bg-gray-200 rounded-full mr-3"></div>
+                    <div class="flex-1">
+                        <div class="flex justify-between"><span class="font-bold text-sm">Gia đình</span> <span class="text-[10px] text-gray-400">10:45</span></div>
+                        <p class="text-xs text-gray-500">Mẹ: Tối nay nhớ về ăn cơm con nhé...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="h-14 border-t flex justify-around items-center text-[10px] text-gray-400">
+                <div class="text-blue-600">💬<br>Tin nhắn</div>
+                <div>👤<br>Danh bạ</div>
+                <div class="bg-blue-100 p-1 rounded-lg">✨<br>Khám phá</div>
+                <div>⚙️<br>Cá nhân</div>
+            </div>
+        </div>
+
+        <div id="lawbuddy-screen">
+            <div class="bg-[#0068ff] p-3 pt-8 flex items-center relative">
+                <div onclick="location.reload()" class="mr-3 cursor-pointer">✕</div>
+                <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center text-blue-600 font-bold mr-2 text-[10px]">LB</div>
+                <div>
+                    <h1 class="text-xs font-bold leading-none">Law-Buddy AI</h1>
+                    <p class="text-[8px] opacity-80 mt-1 italic">Mini App cung cấp bởi Zalo</p>
+                </div>
+            </div>
+
+            <div id="chat-container" class="p-3 h-[430px] overflow-y-auto flex flex-col">
+                <div class="message-bubble bg-gray-800 self-start">
+                    Chào bạn! Tôi là Law-Buddy. Hãy gửi ảnh hoặc file PDF hợp đồng để tôi quét rủi ro cho bạn nhé.
+                </div>
+            </div>
+
+            <div id="scan-overlay" class="absolute inset-0 bg-black/80 z-20 hidden flex flex-col items-center justify-center">
+                <div class="radar-pulse"></div>
+                <div class="relative w-56 h-72 border-2 border-blue-400/30 rounded-lg overflow-hidden bg-gray-900 shadow-[0_0_30px_rgba(0,104,255,0.3)] flex items-center justify-center">
+                    <div class="scan-line"></div>
+                    <div class="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-cyan-400"></div>
+                    <div class="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-cyan-400"></div>
+                    <div class="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-cyan-400"></div>
+                    <div class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-cyan-400"></div>
+                    
+                    <img id="preview-img" src="" class="w-full h-full object-cover opacity-60">
+                    <div id="pdf-icon" class="hidden flex-col items-center">
+                        <span class="text-5xl">📄</span>
+                        <span class="text-white text-[10px] mt-2 font-bold bg-red-600 px-2 rounded">PDF</span>
+                    </div>
+                </div>
+                <div class="mt-6 text-center">
+                    <p id="scan-status" class="text-[10px] font-bold text-cyan-400 animate-pulse tracking-[0.2em]">AI ĐANG PHÂN TÍCH...</p>
+                    <p class="text-[8px] text-gray-500 mt-2 uppercase">Hỗ trợ đa phương thức: Image & PDF</p>
+                </div>
+            </div>
+
+            <div class="absolute bottom-0 w-full p-3 bg-[#111] flex items-center gap-2">
+                <label class="cursor-pointer bg-gray-800 p-2 rounded-full active:scale-95 transition-transform">
+                    <span class="text-blue-400 text-lg">📷</span>
+                    <input type="file" id="file-input" class="hidden" accept="image/*,application/pdf" multiple onchange="startScan(event)">
+                </label>
+                <div class="flex-1 bg-gray-900 rounded-full py-2 px-4 text-[10px] text-gray-500">Tải ảnh/PDF hợp đồng lên...</div>
+                <div class="text-blue-500 font-bold text-xs opacity-50">GỬI</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function playScanSound() {
+            const context = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = context.createOscillator();
+            const gain = context.createGain();
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(880, context.currentTime);
+            gain.gain.setValueAtTime(0.1, context.currentTime);
+            oscillator.connect(gain);
+            gain.connect(context.destination);
+            oscillator.start();
+            oscillator.stop(context.currentTime + 0.1);
+        }
+
+        function openMiniApp() {
+            document.getElementById('zalo-screen').style.display = 'none';
+            document.getElementById('lawbuddy-screen').style.display = 'flex';
+        }
+
+        function startScan(event) {
+            const scanOverlay = document.getElementById('scan-overlay');
+            const previewImg = document.getElementById('preview-img');
+            const pdfIcon = document.getElementById('pdf-icon');
+            const scanStatus = document.getElementById('scan-status');
+            
+            const files = event.target.files;
+            if (files.length === 0) return;
+
+            // Xử lý hiển thị preview cho file đầu tiên
+            const firstFile = files[0];
+            if (firstFile.type === "application/pdf") {
+                previewImg.classList.add('hidden');
+                pdfIcon.classList.remove('hidden');
+            } else {
+                previewImg.src = URL.createObjectURL(firstFile);
+                previewImg.classList.remove('hidden');
+                pdfIcon.classList.add('hidden');
+            }
+
+            // Cập nhật text trạng thái nếu tải nhiều file
+            scanStatus.innerText = files.length > 1 ? `AI ĐANG QUÉT ${files.length} TỆP TIN...` : "AI ĐANG PHÂN TÍCH ĐIỀU KHOẢN...";
+
+            playScanSound();
+            scanOverlay.classList.remove('hidden');
+
+            setTimeout(() => {
+                scanOverlay.classList.add('hidden');
+                
+                // Lời thoại demo giữ nguyên 100%
+                addMessage("<b>🔍 KẾT QUẢ PHÂN TÍCH:</b><br><span class='text-red-400'>• Phát hiện điều khoản rủi ro:</span> <b>Tiền cọc không hoàn lại</b> tại trang 2.", "bg-gray-800 border-l-4 border-red-500");
+
+                setTimeout(() => {
+                    playScanSound();
+                    addMessage("<b>🗣️ DỊCH SANG TIẾNG DÂN GIAN:</b><br>👉 Có nghĩa là: <b>Chủ nhà có thể giữ luôn tiền cọc của bạn nếu bạn dọn đi sớm</b>, bất kể lý do gì.", "bg-blue-900/40 border border-blue-500/50");
+                }, 1500);
+
+                setTimeout(() => {
+                    addMessage("💡 <b>Lời khuyên:</b> Bạn nên đàm phán thêm điều khoản: <i>'Hoàn lại 50% tiền cọc nếu báo trước 30 ngày'</i> để bảo vệ quyền lợi.", "bg-emerald-900/30 border border-emerald-500/30");
+                }, 3000);
+
+            }, 3500);
+        }
+
+        function addMessage(text, style) {
+            const chat = document.getElementById('chat-container');
+            const msg = document.createElement('div');
+            msg.className = `message-bubble ${style} self-start`;
+            msg.innerHTML = text;
+            chat.appendChild(msg);
+            chat.scrollTop = chat.scrollHeight;
+        }
+    </script>
+</body>
+</html>

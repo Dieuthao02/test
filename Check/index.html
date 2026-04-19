@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EventHub - Full Pastel Experience</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .blob-shape {
+            border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
+            background: linear-gradient(135deg, #FFDEE9 0%, #B5FFFC 100%);
+        }
+        
+        #search-suggestions {
+            transition: opacity 0.2s ease-in-out, transform 0.2s ease-out;
+        }
+
+        /* Hiệu ứng cho Tab Active */
+        .tab-btn.active {
+            color: #ec4899; /* pink-500 */
+            border-bottom: 2px solid #ec4899;
+        }
+    </style>
+</head>
+<body class="bg-slate-50">
+
+<header class="sticky top-0 z-[100] bg-white/90 backdrop-blur-lg border-b border-white shadow-sm">
+    <div class="max-w-[1400px] mx-auto px-6 py-3 flex items-center justify-between gap-8 relative">
+        
+        <div class="flex items-center space-x-10 flex-shrink-0">
+            <h1 class="text-3xl font-black text-[#F33B26] tracking-tighter cursor-pointer">EventHub</h1>
+            <nav class="hidden xl:flex space-x-6 font-bold text-gray-600">
+                <a href="#" class="text-pink-500 relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-0.5 after:bg-pink-500">Trang chủ</a>
+                <a href="detail.html" class="hover:text-blue-400 transition">Sự kiện</a>
+                <a href="calendar.html" class="hover:text-blue-400 transition">Lịch</a>
+            </nav>
+        </div>
+
+        <!-- SEARCH CONTAINER -->
+        <div class="flex-1 max-w-xl relative" id="search-container">
+            <div class="relative group">
+                <input type="text" id="search-input" autocomplete="off"
+                       placeholder="Bạn tìm gì hôm nay?..." 
+                       class="w-full bg-gray-100/80 border border-gray-200 rounded-full py-2 px-12 focus:ring-4 focus:ring-pink-100 focus:bg-white outline-none transition-all shadow-inner font-medium text-sm">
+                <i class="fa-solid fa-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-pink-400"></i>
+            </div>
+
+            <!-- Bảng Gợi ý Mega Menu -->
+            <div id="search-suggestions" class="absolute top-[120%] left-1/2 -translate-x-1/2 w-[160%] max-w-[850px] bg-white rounded-3xl shadow-2xl border border-gray-100 p-8 hidden z-[1000] max-h-[85vh] overflow-y-auto no-scrollbar">
+                
+                <div class="mb-8">
+                    <p class="text-[10px] font-black text-gray-400 uppercase mb-4 tracking-widest">Tìm kiếm phổ biến 🔥</p>
+                    <div class="flex flex-wrap gap-3">
+                        <span class="px-4 py-2 bg-gray-50 rounded-full text-xs font-bold text-gray-600 hover:bg-pink-50 hover:text-pink-500 cursor-pointer transition">#anh-trai-say-hi</span>
+                        <span class="px-4 py-2 bg-gray-50 rounded-full text-xs font-bold text-gray-600 hover:bg-blue-50 hover:text-blue-500 cursor-pointer transition">#concert-9</span>
+                        <span class="px-4 py-2 bg-gray-50 rounded-full text-xs font-bold text-gray-600 hover:bg-yellow-50 hover:text-yellow-600 cursor-pointer transition">#workshop-lam-gom</span>
+                    </div>
+                </div>
+
+                <div class="mb-10">
+                    <!-- TABS HEADER -->
+                    <div class="flex space-x-8 border-b border-gray-100 mb-6">
+                        <button class="tab-btn active pb-3 text-sm font-black transition-all" data-tab="the-loai">THEO THỂ LOẠI</button>
+                        <button class="tab-btn pb-3 text-sm font-black text-gray-400 hover:text-gray-600 transition-all" data-tab="thanh-pho">THEO THÀNH PHỐ</button>
+                    </div>
+
+                    <!-- TAB THỂ LOẠI -->
+                    <div id="tab-the-loai" class="tab-content grid grid-cols-4 gap-4">
+                        <div class="group cursor-pointer">
+                            <div class="aspect-video bg-blue-100 rounded-2xl mb-2 overflow-hidden relative">
+                                <img src="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=300" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                                <div class="absolute inset-0 bg-black/30 flex items-center justify-center text-white font-black text-[10px] uppercase">Nhạc sống</div>
+                            </div>
+                        </div>
+                        <div class="group cursor-pointer">
+                            <div class="aspect-video bg-pink-100 rounded-2xl mb-2 overflow-hidden relative">
+                                <img src="https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?w=300" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                                <div class="absolute inset-0 bg-black/30 flex items-center justify-center text-white font-black text-[10px] uppercase">Sân khấu</div>
+                            </div>
+                        </div>
+                        <div class="group cursor-pointer">
+                            <div class="aspect-video bg-yellow-100 rounded-2xl mb-2 overflow-hidden relative">
+                                <img src="https://images.unsplash.com/photo-1459749411177-042180ce673c?w=300" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                                <div class="absolute inset-0 bg-black/30 flex items-center justify-center text-white font-black text-[10px] uppercase">Giải trí</div>
+                            </div>
+                        </div>
+                        <div class="group cursor-pointer">
+                            <div class="aspect-video bg-purple-100 rounded-2xl mb-2 overflow-hidden relative">
+                                <img src="https://images.unsplash.com/photo-1514525253361-bee8718a34a1?w=300" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                                <div class="absolute inset-0 bg-black/30 flex items-center justify-center text-white font-black text-[10px] uppercase">Workshop</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB THÀNH PHỐ -->
+                    <div id="tab-thanh-pho" class="tab-content hidden grid grid-cols-4 gap-4">
+                        <div class="group cursor-pointer text-center">
+                            <div class="w-16 h-16 mx-auto bg-gray-100 rounded-full mb-2 overflow-hidden border-2 border-white shadow-sm group-hover:border-pink-300 transition">
+                                <img src="https://api.dicebear.com/7.x/initials/svg?seed=HN" class="w-full h-full">
+                            </div>
+                            <span class="text-[11px] font-bold text-gray-600">Hà Nội</span>
+                        </div>
+                        <div class="group cursor-pointer text-center">
+                            <div class="w-16 h-16 mx-auto bg-gray-100 rounded-full mb-2 overflow-hidden border-2 border-white shadow-sm group-hover:border-pink-300 transition">
+                                <img src="https://api.dicebear.com/7.x/initials/svg?seed=SG" class="w-full h-full">
+                            </div>
+                            <span class="text-[11px] font-bold text-gray-600">TP. Hồ Chí Minh</span>
+                        </div>
+                        <div class="group cursor-pointer text-center">
+                            <div class="w-16 h-16 mx-auto bg-gray-100 rounded-full mb-2 overflow-hidden border-2 border-white shadow-sm group-hover:border-pink-300 transition">
+                                <img src="https://api.dicebear.com/7.x/initials/svg?seed=DN" class="w-full h-full">
+                            </div>
+                            <span class="text-[11px] font-bold text-gray-600">Đà Nẵng</span>
+                        </div>
+                        <div class="group cursor-pointer text-center">
+                            <div class="w-16 h-16 mx-auto bg-gray-100 rounded-full mb-2 overflow-hidden border-2 border-white shadow-sm group-hover:border-pink-300 transition">
+                                <img src="https://api.dicebear.com/7.x/initials/svg?seed=DL" class="w-full h-full">
+                            </div>
+                            <span class="text-[11px] font-bold text-gray-600">Đà Lạt</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase mb-4 tracking-widest">Sự kiện dành cho bạn ✨</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-2xl transition cursor-pointer group">
+                            <div class="w-16 h-16 bg-pink-100 rounded-xl overflow-hidden shrink-0">
+                                <img src="https://via.placeholder.com/150" class="w-full h-full object-cover group-hover:scale-110 transition">
+                            </div>
+                            <div>
+                                <p class="text-xs font-black text-gray-800 leading-tight">Lễ hội Ánh sáng 2026</p>
+                                <p class="text-[10px] text-gray-400 mt-1">Sân vận động Mỹ Đình</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="auth-zone" class="flex items-center space-x-5 flex-shrink-0 font-bold text-sm">
+    <div class="flex items-center bg-gray-100/80 rounded-full p-1 border border-gray-200">
+        <a href="auth.html?mode=login&redirect=index.html" 
+           class="bg-white text-gray-700 px-4 py-1.5 rounded-full shadow-sm text-xs hover:text-pink-500 transition">
+           Đăng nhập
+        </a>
+        
+        <a href="auth.html?mode=register&redirect=index.html" 
+           class="text-gray-500 px-3 py-1.5 text-xs hover:text-blue-500 transition">
+           Đăng ký
+        </a>
+    </div>
+</div>
+    </div>
+</header>
+
+<main class="max-w-[1400px] mx-auto px-6 py-10">
+    <!-- Hero Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 min-h-[70vh] items-center">
+        <div class="space-y-10">
+            <div class="space-y-4">
+                <h2 class="text-7xl font-black text-gray-900 leading-[0.9]">CONCERT<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-blue-400">CỰC HOTT</span></h2>
+                <p class="text-2xl font-bold text-gray-500 uppercase tracking-tighter">18.04.2026 | VẠN PHÚC CITY</p>
+                <button class="bg-[#FBD719] text-black px-10 py-4 rounded-xl font-black text-xl shadow-lg hover:scale-105 transition active:scale-95">Đăng ký ngay</button>
+            </div>
+        </div>
+        <div class="space-y-12 flex flex-col items-center">
+            <div class="w-72 h-72 blob-shape border-8 border-white shadow-2xl flex items-center justify-center overflow-hidden">
+                <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Event" class="w-full h-full object-cover">
+            </div>
+        </div>
+    </div>
+</main>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { firebaseConfig } from './firebase-config.js';
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const authZone = document.getElementById('auth-zone');
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+        const userObj = {
+            name: user.displayName || "User",
+            email: user.email,
+            uid: user.uid,
+            avatar: user.photoURL
+        };
+        localStorage.setItem('userLogin', JSON.stringify(userObj));
+            authZone.innerHTML = `
+                <div class="flex items-center gap-3 bg-white/50 backdrop-blur-sm p-1 pr-4 rounded-full border border-pink-100 shadow-sm">
+                    <img src="${user.photoURL || 'https://api.dicebear.com/7.x/adventurer/svg?seed=' + user.uid}" 
+                         class="w-8 h-8 rounded-full border-2 border-white shadow-sm">
+                    <div class="flex flex-col">
+                        <span class="text-[10px] text-gray-400 leading-none uppercase">Thành viên</span>
+                        <span class="text-xs text-pink-600 truncate max-w-[100px]">${user.displayName || 'User'}</span>
+                    </div>
+                    <button id="logout-btn" class="ml-2 text-gray-400 hover:text-red-500 transition">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </div>
+            `;
+            document.getElementById('logout-btn').onclick = () => signOut(auth).then(() => location.reload());
+        }
+    });
+</script>
+
+</body>
+</html>

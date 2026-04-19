@@ -3,6 +3,9 @@ let tempSelection = null;
 let isFirstTime = true;
 let scale = 1;
 let currentMethod = 'ElysiumPay';
+let globalTimeLeft = 15 * 60; 
+let globalTimerInterval = null; 
+let currentOrderCode = ""; 
 const MAP_TEMPLATES = {
     26: {
         eventName: "BTS WORLD TOUR ARIRANG",
@@ -848,8 +851,7 @@ function activateZoomLogic() {
     // --- LOGIC KÉO (DRAG) ---
     viewport.addEventListener('mousedown', (e) => {
         isDragging = true;
-        viewport.style.cursor = 'grabbing'; // Đổi icon chuột khi cầm
-        // Lưu vị trí chuột ban đầu trừ đi tọa độ hiện tại của map
+        viewport.style.cursor = 'grabbing'; 
         startX = e.clientX - pointX;
         startY = e.clientY - pointY;
     });
@@ -858,7 +860,6 @@ function activateZoomLogic() {
         if (!isDragging) return;
         e.preventDefault();
 
-        // Tính toán tọa độ mới dựa trên khoảng cách chuột di chuyển
         pointX = e.clientX - startX;
         pointY = e.clientY - startY;
 
@@ -867,61 +868,60 @@ function activateZoomLogic() {
 
     window.addEventListener('mouseup', () => {
         isDragging = false;
-        viewport.style.cursor = 'grab'; // Trả lại icon chuột ban đầu
+        viewport.style.cursor = 'grab'; 
     });
 
-    // Thiết lập icon chuột mặc định cho vùng viewport
     viewport.style.cursor = 'grab';
 }
 
-// SỬA Ở ĐÂY: Thay vì gọi initMap() trực tiếp, hãy đợi trang load xong hoàn toàn
 window.onload = function() {
     initMap();
 };
 
 function showInvoice() {
-    closeModals();
-    const invoice = document.getElementById('invoice-modal');
-    if(!invoice) return;
+    // 1. Ẩn modal QR
+    const qrModal = document.getElementById('qr-modal');
+    if (qrModal) {
+        qrModal.classList.add('hidden');
+        qrModal.style.display = 'none';
+    }
 
-    invoice.classList.remove('hidden');
-    invoice.style.display = 'flex';
+    // 2. Hiển thị modal Hóa đơn
+    const invModal = document.getElementById('invoice-modal');
+    if (!invModal) return;
+    invModal.classList.remove('hidden');
+    invModal.style.display = 'flex';
 
-    // ƯU TIÊN: Lấy từ currentEventConfig trước (Data từ Sheet/Map đã load)
+    // 3. Đổ dữ liệu NGƯỜI MUA 
+    document.getElementById('inv-user-name').innerText = document.getElementById('checkout-name')?.value || "KHÁCH HÀNG";
+    document.getElementById('inv-user-email').innerText = document.getElementById('checkout-email')?.value || "---";
+    document.getElementById('inv-user-phone').innerText = document.getElementById('checkout-phone')?.value || "---";
+
+    // 4. Đổ dữ liệu SỰ KIỆN & VỊ TRÍ
     const eventId = new URLSearchParams(window.location.search).get('id') || '21';
     const config = currentEventConfig || (typeof MAP_TEMPLATES !== 'undefined' ? MAP_TEMPLATES[eventId] : null);
-
-    if (!config) return;
-
-    // 1. Ép tên sự kiện
-    const elName = document.getElementById('inv-event-name');
-    if(elName) elName.innerText = config.eventName;
-
-    // 2. Ép thời gian
-    const elTime = document.getElementById('inv-time');
-    if(elTime) elTime.innerText = config.time;
-
-    // 3. Đổ các thông tin vé
-    const seats = cart.map(i => `${i.name} (x${i.qty})`).join(', ');
-    const invSeats = document.getElementById('inv-seats');
-    if(invSeats) {
-        const spanValue = invSeats.querySelector('span:last-child');
-        if(spanValue) spanValue.innerText = seats;
-    }
     
-    const invQty = document.getElementById('inv-qty');
-    if(invQty) {
-        const spanValue = invQty.querySelector('span:last-child');
-        if(spanValue) spanValue.innerText = 'x' + cart.reduce((a, b) => a + b.qty, 0);
+    if (config) {
+        document.getElementById('inv-event-name').innerText = config.eventName;
     }
-    
-    const invTotal = document.getElementById('inv-total');
-    if(invTotal) {
-        const currentTotal = document.getElementById('pay-total') ? document.getElementById('pay-total').innerText : "0 đ";
-        const spanValue = invTotal.querySelector('span:last-child');
-        if(spanValue) spanValue.innerText = currentTotal;
-    }
+
+    // Lấy danh sách tên ghế từ giỏ hàng
+    const seatNames = cart.map(item => item.name).join(', ');
+    document.getElementById('inv-seats').innerText = seatNames || "Chưa chọn vị trí";
+
+    // 5. Đổ số lượng và Tổng tiền
+    const totalQty = cart.reduce((a, b) => a + (Number(b.qty) || 1), 0);
+    document.getElementById('inv-qty').innerText = 'x' + totalQty;
+
+    // Lấy tổng tiền đang hiển thị ở màn hình thanh toán
+    const finalTotal = document.getElementById('pay-total')?.innerText || "0 đ";
+    document.getElementById('inv-total').innerText = finalTotal;
+
+    // 6. Ghi lại thời gian xác nhận
+    const now = new Date();
+    document.getElementById('inv-order-time').innerText = now.toLocaleString('vi-VN');
 }
+
 
 function finishPayment() {
     console.log("Đang bắt đầu quá trình lưu đơn hàng...");
@@ -1182,7 +1182,7 @@ function goToStep2() {
     const payTotal = document.getElementById('pay-total');
     if (payTotal) payTotal.innerText = totalAll.toLocaleString() + " đ";
     
-    startTimer();
+    startGlobalTimer();
 }
 
 
@@ -1242,7 +1242,6 @@ function handleFinalCheckout() {
 }
 
 function validateStep2() {
-    // Lấy các input từ bảng câu hỏi
     const inputs = document.querySelectorAll('#step-2 .q-input');
     const fullName = inputs[0].value.trim();
     const phone = inputs[1].value.trim();
@@ -1274,30 +1273,108 @@ function validateStep2() {
 
 function setupQRModal(method) {
     const modal = document.getElementById('qr-modal');
+    const qrImg = document.getElementById('qr-image-main');
+    const amountDisplay = document.getElementById('qr-amount-display');
     const title = document.getElementById('qr-title');
-    const instructions = document.getElementById('qr-instructions');
+    const vietqrTabs = document.getElementById('vietqr-tabs');
+    const bankContent = document.getElementById('bank-content');
     
     if(modal) {
         closeModals();
         modal.classList.remove('hidden');
         modal.style.setProperty('display', 'flex', 'important');
         
-        if (method.toUpperCase().includes("ZALO")) {
-            title.innerText = "THANH TOÁN ZALOPAY";
-            instructions.innerHTML = `<p>1. Mở ứng dụng Zalopay</p><p>2. Quét mã QR để thanh toán</p>`;
+        // 1. Lấy số tiền
+        const rawAmount = document.getElementById('pay-total').innerText.replace(/\D/g, '');
+        const amount = parseInt(rawAmount) || 0;
+        amountDisplay.innerText = amount.toLocaleString() + " đ";
+        
+        // 2. Tạo nội dung chuyển khoản ngẫu nhiên
+        const orderInfo = "TKB" + Math.floor(100000 + Math.random() * 899999);
+        if(bankContent) bankContent.innerText = orderInfo;
+
+        const isZalo = method.toUpperCase().includes("ZALO");
+
+        if (isZalo) {
+            title.innerText = "Thanh toán bằng ZaloPay";
+            qrImg.src = "zalo.png";
+            vietqrTabs.classList.add('hidden'); 
+            switchTab('qr'); 
+            renderInstructions('zalo');
         } else {
-            title.innerText = "VIETQR NGÂN HÀNG";
-            instructions.innerHTML = `<p>Quét mã VietQR để thanh toán: <strong>${document.getElementById('pay-total').innerText}</strong></p>`;
+            title.innerText = "Thanh toán bằng VietQR";
+            vietqrTabs.classList.remove('hidden'); 
+            switchTab('qr');
+            
+            const bankId = "MB"; 
+            const accountNo = "0378217462"; 
+            qrImg.src = `https://img.vietqr.io/image/${bankId}-${accountNo}-compact.png?amount=${amount}&addInfo=${encodeURIComponent(orderInfo)}`;
+            renderInstructions('vietqr'); 
         }
+
+        const modalTimer = document.getElementById('qr-countdown');
+    if (modalTimer) modalTimer.innerText = formatTime(globalTimeLeft);
     }
 }
 
-// Hàm này để nhảy về dashboard khi bấm nút OK trên modal
+function renderInstructions(mode) {
+    const list = document.getElementById('instr-list');
+    if(!list) return;
+
+    const steps = mode === 'zalo' ? [
+        "Mở ứng dụng <strong>ZaloPay</strong> trên điện thoại",
+        "Chọn biểu tượng <strong>Quét mã</strong>",
+        "Quét mã QR ở trang này",
+        "Xác nhận thanh toán trên ứng dụng"
+    ] : [
+        "Mở ứng dụng <strong>Ngân hàng</strong> trên điện thoại",
+        "Chọn tính năng <strong>Quét mã QR</strong> hoặc <strong>Chuyển tiền</strong>",
+        "Quét mã hoặc nhập đúng thông tin bên cạnh",
+        "Thực hiện thanh toán và chờ kết quả"
+    ];
+
+    list.innerHTML = steps.map((s, i) => `
+        <li class="flex gap-3">
+            <span class="flex-shrink-0 w-6 h-6 rounded-full bg-green-500 text-white text-xs flex items-center justify-center font-bold">${i+1}</span>
+            <p class="text-sm text-gray-600">${s}</p>
+        </li>
+    `).join('');
+}
+
+function copyText(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        alert("Đã sao chép: " + text);
+    });
+}
+
+// Hàm đổi Tab
+function switchTab(type) {
+    const tabQr = document.getElementById('tab-qr');
+    const tabBank = document.getElementById('tab-bank');
+    const viewQr = document.getElementById('view-qr');
+    const viewBank = document.getElementById('view-bank');
+    const instrTitle = document.getElementById('instr-title');
+
+    if (type === 'qr') {
+        tabQr.className = "flex-1 py-3 text-sm font-bold border-b-2 border-green-500 text-green-600";
+        tabBank.className = "flex-1 py-3 text-sm font-bold border-b-2 border-transparent text-gray-500";
+        viewQr.classList.remove('hidden');
+        viewBank.classList.add('hidden');
+        instrTitle.innerText = "Quét mã QR để thanh toán";
+    } else {
+        tabQr.className = "flex-1 py-3 text-sm font-bold border-b-2 border-transparent text-gray-500";
+        tabBank.className = "flex-1 py-3 text-sm font-bold border-b-2 border-green-500 text-green-600";
+        viewQr.classList.add('hidden');
+        viewBank.classList.remove('hidden');
+        instrTitle.innerText = "Chuyển khoản ngân hàng";
+    }
+}
+
+
 function redirectToDashboard() {
     window.location.href = "dashboard.html";
 }
 
-// Cập nhật lại hàm closeModals để nó biết đóng cả cái success-modal nếu cần
 function closeModals() {
     const modalIds = ['visa-modal', 'qr-modal', 'invoice-modal', 'warning-modal', 'qty-modal', 'cancel-modal', 'error-modal', 'success-modal'];
     modalIds.forEach(id => {
@@ -1313,13 +1390,34 @@ function closeVisaModal() { closeModals(); }
 function closeQRModal() { closeModals(); }
 function closeCancelModal() { closeModals(); }
 
-function startTimer() {
-    let time = 15 * 60;
-    const t = setInterval(() => {
-        let m = Math.floor(time / 60), s = time % 60;
-        const timerEl = document.getElementById('timer');
-        if(timerEl) timerEl.innerText = `${m} : ${s < 10 ? '0'+s : s}`;
-        if(time <= 0) { clearInterval(t); location.reload(); }
-        time--;
+function startGlobalTimer() {
+    // Nếu có timer đang chạy thì xóa đi trước khi tạo mới
+    if (globalTimerInterval) clearInterval(globalTimerInterval);
+
+    globalTimerInterval = setInterval(() => {
+        if (globalTimeLeft <= 0) {
+            clearInterval(globalTimerInterval);
+            alert("Hết thời gian giữ vé!");
+            location.reload();
+            return;
+        }
+
+        globalTimeLeft--;
+
+        // Cập nhật lên giao diện chính (nếu có)
+        const mainTimer = document.getElementById('timer');
+        if (mainTimer) mainTimer.innerText = formatTime(globalTimeLeft);
+
+        // Cập nhật lên Modal (nếu modal đang mở)
+        const modalTimer = document.getElementById('qr-countdown');
+        if (modalTimer) modalTimer.innerText = formatTime(globalTimeLeft);
+
     }, 1000);
+}
+
+// Hàm hỗ trợ định dạng mm : ss
+function formatTime(seconds) {
+    let m = Math.floor(seconds / 60);
+    let s = seconds % 60;
+    return `${m} : ${s < 10 ? '0' + s : s}`;
 }

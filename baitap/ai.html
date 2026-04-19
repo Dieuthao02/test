@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Legal Scanner - Ultra Pro Simulation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;600&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #050505;
+            color: #e5e7eb;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .mono { font-family: 'Space Mono', monospace; }
+
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 10px;
+            background: linear-gradient(to bottom, transparent, rgba(59, 130, 246, 0.5), transparent);
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.8);
+            z-index: 100;
+            display: none;
+            pointer-events: none;
+        }
+
+        @keyframes scanning {
+            0% { top: -10%; }
+            100% { top: 110%; }
+        }
+
+        .scanning-active {
+            display: block;
+            animation: scanning 3s linear infinite;
+        }
+
+        .doc-container {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            height: 65vh;
+            overflow-y: scroll;
+            position: relative;
+            scrollbar-width: thin;
+            scrollbar-color: #3b82f6 transparent;
+        }
+
+        .auto-selection {
+            background-color: #2563eb;
+            color: white;
+            transition: all 0.5s;
+        }
+
+        .highlight-yellow {
+            background-color: rgba(234, 179, 8, 0.3);
+            border-bottom: 2px solid #eab308;
+        }
+
+        .conflict-red {
+            background-color: rgba(239, 68, 68, 0.2);
+            border-bottom: 2px dashed #ef4444;
+            text-decoration: line-through;
+        }
+
+        .glitch-text {
+            color: #ef4444;
+            text-shadow: 2px 0 #fff;
+            animation: glitch 0.2s infinite;
+            display: none;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        #input-area {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            transition: all 0.3s;
+        }
+        #input-area:focus-within {
+            border-color: #3b82f6;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+        }
+    </style>
+</head>
+<body class="p-6">
+
+    <div class="flex justify-between items-center mb-6 border-b border-gray-900 pb-4">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-bold">L</div>
+            <h1 class="text-xl font-black tracking-tighter text-blue-500 uppercase">CHAT GPT PROMAX <span class="text-[10px] text-gray-600">v3.0.0</span></h1>
+        </div>
+        <div class="flex gap-4">
+            <button onclick="triggerHallucination()" class="text-gray-700 px-3 py-1 rounded text-[10px] hover:text-red-500 transition-all uppercase">Hallucination Test</button>
+        </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto mb-8">
+        <div id="input-area" class="flex items-center p-2 rounded-2xl gap-3">
+            <span class="text-blue-500 ml-3">⚡</span>
+            <input type="text" id="user-command" placeholder="Nhập yêu cầu phân tích pháp lý tại đây..." class="bg-transparent border-none outline-none flex-1 text-sm py-2" onkeypress="if(event.key === 'Enter') startAnalysis()">
+            <button onclick="startAnalysis()" id="btn-scan" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl font-bold text-xs transition-all">
+                PHÂN TÍCH NGAY
+            </button>
+        </div>
+        <p class="text-[9px] text-gray-600 mt-2 ml-4">Gợi ý: "So sánh bảo mật dữ liệu Nghị định 13 với GDPR"</p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-6 relative px-4">
+        <div id="radar" class="scan-line"></div>
+
+        <div class="flex flex-col">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">Nguồn A: Nghị định 13/2023/NĐ-CP</span>
+                <span class="text-[9px] text-gray-600">Vietnam Legal Database</span>
+            </div>
+            <div class="doc-container p-8 text-sm leading-relaxed text-gray-500" id="doc-a">
+                <h3 class="font-bold text-gray-200 mb-4 text-lg underline decoration-blue-500">Điều 9. Quyền của chủ thể dữ liệu</h3>
+                <p class="mb-4">1. Quyền được biết: Chủ thể dữ liệu được biết về hoạt động xử lý dữ liệu cá nhân của mình, trừ trường hợp luật có quy định khác.</p>
+                <p class="mb-4" id="select-1">2. Quyền đồng ý: Chủ thể dữ liệu được đồng ý hoặc không đồng ý cho phép xử lý dữ liệu cá nhân của mình, trừ trường hợp quy định tại Điều 17 Nghị định này.</p>
+                <p class="mb-4" id="select-3">3. Quyền truy cập: Chủ thể dữ liệu được truy cập để xem, chỉnh sửa hoặc yêu cầu chỉnh sửa dữ liệu cá nhân của mình sau khi được xử lý.</p>
+                <p class="mb-4">4. Quyền rút lại sự đồng ý: Chủ thể dữ liệu được quyền rút lại sự đồng ý của mình, trừ trường hợp luật có quy định khác.</p>
+                <p class="mb-4 text-gray-400" id="conflict-a">5. Mức phạt vi phạm: Xử phạt hành chính tối đa đối với các hành vi vi phạm quy định bảo vệ dữ liệu là 5% tổng doanh thu tại Việt Nam.</p>
+                <p class="mb-4 italic text-gray-700">[...Dữ liệu pháp luật đã được nạp đầy đủ...]</p>
+                <div class="h-40"></div> </div>
+        </div>
+
+        <div class="flex flex-col">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-[10px] text-purple-400 font-bold uppercase tracking-widest">Nguồn B: GDPR (EU Regulation)</span>
+                <span class="text-[9px] text-gray-600">Official Journal of the EU</span>
+            </div>
+            <div class="doc-container p-8 text-sm leading-relaxed text-gray-500" id="doc-b">
+                <h3 class="font-bold text-gray-200 mb-4 text-lg underline decoration-purple-500">Article 6. Lawfulness of processing</h3>
+                <p class="mb-4">1. Processing shall be lawful only if and to the extent that at least one of the following applies...</p>
+                <p class="mb-4" id="select-2">(a) the data subject has given consent to the processing of his or her personal data for one or more specific purposes;</p>
+                <p class="mb-4" id="select-4">(b) processing is necessary for the performance of a contract to which the data subject is party;</p>
+                <p class="mb-4">Article 17. Right to erasure (‘right to be forgotten’)</p>
+                <p class="mb-4" id="important-b">The data subject shall have the right to obtain from the controller the erasure of personal data concerning him or her without undue delay.</p>
+                <p class="mb-4 text-gray-400" id="conflict-b">Administrative fines: Infringements shall be subject to administrative fines up to 20,000,000 EUR, or up to 4% of total worldwide annual turnover.</p>
+                <p class="mb-4 italic text-gray-700">[...Global Regulation data synchronized...]</p>
+                <div class="h-40"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="result-box" class="mt-6 mx-auto max-w-5xl p-5 bg-blue-900/10 border border-blue-500/20 rounded-2xl hidden flex gap-6 items-center">
+        <div class="w-14 h-14 rounded-full bg-blue-600/20 flex items-center justify-center border border-blue-500">
+            <div class="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+        <div class="flex-1">
+            <div class="flex justify-between items-center mb-1">
+                <h4 class="font-bold text-blue-400 uppercase text-[10px] tracking-widest">AI Comparative Analysis Reports:</h4>
+                <span class="text-[10px] text-green-500 font-mono">Status: Analysis Complete (0.003s)</span>
+            </div>
+            <p class="text-sm text-gray-300">Phát hiện sự tương đồng <b>85%</b> về cơ chế "Quyền đồng ý". Điểm khác biệt lớn nằm ở <b>"Quyền được quên"</b> (chưa rõ nét trong NĐ13) và <b>Mức phạt vi phạm</b> doanh thu (5% vs 4%).</p>
+        </div>
+    </div>
+
+    <div id="hallucination-warning" class="fixed inset-0 bg-red-950/95 z-[200] hidden flex flex-col items-center justify-center p-12 text-center">
+        <h2 class="glitch-text text-8xl font-black mb-4">CRITICAL ERROR</h2>
+        <div class="bg-white text-black p-8 rounded-2xl max-w-2xl shadow-[0_0_50px_rgba(239,68,68,0.5)]">
+            <h3 class="font-black text-red-600 text-2xl mb-4 italic tracking-tight">AI HALLUCINATION DETECTED</h3>
+            <p class="mono text-xl font-bold bg-gray-100 p-4 border-l-8 border-red-600 text-left">"Theo Điều 1000 Bộ luật Dân sự năm 2015, cá nhân có nghĩa vụ cung cấp dữ liệu cho bên thứ ba khi được yêu cầu."</p>
+            <p class="mt-8 text-sm text-gray-500 border-t pt-4"><b>Lưu ý hệ thống:</b> Điều 1000 không tồn tại trong Bộ luật Dân sự 2015 (Bộ luật này chỉ có 689 điều). AI đã tự bịa ra thông tin để lấp đầy khoảng trống dữ liệu.</p>
+        </div>
+        <button onclick="location.reload()" class="mt-10 text-red-500 font-bold border-2 border-red-500 px-8 py-3 rounded-full hover:bg-red-500 hover:text-white transition-all uppercase">REBOOT AI SYSTEM</button>
+    </div>
+
+    <script>
+        function startAnalysis() {
+            const input = document.getElementById('user-command');
+            if (input.value.trim() === "") {
+                alert("Hãy nhập yêu cầu so sánh (ví dụ: So sánh NĐ 13 và GDPR)");
+                return;
+            }
+
+            const radar = document.getElementById('radar');
+            const btn = document.getElementById('btn-scan');
+            
+            // Bắt đầu quét
+            radar.classList.add('scanning-active');
+            btn.innerText = "ĐANG SO SÁNH...";
+            btn.classList.add('animate-pulse');
+
+            const sound = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
+            sound.play();
+
+            // Quá trình quét mất 3 giây
+            setTimeout(() => {
+                radar.classList.remove('scanning-active');
+                btn.innerText = "HOÀN TẤT";
+                btn.classList.remove('animate-pulse');
+                btn.classList.replace('bg-blue-600', 'bg-green-600');
+
+                // Hiển thị bôi đậm và kết quả
+                document.getElementById('select-1').classList.add('auto-selection');
+                document.getElementById('select-2').classList.add('auto-selection');
+
+                setTimeout(() => {
+                    document.getElementById('important-b').classList.add('highlight-yellow');
+                    document.getElementById('conflict-a').classList.add('conflict-red');
+                    document.getElementById('conflict-b').classList.add('conflict-red');
+                    document.getElementById('result-box').classList.remove('hidden');
+                    
+                    document.getElementById('doc-a').scrollTo({ top: 150, behavior: 'smooth' });
+                    document.getElementById('doc-b').scrollTo({ top: 200, behavior: 'smooth' });
+
+                    // LOGIC MỚI: Sau khi hiện kết quả 3 giây, tự động kích hoạt lỗi Hallucination
+                    setTimeout(() => {
+                        triggerHallucination();
+                    }, 3000);
+
+                }, 1000);
+
+            }, 3000);
+        }
+
+        function triggerHallucination() {
+            document.getElementById('hallucination-warning').classList.remove('hidden');
+            const glitch = document.querySelectorAll('.glitch-text');
+            glitch.forEach(el => el.style.display = 'block');
+            
+            const alertSound = new Audio('https://assets.mixkit.co/active_storage/sfx/995/995-preview.mp3');
+            alertSound.loop = true; 
+            alertSound.play();
+            
+            setTimeout(() => { alertSound.pause(); }, 5000);
+        }
+    </script>
+</body>
+</html>

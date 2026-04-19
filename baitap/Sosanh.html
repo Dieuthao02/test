@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Vay AI - Home Screen</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #050505;
+            color: white;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Khung điện thoại giả lập - Đã thu nhỏ tỷ lệ */
+        .mobile-frame {
+            width: 375px;
+            height: 760px;
+            background: #000;
+            border: 12px solid #1a1a1a;
+            border-radius: 50px;
+            position: relative;
+            box-shadow: 0 50px 100px -20px rgba(0,0,0,0.5), 0 0 20px rgba(59, 130, 246, 0.1);
+            overflow: hidden;
+            transform: scale(0.85); /* Thu nhỏ để vừa màn hình laptop/PC */
+        }
+
+        .notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 25px;
+            background: #1a1a1a;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            z-index: 200;
+        }
+
+        .status-bar {
+            padding: 15px 30px 5px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 150;
+            position: relative;
+        }
+
+        /* MÀN HÌNH CHÍNH (HOME SCREEN) */
+        #home-screen {
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop') center/cover;
+            padding: 40px 20px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(6, 1fr);
+            gap: 20px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 10;
+            transition: all 0.5s ease;
+        }
+
+        .app-icon-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .app-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: transform 0.2s;
+        }
+
+        .app-icon:active { transform: scale(0.9); }
+        .app-name { font-size: 10px; color: white; text-align: center; }
+
+        /* Icon App Vay */
+        .loan-icon {
+            background: linear-gradient(135deg, #ec4899, #3b82f6);
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+        }
+
+        /* Màn hình ban đầu (Sau khi mở App) */
+        #app-screen {
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            background: linear-gradient(180deg, #0f172a 0%, #000000 100%);
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 20;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 30px;
+            margin: 20px;
+            padding: 24px;
+        }
+
+        .confirm-btn {
+            background: linear-gradient(90deg, #ec4899, #3b82f6);
+            padding: 16px;
+            border-radius: 18px;
+            font-weight: 800;
+            text-align: center;
+            margin-top: auto;
+            margin-bottom: 40px;
+            margin-left: 20px;
+            margin-right: 20px;
+            cursor: pointer;
+            box-shadow: 0 10px 20px -5px rgba(236, 72, 153, 0.4);
+            transition: all 0.2s;
+        }
+
+        /* Màn hình so sánh */
+        #comparison-screen {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000; z-index: 300; opacity: 0; transition: opacity 0.8s ease;
+        }
+
+        .split { height: 100vh; width: 50%; position: absolute; top: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .left { left: 0; border-right: 1px solid #222; }
+        .right { right: 0; background: linear-gradient(145deg, #000 0%, #0a1128 100%); }
+        .loader { border: 3px solid #222; border-top: 3px solid #3b82f6; border-radius: 50%; width: 40px; height: 40px; animation: spin 2s linear infinite; margin: 20px auto; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .big-text { display: none; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .success-icon { color: #10b981; font-size: 50px; animation: scaleUp 0.5s forwards; }
+        @keyframes scaleUp { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+        .timer { font-family: monospace; color: #666; font-size: 1.2rem; }
+        .highlight-pink { color: #ec4899; }
+        #footer-insight { position: absolute; bottom: 40px; width: 100%; text-align: center; opacity: 0; transform: translateY(20px); transition: all 1s ease; }
+        .show-insight { opacity: 1 !important; transform: translateY(0) !important; }
+    </style>
+</head>
+<body>
+
+    <div class="mobile-frame" id="mobile-container">
+        <div class="notch"></div>
+        <div class="status-bar">
+            <span>9:41</span>
+            <div class="flex gap-1"><span>📶</span><span>🔋</span></div>
+        </div>
+
+        <div id="home-screen">
+            <div class="app-icon-wrapper"><div class="app-icon">💬</div><span class="app-name">Zalo</span></div>
+            <div class="app-icon-wrapper"><div class="app-icon">📸</div><span class="app-name">Photos</span></div>
+            <div class="app-icon-wrapper"><div class="app-icon">🎵</div><span class="app-name">Music</span></div>
+            
+            <div class="app-icon-wrapper" onclick="openLoanApp()">
+                <div class="app-icon loan-icon">💸</div>
+                <span class="app-name font-bold">Vay Nhanh</span>
+            </div>
+
+            <div class="app-icon-wrapper"><div class="app-icon">⚙️</div><span class="app-name">Settings</span></div>
+            <div class="app-icon-wrapper"><div class="app-icon">📅</div><span class="app-name">Calendar</span></div>
+            <div class="app-icon-wrapper"><div class="app-icon">🛒</div><span class="app-name">Shop</span></div>
+            <div class="app-icon-wrapper"><div class="app-icon">🎮</div><span class="app-name">Games</span></div>
+        </div>
+
+        <div id="app-screen">
+            <div class="px-6 pt-8 pb-4">
+                <h1 class="text-2xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-blue-400">
+                    Vay Nhanh AI
+                </h1>
+                <p class="text-gray-500 text-sm mt-1">Hệ thống vay vốn thông minh</p>
+            </div>
+
+            <div class="glass-panel">
+                <div class="text-gray-400 text-[10px] tracking-widest uppercase mb-1">Hạn mức tối đa bạn nhận được</div>
+                <div class="text-4xl font-black mb-6 text-white">50.000.000đ</div>
+                <div class="space-y-4 border-t border-white/5 pt-4">
+                    <div class="flex justify-between items-center"><span class="text-gray-500 text-sm">Thời gian vay</span><span class="font-semibold text-sm text-blue-300">12 Tháng</span></div>
+                    <div class="flex justify-between items-center"><span class="text-gray-500 text-sm">Lãi suất ưu đãi</span><span class="font-semibold text-sm text-emerald-400">0.8% / tháng</span></div>
+                    <div class="flex justify-between items-center"><span class="text-gray-500 text-sm">Trả góp hàng tháng</span><span class="font-semibold text-sm text-white">4.566.000đ</span></div>
+                    <div class="flex justify-between items-center"><span class="text-gray-500 text-sm">Phí xử lý</span><span class="font-semibold text-sm text-emerald-400">Miễn phí</span></div>
+                </div>
+            </div>
+
+            <div class="px-8 mt-4">
+                <div class="flex items-start gap-3 mb-4">
+                    <span class="text-blue-400">✦</span>
+                    <p class="text-[11px] text-gray-500">Bằng việc bấm xác nhận, bạn đồng ý với các điều khoản bảo mật và hợp đồng vay điện tử của chúng tôi.</p>
+                </div>
+            </div>
+
+            <div class="confirm-btn" onclick="startComparison()">XÁC NHẬN VAY NGAY</div>
+        </div>
+    </div>
+
+    <div id="comparison-screen">
+        <div class="split left">
+            <div class="glass-card w-[80%] p-8 rounded-[30px] border border-white/10 text-center">
+                <h2 class="text-xl font-light mb-4 text-gray-400">TRUYỀN THỐNG</h2>
+                <div id="t-left" class="timer mb-4">00h : 00m : 00s</div>
+                <div id="res-left" class="big-text text-5xl font-extrabold mb-6">3 NGÀY</div>
+                <div class="loader"></div>
+                <p class="text-xs text-gray-500 mt-2">Đang xử lý thủ công...</p>
+            </div>
+        </div>
+        <div class="split right">
+            <div class="glass-card w-[80%] p-8 rounded-[30px] border border-pink-500/20 text-center bg-white/5">
+                <h2 class="text-xl font-light mb-4 text-gray-400">CÔNG NGHỆ AI</h2>
+                <div id="t-right" class="timer highlight-pink mb-4" style="opacity: 0.7;">00m : 00s</div>
+                <div id="res-right" class="big-text text-5xl font-extrabold mb-6 highlight-pink">3 PHÚT</div>
+                <div id="ai-loading"><div class="loader" style="border-top-color: #ec4899;"></div><p class="text-xs text-gray-500">AI đang phê duyệt...</p></div>
+                <div id="ai-success" class="hidden"><div class="success-icon">✓</div><h3 class="text-2xl font-bold mt-2 text-emerald-400 italic uppercase">Đã giải ngân</h3><p class="text-[10px] text-gray-400">Tiền đã về tài khoản ngân hàng</p></div>
+            </div>
+        </div>
+        <div id="footer-insight"><div class="inline-block bg-white/5 border border-white/10 px-8 py-4 rounded-full backdrop-blur-md"><span class="text-gray-400 text-sm">Xử lý hàng tỷ giao dịch/năm – </span><span class="text-blue-400 font-bold text-sm">độ trễ mili-giây</span></div></div>
+    </div>
+
+    <script>
+        function openLoanApp() {
+            const home = document.getElementById('home-screen');
+            const app = document.getElementById('app-screen');
+            home.style.transform = 'scale(2)';
+            home.style.opacity = '0';
+            setTimeout(() => {
+                home.style.display = 'none';
+                app.style.display = 'flex';
+                setTimeout(() => app.style.opacity = '1', 50);
+            }, 400);
+        }
+
+        function startComparison() {
+            const container = document.getElementById('mobile-container');
+            const compScreen = document.getElementById('comparison-screen');
+            container.style.transform = 'scale(0.7) translateY(-100px)'; /* Giữ scale nhỏ khi biến mất */
+            container.style.opacity = '0';
+            setTimeout(() => {
+                container.style.display = 'none';
+                compScreen.style.display = 'block';
+                setTimeout(() => compScreen.style.opacity = '1', 50);
+                runTimers();
+            }, 500);
+        }
+
+        function runTimers() {
+            let sLeft = 0; let sRight = 0;
+            const timerL = setInterval(() => {
+                sLeft += 111; 
+                let h = Math.floor(sLeft / 3600); let m = Math.floor((sLeft % 3600) / 60); let s = sLeft % 60;
+                document.getElementById('t-left').innerText = `${h.toString().padStart(2, '0')}h : ${m.toString().padStart(2, '0')}m : ${s.toString().padStart(2, '0')}s`;
+            }, 50);
+            const timerR = setInterval(() => {
+                sRight++;
+                let m = Math.floor(sRight / 60); let s = sRight % 60;
+                document.getElementById('t-right').innerText = `${m.toString().padStart(2, '0')}m : ${s.toString().padStart(2, '0')}s`;
+                if(sRight >= 3) { clearInterval(timerR); showFinalResult(); }
+            }, 1000);
+        }
+
+        function showFinalResult() {
+            document.getElementById('ai-loading').classList.add('hidden');
+            document.getElementById('ai-success').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('res-left').style.display = 'block';
+                document.getElementById('res-right').style.display = 'block';
+                setTimeout(() => document.getElementById('footer-insight').classList.add('show-insight'), 800);
+            }, 600);
+        }
+    </script>
+</body>
+</html>
