@@ -6,6 +6,9 @@ let currentMethod = 'ElysiumPay';
 let globalTimeLeft = 15 * 60; 
 let globalTimerInterval = null; 
 let currentOrderCode = ""; 
+let currentEventConfig = null;
+
+const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbx3vQyakJkFfJxkP5XAQ8fQkjmt5lnls2n4N3zjrEUL4JxYIzMumbGmPIZwOTzbjgO-OA/exec';
 
 const MAP_TEMPLATES = {
     // SƠ ĐỒ ID 21
@@ -500,41 +503,48 @@ const MAP_TEMPLATES = {
 
 };
 
-// 1. Dữ liệu thô 
+// 1. DỮ LIỆU THÔ (RAW DATA)
 const allEventsData = [
-    { id: 21, title: "RAP VIỆT STAR", prices: [{name: 'VVIP PRESIDENT', price: 8000000}, {name: 'CAT 1', price: 1000000}] },
-    { id: 22, title: "SHOW CỦA ĐEN", prices: [{name: 'GA STANDING', price: 1500000}] }
+    { 
+        id: 21, 
+        title: "RAP VIỆT STAR", 
+        prices: [
+            { name: 'VVIP PRESIDENT', price: 8000000 }, 
+            { name: 'CAT 1', price: 1000000 }
+        ] 
+    }
 ];
 
-// 2. Hàm đúc khuôn =
+// 2. HÀM ĐÚC KHUÔN CẤU HÌNH 
 function createEventConfig(sourceData) {
     return {
         eventName: sourceData.title || sourceData.eventName,
         hasDiagram: false,
         time: sourceData.time || "19:00 - 28/03/2026",
-        location: sourceData.location || "SECC, QUẬN 7, TP.HCM",
+        location: sourceData.location || "",
         currency: "đ",
         priceList: (sourceData.prices || []).map(p => ({
             name: p.name,
             price: p.price,
-            desc: p.desc || "Hạng vé tiêu chuẩn bao gồm đầy đủ quyền lợi tham gia sự kiện."
+            desc: p.desc || ""
         }))
     };
 }
 
-// Khởi tạo đối tượng chứa cấu trúc config
+// 3. KHỞI TẠO ĐỐI TƯỢNG CONFIG
 const eventConfigs = {};
 allEventsData.forEach(item => {
     eventConfigs[item.id] = createEventConfig(item);
 });
 
+// 4. HÀM TẠO GIAO DIỆN DANH SÁCH VÉ
 function generateTicketListHTML(config) {
-    const theme = config.themeColor || "#26bc4e";
-    const accent = config.accentColor || theme;
-
     if (!config || !config.priceList || config.priceList.length === 0) {
         return `<div class="text-gray-400 text-center mt-10">Hiện chưa có thông tin giá vé.</div>`;
     }
+
+    const theme = config.themeColor || "#26bc4e";
+    const accent = config.accentColor || theme;
 
     return `
     <style>
@@ -592,7 +602,7 @@ function generateTicketListHTML(config) {
         .ticket-theme-text { color: ${theme}; }
     </style>
     
- <div class="w-full flex flex-col bg-[#0a0a0a] text-white">
+    <div class="w-full flex flex-col bg-[#0a0a0a] text-white">
         <div class="sticky top-0 z-20 bg-[#0a0a0a] py-8 border-b border-zinc-800/30 px-[30px] flex justify-center">
             <div class="font-bold text-xl uppercase tracking-[0.4em]" style="color: ${theme}">Chọn vé</div>
         </div>
@@ -608,7 +618,9 @@ function generateTicketListHTML(config) {
                         <div class="flex justify-between items-center mb-6">
                             <div class="flex-1">
                                 <h3 class="font-black text-white text-[20px] uppercase">${t.name}</h3>
-                                <div class="font-black mt-1 text-[18px]" style="color: ${accent}">${t.price.toLocaleString()} đ</div>
+                                <div class="font-black mt-1 text-[18px]" style="color: ${accent}">
+                                    ${t.price.toLocaleString()} đ
+                                </div>
                             </div>
                             
                             <div class="flex items-center bg-white rounded-full shrink-0 overflow-hidden">
@@ -635,11 +647,9 @@ function generateTicketListHTML(config) {
     </div>`;
 }
 
-
-const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbx3vQyakJkFfJxkP5XAQ8fQkjmt5lnls2n4N3zjrEUL4JxYIzMumbGmPIZwOTzbjgO-OA/exec';
-
-let currentEventConfig = null;
-
+// ==========================================
+// 1. KHỞI TẠO VÀ CẤU HÌNH CHÍNH (INIT)
+// ==========================================
 async function initMap() {
     const urlParams = new URLSearchParams(window.location.search);
     const eventId = (urlParams.get('id') || '21').toString();
@@ -684,22 +694,21 @@ async function initMap() {
     const sideLoc = document.getElementById('side-loc') || document.querySelector('.fa-location-dot')?.parentElement;
     const totalDisplay = document.querySelector('.total-price-class') || document.getElementById('total-price');
 
-    // --- BƯỚC 4: ĐỔI MÀU THEO THEME  ---
+    // --- BƯỚC 4: ĐỔI MÀU THEO THEME ---
     const theme = config.themeColor || "#26bc4e";
     const accent = config.accentColor || theme;
+    
     setTimeout(() => {
         document.querySelectorAll('.fa-calendar-days, .fa-location-dot').forEach(icon => {
             icon.style.setProperty('color', theme, 'important');
         });
-        const textSelectors = '#side-time,  .right-panel p, .fa-calendar-days + span, .fa-location-dot + span';
-    document.querySelectorAll(textSelectors).forEach(el => {
-        el.style.setProperty('color', theme, 'important');
-    });
-
+        const textSelectors = '#side-time, .right-panel p, .fa-calendar-days + span, .fa-location-dot + span';
+        document.querySelectorAll(textSelectors).forEach(el => {
+            el.style.setProperty('color', theme, 'important');
+        });
     }, 100);
 
-
-    const totalLabel = document.querySelector('.total-label-class')
+    const totalLabel = document.querySelector('.total-label-class');
     if (totalLabel) totalLabel.style.color = theme;
 
     if (sidebarTitle) {
@@ -707,10 +716,11 @@ async function initMap() {
         sidebarTitle.style.color = theme; 
     }
 
-    if (totalDisplay) totalDisplay.style.color = accent; // Đổi màu tổng tiền
+    if (totalDisplay) totalDisplay.style.color = accent; 
 
     if (sideTime) sideTime.innerHTML = `<i class="fa-solid fa-calendar-days mr-2"></i> ${config.time}`;
     if (sideLoc) sideLoc.innerHTML = `<i class="fa-solid fa-location-dot mr-2"></i> ${config.location}`;
+
     // --- BƯỚC 5: RENDER SƠ ĐỒ HOẶC LIST VÉ CHÍNH ---
     const mapContainer = document.getElementById('map-container');
     const viewport = document.getElementById('viewport');
@@ -734,15 +744,16 @@ async function initMap() {
     // --- BƯỚC 6: CẬP NHẬT BẢNG GIÁ BÊN PHẢI ---
     renderPriceListSidebar(config);
 }
-// HÀM HỖ TRỢ 1: Parse giá vé (Đã sửa lỗi logic và cú pháp)
+
+// ==========================================
+// 2. HÀM HỖ TRỢ XỬ LÝ DỮ LIỆU (DATA HELPERS)
+// ==========================================
 function parsePriceList(priceData, quantityData, detailData) {
     if (!priceData) return [];
     if (Array.isArray(priceData)) return priceData;
 
     try {
-        // Lấy danh sách đơn hàng để tính toán số vé đã bán
         const orders = JSON.parse(localStorage.getItem('eventOrders')) || [];
-        
         const quantities = quantityData ? quantityData.split(',').map(q => q.trim()) : [];
         const details = detailData ? detailData.split('|').map(d => d.trim()) : [];
         const pricesRaw = priceData.split(/,|\n/).filter(p => p.trim() !== "");
@@ -766,7 +777,6 @@ function parsePriceList(priceData, quantityData, detailData) {
                     return sum + (ticket ? ticket.qty : 0);
                 }, 0);
 
-            // Số vé thực tế còn lại
             let finalStock = totalStock - soldCount;
 
             return {
@@ -783,13 +793,14 @@ function parsePriceList(priceData, quantityData, detailData) {
     }
 }
 
-// HÀM HỖ TRỢ 2: Render bảng giá nhanh
+// ==========================================
+// 3. GIAO DIỆN VÀ LOGIC HIỂN THỊ (UI & ZOOM)
+// ==========================================
 function renderPriceListSidebar(config) {
-    // 1. Lấy màu từ config, nếu không có thì để mặc định (ví dụ xanh lá của Ticketbox)
     const theme = config.themeColor || "#26bc4e"; 
     const accent = config.accentColor || theme;
-    
     const priceListDiv = document.querySelector('#price-list-default .space-y-4') || document.getElementById('ticket-list-container');
+    
     if (!priceListDiv) return;
 
     if (config.priceList && config.priceList.length > 0) {
@@ -798,13 +809,11 @@ function renderPriceListSidebar(config) {
             return `
                 <div class="flex justify-between items-center group cursor-pointer p-2 hover:bg-white/5 rounded-lg" 
                      onclick="handleBlockClick('${safeName}', ${item.price})">
-                    
                     <span class="text-[11px] font-bold text-gray-300 transition uppercase flex-1"
                           onmouseover="this.style.color='${theme}'" 
                           onmouseout="this.style.color=''">
                         ${item.name}
                     </span>
-
                     <span class="text-[11px] font-bold ml-2" style="color: ${accent}">
                         ${item.price.toLocaleString()} đ
                     </span>
@@ -815,7 +824,6 @@ function renderPriceListSidebar(config) {
     }
 }
 
-
 function activateZoomLogic() {
     const container = document.getElementById('map-container');
     const viewport = document.getElementById('viewport');
@@ -824,15 +832,12 @@ function activateZoomLogic() {
     let scale = 0.6;
     let pointX = 0;
     let pointY = 0;
-    
-    // Biến phục vụ việc kéo (Drag)
     let isDragging = false;
     let startX, startY;
 
     container.style.transformOrigin = "center center";
     container.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
 
-    // --- LOGIC ZOOM (Giữ nguyên của ông) ---
     viewport.onwheel = function(e) {
         e.preventDefault();
         const delta = e.deltaY * -0.001;
@@ -849,7 +854,6 @@ function activateZoomLogic() {
         container.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
     };
 
-    // --- LOGIC KÉO (DRAG) ---
     viewport.addEventListener('mousedown', (e) => {
         isDragging = true;
         viewport.style.cursor = 'grabbing'; 
@@ -860,10 +864,8 @@ function activateZoomLogic() {
     window.addEventListener('mousemove', (e) => {
         if (!isDragging) return;
         e.preventDefault();
-
         pointX = e.clientX - startX;
         pointY = e.clientY - startY;
-
         container.style.transform = `translate(${pointX}px, ${pointY}px) scale(${scale})`;
     });
 
@@ -875,30 +877,25 @@ function activateZoomLogic() {
     viewport.style.cursor = 'grab';
 }
 
-window.onload = function() {
-    initMap();
-};
-
+// ==========================================
+// 4. LOGIC THANH TOÁN VÀ HÓA ĐƠN (PAYMENT)
+// ==========================================
 function showInvoice() {
-    // 1. Ẩn modal QR
     const qrModal = document.getElementById('qr-modal');
     if (qrModal) {
         qrModal.classList.add('hidden');
         qrModal.style.display = 'none';
     }
 
-    // 2. Hiển thị modal Hóa đơn
     const invModal = document.getElementById('invoice-modal');
     if (!invModal) return;
     invModal.classList.remove('hidden');
     invModal.style.display = 'flex';
 
-    // 3. Đổ dữ liệu NGƯỜI MUA 
     document.getElementById('inv-user-name').innerText = document.getElementById('checkout-name')?.value || "KHÁCH HÀNG";
     document.getElementById('inv-user-email').innerText = document.getElementById('checkout-email')?.value || "---";
     document.getElementById('inv-user-phone').innerText = document.getElementById('checkout-phone')?.value || "---";
 
-    // 4. Đổ dữ liệu SỰ KIỆN & VỊ TRÍ
     const eventId = new URLSearchParams(window.location.search).get('id') || '21';
     const config = currentEventConfig || (typeof MAP_TEMPLATES !== 'undefined' ? MAP_TEMPLATES[eventId] : null);
     
@@ -906,27 +903,21 @@ function showInvoice() {
         document.getElementById('inv-event-name').innerText = config.eventName;
     }
 
-    // Lấy danh sách tên ghế từ giỏ hàng
     const seatNames = cart.map(item => item.name).join(', ');
     document.getElementById('inv-seats').innerText = seatNames || "Chưa chọn vị trí";
 
-    // 5. Đổ số lượng và Tổng tiền
     const totalQty = cart.reduce((a, b) => a + (Number(b.qty) || 1), 0);
     document.getElementById('inv-qty').innerText = 'x' + totalQty;
 
-    // Lấy tổng tiền đang hiển thị ở màn hình thanh toán
     const finalTotal = document.getElementById('pay-total')?.innerText || "0 đ";
     document.getElementById('inv-total').innerText = finalTotal;
 
-    // 6. Ghi lại thời gian xác nhận
     const now = new Date();
     document.getElementById('inv-order-time').innerText = now.toLocaleString('vi-VN');
 }
 
-
 function finishPayment() {
     console.log("Đang bắt đầu quá trình lưu đơn hàng...");
-    
     try {
         const eventId = new URLSearchParams(window.location.search).get('id') || '21';
         const config = currentEventConfig || (typeof MAP_TEMPLATES !== 'undefined' ? MAP_TEMPLATES[eventId] : null);
@@ -966,6 +957,12 @@ function finishPayment() {
         showError("Có lỗi xảy ra khi lưu đơn: " + error.message);
     }
 }
+
+// Khởi chạy khi trang tải xong
+window.onload = function() {
+    initMap();
+};
+
 
 // --- HÀM THÔNG BÁO LỖI  ---
 function showError(msg) {
@@ -1030,13 +1027,13 @@ function changeModalQty(delta) {
 }
 
 function addTicketToCart() {
-    // 1. Kiểm tra giới hạn 10 vé
+    // 1. Kiểm tra giới hạn
     const currentTotalQty = cart.reduce((sum, item) => sum + item.qty, 0);
     if (currentTotalQty + tempSelection.qty > 10) {
         showError("Mỗi người chỉ được mua tối đa 10 vé thôi bà ơi!");
         return;
     }
-    // 2. KIỂM TRA TỒN KHO 
+    // 2. Kiểm tra tồn kho
     const ticketInConfig = currentEventConfig.priceList.find(p => p.name === tempSelection.name);
     if (ticketInConfig && tempSelection.qty > ticketInConfig.stock) {
         showError(`Rất tiếc, hạng vé này chỉ còn lại ${ticketInConfig.stock} vé thôi!`);
@@ -1057,7 +1054,7 @@ function addTicketToCart() {
 function updateCart(name, delta) {
     let item = cart.find(i => i.name === name);
     if(item) {
-        // Kiểm tra nếu tăng lên có quá 10 vé không
+
         const currentTotal = cart.reduce((sum, i) => sum + i.qty, 0);
         if (delta > 0 && currentTotal >= 10) {
             showError("Tối đa 10 vé thôi nhé!");
@@ -1075,11 +1072,8 @@ function renderCart() {
     const priceListDefault = document.getElementById('price-list-default');
     const totalQtyDisplay = document.getElementById('total-qty-display');
     let total = 0;
-
-    // Lấy màu theme để dùng cho các chi tiết
     const theme = currentEventConfig?.themeColor || "#26bc4e";
 
-    // --- PHẦN 1: CẬP NHẬT GIAO DIỆN BÊN PHẢI (CART) ---
     if (cart.length === 0) {
         list.innerHTML = `<p class="text-gray-700 text-xs italic text-center py-20 uppercase font-bold">Chưa có vé nào</p>`;
         list.classList.add('hidden');
@@ -1093,8 +1087,6 @@ function renderCart() {
     } else {
         priceListDefault.classList.add('hidden');
         list.classList.remove('hidden');
-
-        // SỬA TẠI ĐÂY: Giữ nguyên cấu trúc nút bấm để updateCart hoạt động
         list.innerHTML = cart.map(i => {
             total += i.price * i.qty;
             return `
@@ -1114,7 +1106,7 @@ function renderCart() {
         const btnNext = document.getElementById('btn-next');
         if(btnNext) {
             btnNext.classList.remove('hidden');
-            btnNext.style.backgroundColor = theme; // Ép màu nút TIẾP TỤC
+            btnNext.style.backgroundColor = theme;
         }
 
         const btnTotalVal = document.getElementById('btn-total-val');
@@ -1127,14 +1119,12 @@ function renderCart() {
         }
     }
     
-    // Cập nhật text tổng tiền ở sidebar
     const totalElem = document.getElementById('total-price');
     if(totalElem) {
         totalElem.innerText = total.toLocaleString() + " đ";
-        totalElem.style.color = theme; // Ép luôn màu tổng tiền cho đồng bộ
+        totalElem.style.color = theme;
     }
 
-    // --- PHẦN 2: ÉP SỐ LIỆU SANG BÊN TRÁI (TICKET LIST) ---
     document.querySelectorAll('[id^="qty-left-"]').forEach(el => {
         el.innerText = "0";
     });
@@ -1214,7 +1204,6 @@ function selectPay(element) {
         if (check) check.remove();
     });
 
-    // Thêm active mới
     element.classList.add('active');
     const checkIcon = document.createElement('i');
     checkIcon.className = 'fa-solid fa-circle-check ml-auto text-green-500';
@@ -1243,7 +1232,6 @@ function handleFinalCheckout() {
         }
     } 
     else {
-        // Nếu là ZALOPAY hoặc VIETQR (hoặc bất kỳ cái gì khác)
         setupQRModal(currentMethod);
     }
 }
@@ -1255,7 +1243,6 @@ function validateStep2() {
     const email = inputs[2].value.trim();
     const isAgreed = document.getElementById('c').checked;
 
-    // Kiểm tra từng trường một
     if (!fullName) {
         showError("Bà ơi, nhập Họ và tên để tụi tui in lên vé nhé!");
         return false;
@@ -1264,7 +1251,7 @@ function validateStep2() {
         showError("Số điện thoại không hợp lệ nè, bà kiểm tra lại nha.");
         return false;
     }
-    // Regex kiểm tra email cơ bản
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
         showError("Email có vẻ sai sai, bà nhập lại chính xác để nhận vé điện tử nhé!");
