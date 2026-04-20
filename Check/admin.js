@@ -1024,7 +1024,7 @@ function viewEventDetails(eventId) {
         btcLogoElem.src = ev.btclogo || `https://ui-avatars.com/api/?name=${encodeURIComponent(ev.btcname || 'BTC')}&background=00d2ff&color=fff`;
     }
 
-    // --- 4. TÀI KHOẢN NGÂN HÀNG (Fix lỗi N/A) ---
+    // --- 4. TÀI KHOẢN NGÂN HÀNG ---
     if (document.getElementById('det-bank-name')) 
         document.getElementById('det-bank-name').innerText = ev.bankname || ev.bankName || 'N/A';
     
@@ -1400,14 +1400,12 @@ function renderOrderRow(orderObj) {
     const formattedPrice = new Intl.NumberFormat('vi-VN').format(orderObj.price || 0);
     const status = orderObj._isReal ? "HOÀN TẤT" : "MỚI";
     const statusClass = orderObj._isReal ? "bg-green-500/10 text-green-500" : "bg-blue-500 text-white";
-    
-    // --- ĐỒNG BỘ ID TẠI ĐÂY ---
+
     let rawId = String(orderObj.id).replace('TK-', ''); 
     if (rawId.length > 10) {
         rawId = rawId.slice(-10);
     }
     const displayId = `TK-${rawId}`; 
-    // -------------------------
 
     const row = `
         <tr class="border-b border-white/5 ${orderObj._isReal ? '' : 'bg-blue-500/5'} transition order-row">
@@ -1433,7 +1431,7 @@ function renderOrderRow(orderObj) {
 
 /* --- HÀM TỰ ĐỘNG HÓA ĐA NHIỆM TỔNG HỢP --- */
 function startAutomation() {
-    // Chạy mỗi 12 giây
+
     setInterval(() => {
        const randomAction = Math.random();
         const buyer = names[Math.floor(Math.random() * names.length)];
@@ -1442,12 +1440,10 @@ function startAutomation() {
         const now = Date.now();
         const orderId = 'TK-' + now;
 
-        /// KỊCH BẢN 1: Bán vé ảo (30%) - CHỈ GIỮ BÁN VÉ
+        /// KỊCH BẢN 1: Bán vé ảo 
         if (randomAction > 0.7) {
-            // 1. Tạo giá gốc
-            const originalPrice = (Math.floor(Math.random() * 10) + 5) * 100000; 
 
-            // 2. Định dạng đối tượng đơn hàng chuẩn
+            const originalPrice = (Math.floor(Math.random() * 10) + 5) * 100000; 
             const salesOrder = { 
                 id: orderId, 
                 name: buyer, 
@@ -1459,26 +1455,22 @@ function startAutomation() {
                 _isReal: false 
             };
 
-            // 3. Lưu vào admin_orders
             try {
                 let adminOrders = JSON.parse(localStorage.getItem('admin_orders')) || [];
                 adminOrders.unshift(salesOrder);
-                // Giới hạn 50 đơn cho nhẹ máy
                 if (adminOrders.length > 50) adminOrders.pop();
                 localStorage.setItem('admin_orders', JSON.stringify(adminOrders));
             } catch (e) { console.error("Lưu đơn ảo lỗi:", e); }
             
-            // 4. Vẽ ngay lên bảng hiển thị
             addLiveOrder(buyer, event, originalPrice, true, salesOrder);
             updateDashboardStats(1, originalPrice, 0);
 
-            // Ghi log hoạt động
             logAdminAction('ORDER', `Đơn hàng mới: ${buyer} mua vé ${event}`);
             addNotification("Giao dịch", `Khách hàng ${buyer} vừa đặt vé thành công.`);
         }
 
 
-        // KỊCH BẢN 2: Khách hàng mới (25%) - Tăng User
+        // KỊCH BẢN 2: Khách hàng mới 
         else if (randomAction > 0.45) {
             const dummyUser = {
                 id: 'dummy-' + timestamp,
@@ -1489,20 +1481,18 @@ function startAutomation() {
                 createdAt: Date.now()
             };
 
-            // Cập nhật Dashboard 
             updateDashboardStats(0, 0, 1);
             
             if (typeof addUserCardToGrid === "function") {
                 addUserCardToGrid(dummyUser, false); 
             }
-             // ✅ LƯU USER
+
             try {
                 let users = JSON.parse(localStorage.getItem('admin_dummy_users')) || [];
                 users.unshift(dummyUser);
                 localStorage.setItem('admin_dummy_users', JSON.stringify(users));
             } catch {}
 
-            // ✅ LOG
             logAdminAction('USER', `${dummyUser.name} đăng ký`, {
                 userId: dummyUser.id
             });
@@ -1510,30 +1500,30 @@ function startAutomation() {
         }
 
         // KỊCH BẢN 3: Sự kiện mới ảo
-else if (randomAction > 0.2) {
-    const now = Date.now(); 
-    const dummyEv = {
-        id: 'ev-' + now, 
-        title: event,
-        location: locations[Math.floor(Math.random() * locations.length)],
-        organizer: "BTC " + buyer,
-        price: (Math.floor(Math.random() * 8) + 2) * 100000,
-        createdAt: now // BẮT BUỘC PHẢI CÓ để sort lên đầu
-    };
+        else if (randomAction > 0.2) {
+            const now = Date.now(); 
+            const dummyEv = {
+                id: 'ev-' + now, 
+                title: event,
+                location: locations[Math.floor(Math.random() * locations.length)],
+                organizer: "BTC " + buyer,
+                price: (Math.floor(Math.random() * 8) + 2) * 100000,
+                createdAt: now 
+            };
 
-    // 1. Lưu vào LocalStorage trước
-    try {
-        let dummyList = JSON.parse(localStorage.getItem('admin_dummy_events')) || [];
-        dummyList.push(dummyEv);
-        if(dummyList.length > 50) dummyList.shift(); 
-        localStorage.setItem('admin_dummy_events', JSON.stringify(dummyList));
-    } catch(err) {}
-    loadAllAdminData(); 
-    logAdminAction('EVENT', `Event "${event}" đang chờ duyệt`);
-    addNotification("Sự kiện", `Sự kiện mới "${event}" đang chờ duyệt.`);
-}
+            try {
+                let dummyList = JSON.parse(localStorage.getItem('admin_dummy_events')) || [];
+                dummyList.push(dummyEv);
+                if(dummyList.length > 50) dummyList.shift(); 
+                localStorage.setItem('admin_dummy_events', JSON.stringify(dummyList));
+            } 
+            catch(err) {}
+            loadAllAdminData(); 
+            logAdminAction('EVENT', `Event "${event}" đang chờ duyệt`);
+            addNotification("Sự kiện", `Sự kiện mới "${event}" đang chờ duyệt.`);
+        }
 
-        // KỊCH BẢN 4: Tin nhắn hỗ trợ mới (20%)
+        // KỊCH BẢN 4: Tin nhắn hỗ trợ mới 
         else {
             const newTicket = {
                 id: 'TK-' + timestamp,
@@ -1551,28 +1541,25 @@ else if (randomAction > 0.2) {
                     renderSupportList(window.allSupportData);
                 }
             }
-            // ✅ LƯU SUPPORT
+   
             try {
                 let supports = JSON.parse(localStorage.getItem('admin_support')) || [];
                 supports.unshift(newTicket);
                 localStorage.setItem('admin_support', JSON.stringify(supports));
             } catch {}
 
-            // ✅ LOG
             logAdminAction('SUPPORT', `Yêu cầu từ ${buyer}: "${newTicket.subject}"`);
             addNotification("Hỗ trợ", `Yêu cầu mới từ ${buyer}: "${newTicket.subject}"`);
             addActivity(
-    'SUPPORT',
-    buyer,
-    newTicket.message
-);
+                'SUPPORT',
+                buyer,
+                newTicket.message
+            );
         }
-
-
     }, 12000); 
 }
 
-/* --- TIỆN ÍCH (NOTIF, SEARCH, STATS) --- */
+/* --- TIỆN ÍCH  --- */
 function updateDashboardStats(ticketIncr, revenueIncr, userIncr = 0) {
     if (ticketIncr > 0) totalTickets += ticketIncr;
     if (revenueIncr > 0) totalRevenue += revenueIncr;
@@ -1587,7 +1574,6 @@ function updateDashboardStats(ticketIncr, revenueIncr, userIncr = 0) {
     }));
 }
 
-// Quản lý trạng thái panel thông báo
 
 function addNotification(title, message, type = 'EVENT') {
     const now = new Date();
@@ -1604,7 +1590,7 @@ function addNotification(title, message, type = 'EVENT') {
 let currentRejectingId = null;
 let currentRefundData = null;
 
-//ai vừa đăng ký thật
+
 function checkRealRegistrations() {
     const newRegs = JSON.parse(localStorage.getItem('new_registrations')) || [];
     
@@ -1619,7 +1605,7 @@ function checkRealRegistrations() {
 
 setInterval(checkRealRegistrations, 5000);
 
-/* --- HÀM QUẢN LÝ HỖ TRỢ (FIXED & OPTIMIZED) --- */
+/* --- HÀM QUẢN LÝ HỖ TRỢ --- */
 
 // 1. Hàm render danh sách 
 function renderSupportList(data) {
@@ -1661,16 +1647,16 @@ function renderSupportList(data) {
             </div>
             <div class="flex gap-2 justify-end opacity-0 group-hover:opacity-100 transition-all">
                 <button onclick="askAIHelp('${tk.id}')" 
-    ${tk.status === 'replied' || tk.status === 'resolved' ? 'disabled' : ''} 
-    class="text-[10px] font-black text-white bg-gradient-to-r from-indigo-600 to-blue-600 px-4 py-2 rounded-xl hover:shadow-[0_0_15px_rgba(37,99,235,0.4)] transition-all flex items-center gap-2">
-    <i class="fa-solid fa-robot text-[9px]"></i> 
-    ${tk.status === 'replied' ? 'AI DONE' : 'AI REPLY'}
-</button>
+                ${tk.status === 'replied' || tk.status === 'resolved' ? 'disabled' : ''} 
+                class="text-[10px] font-black text-white bg-gradient-to-r from-indigo-600 to-blue-600 px-4 py-2 rounded-xl hover:shadow-[0_0_15px_rgba(37,99,235,0.4)] transition-all flex items-center gap-2">
+                <i class="fa-solid fa-robot text-[9px]"></i> 
+                ${tk.status === 'replied' ? 'AI DONE' : 'AI REPLY'}
+                </button>
                 <button onclick="resolveTicket(this, '${tk.id}')" 
-    ${tk.status === 'resolved' ? 'disabled' : ''} 
-    class="text-[10px] font-black text-green-500 bg-green-500/10 px-4 py-2 rounded-xl hover:bg-green-500 hover:text-white transition-all">
-    ${tk.status === 'resolved' ? 'HOÀN TẤT' : 'ĐÃ XỬ LÝ'}
-</button>
+                ${tk.status === 'resolved' ? 'disabled' : ''} 
+                class="text-[10px] font-black text-green-500 bg-green-500/10 px-4 py-2 rounded-xl hover:bg-green-500 hover:text-white transition-all">
+                ${tk.status === 'resolved' ? 'HOÀN TẤT' : 'ĐÃ XỬ LÝ'}
+                </button>
                 <a href="mailto:${tk.email}?subject=Re: ${subject}" class="text-[10px] font-black text-white/50 bg-white/5 px-4 py-2 rounded-xl hover:bg-white/10 transition-all border border-white/5">GMAIL</a>
             </div>
         </div>
@@ -1679,19 +1665,16 @@ function renderSupportList(data) {
 
 function updateSupportStatus(id, newStatus) {
     try {
-        // Lấy dữ liệu cũ ra
+
         let supports = JSON.parse(localStorage.getItem('admin_support')) || [];
         let contacts = JSON.parse(localStorage.getItem('contact_messages')) || [];
 
-        // Cập nhật cho cả mảng ảo và mảng thật (nếu có)
         supports = supports.map(tk => tk.id == id ? { ...tk, status: newStatus } : tk);
         contacts = contacts.map(tk => tk.id == id ? { ...tk, status: newStatus } : tk);
 
-        // Lưu ngược lại vào máy
         localStorage.setItem('admin_support', JSON.stringify(supports));
         localStorage.setItem('contact_messages', JSON.stringify(contacts));
         
-        // Cập nhật biến tạm đang hiển thị
         if (window.allSupportData) {
             window.allSupportData = window.allSupportData.map(tk => tk.id == id ? { ...tk, status: newStatus } : tk);
         }
@@ -1731,7 +1714,7 @@ function askAIHelp(id) {
         template = replyTemplates.location;
     }
 
-    // 2. Điền tên khách vào văn mẫu
+    // 2. Điền tên khách 
     const finalContent = template.replace(/{name}/g, data.name); 
 
     // 3. Mở Gmail
@@ -1752,7 +1735,7 @@ function resolveTicket(btn, id) {
     const card = btn.closest('.glass');
     if (!card) return;
 
-    // --- BƯỚC 1: LƯU VÀO MÁY (QUAN TRỌNG NHẤT) ---
+    // --- BƯỚC 1: LƯU VÀO MÁY  ---
     updateSupportStatus(id, 'resolved');
 
     // --- BƯỚC 2: HIỆN THÔNG BÁO ---
@@ -1777,7 +1760,7 @@ function resolveTicket(btn, id) {
     }
 }
 
-// 3. Khởi tạo dữ liệu gộp 
+// 3. Khởi tạo dữ liệu 
 function initDummySupport() {
     let savedSupports = JSON.parse(localStorage.getItem('admin_support'));
     if (!savedSupports || savedSupports.length === 0) {
@@ -1796,7 +1779,6 @@ function initDummySupport() {
         savedSupports = dummyTickets;
     }
 
-
     const realTickets = JSON.parse(localStorage.getItem('contact_messages')) || [];
     const markedReal = realTickets.map(t => ({
         ...t,
@@ -1810,7 +1792,7 @@ function initDummySupport() {
     updateDashboardNumbers();
 }
 
-/* --- 5. HÀM TÌM KIẾM HỖ TRỢ (SEARCH SUPPORT) --- */
+/* --- 5. HÀM TÌM KIẾM HỖ TRỢ  --- */
 function setupSupportSearch() {
     const searchInput = document.querySelector('input[placeholder*="Tìm kiếm"]') || 
                         document.querySelector('.support-search-input');
@@ -1846,7 +1828,7 @@ function setupSupportSearch() {
 }
 
 
-/* --- HỆ THỐNG ACTIVITY FEED THỜI GIAN THỰC --- */
+/* --- HỆ THỐNG ACTIVITY FEED --- */
 
 const feedTypes = {
     USER: { icon: 'fa-user-plus', color: 'blue', label: 'Khách hàng mới' },
@@ -2017,7 +1999,7 @@ function loadDeposits() {
 }
 
 
-/* --- HỆ THỐNG LẮNG NGHE DỮ LIỆU ĐA KÊNH  --- */
+/* --- HỆ THỐNG LẮNG NGHE DỮ LIỆU --- */
 window.addEventListener('storage', (e) => {
     if (!e.newValue) return;
 
@@ -2052,23 +2034,23 @@ window.addEventListener('storage', (e) => {
 
         /* 2. ĐƠN HÀNG */
         if (e.key === 'eventOrders') {
-    renderAdminTable?.();
-    reconcileDashboardFromOrders();
-
-    const lastOrder = data[data.length - 1];
-    if (lastOrder) {
-        if (!lastOrder._isRefund) {
-            updateDashboardStats(Number(lastOrder.quantity) || 1, Number(String(lastOrder.total || 0).replace(/\D/g, '')) || 0, 0);
+            renderAdminTable?.();
+            reconcileDashboardFromOrders();
+            
+            const lastOrder = data[data.length - 1];
+            if (lastOrder) {
+                if (!lastOrder._isRefund) {
+                    updateDashboardStats(Number(lastOrder.quantity) || 1, Number(String(lastOrder.total || 0).replace(/\D/g, '')) || 0, 0);
+                }
+                addActivity?.(
+                    'TICKET',
+                    lastOrder.customer || "Khách",
+                    `Mua ${lastOrder.event} (${lastOrder.total})`
+                );
+            }
+            addNotification("Đơn hàng", "Có đơn mua vé mới!", 'TICKET');
         }
-        addActivity?.(
-            'TICKET',
-            lastOrder.customer || "Khách",
-            `Mua ${lastOrder.event} (${lastOrder.total})`
-        );
-    }
 
-    addNotification("Đơn hàng", "Có đơn mua vé mới!", 'TICKET');
-}
         /*  3. USER MỚI */
         if (e.key === 'ticket_users') {
             const lastUser = data[data.length - 1];
@@ -2128,18 +2110,17 @@ window.addEventListener('storage', (e) => {
                 pendingEl.innerText = count + 1;
             }
         }
-
-if (e.key === 'ticket_events') {
-        console.log("Dữ liệu sự kiện đã thay đổi, đang cập nhật lại...");
-
-        if (typeof loadEventsForUser === "function") {
-            loadEventsForUser();
-        } else {
+        
+        if (e.key === 'ticket_events') {
+            console.log("Dữ liệu sự kiện đã thay đổi, đang cập nhật lại...");
+            
+            if (typeof loadEventsForUser === "function") {
+                loadEventsForUser();
+            } else {
             location.reload();
             }
-    }
-
-
+        }
+    
     } catch (err) {
         console.error("Lỗi storage:", err);
     }
@@ -2226,7 +2207,7 @@ function initChart() {
     });
 }
 
-/* --- XUẤT DỮ LIỆU EXCEL/CSV --- */
+/* --- XUẤT DỮ LIỆU --- */
 function exportToExcel() {
     const activeTab = document.querySelector('.tab-content.active').id;
     let csvContent = "data:text/csv;charset=utf-8,\uFEFF";
@@ -2372,7 +2353,6 @@ function updatePendingRefundUI() {
     renderPendingRefundList();
 }
 
-// 1. Hàm load danh sách hoàn tiền 
 function loadRefundData() {
     const tbody = document.getElementById('refund-table-body');
     const adminDisplay = document.getElementById('admin-balance-display');
@@ -2381,22 +2361,15 @@ function loadRefundData() {
     const adminBalance = parseInt(localStorage.getItem('admin_source_money')) || 0;
     if (adminDisplay) adminDisplay.innerText = adminBalance.toLocaleString();
 
-    // 1. Lấy dữ liệu và ĐẢO NGƯỢC để đơn mới nhất lên đầu
     let allOrders = JSON.parse(localStorage.getItem('eventOrders')) || [];
     const refundHistory = JSON.parse(localStorage.getItem('admin_refunds')) || [];
     
-    // Tạo bản sao và đảo ngược
     const displayOrders = [...allOrders].reverse();
 
     tbody.innerHTML = displayOrders.map(order => {
         const rawTotal = String(order.total || '0').replace(/\D/g, '');
         let originalPrice = parseInt(rawTotal) || 0;
-
-        // 2. LOGIC FIX NHÂN ĐÔI: 
-        // Nếu đơn hàng này đã có flag _isRefund, ta coi originalPrice chính là số tiền cần hoàn luôn, không nhân 0.9 nữa.
-        // Nếu là đơn thường mới bắt đầu hoàn, thì mới nhân 0.9.
         const refundAmount = order._isRefund ? originalPrice : Math.floor(originalPrice * 0.9);
-        
         const isRefunded = refundHistory.some(r => String(r.orderId) === String(order.id));
 
         return `

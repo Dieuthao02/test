@@ -1,51 +1,78 @@
-/* --- 1. Màn hình Laptop/Tablet ngang (Dưới 1024px) --- */
 @media screen and (max-width: 1024px) {
-    .container {
-        width: 95%; /* Co lại một chút để không sát mép màn hình */
+    /* Đảm bảo không có gì bị tràn ngang */
+    body {
+        overflow-x: hidden;
     }
     
-    /* Ví dụ: Ticketbox bản Desktop hiện 4 cột sự kiện -> Tablet hiện 3 cột */
-    .event-list {
-        grid-template-columns: repeat(3, 1fr);
+
+    .container, .main-content, .wrapper {
+        width: 100% !important;
+        padding-left: 15px;
+        padding-right: 15px;
+        box-sizing: border-box;
+    }
+
+
+    img {
+        max-width: 100%;
+        height: auto;
     }
 }
 
-/* --- 2. Màn hình Tablet dọc (Dưới 768px) --- */
 @media screen and (max-width: 768px) {
-    /* Menu: Ẩn thanh menu ngang, hiện nút bấm menu (Hamburger) */
+    header nav {
+        position: relative;
+    }
+
+    /* Ẩn danh sách menu */
     .nav-links {
-        display: none; /* Bạn sẽ dùng JS để hiện nó ra khi bấm nút */
-    }
-    
-    .hamburger-btn {
-        display: block; /* Hiện nút 3 gạch */
+        position: fixed;
+        top: 70px; 
+        right: -100%;
+        width: 70%;
+        height: 100vh;
+        background: #fff;
+        flex-direction: column;
+        transition: 0.4s;
+        box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+        z-index: 999;
     }
 
-    /* Chuyển các Grid từ nhiều cột về 2 cột hoặc 1 cột */
-    .event-list {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    /* Các phần như banner, intro nên giảm size chữ */
-    .hero-title {
-        font-size: 1.8rem;
+    .nav-links.active {
+        right: 0;
     }
 }
 
-/* --- 3. Màn hình Điện thoại (Dưới 480px) --- */
-@media screen and (max-width: 480px) {
-    /* Chuyển tất cả về 1 cột dọc duy nhất */
-    .event-list {
-        grid-template-columns: 1fr;
+@media screen and (max-width: 768px) {
+
+    .event-grid, .card-container {
+        display: grid;
+        grid-template-columns: 1fr !important; 
+        gap: 15px;
     }
 
-    /* Thu nhỏ các khoảng cách (padding/margin) quá lớn của bản Desktop */
-    .section {
-        padding: 20px 10px;
+    .event-detail-wrapper {
+        display: flex;
+        flex-direction: column;
     }
 
-    /* Form đăng ký/đặt vé nên chiếm 100% chiều ngang */
-    .booking-form {
+    .table-responsive {
+        display: block;
         width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .login-box, .booking-form, .modal-content {
+        width: 90% !important;
+        margin: 10px auto;
+        padding: 20px;
+    }
+
+    input, button {
+        width: 100%; 
+        font-size: 16px; 
     }
 }
