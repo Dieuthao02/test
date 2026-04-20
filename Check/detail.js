@@ -143,109 +143,93 @@
         } else { timeHTML += `</div>`; }
         timeContainer.innerHTML = timeHTML + `</div>`;
     }
-// --- 5. RENDER VÉ ---
-const ticketContainer = document.getElementById('ticket-list-container');
-
-const orders = JSON.parse(localStorage.getItem('eventOrders')) || [];
-
-if (ev.priceList && timeArray.length > 0) {
-    let accordionHTML = '';
-    let ticketsHTML = '';
     
-    const pricesRaw = ev.priceList.split(/,|\n/).filter(p => p.trim() !== "");
-    const detailsRaw = ev.ticketDetail ? ev.ticketDetail.split('|').map(d => d.trim()) : [];
-    const quantitiesRaw = ev.ticketQuantity ? ev.ticketQuantity.split(',').map(q => q.trim()) : [];
+    // --- 5. RENDER VÉ  ---
+    const ticketContainer = document.getElementById('ticket-list-container');
+    const orders = JSON.parse(localStorage.getItem('eventOrders')) || [];
 
-    // --- 5. RENDER VÉ ---
-pricesRaw.forEach((p, index) => {
-    if (p.includes(':')) {
-        const parts = p.split(':');
-        const name = parts[0].trim();
-        const priceValue = parseInt(parts[1].replace(/\D/g, ''));
-        
-        if (!isNaN(priceValue)) {
-            if (priceValue < minPrice) minPrice = priceValue;
+    if (ev.priceList && timeArray.length > 0) {
+        let accordionHTML = '';
+        const pricesRaw = ev.priceList.split(/,|\n/).filter(p => p.trim() !== "");
+        const detailsRaw = ev.ticketDetail ? ev.ticketDetail.split('|').map(d => d.trim()) : [];
+        const quantitiesByTime = ev.ticketQuantity ? ev.ticketQuantity.split('|').map(q => q.trim()) : [];
 
-            let qVal = quantitiesRaw[index];
-            let totalQty;
+        timeArray.forEach((timeStr, timeIdx) => {
+            const isPast = parseDate(timeStr).getTime() < now.getTime();
+            let ticketsHTML = ''; 
 
-            if (qVal === undefined || qVal === null || qVal.toString().trim() === "") {
-                totalQty = 1000; 
-            } else if (qVal.toString().toLowerCase() === "sold out" || qVal.toString().trim() === "0") {
-                totalQty = 0; 
-            } else {
-                totalQty = parseInt(qVal);
-            }
+            const currentBatchStr = quantitiesByTime[timeIdx] || quantitiesByTime[0] || "";
+            const quantitiesRaw = currentBatchStr.split(',').map(q => q.trim());
 
-            const soldCount = orders
-                .filter(order => order.event === ev.title || order.event === ev.eventName) 
-                .reduce((sum, order) => {
-                    const ticket = order.tickets.find(t => t.name === name);
-                    return sum + (ticket ? ticket.qty : 0);
-                }, 0);
+            pricesRaw.forEach((p, pIdx) => {
+                if (p.includes(':')) {
+                    const [name, priceRawValue] = p.split(':').map(s => s.trim());
+                    const priceValue = parseInt(priceRawValue.replace(/\D/g, '')) || 0; 
+                    
+                    if (!isNaN(priceValue)) {
+                        if (priceValue < minPrice) minPrice = priceValue;
 
-            let remainingQty = totalQty - soldCount;
-            const isSoldOut = remainingQty <= 0;
+                        let qVal = quantitiesRaw[pIdx];
+                        let totalQty = (!qVal || qVal.toLowerCase() === "sold out" || qVal === "0") ? 0 : parseInt(qVal);
+                        if (qVal === undefined || qVal === "") totalQty = 1000;
 
-            ticketsHTML += `
-                <div class="flex items-center justify-between p-4 border-t border-white/5 hover:bg-white/[0.02] transition ${isSoldOut ? 'opacity-60' : ''}">
-                    <div class="flex flex-col">
-                        <span class="text-xs font-bold text-gray-300 uppercase">
-                            ${name} ${isSoldOut ? '<span class="text-red-500 ml-2 text-[8px] tracking-normal">[HẾT VÉ]</span>' : ''}
-                        </span>
-                        <span class="text-[10px] text-gray-500 mt-0.5">${detailsRaw[index] || 'Vé chính thức'}</span>
+                        const soldCount = orders
+                            .filter(order => (order.event === ev.eventName || order.event === ev.title) && order.showtime === timeStr) 
+                            .reduce((sum, order) => {
+                                const ticket = order.tickets.find(t => t.name === name);
+                                return sum + (ticket ? ticket.qty : 0);
+                            }, 0);
+
+                        let remainingQty = totalQty - soldCount;
+                        const isSoldOut = remainingQty <= 0;
+                        const isFree = priceValue === 0;
+
+                        ticketsHTML += `
+                            <div class="flex items-center justify-between p-4 border-t border-white/5">
+                                <div class="flex flex-col">
+                                    <span class="text-xs font-bold text-gray-300 uppercase">
+                                        ${name} ${isSoldOut ? '<span class="text-red-500 ml-2">[HẾT VÉ]</span>' : ''}
+                                    </span>
+                                    <span class="text-[10px] text-gray-500">${detailsRaw[pIdx] || 'Vé chính thức'}</span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-sm font-black ${isFree ? 'text-pink-400' : 'text-green-400'}">
+                                        ${isFree ? 'MIỄN PHÍ' : priceValue.toLocaleString() + 'đ'}
+                                    </span>
+                                </div>
+                            </div>`;
+                    }
+                }
+            });
+
+            accordionHTML += `
+                <div class="showtime-item ${timeIdx === 0 && !isPast ? 'active' : ''} mb-4 bg-white/[0.03] rounded-2xl overflow-hidden border border-white/5">
+                    <div class="p-4 flex justify-between items-center">
+                        <div class="flex items-center gap-4 cursor-pointer" onclick="this.closest('.showtime-item').classList.toggle('active')">
+                            <div class="w-10 h-10 rounded-xl bg-pink-500/10 flex items-center justify-center">
+                                <i class="fa-solid fa-calendar-day text-pink-400"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-white">${timeStr}</p>
+                                <span class="text-[9px] ${isPast ? 'text-red-400' : 'text-green-400'} uppercase font-bold">
+                                    ${isPast ? 'Đã diễn ra' : 'Sắp diễn ra'}
+                                </span>
+                            </div>
+                            <i class="fa-solid fa-chevron-down text-[10px] text-gray-500"></i>
+                        </div>
+                        ${!isPast ? `<button onclick="goToBooking('${timeStr}')" class="px-6 py-2 bg-[#2ecc71] text-white rounded-xl text-[10px] font-black uppercase">Mua vé ngay</button>` : ''}
                     </div>
-                    <div class="text-right">
-                        <span class="text-sm font-black ${isSoldOut ? 'text-gray-600 line-through' : 'text-green-400'}">
-                            ${priceValue.toLocaleString()} đ
-                        </span>
-                    </div>
+                    <div class="ticket-rows-container bg-black/20">${ticketsHTML}</div>
                 </div>`;
-        }
+        });
+        ticketContainer.innerHTML = accordionHTML;
     }
-});
 
-    timeArray.forEach((timeStr, idx) => {
-        const isPast = parseDate(timeStr).getTime() < now.getTime();
-        
-        accordionHTML += `
-            <div class="showtime-item ${idx === 0 && !isPast ? 'active' : ''} ${isPast ? 'opacity-50' : ''} bg-white/[0.03] rounded-2xl overflow-hidden border border-white/5 mb-4">
-                <div class="p-4 flex flex-wrap justify-between items-center gap-4">
-                    <div class="flex items-center gap-4 cursor-pointer" onclick="this.parentElement.parentElement.classList.toggle('active')">
-                        <div class="w-10 h-10 rounded-xl bg-pink-500/10 flex items-center justify-center">
-                            <i class="fa-solid fa-calendar-day text-pink-400 text-sm"></i>
-                        </div>
-                        <div>
-                            <p class="text-sm font-bold text-white">${timeStr}</p>
-                            <span class="text-[9px] ${isPast ? 'text-red-400' : 'text-green-400'} font-bold uppercase">
-                                ${isPast ? 'Đã diễn ra' : 'Sắp diễn ra'}
-                            </span>
-                        </div>
-                        <i class="fa-solid fa-chevron-down text-[10px] text-gray-500 transition-transform icon-arrow ml-2"></i>
-                    </div>
-
-                    ${!isPast ? `
-                        <button onclick="goToBooking('${timeStr}')" class="px-6 py-2.5 bg-[#2ecc71] text-white rounded-xl font-black uppercase text-[10px] shadow-lg hover:scale-105 active:scale-95 transition-all">
-                            Mua vé ngay
-                        </button>
-                    ` : `
-                        <button class="px-6 py-2.5 bg-gray-800 text-gray-500 rounded-xl font-black uppercase text-[10px] cursor-not-allowed">
-                            Kết thúc
-                        </button>
-                    `}
-                </div>
-                <div class="ticket-rows-container">
-                    <div class="pb-2 bg-black/20">${ticketsHTML}</div>
-                </div>
-            </div>`;
-    });
-    ticketContainer.innerHTML = accordionHTML;
-}
 
     // --- 6. NÚT BOOKING ---
     const bookingBtn = document.getElementById('main-booking-btn');
     const priceDisplay = document.getElementById('event-min-price');
-    const finalMin = (minPrice === Infinity) ? "0" : minPrice.toLocaleString();
+    const finalMinDisplay = (minPrice === Infinity) ? "0 đ" : (minPrice === 0 ? "MIỄN PHÍ" : minPrice.toLocaleString() + " đ");
 
     if (isAllPast) {
         if (bookingBtn) {
@@ -253,7 +237,7 @@ pricesRaw.forEach((p, index) => {
             bookingBtn.className = "w-full py-2.5 bg-gray-800 text-gray-500 rounded-[1.5rem] font-black uppercase text-[10px] cursor-not-allowed opacity-70";
             bookingBtn.onclick = null;
         }
-        if (priceDisplay) priceDisplay.innerHTML = `<span class="line-through opacity-50">${finalMin} đ</span>`;
+        if (priceDisplay) priceDisplay.innerHTML = `<span class="line-through opacity-50">${finalMinDisplay} đ</span>`;
     } else {
         if (bookingBtn) {
             // KIỂM TRA SỐ LƯỢNG LỊCH DIỄN
@@ -277,7 +261,7 @@ pricesRaw.forEach((p, index) => {
             }
             bookingBtn.className = "w-full py-2.5 bg-[#2ecc71] text-white rounded-[1.5rem] font-black uppercase text-[10px] shadow-lg transition-all active:scale-95";
         }
-        if (priceDisplay) priceDisplay.innerHTML = `${finalMin} đ`;
+        if (priceDisplay) priceDisplay.innerHTML = `${finalMinDisplay} `;
     }
 
     // --- 7. TỔ CHỨC ---
