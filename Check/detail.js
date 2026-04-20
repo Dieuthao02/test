@@ -156,50 +156,54 @@ if (ev.priceList && timeArray.length > 0) {
     const detailsRaw = ev.ticketDetail ? ev.ticketDetail.split('|').map(d => d.trim()) : [];
     const quantitiesRaw = ev.ticketQuantity ? ev.ticketQuantity.split(',').map(q => q.trim()) : [];
 
-    pricesRaw.forEach((p, index) => {
-        if (p.includes(':')) {
-            const parts = p.split(':');
-            const name = parts[0].trim();
-            const priceValue = parseInt(parts[1].replace(/\D/g, ''));
-            
-            if (!isNaN(priceValue)) {
-                if (priceValue < minPrice) minPrice = priceValue;
-                const soldCount = orders
-                    .filter(order => order.event === ev.title || order.event === ev.eventName) 
-                    .reduce((sum, order) => {
-                        const ticket = order.tickets.find(t => t.name === name);
-                        return sum + (ticket ? ticket.qty : 0);
-                    }, 0);
+    // --- 5. RENDER VÉ ---
+pricesRaw.forEach((p, index) => {
+    if (p.includes(':')) {
+        const parts = p.split(':');
+        const name = parts[0].trim();
+        const priceValue = parseInt(parts[1].replace(/\D/g, ''));
+        
+        if (!isNaN(priceValue)) {
+            if (priceValue < minPrice) minPrice = priceValue;
 
-                let qVal = quantitiesRaw[index];
-                let totalQty = (qVal === undefined || qVal === "") ? 1000 : parseInt(qVal);
+            let qVal = quantitiesRaw[index];
+            let totalQty;
 
-                if (qVal && qVal.toLowerCase() === "sold out") {
-                totalQty = 0;
-                } else {
-                totalQty = (qVal === undefined || qVal === "") ? 1000 : parseInt(qVal);
-                }
-                
-                let remainingQty = totalQty - soldCount;
-                const isSoldOut = remainingQty <= 0;
-
-                ticketsHTML += `
-                    <div class="flex items-center justify-between p-4 border-t border-white/5 hover:bg-white/[0.02] transition ${isSoldOut ? 'opacity-60' : ''}">
-                        <div class="flex flex-col">
-                            <span class="text-xs font-bold text-gray-300 uppercase">
-                                ${name} ${isSoldOut ? '<span class="text-red-500 ml-2 text-[8px] tracking-normal">[HẾT VÉ]</span>' : ''}
-                            </span>
-                            <span class="text-[10px] text-gray-500 mt-0.5">${detailsRaw[index] || 'Vé chính thức'}</span>
-                        </div>
-                        <div class="text-right">
-                            <span class="text-sm font-black ${isSoldOut ? 'text-gray-600 line-through' : 'text-green-400'}">
-                                ${priceValue.toLocaleString()} đ
-                            </span>
-                        </div>
-                    </div>`;
+            if (qVal === undefined || qVal === null || qVal.toString().trim() === "") {
+                totalQty = 1000; 
+            } else if (qVal.toString().toLowerCase() === "sold out" || qVal.toString().trim() === "0") {
+                totalQty = 0; 
+            } else {
+                totalQty = parseInt(qVal);
             }
+
+            const soldCount = orders
+                .filter(order => order.event === ev.title || order.event === ev.eventName) 
+                .reduce((sum, order) => {
+                    const ticket = order.tickets.find(t => t.name === name);
+                    return sum + (ticket ? ticket.qty : 0);
+                }, 0);
+
+            let remainingQty = totalQty - soldCount;
+            const isSoldOut = remainingQty <= 0;
+
+            ticketsHTML += `
+                <div class="flex items-center justify-between p-4 border-t border-white/5 hover:bg-white/[0.02] transition ${isSoldOut ? 'opacity-60' : ''}">
+                    <div class="flex flex-col">
+                        <span class="text-xs font-bold text-gray-300 uppercase">
+                            ${name} ${isSoldOut ? '<span class="text-red-500 ml-2 text-[8px] tracking-normal">[HẾT VÉ]</span>' : ''}
+                        </span>
+                        <span class="text-[10px] text-gray-500 mt-0.5">${detailsRaw[index] || 'Vé chính thức'}</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-sm font-black ${isSoldOut ? 'text-gray-600 line-through' : 'text-green-400'}">
+                            ${priceValue.toLocaleString()} đ
+                        </span>
+                    </div>
+                </div>`;
         }
-    });
+    }
+});
 
     timeArray.forEach((timeStr, idx) => {
         const isPast = parseDate(timeStr).getTime() < now.getTime();

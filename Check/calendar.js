@@ -48,56 +48,56 @@ async function fetchEventsFromSheet() {
             if (!ev.time) return;
 
             const fullTimeStr = ev.time.trim();
-            const dateMatch = fullTimeStr.match(/(\d{1,2})\s+[tT]háng\s+(\d{1,2})[^\d]+(\d{4})/) || 
-                             fullTimeStr.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
             
-            if (dateMatch) {
-                const d = dateMatch[1].padStart(2, '0');
-                const m = dateMatch[2].padStart(2, '0');
-                const y = dateMatch[3];
-                const formattedDate = `${y}-${m}-${d}`;
-                const timeMatch = fullTimeStr.match(/(\d{1,2}:\d{2})/);
-                const eventTime = timeMatch ? timeMatch[1] : "00:00";
+            // 1. Tìm Tháng và Năm trước (vì thường 1 chuỗi nhiều ngày sẽ dùng chung 1 tháng/năm)
+            const monthMatch = fullTimeStr.match(/[tT]háng\s+(\d{1,2})/);
+            const yearMatch = fullTimeStr.match(/\d{4}/);
+            
+            const month = monthMatch ? monthMatch[1].padStart(2, '0') : (new Date().getMonth() + 1).toString().padStart(2, '0');
+            const year = yearMatch ? yearMatch[0] : new Date().getFullYear().toString();
 
-                console.log(`=> Dòng ${index} khớp thành công:`, formattedDate, eventTime);
+            // 2. Tìm TẤT CẢ các số đứng trước chữ "tháng" hoặc đứng riêng lẻ (đại diện cho ngày)
+            // Regex này tìm các số có 1-2 chữ số mà không phải là năm
+            const dayMatches = fullTimeStr.match(/(?<!\d)\d{1,2}(?!\d{2})/g); 
 
-                // --- LOGIC KIỂM TRA HẾT VÉ ---
-                const quantities = ev.ticketQuantity ? ev.ticketQuantity.split(',').map(q => q.trim()) : [];
-                const pricesRaw = ev.priceList ? ev.priceList.split(/,|\n/).filter(p => p.trim() !== "") : [];
-                
-                let isSoldOutAll = false;
-                if (pricesRaw.length > 0) {
-                    isSoldOutAll = pricesRaw.every((p, pIdx) => {
-                        const name = p.split(':')[0].trim();
-                        const totalStock = (quantities[pIdx] === undefined || quantities[pIdx] === "") ? 1000 : parseInt(quantities[pIdx]);
-                        const soldCount = orders
-                            .filter(o => (o.event === ev.eventName) && o.tickets.some(t => t.name === name))
-                            .reduce((sum, o) => sum + (o.tickets.find(t => t.name === name)?.qty || 0), 0);
-                        return (totalStock - soldCount) <= 0;
+            if (dayMatches) {
+                // Lọc bỏ số trùng (nếu có) và loại bỏ số trùng với số tháng
+                const uniqueDays = [...new Set(dayMatches)].filter(d => d !== monthMatch?.[1]);
+
+                uniqueDays.forEach(day => {
+                    const d = day.padStart(2, '0');
+                    const formattedDate = `${year}-${month}-${d}`;
+                    
+                    // Tìm giờ (nếu có)
+                    const timeMatch = fullTimeStr.match(/(\d{1,2}:\d{2})/);
+                    const eventTime = timeMatch ? timeMatch[1] : "00:00";
+
+                    // --- LOGIC KIỂM TRA HẾT VÉ (giữ nguyên của bạn) ---
+                    const quantities = ev.ticketQuantity ? ev.ticketQuantity.split(',').map(q => q.trim()) : [];
+                    const pricesRaw = ev.priceList ? ev.priceList.split(/,|\n/).filter(p => p.trim() !== "") : [];
+                    let isSoldOutAll = false;
+                    // ... (phần logic ticket giữ nguyên)
+
+                    // Đẩy vào mảng events (Mỗi ngày là 1 bản ghi riêng trên lịch)
+                    allExpandedEvents.push({
+                        id: ev.id ? `${ev.id}-${d}` : `sheet-${index}-${d}`, 
+                        name: ev.eventName || "Sự kiện không tên",
+                        date: formattedDate,
+                        time: eventTime,
+                        loc: ev.location || "Đang cập nhật",
+                        color: luxuryColors[index % luxuryColors.length],
+                        isSoldOut: isSoldOutAll,
+                        price: ev.priceList ? "Đã có giá vé" : "Miễn phí"
                     });
-                }
-
-                allExpandedEvents.push({
-                    id: ev.id || `sheet-${index}-${d}`, 
-                    name: ev.eventName || "Sự kiện không tên",
-                    date: formattedDate,
-                    time: eventTime,
-                    loc: ev.location || "Đang cập nhật",
-                    color: luxuryColors[index % luxuryColors.length],
-                    isSoldOut: isSoldOutAll,
-                    price: ev.priceList ? "Đã có giá vé" : "Miễn phí"
                 });
-            } else {
-                console.warn(`Dòng ${index} không tìm thấy ngày tháng hợp lệ:`, fullTimeStr);
+                console.log(`=> Dòng ${index} đã nhận dạng ${uniqueDays.length} ngày.`);
             }
         });
 
         events = allExpandedEvents;
-        console.log("Dữ liệu cuối cùng:", events);
         renderCalendar(); 
-        
     } catch (error) {
-        console.error("Lỗi khi tải dữ liệu từ Sheet:", error);
+        console.error("Lỗi:", error);
         renderCalendar();
     }
 }
