@@ -34,7 +34,7 @@ const MAP_TEMPLATES = {
     eventName: "BTS WORLD TOUR ARIRANG",
     hasDiagram: true,
     time: "19:00 - 18/05/2026",
-    location: "GILLETTE STADIUM, FOXBOROUGH, MA",
+    location: "SVĐ QUỐC GIA MỸ ĐÌNH, HÀ NỘI",
     currency: "COP",
     priceList: [
         { name: 'PAQUETE VIP | SOUND CHECK', price: 2953000 },

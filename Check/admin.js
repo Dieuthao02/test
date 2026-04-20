@@ -237,7 +237,6 @@ function loadAllAdminData() {
 
         let allEvents = [...markedReal, ...markedDummy];
 
-        // Sắp xếp chung theo thời gian tạo để event thật và ảo trộn lẫn
         allEvents.sort((a, b) => b._sortKey - a._sortKey);
 
         if (grid) {
@@ -283,7 +282,6 @@ function loadAllAdminData() {
                 })
             ];
 
-            // Sắp xếp 
             allOrders.sort((a, b) => b.sortTime - a.sortTime);
             allOrders.forEach(o => renderOrderRow(o));
             body.innerHTML = '';
@@ -2285,10 +2283,6 @@ function exportToExcel() {
     }
 }
 
-window.addEventListener('storage_updated', () => {
-    if (typeof loadDeposits === 'function') loadDeposits();
-});
-
 document.addEventListener('DOMContentLoaded', () => {
     if (typeof loadDeposits === 'function') loadDeposits();
     if (typeof renderAdminTable === 'function') renderAdminTable();
@@ -2384,34 +2378,41 @@ function loadRefundData() {
     const adminDisplay = document.getElementById('admin-balance-display');
     if (!tbody) return;
 
-    const adminBalance = parseInt(localStorage.getItem('admin_source_money')) || 1000000000;
+    const adminBalance = parseInt(localStorage.getItem('admin_source_money')) || 0;
     if (adminDisplay) adminDisplay.innerText = adminBalance.toLocaleString();
 
+    // 1. Lấy dữ liệu và ĐẢO NGƯỢC để đơn mới nhất lên đầu
     let allOrders = JSON.parse(localStorage.getItem('eventOrders')) || [];
-    const realOrders = allOrders.filter(o => !o._isRefund); 
-
     const refundHistory = JSON.parse(localStorage.getItem('admin_refunds')) || [];
+    
+    // Tạo bản sao và đảo ngược
+    const displayOrders = [...allOrders].reverse();
 
-    tbody.innerHTML = realOrders.map(order => {
-
+    tbody.innerHTML = displayOrders.map(order => {
         const rawTotal = String(order.total || '0').replace(/\D/g, '');
-        const originalPrice = parseInt(rawTotal) || 0;
+        let originalPrice = parseInt(rawTotal) || 0;
 
-        const refundAmount = Math.floor(originalPrice * 0.9);
+        // 2. LOGIC FIX NHÂN ĐÔI: 
+        // Nếu đơn hàng này đã có flag _isRefund, ta coi originalPrice chính là số tiền cần hoàn luôn, không nhân 0.9 nữa.
+        // Nếu là đơn thường mới bắt đầu hoàn, thì mới nhân 0.9.
+        const refundAmount = order._isRefund ? originalPrice : Math.floor(originalPrice * 0.9);
         
-        const isRefunded = refundHistory.some(r => r.orderId == order.id);
+        const isRefunded = refundHistory.some(r => String(r.orderId) === String(order.id));
 
         return `
             <tr class="hover:bg-white/[0.02] border-b border-white/5 transition-all">
-                <td class="p-6 text-xs font-bold text-white">${order.id}</td>
-                <td class="p-6 text-xs text-gray-400">${order.customer}</td>
-                <td class="p-6 text-xs text-gray-400">${order.event} <span class="text-blue-500 ml-2">(x${order.quantity || 1})</span></td>
+                <td class="p-6 text-xs font-bold text-white">#${order.id}</td>
+                <td class="p-6 text-xs text-gray-400">${order.customer || 'N/A'}</td>
+                <td class="p-6 text-xs text-gray-400">
+                    ${order.event || 'Sự kiện'} 
+                    <span class="text-blue-500 ml-2">(x${order.quantity || 1})</span>
+                </td>
                 <td class="p-6 text-xs font-bold text-gray-500">${originalPrice.toLocaleString()}đ</td>
                 <td class="p-6 text-xs font-black text-red-400">${refundAmount.toLocaleString()}đ</td>
                 <td class="p-6">
                     ${isRefunded 
-                        ? '<span class="text-[10px] font-black text-green-500 bg-green-500/10 px-3 py-1 rounded-lg border border-green-500/20">ĐÃ HOÀN VÍ</span>' 
-                        : `<button onclick="openRefundModal('${order.id}', '${order.customer}', ${refundAmount})" 
+                        ? '<span class="text-[10px] font-black text-green-500 bg-green-500/10 px-3 py-1 rounded-lg border border-green-500/20">ĐÃ HOÀN TIỀN</span>' 
+                        : `<button onclick="openRefundModal('${order.id}', '${(order.customer || 'Khách').replace(/'/g, "\\'")}', ${refundAmount})" 
                             class="text-[10px] font-black text-white bg-red-500 px-4 py-2 rounded-xl hover:bg-red-600 transition-all">
                             XÁC NHẬN HOÀN
                            </button>`
@@ -2447,12 +2448,12 @@ function confirmRecharge() {
     }
 
     try {
-        // A. Cập nhật số dư vào LocalStorage
+        // A. Cập nhật số dư 
         let current = parseInt(localStorage.getItem('admin_source_money')) || 1000000000;
         let newBalance = current + amount;
         localStorage.setItem('admin_source_money', newBalance.toString());
 
-        // B. Đổ dữ liệu vào các thẻ trong Biên lai 
+        // B. Đổ dữ liệu vào các thẻ 
         if (document.getElementById('invoice-id')) {
             document.getElementById('invoice-id').innerText = '#RCG-' + Math.floor(Math.random() * 90000 + 10000);
         }
@@ -2521,23 +2522,22 @@ function executeRefund(reason) {
     if (!currentRefundData) return;
     const { orderId, customerName, amount } = currentRefundData;
 
-    // 1. Kiểm tra xem đơn này ĐÃ ĐƯỢC HOÀN CHƯA 
     let refundHistory = JSON.parse(localStorage.getItem('admin_refunds')) || [];
-    const alreadyDone = refundHistory.some(r => r.orderId === orderId);
     
-    if (alreadyDone) {
-        alert("Đơn hàng này đã được hoàn tiền trước đó!");
+    // Kiểm tra trùng lặp lần cuối
+    if (refundHistory.some(r => String(r.orderId) === String(orderId))) {
+        alert("Đơn hàng này đã được xử lý hoàn tiền!");
         closeRefundModal();
         return;
     }
 
-    let adminBalance = parseInt(localStorage.getItem('admin_source_money')) || 1000000000;
+    let adminBalance = parseInt(localStorage.getItem('admin_source_money')) || 0;
     if (adminBalance < amount) {
-        alert("Nguồn tiền hệ thống không đủ!");
+        alert("Nguồn tiền hệ thống không đủ để thực hiện hoàn trả!");
         return;
     }
 
-    // 2. Thực hiện trừ/cộng tiền
+    // A. Khấu trừ tiền Admin và cộng tiền User
     adminBalance -= amount;
     localStorage.setItem('admin_source_money', adminBalance.toString());
 
@@ -2545,9 +2545,9 @@ function executeRefund(reason) {
     userBalances[customerName] = (userBalances[customerName] || 0) + amount;
     localStorage.setItem('user_balances', JSON.stringify(userBalances));
 
-    // 3. Lưu vào lịch sử
+    // B. Lưu lịch sử hoàn tiền
     refundHistory.push({
-        orderId, 
+        orderId: String(orderId), 
         customer: customerName, 
         amount, 
         reason, 
@@ -2556,13 +2556,21 @@ function executeRefund(reason) {
     });
     localStorage.setItem('admin_refunds', JSON.stringify(refundHistory));
 
-    // 4. Cập nhật giao diện
+    // C. Cập nhật lại thuộc tính của đơn hàng trong eventOrders (để đồng bộ triệt để)
+    let allOrders = JSON.parse(localStorage.getItem('eventOrders')) || [];
+    const orderIdx = allOrders.findIndex(o => String(o.id) === String(orderId));
+    if (orderIdx !== -1) {
+        allOrders[orderIdx]._isRefunded = true; // Đánh dấu đã hoàn
+        localStorage.setItem('eventOrders', JSON.stringify(allOrders));
+    }
+
+    // D. Làm mới toàn bộ UI
     closeRefundModal();
     loadRefundData(); 
-    updatePendingRefundUI();
+    updatePendingRefundUI(); 
     
     if (typeof addNotification === 'function') {
-        addNotification("Thành công", `Đã hoàn ${amount.toLocaleString()}đ cho đơn ${orderId}`, "SUCCESS");
+        addNotification("Thành công", `Đã hoàn ${amount.toLocaleString()}đ cho ${customerName}`, "SUCCESS");
     }
 }
 

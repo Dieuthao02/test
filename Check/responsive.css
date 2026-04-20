@@ -1,0 +1,51 @@
+/* --- 1. Màn hình Laptop/Tablet ngang (Dưới 1024px) --- */
+@media screen and (max-width: 1024px) {
+    .container {
+        width: 95%; /* Co lại một chút để không sát mép màn hình */
+    }
+    
+    /* Ví dụ: Ticketbox bản Desktop hiện 4 cột sự kiện -> Tablet hiện 3 cột */
+    .event-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* --- 2. Màn hình Tablet dọc (Dưới 768px) --- */
+@media screen and (max-width: 768px) {
+    /* Menu: Ẩn thanh menu ngang, hiện nút bấm menu (Hamburger) */
+    .nav-links {
+        display: none; /* Bạn sẽ dùng JS để hiện nó ra khi bấm nút */
+    }
+    
+    .hamburger-btn {
+        display: block; /* Hiện nút 3 gạch */
+    }
+
+    /* Chuyển các Grid từ nhiều cột về 2 cột hoặc 1 cột */
+    .event-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Các phần như banner, intro nên giảm size chữ */
+    .hero-title {
+        font-size: 1.8rem;
+    }
+}
+
+/* --- 3. Màn hình Điện thoại (Dưới 480px) --- */
+@media screen and (max-width: 480px) {
+    /* Chuyển tất cả về 1 cột dọc duy nhất */
+    .event-list {
+        grid-template-columns: 1fr;
+    }
+
+    /* Thu nhỏ các khoảng cách (padding/margin) quá lớn của bản Desktop */
+    .section {
+        padding: 20px 10px;
+    }
+
+    /* Form đăng ký/đặt vé nên chiếm 100% chiều ngang */
+    .booking-form {
+        width: 100%;
+    }
+}
