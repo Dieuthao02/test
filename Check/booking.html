@@ -49,7 +49,7 @@
                 <div class="flex justify-between items-end mb-4">
                     <div>
                         <p class="text-gray-500 text-[10px] uppercase font-bold mb-1">Tổng cộng</p>
-                        <p id="total-price" class="text-3xl font-black text-green-400 tracking-tighter">0 đ</p>
+                        <p id="total-price" class="text-3xl font-black text-blue-400 tracking-tighter">0 đ</p>
                     </div>
                     <div id="total-qty-display"
                         class="hidden items-center gap-2 text-white bg-white/10 px-3 py-1 rounded-lg">
@@ -58,7 +58,7 @@
                     </div>
                 </div>
                 <button id="btn-next" onclick="goToStep2()"
-                    class="hidden w-full py-5 bg-green-500 text-white rounded-full font-black uppercase text-xs tracking-widest shadow-lg active:scale-95 transition-all">
+                    class="hidden w-full py-5 bg-blue-500 text-white rounded-full font-black uppercase text-xs tracking-widest shadow-lg active:scale-95 transition-all">
                     Tiếp tục - <span id="btn-total-val">0</span> đ
                 </button>
             </div>
@@ -75,7 +75,7 @@
                 <p>• Quà tặng đi kèm: Vòng tay, bộ stickers kỷ niệm.</p>
             </div>
             <button onclick="showQtySelection()"
-                class="w-full py-4 bg-green-500 text-white rounded-xl font-bold uppercase text-xs tracking-widest">Tôi đã
+                class="w-full py-4 bg-blue-500 text-white rounded-xl font-bold uppercase text-xs tracking-widest">Tôi đã
                 hiểu & Chọn số lượng</button>
         </div>
     </div>
@@ -92,7 +92,7 @@
                         class="w-10 h-10 border-2 rounded-xl font-bold hover:bg-gray-50 transition">-</button>
                     <span id="qty-val" class="font-black text-xl">1</span>
                     <button onclick="changeModalQty(1)"
-                        class="w-10 h-10 border-2 border-green-500 text-green-500 rounded-xl font-bold hover:bg-green-50 transition">+</button>
+                        class="w-10 h-10 border-2 border-blue-500 text-blue-500 rounded-xl font-bold hover:bg-blue-50 transition">+</button>
                 </div>
             </div>
             <button onclick="addTicketToCart()"
@@ -116,7 +116,7 @@
             <div class="col-span-12 grid grid-cols-12 gap-8 items-start">
                 <div class="col-span-7 space-y-8">
                     <div class="q-card">
-                        <h2 class="text-green-500 font-black uppercase text-sm mb-10">BẢNG CÂU HỎI</h2>
+                        <h2 class="text-blue-500 font-black uppercase text-sm mb-10">BẢNG CÂU HỎI</h2>
                         <div class="space-y-6">
                             <div>
                                 <label class="text-[10px] text-gray-500 font-bold uppercase">Họ và tên *</label>
@@ -134,7 +134,7 @@
                                 </div>
                             </div>
                             <div class="pt-6 flex items-center gap-4">
-                                <input type="checkbox" id="c" class="w-5 h-5 accent-green-500 cursor-pointer">
+                                <input type="checkbox" id="c" class="w-5 h-5 accent-blue-500 cursor-pointer">
                                 <label for="c" class="text-xs text-gray-500 cursor-pointer">
                                     Tôi xác nhận đã đọc và đồng ý với các điều khoản tham gia sự kiện.
                                 </label>
@@ -147,13 +147,13 @@
 
                         <div class="pay-method active group" onclick="selectPay(this)">
                             <div
-                                class="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center shadow-lg shadow-green-500/20">
+                                class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20">
                                 <i class="fa-solid fa-wallet text-white text-xs"></i>
                             </div>
                             <div class="flex flex-col ml-3">
                                 <span class="text-xs font-bold uppercase">ElysiumPay</span>
                             </div>
-                            <i class="fa-solid fa-circle-check ml-auto text-green-500"></i>
+                            <i class="fa-solid fa-circle-check ml-auto text-blue-500"></i>
                         </div>
 
                         <div class="pay-method group" onclick="selectPay(this)" data-method="zalopay">
@@ -180,10 +180,10 @@
                         <div id="payment-items" class="space-y-5 mb-10 text-black"></div>
                         <div class="flex justify-between items-center pt-6 border-t border-gray-100">
                             <span class="font-bold text-gray-400 uppercase text-[10px]">Tổng tiền thanh toán</span>
-                            <span id="pay-total" class="text-3xl font-black text-green-600 tracking-tighter">0 đ</span>
+                            <span id="pay-total" class="text-3xl font-black text-blue-600 tracking-tighter">0 đ</span>
                         </div>
                         <button onclick="handleFinalCheckout()"
-                            class="w-full mt-10 py-5 bg-green-500 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-green-600 transition-all shadow-xl shadow-green-500/20">
+                            class="w-full mt-10 py-5 bg-blue-500 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-blue-600 transition-all shadow-xl shadow-blue-500/20">
                             XÁC NHẬN ĐẶT VÉ
                         </button>
                     </div>
@@ -205,7 +205,7 @@
                     class="flex-1 py-3 border-2 border-red-500 text-red-500 rounded-xl font-bold uppercase text-[10px]">Hủy
                     đơn</button>
                 <button onclick="closeCancelModal()"
-                    class="flex-1 py-3 bg-green-500 text-white rounded-xl font-bold uppercase text-[10px]">Ở lại</button>
+                    class="flex-1 py-3 bg-blue-500 text-white rounded-xl font-bold uppercase text-[10px]">Ở lại</button>
             </div>
         </div>
     </div>
@@ -217,13 +217,13 @@
                 <div class="flex items-center gap-2">
                     <h2 id="qr-title" class="font-bold text-gray-800">Thanh toán</h2>
                 </div>
-                <button onclick="closeModals()" class="text-green-600 text-sm font-bold hover:underline">Đổi phương thức
+                <button onclick="closeModals()" class="text-blue-600 text-sm font-bold hover:underline">Đổi phương thức
                     khác</button>
             </div>
 
             <div id="vietqr-tabs" class="flex border-b hidden">
                 <button onclick="switchTab('qr')" id="tab-qr"
-                    class="flex-1 py-3 text-sm font-bold border-b-2 border-green-500 text-green-600">Thanh toán bằng
+                    class="flex-1 py-3 text-sm font-bold border-b-2 border-blue-500 text-blue-600">Thanh toán bằng
                     VietQR</button>
                 <button onclick="switchTab('bank')" id="tab-bank"
                     class="flex-1 py-3 text-sm font-bold border-b-2 border-transparent text-gray-500">Chuyển khoản ngân
@@ -281,7 +281,7 @@
                     <h3 id="instr-title" class="font-bold text-lg text-gray-800">Quét mã QR để thanh toán</h3>
                     <ul id="instr-list" class="space-y-4"></ul>
                     <button onclick="showInvoice()"
-                        class="w-full py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg font-bold transition-colors mt-4">
+                        class="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-bold transition-colors mt-4">
                         XÁC NHẬN ĐÃ CHUYỂN KHOẢN
                     </button>
                 </div>
@@ -337,7 +337,7 @@
     <div id="invoice-modal" class="modal-overlay hidden" style="z-index: 500;">
         <div class="modal-box max-w-sm">
             <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div class="w-16 h-16 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
                     <i class="fa-solid fa-file-invoice-dollar text-2xl"></i>
                 </div>
                 <h3 class="font-black text-xl">XÁC NHẬN HÓA ĐƠN</h3>
@@ -357,7 +357,7 @@
                 <div class="flex justify-between"><span>Sự kiện:</span><span id="inv-event-name"
                         class="font-bold text-right ml-4">BTS WORLD TOUR</span></div>
                 <div class="flex justify-between"><span>Vị trí:</span><span
-                        id="inv-seats" class="font-bold text-green-600 uppercase">VIP (GA)</span></div>
+                        id="inv-seats" class="font-bold text-blue-600 uppercase">VIP (GA)</span></div>
                 <div class="flex justify-between"><span>Số vé:</span><span id="inv-qty" class="font-bold text-lg">x1</span>
                 </div>
                 <div class="flex justify-between pt-2 border-t border-gray-100">
@@ -371,7 +371,7 @@
             </div>
 
             <button onclick="finishPayment()"
-                class="w-full mt-6 py-4 bg-green-500 text-white rounded-xl font-black uppercase text-xs shadow-lg shadow-green-500/20 hover:scale-[1.02] transition-transform">
+                class="w-full mt-6 py-4 bg-blue-500 text-white rounded-xl font-black uppercase text-xs shadow-lg shadow-blue-500/20 hover:scale-[1.02] transition-transform">
                 XÁC NHẬN THANH TOÁN
             </button>
             <button onclick="backToStep1()"
@@ -398,8 +398,8 @@
     </div>
 
     <div id="success-modal" class="modal-overlay hidden" style="z-index: 2000;">
-        <div class="modal-box max-w-[340px] p-8 text-center shadow-2xl border border-green-500/20">
-            <div class="w-16 h-16 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
+        <div class="modal-box max-w-[340px] p-8 text-center shadow-2xl border border-blue-500/20">
+            <div class="w-16 h-16 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
                 <i class="fa-solid fa-circle-check text-3xl"></i>
             </div>
             <h3 class="font-black text-xl mb-3 uppercase text-gray-800">Đặt vé thành công!</h3>
@@ -408,7 +408,7 @@
                 Vui lòng kiểm tra <b>Gmail</b> và mục <b>Vé của tôi</b> để nhận vé QR nhé. <br><br>
             </p>
             <button onclick="redirectToDashboard()"
-                class="w-full py-4 bg-green-500 text-white rounded-xl font-bold uppercase text-[11px] tracking-widest hover:bg-green-600 transition-all shadow-lg shadow-green-500/20">
+                class="w-full py-4 bg-blue-500 text-white rounded-xl font-bold uppercase text-[11px] tracking-widest hover:bg-blue-600 transition-all shadow-lg shadow-blue-500/20">
                 Xem vé ngay
             </button>
         </div>
