@@ -971,32 +971,21 @@ function viewEventDetails(eventId) {
     // Tệp đính kèm
     const filesElem = document.getElementById('det-files-list');
     if (filesElem) {
-    let filesArray = [];
-    
-    if (ev.filesData) filesArray = ev.filesData;
-    else if (typeof ev.files === 'string') {
-        try { filesArray = JSON.parse(ev.files); } catch(e) { filesArray = []; }
-    } else if (Array.isArray(ev.files)) filesArray = ev.files;
-
-    if (filesArray.length > 0) {
-        let linksHTML = filesArray.map((file, index) => {
-            const isPDF = (file.type && file.type.includes('pdf')) || file.name?.endsWith('.pdf');
-            const icon = isPDF ? 'fa-file-pdf text-red-400' : 'fa-image text-green-400';
-            const fileData = file.data || file.base64 || "#";
-            
-            return `
-                <a href="${fileData}" download="${file.name}" 
-                   class="text-blue-400 hover:text-blue-300 flex items-center gap-1.5 bg-white/5 px-3 py-1.5 rounded-xl border border-white/10 transition-all hover:bg-white/10 group">
-                    <i class="fa-solid ${icon} text-[12px]"></i> 
-                    <span class="text-[10px] font-medium">${file.name || 'Tệp ' + (index + 1)}</span>
-                    <i class="fa-solid fa-download text-[8px] opacity-0 group-hover:opacity-100 ml-1"></i>
-                </a>`;
-        }).join('');
-
-        filesElem.innerHTML = `<div class="flex flex-wrap gap-2 mt-1">${linksHTML}</div>`;
-    } else {
-        filesElem.innerHTML = '<span class="text-gray-500 italic text-[10px]">Không có tệp đính kèm</span>';
-           }
+        const legalLink = ev.legalFilesLink || "";
+        if (legalLink) {
+            filesElem.innerHTML = `
+            <div class="flex flex-wrap gap-2 mt-1">
+            <a href="${legalLink}" target="_blank" 
+                class="text-blue-400 hover:text-blue-300 flex items-center gap-1.5 bg-blue-500/10 px-3 py-1.5 rounded-xl border border-blue-500/20 transition-all hover:bg-blue-500/20 group">
+                    <i class="fa-solid fa-link text-[12px]"></i> 
+                    <span class="text-[10px] font-bold uppercase tracking-tight">Truy cập hồ sơ pháp lý</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[8px] ml-1"></i>
+                </a>
+            </div>`;
+    } 
+    else {
+        filesElem.innerHTML = '<span class="text-gray-600 italic text-[10px]">Không có link hồ sơ</span>';
+    }
     }
 
     // Nội quy
@@ -1203,7 +1192,7 @@ document.body.insertAdjacentHTML('beforeend', `
                 <div class="mt-3 space-y-2 text-[10px]">
                     <div class="flex justify-between italic"><span class="text-gray-500">Chinh sách hoàn tiền:</span> <span id="refund-policy" class="text-blue-400 font-bold">N/A</span></div>
                     <div class="flex justify-between italic"><span class="text-gray-500">Trách nhiệm bồi thường:</span> <span id="det-compensation" class="text-blue-400 font-bold">N/A</span></div>
-                    <div class="flex justify-between italic"><span class="text-gray-500">Tệp đính kèm:</span> <span id="det-files-list">N/A</span></div>
+                    <div class="flex justify-between items-center italic"><span class="text-gray-500">Liên kết hồ sơ:</span> <span id="det-files-list">N/A</span></div>
                 </div>
                 <div class="mt-4 p-3 bg-white/5 rounded-xl">
                     <p class="text-[9px] text-gray-500 uppercase font-bold mb-1">Nội quy sự kiện:</p>
@@ -2497,7 +2486,6 @@ function executeRefund(reason) {
 
     let refundHistory = JSON.parse(localStorage.getItem('admin_refunds')) || [];
     
-    // Kiểm tra trùng lặp lần cuối
     if (refundHistory.some(r => String(r.orderId) === String(orderId))) {
         alert("Đơn hàng này đã được xử lý hoàn tiền!");
         closeRefundModal();

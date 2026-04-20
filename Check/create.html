@@ -102,7 +102,6 @@
     </div>
 </section>
 
-
              <section id="page-create-event" class="hidden">
     <div class="max-w-5xl mx-auto pb-20">
         <div class="flex items-center justify-between mb-8 overflow-x-auto gap-4 py-2 border-b border-white/10">
@@ -147,11 +146,11 @@
                     <div class="space-y-4">
                         <div>
                             <label class="text-sm font-medium text-gray-400">* Tên sự kiện</label>
-                            <input type="text" id="event-name-input" placeholder="Nhập tên sự kiện" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 mt-1 text-white focus:border-[#00d2ff] outline-none">
+                            <input type="text" id="event-name-input" required placeholder="Nhập tên sự kiện" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 mt-1 text-white focus:border-[#00d2ff] outline-none">
                         </div>
                         <div>
                             <label class="text-sm font-medium text-gray-400">* Thể loại</label>
-                            <select id="event-type-input" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 mt-1 text-white focus:border-[#00d2ff] outline-none">
+                            <select id="event-type-input" required class="w-full bg-white/5 border border-white/10 rounded-lg p-3 mt-1 text-white focus:border-[#00d2ff] outline-none">
                                 <option value="" class="bg-[#0a0a0a]">Chọn thể loại</option>
                                 <option class="bg-[#0a0a0a]">Nhạc sống</option>
                                 <option class="bg-[#0a0a0a]">Sân khấu & Nghệ thuật</option>
@@ -168,7 +167,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
     <div>
         <label class="text-sm font-medium text-gray-400">* Hình thức</label>
-        <select id="event-mode-input" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 mt-1 text-white focus:border-[#00d2ff] outline-none" onchange="toggleLocation(this.value)">
+        <select id="event-mode-input" required class="w-full bg-white/5 border border-white/10 rounded-lg p-3 mt-1 text-white focus:border-[#00d2ff] outline-none" onchange="toggleLocation(this.value)">
             <option value="offline" class="bg-[#0a0a0a]">Sự kiện Offline</option>
             <option value="online" class="bg-[#0a0a0a]">Sự kiện Online</option>
         </select>
@@ -182,11 +181,11 @@
             <div class="bg-white/5 p-6 rounded-xl border border-white/10 space-y-6">
                 <h3 class="font-bold border-b border-white/10 pb-2 text-[#00d2ff] uppercase text-sm tracking-wider">Địa điểm sự kiện</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input type="text" id="event-location-name" placeholder="Tên địa điểm (Vd: Nhà thi đấu Hà Nội)" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white outline-none focus:border-[#00d2ff]">
-                    <input type="text" id="event-location-detail" placeholder="Địa chỉ chi tiết" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white outline-none focus:border-[#00d2ff]">
+                    <input type="text" id="event-location-name" required placeholder="Tên địa điểm (Vd: Nhà thi đấu Hà Nội)" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white outline-none focus:border-[#00d2ff]">
+                    <input type="text" id="event-location-detail" required placeholder="Địa chỉ chi tiết" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white outline-none focus:border-[#00d2ff]">
                 </div>
                 <h3 class="font-bold border-b border-white/10 pb-2 text-[#00d2ff] uppercase text-sm tracking-wider">Thông tin chi tiết</h3>
-                <textarea id="event-description" placeholder="Giới thiệu về sự kiện của bạn..." class="w-full bg-white/5 border border-white/10 rounded-lg p-3 h-40 text-white outline-none focus:border-[#00d2ff] resize-none"></textarea>
+                <textarea id="event-description" required placeholder="Giới thiệu về sự kiện của bạn..." class="w-full bg-white/5 border border-white/10 rounded-lg p-3 h-40 text-white outline-none focus:border-[#00d2ff] resize-none"></textarea>
             </div>
 
             <div class="bg-white/5 p-6 rounded-2xl border border-white/10 space-y-6">
@@ -206,10 +205,10 @@
                         </div>
                     </div>
                     <div class="flex-1 space-y-4">
-                        <input type="text" id="btc-name" placeholder="Tên ban tổ chức" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-[#00d2ff]">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <input type="email" id="btc-email" placeholder="Email liên hệ" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-[#00d2ff]">
-                            <input type="tel" id="btc-phone" placeholder="Số điện thoại" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-[#00d2ff]">
+                        <input type="text" id="btc-name" required placeholder="Tên ban tổ chức" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-[#00d2ff]">
+                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input type="email" id="btc-email" required placeholder="Email liên hệ" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-[#00d2ff]">
+                            <input type="tel" id="btc-phone" required placeholder="Số điện thoại" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-[#00d2ff]">
                         </div>
                         <textarea id="btc-info" placeholder="Thông tin thêm về BTC..." class="w-full bg-white/5 border border-white/10 rounded-xl p-3 h-24 text-white outline-none focus:border-[#00d2ff] resize-none"></textarea>
                     </div>
@@ -233,11 +232,11 @@
             <div class="timeslot-item grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-white/5 rounded-lg border border-white/5 relative group">
                 <div>
                     <label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Bắt đầu</label>
-                    <input type="datetime-local" class="start-time-input w-full bg-white/10 border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-[#00d2ff]">
+                    <input type="datetime-local" class="start-time-input w-full bg-white/10 border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-[#00d2ff]" required>
                 </div>
                 <div>
                     <label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Kết thúc</label>
-                    <input type="datetime-local" class="end-time-input w-full bg-white/10 border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-[#00d2ff]">
+                    <input type="datetime-local" class="end-time-input w-full bg-white/10 border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-[#00d2ff]" required >
                 </div>
             </div>
         </div>
@@ -260,15 +259,15 @@
 
         <div>
             <label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Tên vé</label>
-            <input type="text" placeholder="Vd: Vé VIP" class="ticket-name-input w-full bg-white/10 border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-[#00d2ff]">
+            <input type="text" placeholder="Vd: Vé VIP" class="ticket-name-input w-full bg-white/10 border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-[#00d2ff]" required>
         </div>
         <div>
             <label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Giá (VNĐ)</label>
-            <input type="number" placeholder="0" class="ticket-price-input w-full bg-white/10 border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-[#00d2ff]">
+            <input type="number" placeholder="0" class="ticket-price-input w-full bg-white/10 border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-[#00d2ff]" required>
         </div>
         <div>
             <label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Số lượng</label>
-            <input type="number" placeholder="0" class="ticket-qty-input w-full bg-white/10 border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-[#00d2ff]">
+            <input type="number" placeholder="0" class="ticket-qty-input w-full bg-white/10 border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-[#00d2ff]" required>
         </div>
     </div>
 </div>
@@ -339,11 +338,11 @@
                     </div>
                     <div class="space-y-2">
     <label class="text-xs text-gray-400 ml-1">Số giấy phép tổ chức / CMND</label>
-    <input type="text" id="legal-id-input" placeholder="Số hiệu văn bản pháp lý" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#00d2ff]">
+    <input type="text" id="legal-id-input" required placeholder="Số hiệu văn bản pháp lý" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#00d2ff]">
 </div>
 <div class="space-y-2">
     <label class="text-xs text-gray-400 ml-1">Mã số thuế (để xuất hóa đơn)</label>
-    <input type="text" id="tax-id-input" placeholder="Mã số thuế 10 hoặc 13 số" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#00d2ff]">
+    <input type="text" id="tax-id-input" required placeholder="Mã số thuế 10 hoặc 13 số" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#00d2ff]">
 </div>
                 </div>
             </div>
@@ -361,7 +360,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="space-y-2">
                         <label class="text-xs text-gray-400 ml-1">Chính sách hoàn tiền</label>
-                        <select id="refund-policy" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#00d2ff]">
+                        <select id="refund-policy" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#00d2ff]">
                             <option value="none">Không hỗ trợ hoàn trả</option>
                             <option value="strict">Chặt chẽ (Hoàn trước 7 ngày, phí 30%)</option>
                             <option value="flexible">Linh hoạt (Hoàn trước 3 ngày, phí 10%)</option>
@@ -370,7 +369,7 @@
                     </div>
                     <div class="space-y-2">
                         <label class="text-xs text-gray-400 ml-1">Trách nhiệm bồi thường</label>
-                        <select id="det-compensation" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#00d2ff]">
+                        <select id="det-compensation" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#00d2ff]">
                             <option value="refund_100">Hoàn tiền 100% nếu sự kiện bị hủy</option>
                             <option value="reschedule">Dời ngày và bảo lưu giá trị vé</option>
                         </select>
@@ -378,30 +377,33 @@
                 </div>
             </div>
 
-            <div class="space-y-2">
-                <label class="text-xs text-gray-400 ml-1 uppercase tracking-tighter">Bản scan giấy phép / Hợp đồng địa điểm (Bắt buộc)</label>
-                <div class="relative group">
-                    <input type="file" multiple id="legal-files" class="hidden" onchange="handleFileSelect(this)">
-                    <label for="legal-files" class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-white/10 rounded-2xl bg-white/5 hover:bg-[#00d2ff]/5 hover:border-[#00d2ff]/50 cursor-pointer transition-all">
-                        <div class="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
-                            <i class="fa-solid fa-upload text-[#00d2ff]"></i>
-                        </div>
-                        <span class="text-xs text-gray-400 font-medium">Nhấn để tải lên hồ sơ pháp lý (.pdf, .jpg, .png)</span>
-                        <span class="text-[10px] text-gray-500 mt-1">Dung lượng tối đa 10MB/file</span>
-                    </label>
-                </div>
-                <div id="file-list" class="flex flex-wrap gap-2 mt-2"></div>
+            <div class="space-y-3 mb-8"> 
+    <label class="text-xs text-gray-400 ml-1 uppercase tracking-tighter">Link hồ sơ pháp lý / Hợp đồng (Dán link từ Drive/Cloud)</label>
+    
+    <div class="relative group">
+    <div class="flex items-center w-full bg-white/5 border border-white/10 rounded-2xl focus-within:border-[#00d2ff]/50 transition-all p-1">
+            <div class="pl-4 pr-2 text-[#00d2ff] flex items-center justify-center">
+                <i class="fa-solid fa-link text-sm"></i>
             </div>
+
+        <input type="text" id="legal-files-link" 
+               placeholder="Dán đường dẫn hồ sơ tại đây (Google Drive, Dropbox...)" 
+               class="w-full bg-transparent border-none text-white text-xs py-4 pr-4 outline-none placeholder:text-gray-600">
+    </div>
+</div>
+
+    <p class="text-[10px] text-gray-500 ml-1 italic mb-4">* Ưu tiên link Google Drive ở chế độ công khai để BTC dễ kiểm tra.</p>
+</div>
 
             <div class="p-4 bg-yellow-500/5 border border-yellow-500/20 rounded-2xl space-y-4">
                 <label class="flex items-start gap-3 cursor-pointer group">
-                    <input type="checkbox" id="legal-confirm" class="w-5 h-5 mt-0.5 rounded border-white/10 bg-white/5 text-[#00d2ff] focus:ring-0">
+                    <input type="checkbox" required id="legal-confirm" class="w-5 h-5 mt-0.5 rounded border-white/10 bg-white/5 text-[#00d2ff] focus:ring-0">
                     <span class="text-xs text-gray-400 group-hover:text-gray-300 leading-relaxed">
                         Tôi xác nhận rằng đơn vị tổ chức đã có đầy đủ giấy phép từ các cơ quan chức năng (Sở Văn hóa, Thể thao...). Nền tảng có quyền gỡ bỏ sự kiện nếu phát hiện vi phạm mà không cần báo trước.
                     </span>
                 </label>
                 <label class="flex items-start gap-3 cursor-pointer group">
-                    <input type="checkbox" id="tax-confirm" class="w-5 h-5 mt-0.5 rounded border-white/10 bg-white/5 text-[#00d2ff] focus:ring-0">
+                    <input type="checkbox" required id="tax-confirm" class="w-5 h-5 mt-0.5 rounded border-white/10 bg-white/5 text-[#00d2ff] focus:ring-0">
                     <span class="text-xs text-gray-400 group-hover:text-gray-300 leading-relaxed">
                         BTC cam kết tự chịu trách nhiệm kê khai và nộp các loại thuế (GTGT, TNCN cho nghệ sĩ...) liên quan đến doanh thu bán vé theo quy định pháp luật.
                     </span>
@@ -432,14 +434,14 @@
         <div class="space-y-4 text-left">
             <div>
                 <label class="text-[10px] font-bold text-gray-400 uppercase ml-2 mb-1 block">Tên chủ tài khoản</label>
-                <input type="text" id="bank-user" placeholder="NHU THI DIEU THAO" 
+                <input type="text" id="bank-user" required placeholder="NHU THI DIEU THAO" 
                     class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-[#00d2ff] transition uppercase font-medium">
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="text-[10px] font-bold text-gray-400 uppercase ml-2 mb-1 block">Ngân hàng</label>
-                    <input type="text" id="bank-name" list="bank-list" placeholder="Chọn ngân hàng..." 
+                    <input type="text" id="bank-name" required list="bank-list" placeholder="Chọn ngân hàng..." 
                         class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-[#00d2ff] transition text-sm">
                     <datalist id="bank-list">
                         <option value="Vietcombank">
@@ -453,20 +455,20 @@
                 </div>
                 <div>
                     <label class="text-[10px] font-bold text-gray-400 uppercase ml-2 mb-1 block">Chi nhánh</label>
-                    <input type="text" id="bank-branch" placeholder="Vd: Chi nhánh TP.HCM" 
+                    <input type="text" id="bank-branch" required placeholder="Vd: Chi nhánh TP.HCM" 
                         class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-[#00d2ff] transition text-sm">
                 </div>
             </div>
 
             <div>
                 <label class="text-[10px] font-bold text-gray-400 uppercase ml-2 mb-1 block">Số tài khoản</label>
-                <input type="text" id="bank-acc" placeholder="Nhập số tài khoản" 
+                <input type="text" id="bank-acc" required placeholder="Nhập số tài khoản" 
                     class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-[#00d2ff] transition">
             </div>
 
             <div>
                 <label class="text-[10px] font-bold text-gray-400 uppercase ml-2 mb-1 block">Email nhận thông báo thanh toán</label>
-                <input type="email" id="billing-email" placeholder="example@gmail.com" 
+                <input type="email" id="billing-email" required placeholder="example@gmail.com" 
                     class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-white outline-none focus:border-[#00d2ff] transition text-sm">
             </div>
 
@@ -481,7 +483,7 @@
             <div class="mt-4">
                 <label class="text-[10px] font-bold text-gray-400 uppercase ml-2 mb-2 block">Mã QR nhận tiền (VietQR)</label>
                 <div class="upload-box aspect-square w-full max-w-[180px] mx-auto rounded-2xl border border-dashed border-white/20 bg-white/5 relative group hover:border-[#00d2ff] transition cursor-pointer">
-                    <input type="file" id="input-qr" class="hidden" accept="image/*" onchange="previewImg(this, 'qr-prev')">
+                    <input type="file" id="input-qr" required class="hidden" accept="image/*" onchange="previewImg(this, 'qr-prev')">
                     
                     <div id="qr-prev-ui" class="flex flex-col items-center justify-center h-full p-4 text-center" onclick="document.getElementById('input-qr').click()">
                         <i class="fa-solid fa-qrcode text-3xl mb-2 text-gray-500 group-hover:text-[#00d2ff]"></i>
@@ -501,7 +503,7 @@
 
         <div class="mt-6 space-y-3">
             <label class="flex items-start gap-3 cursor-pointer group text-left">
-                <input type="checkbox" id="confirm-bank" class="w-4 h-4 mt-0.5 rounded border-white/10 bg-white/5 text-[#00d2ff] focus:ring-0">
+                <input type="checkbox" id="confirm-bank" required class="w-4 h-4 mt-0.5 rounded border-white/10 bg-white/5 text-[#00d2ff] focus:ring-0">
                 <span class="text-[10px] text-gray-500 group-hover:text-gray-400 leading-relaxed">
                     Tôi xác nhận thông tin tài khoản trên là chính xác. Nền tảng không chịu trách nhiệm nếu tiền được gửi sai do sai sót thông tin từ phía BTC.
                 </span>

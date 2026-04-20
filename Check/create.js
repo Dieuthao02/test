@@ -82,20 +82,75 @@ function showPage(pageId) {
 }
 
 function goToStep(stepNumber) {
-    document.querySelectorAll('.step-content').forEach(content => content.classList.add('hidden'));
-    const targetStep = document.getElementById(`create-step-${stepNumber}`);
-    if (targetStep) targetStep.classList.remove('hidden');
+    const currentStep = document.querySelector('.step-content:not(.hidden)');
+    const currentStepNum = currentStep ? parseInt(currentStep.id.replace('create-step-', '')) : 1;
 
-    document.querySelectorAll('.step-item').forEach((tab, index) => {
-        const stepIdx = index + 1;
-        const isActive = stepIdx === stepNumber;
-        tab.classList.toggle('active', isActive);
-        tab.classList.toggle('font-bold', isActive);
-        tab.classList.toggle('border-b-2', isActive);
-        tab.classList.toggle('border-black', isActive);
-        tab.classList.toggle('text-black', isActive);
-        tab.classList.toggle('text-gray-400', !isActive);
-    });
+    if (stepNumber > currentStepNum) {
+        let firstInvalidField = null;
+        let isValid = true;
+
+        // 1. Quét các ô bắt buộc (Text, Email, Checkbox...)
+        const requiredFields = currentStep.querySelectorAll('input[required], select[required], textarea[required]');
+        
+        requiredFields.forEach(field => {
+            field.classList.remove('border-red-500', 'ring-1', 'ring-red-500');
+            field.parentElement.classList.remove('ring-1', 'ring-red-500');
+
+            let isFieldInvalid = false;
+
+            if (field.type === 'checkbox') {
+                if (!field.checked) {
+                    isFieldInvalid = true;
+                    field.parentElement.classList.add('ring-1', 'ring-red-500', 'rounded-lg');
+                }
+            } else {
+                // Với input file hoặc text, kiểm tra giá trị rỗng
+                if (!field.value || !field.value.trim()) {
+                    isFieldInvalid = true;
+                    // Nếu là input file bị ẩn (Mã QR), mình highlight cái khung Upload
+                    if (field.type === 'file') {
+                        const uploadBox = field.closest('.upload-box');
+                        if (uploadBox) uploadBox.classList.add('border-red-500', 'ring-1', 'ring-red-500');
+                    } else {
+                        field.classList.add('border-red-500', 'ring-1', 'ring-red-500');
+                    }
+                }
+            }
+
+            if (isFieldInvalid) {
+                isValid = false;
+                if (!firstInvalidField) firstInvalidField = field;
+            }
+        });
+
+        if (!isValid) {
+            if (firstInvalidField) {
+                // Nếu là input ẩn, mình focus vào cái khung chứa nó
+                if (firstInvalidField.classList.contains('hidden')) {
+                    firstInvalidField.parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    firstInvalidField.focus();
+                    firstInvalidField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+            return; 
+        }
+    }
+
+    // --- PHẦN CHUYỂN BƯỚC (Giữ nguyên giao diện của Thảo) ---
+    document.querySelectorAll('.step-content').forEach(content => content.classList.add('hidden'));
+    const targetStep = document.getElementById(`create-step-${stepNumber}`);
+    if (targetStep) targetStep.classList.remove('hidden');
+
+    document.querySelectorAll('.step-item').forEach((tab, index) => {
+        const stepIdx = index + 1;
+        const isActive = stepIdx === stepNumber;
+        tab.classList.toggle('border-[#00d2ff]', isActive);
+        tab.classList.toggle('text-[#00d2ff]', isActive);
+        tab.classList.toggle('text-gray-500', !isActive);
+    });
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // --- 3. QUẢN LÝ MEDIA & PREVIEW ---
@@ -159,11 +214,11 @@ function addTimeSlot() {
         </div>
         <div>
             <label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Bắt đầu</label>
-            <input type="datetime-local" class="start-time-input w-full bg-white/10 border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-[#00d2ff]">
+            <input type="datetime-local" class="start-time-input w-full bg-white/10 border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-[#00d2ff]" required>
         </div>
         <div>
             <label class="text-[10px] text-gray-500 uppercase font-bold mb-1 block">Kết thúc</label>
-            <input type="datetime-local" class="end-time-input w-full bg-white/10 border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-[#00d2ff]">
+            <input type="datetime-local" class="end-time-input w-full bg-white/10 border border-white/10 rounded-lg p-2 text-sm text-white outline-none focus:border-[#00d2ff]" required>
         </div>
     `;
     list.appendChild(newSlot);
@@ -178,13 +233,13 @@ div.className = "grid grid-cols-1 md:grid-cols-[2fr_2fr_1.5fr_0.5fr] gap-4 p-4 b
 
 div.innerHTML = `
     <input type="text" placeholder="Tên vé" 
-        class="ticket-name-input w-full bg-transparent border border-gray-500 rounded p-2 text-white focus:border-[#00d2ff] outline-none transition-all">
+        class="ticket-name-input w-full bg-transparent border border-gray-500 rounded p-2 text-white focus:border-[#00d2ff] outline-none transition-all" required>
     
     <input type="number" placeholder="Giá (VNĐ)" 
-        class="ticket-price-input w-full bg-transparent border border-gray-500 rounded p-2 text-white focus:border-[#00d2ff] outline-none transition-all">
+        class="ticket-price-input w-full bg-transparent border border-gray-500 rounded p-2 text-white focus:border-[#00d2ff] outline-none transition-all" required>
     
     <input type="number" placeholder="Số lượng" 
-        class="ticket-qty-input w-full bg-transparent border border-gray-500 rounded p-2 text-white focus:border-[#00d2ff] outline-none transition-all text-center">
+        class="ticket-qty-input w-full bg-transparent border border-gray-500 rounded p-2 text-white focus:border-[#00d2ff] outline-none transition-all text-center" required>
     
     <button onclick="this.parentElement.remove()" 
         class="text-red-500 hover:text-red-400 p-2 flex justify-center items-center transition-transform hover:scale-110">
@@ -204,23 +259,7 @@ async function finishCreateEvent(isDraft = false) {
             return;
         }
         
-        let finalFilesData = [];
-        if (typeof selectedFiles !== 'undefined' && selectedFiles.length > 0) {
-            // Nếu là File mới (đối tượng File thực sự), ta mới cần đọc lại
-            const promises = selectedFiles.map(file => {
-                if (!(file instanceof File)) return Promise.resolve(file); // Đã là Base64 cũ thì giữ nguyên
-                return new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => resolve({
-                        name: file.name,
-                        type: file.type,
-                        data: e.target.result 
-                    });
-                    reader.readAsDataURL(file);
-                });
-            });
-            finalFilesData = await Promise.all(promises);
-        }
+        const legalFilesLink = document.getElementById('legal-files-link')?.value.trim() || "";
         
         const getBase64FromImg = (id) => {
             const imgEl = document.getElementById(id);
@@ -270,7 +309,7 @@ async function finishCreateEvent(isDraft = false) {
             rules: document.getElementById('event-rules')?.value.trim() || "",
             refundPolicy: document.getElementById('refund-policy')?.value || "none",
             compensation: document.getElementById('det-compensation')?.value || "",
-            filesData: finalFilesData,
+            legalFilesLink: legalFilesLink,
         
             // Bước 4: Tài khoản
             bankname: document.getElementById('bank-name')?.value.trim() || "",
@@ -461,26 +500,27 @@ function editEvent(btn) {
     
     const compEl = document.getElementById('det-compensation') || document.getElementById('compensation-policy');
     if (compEl) compEl.value = ev.compensation || "";
-
-    // 3. Khôi phục danh sách File pháp lý
-    selectedFiles = ev.filesData || [];
+ 
+    // 2. Xử lý Link hồ sơ pháp lý 
+    const legalLink = ev.legalFilesLink || "";
+    setVal('legal-files-link', legalLink); 
+    
     const fileListContainer = document.getElementById('file-list');
     if (fileListContainer) {
-        fileListContainer.innerHTML = '';
-        selectedFiles.forEach(fileObj => {
-            const fileItem = document.createElement('div');
-            fileItem.className = "flex items-center gap-2 bg-white/10 px-3 py-2 rounded-xl border border-white/5 animate-fade-in";
-            const icon = fileObj.type && fileObj.type.includes('pdf') ? 'fa-file-pdf text-red-400' : 'fa-image text-green-400';
-            fileItem.innerHTML = `
-                <i class="fa-solid ${icon} text-xs"></i>
-                <span class="text-[10px] text-gray-300 truncate max-w-[150px]">${fileObj.name}</span>
-                <button type="button" class="ml-1 text-gray-500 hover:text-red-400 transition-colors" 
-                    onclick="removeFile(this, '${fileObj.name}')">
+        if (legalLink) {
+            fileListContainer.innerHTML = `
+            <div class="flex items-center gap-2 bg-[#00d2ff]/10 px-3 py-2 rounded-xl border border-[#00d2ff]/20 animate-fade-in">
+                <i class="fa-solid fa-link text-[#00d2ff] text-[10px]"></i>
+                <span class="text-[10px] text-gray-200">Đã khôi phục đường dẫn hồ sơ</span>
+                <button type="button" class="ml-1 text-gray-500 hover:text-red-400" onclick="clearLinkLabel()">
                     <i class="fa-solid fa-xmark text-[10px]"></i>
-                </button>`;
-            fileListContainer.appendChild(fileItem);
-        });
+                </button>
+            </div>
+        `;
+    } else {
+        fileListContainer.innerHTML = '';
     }
+}
 
     // --- BƯỚC 4: BAN TỔ CHỨC & TÀI KHOẢN ---
     setVal('btc-name', ev.btcname || ev.btcName);
@@ -494,7 +534,7 @@ function editEvent(btn) {
     setVal('bank-branch', ev.bankbranch || ev.bankBranch); 
     setVal('billing-email', ev.billingEmail || ev.billingemail);
 
-    // --- HIỂN THỊ LẠI TẤT CẢ ẢNH (Quan trọng) ---
+    // --- HIỂN THỊ LẠI TẤT CẢ ẢNH  ---
     if (typeof renderImagePreview === "function") {
         // Poster & Banner
         renderImagePreview(ev.img || ev.poster, 'poster-prev', 'poster-wrap', 'poster-prev-ui');
@@ -588,30 +628,20 @@ function showConfirmModal() {
                 </button>
             </div>`;
 
-        const fileList = document.getElementById('file-list');
-
+        const legalLinkVal = document.getElementById('legal-files-link')?.value.trim();
+        
         let filesHTML = "";
         
-        if (typeof selectedFiles !== 'undefined' && selectedFiles.length > 0 && selectedFiles[0] instanceof File) {
-            let links = selectedFiles.map((file, index) => {
-                try {
-                    const fileURL = URL.createObjectURL(file); 
-                    const icon = file.type.includes('pdf') ? 'fa-file-pdf' : 'fa-image';
-                    return `
-                        <a href="${fileURL}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1">
-                            <i class="fa-solid ${icon} text-[8px]"></i> Xem tệp ${index + 1}
-                        </a>`;
-                } catch (err) {
-                    return `<span class="text-gray-400">Tệp ${index + 1}</span>`;
-                }
-            }).join(', ');
-            
-            filesHTML = `<div class="flex flex-wrap gap-2 text-[9px] font-bold">${links}</div>`;
-        } else {
-
-            filesHTML = '<span class="text-gray-400 italic">Giữ nguyên hồ sơ cũ hoặc tải mới</span>';
-        }
-
+        if (legalLinkVal) {
+    filesHTML = `
+        <a href="${legalLinkVal}" target="_blank" 
+           class="flex items-center gap-1.5 px-2 py-1 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-all font-black text-[9px]">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            XEM HỒ SƠ ĐÃ DÁN
+        </a>`;
+} else {
+    filesHTML = '<span class="text-gray-400 italic font-normal">Chưa cung cấp đường dẫn</span>';
+}
 
         // --- TỔNG HỢP NỘI DUNG ---
         const content = `
@@ -715,9 +745,9 @@ function showConfirmModal() {
                 <span class="text-gray-600 font-medium">Trách nhiệm bồi thường:</span>
                 <b class="text-gray-800">${document.getElementById('det-compensation')?.options[document.getElementById('det-compensation').selectedIndex]?.text || 'N/A'}</b>
             </div>
-            <div class="flex justify-between text-[10px] mt-1 italic border-b border-blue-100 pb-2">
+            <div class="flex justify-between items-center text-[10px] mt-1 italic border-b border-blue-100 pb-2">
                 <span class="text-gray-600 font-medium">Tệp hồ sơ:</span>
-                ${filesHTML}
+                <div class="flex items-center">${filesHTML}</div>
             </div>
             ${rulesHTML}
         </div>
@@ -737,21 +767,15 @@ function showConfirmModal() {
         </div>
 
     <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200">
-
             <p class="text-[10px] text-amber-600 font-black uppercase mb-1 flex items-center gap-2">
-
                 <i class="fa-solid fa-circle-exclamation"></i> Lưu ý quan trọng
-
             </p>
-
             <ul class="text-[10px] text-amber-800/80 space-y-1 font-medium leading-tight">
                 <li>• Sự kiện sẽ được kiểm duyệt trong vòng 5-7 ngày làm việc.</li>
                 <li>• Doanh thu được chuyển từ 3-5 ngày sau khi sự kiện kết thúc thành công.</li>
                 <li>• Vui lòng kiểm tra kỹ STK, chúng tôi không hỗ trợ sai sót thông tin ngân hàng.</li>
             </ul>
-
         </div>
-
     </div>`;
 
         const modalContent = document.getElementById('confirm-content');
@@ -771,58 +795,11 @@ function closeConfirmModal() {
     document.getElementById('confirm-modal')?.classList.add('hidden');
 }
 
-
-let selectedFiles = [];
-
-function handleFileSelect(input) {
-    const fileListContainer = document.getElementById('file-list');
-    const files = Array.from(input.files);
-
-    files.forEach(file => {
-        if (file.size > 10 * 1024 * 1024) {
-            alert(`File ${file.name} quá lớn (tối đa 10MB)`);
-            return;
-        }
-
-        selectedFiles.push(file);
-
-        const fileItem = document.createElement('div');
-        fileItem.className = "flex items-center gap-2 bg-white/10 px-3 py-2 rounded-xl border border-white/5 animate-fade-in";
-        
-        // Icon dựa trên định dạng file
-        const icon = file.type.includes('pdf') ? 'fa-file-pdf text-red-400' : 'fa-image text-green-400';
-
-        fileItem.innerHTML = `
-            <i class="fa-solid ${icon} text-xs"></i>
-            <span class="text-[10px] text-gray-300 truncate max-w-[150px]">${file.name}</span>
-            <button type="button" class="ml-1 text-gray-500 hover:text-red-400 transition-colors" onclick="removeFile(this, '${file.name}')">
-                <i class="fa-solid fa-xmark text-[10px]"></i>
-            </button>
-        `;
-
-        fileListContainer.appendChild(fileItem);
-    });
-
-    // Reset input để có thể chọn lại cùng 1 file nếu đã xóa
-    input.value = "";
-}
-
-function removeFile(element, fileName) {
-    // Xóa khỏi mảng lưu trữ
-    selectedFiles = selectedFiles.filter(f => f.name !== fileName);
-    // Xóa giao diện
-    element.parentElement.remove();
-}
-
 // --- 7. HIỂN THỊ DANH SÁCH ---
 function loadMyEvents() {
     const container = document.getElementById('events-container');
     if (!container) return;
-
-    // Lấy dữ liệu từ localStorage
     const allEvents = JSON.parse(localStorage.getItem('ticket_events')) || [];
-
-    // Kiểm tra nếu rỗng
     if (allEvents.length === 0) {
         container.innerHTML = `
             <div id="empty-state" class="flex flex-col items-center justify-center py-20 animate-fade-in text-center">
@@ -836,12 +813,9 @@ function loadMyEvents() {
             </div>`;
         return;
     }
-
-    // Xóa trắng container trước khi render lại
     container.innerHTML = ""; 
-
     allEvents.forEach(ev => {
-        // Xử lý Badge trạng thái
+
         let statusBadge = "";
         switch(ev.status) {
             case 'active':
@@ -903,10 +877,8 @@ function showRejectReason(eventId) {
         modal.classList.remove('hidden');
         modal.classList.add('flex');
 
-        // Gán sự kiện cho nút "Sửa lỗi ngay"
         document.getElementById('btn-fix-event').onclick = function() {
             closeRejectModal();
-            // Tìm nút edit tương ứng trong card để giả lập click
             const card = document.querySelector(`.event-item-card[data-id="${eventId}"]`);
             const editBtn = card.querySelector('button[onclick="editEvent(this)"]');
             editEvent(editBtn);
@@ -976,7 +948,7 @@ function loadEventsForUser() {
 document.addEventListener('DOMContentLoaded', loadEventsForUser);
 
 
-// --- 8. ADMIN RENDER LOGIC (Trang 1.html) ---
+// --- 8. ADMIN RENDER ---
 function loadEventsAdmin() {
     const container = document.getElementById('admin-events-container');
     if (!container) return;
@@ -1004,10 +976,16 @@ function loadEventsAdmin() {
                 <span class="text-[10px] text-gray-500">SL: ${t.qty}</span>
             </div>`).join('');
 
-        // 3. Render file hồ sơ (nếu có)
-        let filesHtml = (ev.files || []).map((f, idx) => 
-            `<a href="${f.url}" target="_blank" class="text-[10px] text-blue-400 underline mr-2">Tệp ${idx + 1}</a>`
-        ).join('') || '<span class="text-gray-600">Không có hồ sơ</span>';
+        let filesHtml = "";
+        if (ev.legalFilesLink) {
+            filesHtml = `
+            <a href="${ev.legalFilesLink}" target="_blank" 
+            class="inline-flex items-center gap-1 px-3 py-1 bg-blue-500/20 text-blue-400 rounded-lg border border-blue-500/30 text-[10px] font-bold hover:bg-blue-500 hover:text-white transition-all uppercase">
+            <i class="fa-solid fa-arrow-up-right-from-square text-[8px]"></i> Xem hồ sơ pháp lý
+        </a>`;
+    } else {
+        filesHtml = '<span class="text-gray-600 italic text-[10px]">Không có link hồ sơ</span>';
+    }
 
         const card = `
             <div class="bg-[#121212] border border-white/10 rounded-[32px] p-6 mb-6 hover:border-[#00d2ff]/40 transition-all group animate-fade-in">
