@@ -120,6 +120,24 @@ function previewImg(input, prevId) {
     }
 }
 
+function renderImagePreview(base64, prevId, wrapId, uiId) {
+    if (!base64 || base64 === "") return;
+    const img = document.getElementById(prevId);
+    const wrap = document.getElementById(wrapId);
+    const ui = document.getElementById(uiId);
+
+    if (img) {
+        img.src = base64;
+        img.style.display = 'block';
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'cover';
+        if (wrap) wrap.classList.remove('hidden');
+        if (ui) ui.classList.add('hidden');
+    }
+}
+
+
 function removeImg(inputId, previewId, wrapId, uiId) {
     const input = document.getElementById(inputId);
     if(input) input.value = "";
@@ -129,7 +147,7 @@ function removeImg(inputId, previewId, wrapId, uiId) {
     if (ui) ui.classList.remove('hidden');
 }
 
-// --- 4. LOGIC NGHIỆP VỤ VÉ (TICKET LOGIC) ---
+// --- 4. LOGIC NGHIỆP VỤ VÉ  ---
 
 function addTimeSlot() {
     const list = document.getElementById('timeslot-list');
@@ -177,46 +195,37 @@ div.innerHTML = `
 }
 
 // --- 5. LƯU TRỮ & XỬ LÝ DỮ LIỆU (STORAGE & CRUD) ---
-function finishCreateEvent(isDraft = false) {
+async function finishCreateEvent(isDraft = false) {
     try {
         const rawName = document.getElementById('event-name-input')?.value.trim() || "";
         
-        // Kiểm tra tên sự kiện
         if (!isDraft && (rawName === "" || rawName === "Diệu Thảo")) { 
             alert("Tên sự kiện không được để trống nhé!");
             return;
         }
         
-        // --- HÀM ĐỌC FILE PHÁP LÝ SANG BASE64 ---
-        const getFilesAsBase64 = async () => {
-            // selectedFiles là mảng chứa các File object từ bước handleFileSelect
-            if (typeof selectedFiles !== 'undefined' && selectedFiles.length > 0) {
-                const promises = selectedFiles.map(file => {
-                    return new Promise((resolve) => {
-                        const reader = new FileReader();
-                        reader.onload = (e) => resolve({
-                            name: file.name,
-                            type: file.type,
-                            data: e.target.result
-                        });
-                        reader.readAsDataURL(file);
+        let finalFilesData = [];
+        if (typeof selectedFiles !== 'undefined' && selectedFiles.length > 0) {
+            // Nếu là File mới (đối tượng File thực sự), ta mới cần đọc lại
+            const promises = selectedFiles.map(file => {
+                if (!(file instanceof File)) return Promise.resolve(file); // Đã là Base64 cũ thì giữ nguyên
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve({
+                        name: file.name,
+                        type: file.type,
+                        data: e.target.result 
                     });
+                    reader.readAsDataURL(file);
                 });
-                return await Promise.all(promises);
-            }
-            return [];
-        };
-
-        // Hàm nội bộ để lấy dữ liệu Base64 từ thẻ IMG preview
+            });
+            finalFilesData = await Promise.all(promises);
+        }
+        
         const getBase64FromImg = (id) => {
             const imgEl = document.getElementById(id);
-            if (imgEl && imgEl.src && imgEl.src.startsWith('data:image')) {
-                return imgEl.src;
-            }
-            return "";
+            return (imgEl && imgEl.src && imgEl.src.startsWith('data:image')) ? imgEl.src : "";
         };
-
-     
 
         // Gom dữ liệu sự kiện
         const newEvent = {
@@ -239,13 +248,13 @@ function finishCreateEvent(isDraft = false) {
             btcphone: document.getElementById('btc-phone')?.value.trim() || "",
             btcinfo: document.getElementById('btc-info')?.value.trim() || "",
 
-            // Thời gian (Lấy từ danh sách động)
+            // Thời gian
             timeSlots: Array.from(document.querySelectorAll('#timeslot-list .timeslot-item')).map(slot => ({
                 start: slot.querySelector('.start-time-input')?.value,
                 end: slot.querySelector('.end-time-input')?.value
             })),
 
-            // Vé (Lấy từ danh sách động)
+            // Vé 
             tickets: Array.from(document.querySelectorAll('#ticket-list > div')).map(row => ({
                 name: row.querySelector('.ticket-name-input')?.value || "",
                 price: row.querySelector('.ticket-price-input')?.value || "0",
@@ -261,7 +270,7 @@ function finishCreateEvent(isDraft = false) {
             rules: document.getElementById('event-rules')?.value.trim() || "",
             refundPolicy: document.getElementById('refund-policy')?.value || "none",
             compensation: document.getElementById('det-compensation')?.value || "",
-            filesData: typeof selectedFiles !== 'undefined' ? selectedFiles : [],
+            filesData: finalFilesData,
         
             // Bước 4: Tài khoản
             bankname: document.getElementById('bank-name')?.value.trim() || "",
@@ -277,14 +286,10 @@ function finishCreateEvent(isDraft = false) {
 
         // Lưu vào LocalStorage
         let allData = JSON.parse(localStorage.getItem('ticket_events')) || [];
-        
         if (isEditing && currentEditCard) {
             const index = allData.findIndex(ev => ev.id === newEvent.id);
-            if (index !== -1) {
-                allData[index] = newEvent;
-            } else {
-                allData.unshift(newEvent);
-            }
+            if (index !== -1) allData[index] = newEvent;
+            else allData.unshift(newEvent);
         } else {
             allData.unshift(newEvent);
         }
@@ -300,7 +305,7 @@ function finishCreateEvent(isDraft = false) {
             openSuccessModal();
         }
         
-        // Reset trạng thái và chuyển trang
+        alert(isDraft ? "Đã lưu nháp!" : "Lưu thành công!");
         isEditing = false;
         currentEditCard = null;
         selectedFiles = [];
@@ -310,59 +315,53 @@ function finishCreateEvent(isDraft = false) {
 
     } catch (error) {
         console.error("Lỗi khi lưu sự kiện:", error);
-        alert("Có lỗi xảy ra khi lưu. Vui lòng kiểm tra Console (F12)");
     }
 }
 
-
 function cancelCreate() {
+
     isEditing = false;
     currentEditCard = null;
+    if (typeof selectedFiles !== 'undefined') selectedFiles = []; 
+
     const createPage = document.getElementById('page-create-event');
     if (!createPage) return;
 
-    // 1. Reset tất cả input text, date, textarea
     createPage.querySelectorAll('input, textarea, select').forEach(field => {
         field.value = ''; 
         if (field.type === 'checkbox' || field.type === 'radio') field.checked = false;
     });
 
-    // 2. Danh sách các ID preview ảnh cần dọn dẹp
-    const imageIds = ['poster-prev', 'map-prev', 'qr-prev', 'logo-prev', 'seating-prev', 'qr-prev'];
+    const timeslotList = document.getElementById('timeslot-list');
+    if (timeslotList) timeslotList.innerHTML = ''; 
     
-    imageIds.forEach(id => {
-        // Xóa nội dung ảnh
-        const img = document.getElementById(id);
-        if (img) {
-            img.src = "";
-            img.style.display = 'none'; // Ẩn hẳn thẻ img
-        }
-
-        // Hiện lại khung dấu cộng (+), ẩn khung chứa ảnh (wrap)
-        const wrapId = id.replace('-prev', '-wrap');
-        const uiId = id.replace('-prev', '-prev-ui');
-        const wrap = document.getElementById(wrapId);
-        const ui = document.getElementById(uiId);
-        
-        if (wrap) wrap.classList.add('hidden');
-        if (ui) ui.classList.remove('hidden');
-
-        // 3. QUAN TRỌNG: Xóa luôn dữ liệu tạm trong LocalStorage (nếu có lưu)
-        localStorage.removeItem('temp_img_' + id);
-    });
-
-    // 4. Reset danh sách vé về mặc định (1 hàng trống)
-    const list = document.getElementById('ticket-list');
-    if (list) { 
-        list.innerHTML = ''; 
+    const ticketList = document.getElementById('ticket-list');
+    if (ticketList) {
+        ticketList.innerHTML = '';
         addTicketRow(); 
     }
 
-    // 5. Đưa nút bấm về trạng thái ban đầu
+    const imagePreviewConfigs = [
+        { id: 'poster-prev', wrap: 'poster-wrap', ui: 'poster-prev-ui' },
+        { id: 'cover-prev', wrap: 'cover-wrap', ui: 'cover-prev-ui' },
+        { id: 'map-prev', wrap: 'map-wrap', ui: 'map-prev-ui' },
+        { id: 'logo-prev', wrap: 'logo-wrap', ui: 'logo-prev-ui' },
+        { id: 'qr-prev', wrap: 'qr-wrap', ui: 'qr-prev-ui' }
+    ];
+
+    imagePreviewConfigs.forEach(config => {
+        const img = document.getElementById(config.id);
+        const wrap = document.getElementById(config.wrap);
+        const ui = document.getElementById(config.ui);
+        
+        if (img) img.src = "";
+        if (wrap) wrap.classList.add('hidden');
+        if (ui) ui.classList.remove('hidden');
+    });
+
     const mainFinishBtn = document.querySelector('button[onclick="showConfirmModal()"]');
     if (mainFinishBtn) mainFinishBtn.innerText = "TẠO SỰ KIỆN";
 
-    // 6. Quay về bước 1
     goToStep(1);
 }
 
@@ -380,7 +379,7 @@ function closeSuccessModal() {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
     }
-    // Sau khi đóng modal mới chuyển trang
+
     showPage('my-events');
 }
 
@@ -393,7 +392,8 @@ function editEvent(btn) {
     const ev = allData.find(item => item.id === eventId);
 
     if (!ev) {
-        alert("Không tìm thấy dữ liệu!"); return;
+        alert("Không tìm thấy dữ liệu!"); 
+        return;
     }
 
     showPage('create-event');
@@ -419,13 +419,11 @@ function editEvent(btn) {
     if (timeslotList && slots) {
         timeslotList.innerHTML = ''; 
         slots.forEach(slot => {
-            if (typeof addTimeSlot === "function") {
-                addTimeSlot(); 
-                const lastRow = timeslotList.lastElementChild;
-                if (lastRow) {
-                    lastRow.querySelector('.start-time-input').value = slot.start || "";
-                    lastRow.querySelector('.end-time-input').value = slot.end || "";
-                }
+            addTimeSlot(); 
+            const lastRow = timeslotList.lastElementChild;
+            if (lastRow) {
+                lastRow.querySelector('.start-time-input').value = slot.start || "";
+                lastRow.querySelector('.end-time-input').value = slot.end || "";
             }
         });
     }
@@ -434,69 +432,57 @@ function editEvent(btn) {
     if (ticketList && ev.tickets) {
         ticketList.innerHTML = ''; 
         ev.tickets.forEach(t => {
-            if (typeof addTicketRow === "function") {
-                addTicketRow();
-                const lastRow = ticketList.lastElementChild;
-                if (lastRow) {
-                    lastRow.querySelector('.ticket-name-input').value = t.name || "";
-                    lastRow.querySelector('.ticket-price-input').value = t.price || "";
-                    lastRow.querySelector('.ticket-qty-input').value = t.qty || "";
-                }
+            addTicketRow();
+            const lastRow = ticketList.lastElementChild;
+            if (lastRow) {
+                lastRow.querySelector('.ticket-name-input').value = t.name || "";
+                lastRow.querySelector('.ticket-price-input').value = t.price || "";
+                lastRow.querySelector('.ticket-qty-input').value = t.qty || "";
             }
         });
     }
-    renderImagePreview(ev.map, 'map-prev', 'map-wrap', 'map-prev-ui');
 
-    // --- BƯỚC 3: PHÁP LÝ (So khớp theo Value) ---
-const orgRadios = document.querySelectorAll('input[name="org-type"]');
-if (orgRadios.length > 0 && ev.orgType) {
-    orgRadios.forEach(radio => {
-        if (radio.value === ev.orgType) {
-            radio.checked = true;
-        }
-    });
-}
+    // --- BƯỚC 3: PHÁP LÝ & FILE ---
+    // 1. Loại hình tổ chức 
+    const orgRadios = document.querySelectorAll('input[name="org-type"]');
+    if (orgRadios.length > 0 && ev.orgType) {
+        orgRadios.forEach(radio => { 
+            radio.checked = (radio.value === ev.orgType); 
+        });
+    }
 
-    // --- File ---
-// 1. Reset mảng tạm và giao diện list file
-selectedFiles = []; 
-const fileListContainer = document.getElementById('file-list');
-if (fileListContainer) fileListContainer.innerHTML = '';
-
-// 2. Nếu có dữ liệu file cũ, đổ lại vào
-if (ev.filesData && Array.isArray(ev.filesData)) {
-    ev.filesData.forEach(fileObj => {
-        selectedFiles.push(fileObj); 
-
-        // Hiển thị ra giao diện
-        const fileItem = document.createElement('div');
-        fileItem.className = "flex items-center gap-2 bg-white/10 px-3 py-2 rounded-xl border border-white/5 animate-fade-in";
-        const icon = fileObj.type.includes('pdf') ? 'fa-file-pdf text-red-400' : 'fa-image text-green-400';
-
-        fileItem.innerHTML = `
-            <i class="fa-solid ${icon} text-xs"></i>
-            <span class="text-[10px] text-gray-300 truncate max-w-[150px]">${fileObj.name}</span>
-            <button type="button" class="ml-1 text-gray-500 hover:text-red-400 transition-colors" 
-                onclick="removeFile(this, '${fileObj.name}')">
-                <i class="fa-solid fa-xmark text-[10px]"></i>
-            </button>
-        `;
-        fileListContainer.appendChild(fileItem);
-    });
-}
     setVal('legal-id-input', ev.legalId || ev.legalid);
     setVal('tax-id-input', ev.taxId || ev.taxid);
     setVal('event-rules', ev.rules);
     
-    // Đổ lại dữ liệu Select cho Chính sách & Bồi thường
+    // 2. Chính sách & Bồi thường 
     const refundEl = document.getElementById('refund-policy');
     if (refundEl) refundEl.value = ev.refundPolicy || ev.refundpolicy || "none";
     
-    // Lưu ý: Đảm bảo Select "Trách nhiệm bồi thường" trong HTML có id="compensation-policy"
-    const compEl = document.getElementById('compensation-policy');
-    if (compEl) compEl.value = ev.compensation || "Hoàn tiền 100% nếu sự kiện bị hủy";
+    const compEl = document.getElementById('det-compensation') || document.getElementById('compensation-policy');
+    if (compEl) compEl.value = ev.compensation || "";
 
-    // --- BƯỚC 4: BAN TỔ CHỨC & NGÂN HÀNG (Sửa lỗi mất dữ liệu ở đây) ---
+    // 3. Khôi phục danh sách File pháp lý
+    selectedFiles = ev.filesData || [];
+    const fileListContainer = document.getElementById('file-list');
+    if (fileListContainer) {
+        fileListContainer.innerHTML = '';
+        selectedFiles.forEach(fileObj => {
+            const fileItem = document.createElement('div');
+            fileItem.className = "flex items-center gap-2 bg-white/10 px-3 py-2 rounded-xl border border-white/5 animate-fade-in";
+            const icon = fileObj.type && fileObj.type.includes('pdf') ? 'fa-file-pdf text-red-400' : 'fa-image text-green-400';
+            fileItem.innerHTML = `
+                <i class="fa-solid ${icon} text-xs"></i>
+                <span class="text-[10px] text-gray-300 truncate max-w-[150px]">${fileObj.name}</span>
+                <button type="button" class="ml-1 text-gray-500 hover:text-red-400 transition-colors" 
+                    onclick="removeFile(this, '${fileObj.name}')">
+                    <i class="fa-solid fa-xmark text-[10px]"></i>
+                </button>`;
+            fileListContainer.appendChild(fileItem);
+        });
+    }
+
+    // --- BƯỚC 4: BAN TỔ CHỨC & TÀI KHOẢN ---
     setVal('btc-name', ev.btcname || ev.btcName);
     setVal('btc-email', ev.btcemail || ev.btcEmail);
     setVal('btc-phone', ev.btcphone || ev.btcPhone);
@@ -508,17 +494,25 @@ if (ev.filesData && Array.isArray(ev.filesData)) {
     setVal('bank-branch', ev.bankbranch || ev.bankBranch); 
     setVal('billing-email', ev.billingEmail || ev.billingemail);
 
-    // --- ẢNH ---
-    renderImagePreview(ev.banner || ev.cover, 'cover-prev', 'cover-wrap', 'cover-prev-ui');
-    renderImagePreview(ev.img || ev.poster, 'poster-prev', 'poster-wrap', 'poster-prev-ui');
-    renderImagePreview(ev.bankqr || ev.qr, 'qr-prev', 'qr-wrap', 'qr-prev-ui');
-    renderImagePreview(ev.btclogo || ev.logo, 'logo-prev', 'logo-wrap', 'logo-prev-ui');
+    // --- HIỂN THỊ LẠI TẤT CẢ ẢNH (Quan trọng) ---
+    if (typeof renderImagePreview === "function") {
+        // Poster & Banner
+        renderImagePreview(ev.img || ev.poster, 'poster-prev', 'poster-wrap', 'poster-prev-ui');
+        renderImagePreview(ev.banner || ev.cover, 'cover-prev', 'cover-wrap', 'cover-prev-ui');
+        // Sơ đồ chỗ ngồi
+        renderImagePreview(ev.map, 'map-prev', 'map-wrap', 'map-prev-ui');
+        // Logo BTC
+        renderImagePreview(ev.btclogo || ev.logo, 'logo-prev', 'logo-wrap', 'logo-prev-ui');
+        // Mã QR Ngân hàng
+        renderImagePreview(ev.bankqr || ev.qr, 'qr-prev', 'qr-wrap', 'qr-prev-ui');
+    }
 
+    // Đổi tên nút xác nhận
     const mainFinishBtn = document.querySelector('button[onclick="showConfirmModal()"]');
-    if(mainFinishBtn) mainFinishBtn.innerText = "CẬP NHẬT SỰ KIỆN";
+    if (mainFinishBtn) mainFinishBtn.innerText = "CẬP NHẬT SỰ KIỆN";
 }
 
-// --- 6. MODAL XÁC NHẬN (CONFIRMATION) ---
+// --- 6. MODAL XÁC NHẬN  ---
 function showConfirmModal() {
     try {
         const getVal = (id) => {
@@ -595,22 +589,27 @@ function showConfirmModal() {
             </div>`;
 
         const fileList = document.getElementById('file-list');
+
         let filesHTML = "";
         
-        if (selectedFiles.length > 0) {
-            // Tạo danh sách các link để bấm xem được
+        if (typeof selectedFiles !== 'undefined' && selectedFiles.length > 0 && selectedFiles[0] instanceof File) {
             let links = selectedFiles.map((file, index) => {
-                const fileURL = URL.createObjectURL(file); 
-                const icon = file.type.includes('pdf') ? 'fa-file-pdf' : 'fa-image';
-                return `
-                    <a href="${fileURL}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1">
-                        <i class="fa-solid ${icon} text-[8px]"></i> Xem tệp ${index + 1}
-                    </a>`;
+                try {
+                    const fileURL = URL.createObjectURL(file); 
+                    const icon = file.type.includes('pdf') ? 'fa-file-pdf' : 'fa-image';
+                    return `
+                        <a href="${fileURL}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1">
+                            <i class="fa-solid ${icon} text-[8px]"></i> Xem tệp ${index + 1}
+                        </a>`;
+                } catch (err) {
+                    return `<span class="text-gray-400">Tệp ${index + 1}</span>`;
+                }
             }).join(', ');
             
             filesHTML = `<div class="flex flex-wrap gap-2 text-[9px] font-bold">${links}</div>`;
         } else {
-            filesHTML = '<span class="text-red-400 italic">Chưa có hồ sơ đính kèm</span>';
+
+            filesHTML = '<span class="text-gray-400 italic">Giữ nguyên hồ sơ cũ hoặc tải mới</span>';
         }
 
 
@@ -780,7 +779,6 @@ function handleFileSelect(input) {
     const files = Array.from(input.files);
 
     files.forEach(file => {
-        // Kiểm tra dung lượng (10MB = 10 * 1024 * 1024 bytes)
         if (file.size > 10 * 1024 * 1024) {
             alert(`File ${file.name} quá lớn (tối đa 10MB)`);
             return;
@@ -788,7 +786,6 @@ function handleFileSelect(input) {
 
         selectedFiles.push(file);
 
-        // Tạo giao diện hiển thị file đã chọn
         const fileItem = document.createElement('div');
         fileItem.className = "flex items-center gap-2 bg-white/10 px-3 py-2 rounded-xl border border-white/5 animate-fade-in";
         
@@ -1077,7 +1074,7 @@ function approveEvent(id) {
     }
 }
 
-// --- 9. MODAL LƯU Ý (NOTICE MODAL) ---
+// --- 9. MODAL LƯU Ý  ---
 function openNoticeModal() {
     const modal = document.getElementById('notice-modal');
     if (modal) {
