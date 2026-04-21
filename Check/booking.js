@@ -901,6 +901,8 @@ function showInvoice() {
     
     if (config) {
         document.getElementById('inv-event-name').innerText = config.eventName;
+        document.getElementById('inv-event-time').innerText = config.time;
+        document.getElementById('inv-event-loc').innerText = config.location;
     }
 
     const seatNames = cart.map(item => item.name).join(', ');
@@ -934,6 +936,8 @@ function finishPayment() {
             phone: inputs[1] ? inputs[1].value : "",
             email: inputs[2] ? inputs[2].value : "",
             event: config.eventName, 
+            location: config.location,
+            eventTime: config.time,
             tickets: [...cart], 
             total: document.getElementById('pay-total') ? document.getElementById('pay-total').innerText : "0đ",
             time: now.toLocaleString('vi-VN'),
