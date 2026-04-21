@@ -72,13 +72,12 @@ async function fetchEventsFromSheet() {
                     const timeMatch = fullTimeStr.match(/(\d{1,2}:\d{2})/);
                     const eventTime = timeMatch ? timeMatch[1] : "00:00";
 
-                    // --- LOGIC KIỂM TRA HẾT VÉ (giữ nguyên của bạn) ---
-                    const quantities = ev.ticketQuantity ? ev.ticketQuantity.split(',').map(q => q.trim()) : [];
+                    // --- LOGIC KIỂM TRA HẾT VÉ ---
+                  
+                    const ticketQtyStr = ev.ticketQuantity ? String(ev.ticketQuantity) : "";
+                    const quantities = ticketQtyStr ? ticketQtyStr.split(',').map(q => q.trim()) : [];
                     const pricesRaw = ev.priceList ? ev.priceList.split(/,|\n/).filter(p => p.trim() !== "") : [];
                     let isSoldOutAll = false;
-                    // ... (phần logic ticket giữ nguyên)
-
-                    // Đẩy vào mảng events (Mỗi ngày là 1 bản ghi riêng trên lịch)
                     allExpandedEvents.push({
                         id: ev.id ? `${ev.id}-${d}` : `sheet-${index}-${d}`, 
                         name: ev.eventName || "Sự kiện không tên",
@@ -192,7 +191,7 @@ window.showEvents = (dateStr) => {
         }
 
         return `
-            <div class="event-card group p-5 rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-2 transition-all duration-300 cursor-pointerdiv class="event-card group p-5 rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500 cursor-pointer overflow-hidden relative mb-4 ${isPast ? 'grayscale-[0.5]' : ''}">
+            <div class="event-card group p-5 rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:-translate-y-2 transition-all duration-300 cursor-pointer class="event-card group p-5 rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500 cursor-pointer overflow-hidden relative mb-4 ${isPast ? 'grayscale-[0.5]' : ''}">
                 <div class="flex justify-between items-start mb-4">
                     ${statusBadge}
                     <span class="text-xs font-black text-blue-500 bg-blue-50 px-3 py-1 rounded-lg border border-blue-100">${e.price}</span>
