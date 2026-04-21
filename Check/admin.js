@@ -2370,7 +2370,8 @@ function loadRefundData() {
             refundAmount = Math.floor(originalPrice * 0.95);
         }
         const isRefunded = refundHistory.some(r => String(r.orderId) === String(order.id));
-
+        const refundReason = (order.refundReason || "Khách yêu cầu hủy vé").replace(/'/g, "\\'");
+        const customerSafe = (order.customer || 'Khách').replace(/'/g, "\\'");
         return `
             <tr class="hover:bg-white/[0.02] border-b border-white/5 transition-all">
                 <td class="p-6 text-xs font-bold text-white">#${order.id}</td>
@@ -2382,12 +2383,12 @@ function loadRefundData() {
                 <td class="p-6 text-xs font-bold text-gray-500">${originalPrice.toLocaleString()}đ</td>
                 <td class="p-6 text-xs font-black text-red-400">${refundAmount.toLocaleString()}đ</td>
                 <td class="p-6">
-                    ${isRefunded 
-                        ? '<span class="text-[10px] font-black text-green-500 bg-green-500/10 px-3 py-1 rounded-lg border border-green-500/20">ĐÃ HOÀN TIỀN</span>' 
-                        : `<button onclick="openRefundModal('${order.id}', '${(order.customer || 'Khách').replace(/'/g, "\\'")}', ${refundAmount})" 
-                            class="text-[10px] font-black text-white bg-red-500 px-4 py-2 rounded-xl hover:bg-red-600 transition-all">
-                            XÁC NHẬN HOÀN
-                           </button>`
+                ${isRefunded 
+                    ? '<span class="text-[10px] font-black text-green-500 bg-green-500/10 px-3 py-1 rounded-lg border border-green-500/20">ĐÃ HOÀN TIỀN</span>' 
+                    : `<button onclick="openRefundModal('${order.id}', '${customerSafe}', ${refundAmount}, '${refundReason}')" 
+                        class="text-[10px] font-black text-white bg-red-500 px-4 py-2 rounded-xl hover:bg-red-600 transition-all">
+                        XÁC NHẬN HOÀN
+                       </button>`
                     }
                 </td>
             </tr>
@@ -2464,23 +2465,26 @@ function closeRechargeModal() {
 
 
 // Hàm mở Modal
-function openRefundModal(orderId, customerName, amount) {
-    currentRefundData = { orderId, customerName, amount };
+function openRefundModal(orderId, customerName, amount, reason) {
+
+    currentRefundData = { orderId, customerName, amount, reason };
     
-    // Đổ dữ liệu vào Modal
     document.getElementById('modal-order-id').innerText = '#' + orderId;
     document.getElementById('modal-customer-name').innerText = customerName;
     document.getElementById('modal-refund-amount').innerText = amount.toLocaleString() + 'đ';
-    document.getElementById('modal-refund-reason').value = "Khách yêu cầu hủy vé";
+    
+    const reasonInput = document.getElementById('modal-refund-reason');
+    if (reasonInput) {
+        reasonInput.value = reason || "Khách yêu cầu hủy vé";
+    }
 
-    // Hiện Modal
     const modal = document.getElementById('refund-modal');
     modal.classList.remove('hidden');
     
-    // Gán sự kiện cho nút Xác nhận trong Modal
     document.getElementById('modal-confirm-btn').onclick = function() {
-        const reason = document.getElementById('modal-refund-reason').value;
-        executeRefund(reason);
+
+        const finalReason = document.getElementById('modal-refund-reason').value;
+        executeRefund(finalReason);
     };
 }
 
@@ -2527,11 +2531,11 @@ function executeRefund(reason) {
     });
     localStorage.setItem('admin_refunds', JSON.stringify(refundHistory));
 
-    // C. Cập nhật lại thuộc tính của đơn hàng trong eventOrders (để đồng bộ triệt để)
+    // C. Cập nhật lại thuộc tính 
     let allOrders = JSON.parse(localStorage.getItem('eventOrders')) || [];
     const orderIdx = allOrders.findIndex(o => String(o.id) === String(orderId));
     if (orderIdx !== -1) {
-        allOrders[orderIdx]._isRefunded = true; // Đánh dấu đã hoàn
+        allOrders[orderIdx]._isRefunded = true; 
         localStorage.setItem('eventOrders', JSON.stringify(allOrders));
     }
 
