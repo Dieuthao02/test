@@ -1,8 +1,8 @@
 const BASE_TICKETS = 15402;
 const BASE_REVENUE = 2840000000;
 const BASE_USERS = 8920;
-const TOTAL_VISIBLE_ORDERS_LIMIT = 50; 
-const MAX_VISIBLE_DUMMY_ORDERS = 30;   
+const TOTAL_VISIBLE_ORDERS_LIMIT = 100; 
+const MAX_VISIBLE_DUMMY_ORDERS = 50;   
 
 let totalTickets = parseInt(localStorage.getItem('total_tickets'));
 let totalRevenue = parseFloat(localStorage.getItem('total_revenue'));
