@@ -204,41 +204,7 @@
             <!-- 3. KHO VÉ -->
             <div id="tickets" class="page-content">
     <h3 class="text-3xl font-black mb-8 uppercase italic">Vé của bạn</h3>
-    
-    <div onclick="openModal('modal-ticket-detail')" 
-         class="relative bg-white group cursor-pointer transition-all duration-300 hover:scale-[1.02]">
-        
-        <div class="flex items-center overflow-hidden rounded-[2rem] border-2 border-gray-100 shadow-sm hover:border-pink-200">
-            <div class="w-24 h-32 bg-pink-500 flex flex-col items-center justify-center text-white border-r-2 border-dashed border-gray-200">
-                <i class="fa-solid fa-ticket-alt text-3xl mb-1"></i>
-                <span class="text-[10px] font-bold uppercase rotate-[-90deg] origin-center">EventHub</span>
-            </div>
-
-            <div class="flex-1 p-5 relative">
-                <div class="absolute -left-[10px] top-1/2 -translate-y-1/2 w-5 h-5 bg-[#fdfaf5] rounded-full border-r-2 border-gray-100"></div>
-                
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h4 id="display-event-name" class="font-black text-xl uppercase text-gray-800">GAI HOME CONCERT</h4>
-                        <div class="flex items-center gap-4 mt-1 text-gray-500 font-bold text-[11px]">
-                            <span><i class="fa-solid fa-calendar-days mr-1"></i> 20:00 - 15/05/2026</span>
-                            <span><i class="fa-solid fa-location-dot mr-1"></i> Sân vận động Mỹ Đình</span>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <span class="bg-pink-100 text-pink-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter">
-                            Đã thanh toán
-                        </span>
-                    </div>
-                </div>
-
-                <div class="mt-4 pt-4 border-t border-gray-50 flex justify-between items-center">
-                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Nhấn để xem chi tiết vé thật</p>
-                    <span class="font-black text-pink-500 text-lg">1.500.000đ</span>
-                </div>
-            </div>
-        </div>
-    </div>
+ 
 
     <!-- Danh sách vé sẽ được đổ vào đây bởi hàm renderMyTickets() -->
     <div id="my-tickets-container" class="space-y-6"></div>
@@ -293,7 +259,7 @@
             <div id="refund-page" class="page-content p-6">
     <div class="flex items-center justify-between mb-8">
         <h3 class="text-3xl font-black uppercase italic text-gray-800">Yêu cầu <span class="text-red-500">Hoàn tiền</span></h3>
-        <span class="bg-red-50 px-4 py-1 rounded-full text-[10px] font-bold text-red-500 border border-red-100 uppercase">Chính sách: Hoàn 90% giá trị</span>
+        <span class="bg-red-50 px-4 py-1 rounded-full text-[10px] font-bold text-red-500 border border-red-100 uppercase">Chính sách: 95% giá trị</span>
     </div>
 
     <div id="ticket-list-refund" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -321,48 +287,30 @@
     </div>
 </div>
 
-<div id="refund-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999] hidden flex items-center justify-center p-4">
-    <div class="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl scale-95 transition-transform">
-        <div class="text-center mb-6">
-            <div class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
-                <i class="fa-solid fa-rotate-left"></i>
-            </div>
-            <h3 class="text-xl font-black uppercase">Xác nhận hoàn tiền</h3>
-            <p class="text-xs text-gray-500 font-medium mt-1">Vui lòng cho chúng tôi biết lý do bạn muốn hoàn vé</p>
+<div id="refund-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div class="bg-white w-full max-w-md p-8 rounded-[3rem] shadow-2xl">
+        <h3 class="text-xl font-black mb-4">LÝ DO HOÀN TIỀN</h3>
+        
+        <select id="refund-reason-select" onchange="toggleOtherReason()" class="w-full p-3 rounded-xl border mb-4">
+            <option value="Đổi ý không đi nữa">Đổi ý không đi nữa</option>
+            <option value="Có lí do cá nhân">Có lí do cá nhân</option>
+            <option value="Thanh toán nhầm vé giống nhau">Thanh toán nhầm vé giống nhau</option>
+            <option value="Trùng lịch trình">Trùng lịch trình</option>
+            <option value="other">Khác...</option>
+        </select>
+
+        <div id="other-reason-container" class="hidden mb-4">
+            <textarea id="refund-reason-text" class="w-full p-3 border rounded-xl" placeholder="Nhập lý do của bạn..."></textarea>
         </div>
 
-        <div class="space-y-4">
-            <div>
-                <label class="text-[10px] font-black uppercase text-gray-400 ml-2">Lý do hoàn tiền</label>
-                <select id="refund-reason-select" onchange="toggleOtherReason()" class="w-full mt-1 bg-gray-50 border-2 border-gray-100 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-red-500 transition-all">
-                    <option value="Thay đổi kế hoạch cá nhân">Thay đổi kế hoạch cá nhân</option>
-                    <option value="Sức khỏe không cho phép">Sức khỏe không cho phép</option>
-                    <option value="Đặt nhầm sự kiện/thời gian">Đặt nhầm sự kiện/thời gian</option>
-                    <option value="other">Lý do khác...</option>
-                </select>
-            </div>
+        <p class="text-sm font-bold mb-6">Số tiền nhận lại (95%): <span id="refund-amount" class="text-red-500">0đ</span></p>
 
-            <div id="other-reason-container" class="hidden">
-                <label class="text-[10px] font-black uppercase text-gray-400 ml-2">Nhập lý do cụ thể</label>
-                <textarea id="refund-reason-text" placeholder="Viết lý do của bạn tại đây..." class="w-full mt-1 bg-gray-50 border-2 border-gray-100 rounded-2xl px-4 py-3 text-xs font-bold outline-none focus:border-red-500 transition-all h-24 resize-none"></textarea>
-            </div>
-
-            <div class="bg-orange-50 border border-orange-100 p-4 rounded-2xl">
-                <div class="flex gap-3">
-                    <i class="fa-solid fa-circle-exclamation text-orange-500 mt-0.5"></i>
-                    <p class="text-[11px] text-orange-700 leading-relaxed">
-                        <b>Lưu ý:</b> Phí dịch vụ hoàn vé là <b>20%</b> giá trị vé. Bạn sẽ nhận lại được <span id="refund-amount" class="font-black text-red-600">0đ</span>.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3 mt-8">
-            <button onclick="closeRefundModal()" class="py-4 rounded-2xl text-[10px] font-black uppercase bg-gray-100 text-gray-500 hover:bg-gray-200 transition-all">Hủy bỏ</button>
-            <button onclick="confirmRefundRequest()" class="py-4 rounded-2xl text-[10px] font-black uppercase bg-red-500 text-white shadow-lg shadow-red-200 hover:bg-red-600 transition-all">Xác nhận gửi</button>
+        <div class="flex gap-4">
+            <button onclick="closeRefundModal()" class="flex-1 py-3 bg-gray-100 rounded-2xl font-bold">HỦY</button>
+            <button onclick="confirmRefundRequest()" class="flex-1 py-3 bg-red-500 text-white rounded-2xl font-black">XÁC NHẬN</button>
         </div>
     </div>
-    </div>
+
     
     <!-- MODALS -->
     <!-- Chi tiết vé -->

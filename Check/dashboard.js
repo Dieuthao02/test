@@ -205,7 +205,7 @@
         document.getElementById('nap-tien-step-2').classList.add('hidden');
     }
 
-    // --- 5. LOGIC CẬP NHẬT HỒ SƠ (LƯU NỘI BỘ ACC) ---
+    // --- 5. LOGIC CẬP NHẬT HỒ SƠ ---
 
 function handleAvatarChange(event) {
     const file = event.target.files[0];
@@ -303,13 +303,14 @@ function renderMyTickets() {
         return;
     }
 
+    // Đổ dữ liệu từ localStorage ra giao diện
     container.innerHTML = orders.reverse().map(order => {
         const totalQty = order.tickets.reduce((sum, t) => sum + (t.qty || 1), 0);
         const ticketNames = order.tickets.map(t => t.name).join(', ');
 
         return `
         <div onclick="viewOrderDetail('${order.id}')" 
-             class="relative bg-white group cursor-pointer transition-all duration-300 hover:scale-[1.02]">
+             class="relative bg-white group cursor-pointer transition-all duration-300 hover:scale-[1.02] mb-6">
             <div class="flex items-center overflow-hidden rounded-[2rem] border-2 border-gray-100 shadow-sm hover:border-pink-200">
                 <div class="w-24 h-32 bg-pink-500 flex flex-col items-center justify-center text-white border-r-2 border-dashed border-gray-200">
                     <i class="fa-solid fa-ticket-alt text-3xl mb-1"></i>
@@ -322,8 +323,7 @@ function renderMyTickets() {
                             <h4 class="font-black text-xl uppercase text-gray-800">${order.event}</h4>
                             <div class="flex items-center gap-4 mt-1 text-gray-500 font-bold text-[11px]">
                                 <span><i class="fa-solid fa-calendar-days mr-1"></i> ${order.eventTime || order.time}</span>
-                                <span><i class="fa-solid fa-location-dot mr-1"></i> ${order.location || 'Xem trong email'}</span>
-                                <span><i class="fa-solid fa-ticket mr-1"></i> x${totalQty} vé</span>
+                                <span><i class="fa-solid fa-location-dot mr-1"></i> ${order.location || 'Hà Nội'}</span>
                             </div>
                         </div>
                         <div class="text-right">
@@ -331,7 +331,7 @@ function renderMyTickets() {
                         </div>
                     </div>
                     <div class="mt-4 pt-4 border-t border-gray-50 flex justify-between items-center">
-                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest truncate max-w-[200px]">${ticketNames}</p>
+                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Mã vé: #${order.id}</p>
                         <span class="font-black text-pink-500 text-lg">${order.total}</span>
                     </div>
                 </div>
@@ -343,7 +343,11 @@ function renderMyTickets() {
 function viewOrderDetail(orderId) {
     const orders = JSON.parse(localStorage.getItem('eventOrders')) || [];
     const order = orders.find(o => o.id === orderId);
-    if (!order) return;
+    
+    if (!order) {
+        console.error("Không tìm thấy đơn hàng với ID:", orderId);
+        return;
+    }
 
     updateTicketData({
         eventName: order.event,
@@ -398,7 +402,6 @@ const myTicket = {
     location: "Sân vận động Quốc gia Mỹ Đình, Hà Nội"
 };
 
-// Khởi tạo các biến để lưu thông tin vé đang chọn
 let selectedTicketId = '';
 let selectedPrice = 0;
 
@@ -407,9 +410,7 @@ function openRefundModal(ticketId, price) {
     selectedTicketId = ticketId;
     selectedPrice = price;
 
-    // Hiển thị mã đơn hàng lên Modal (nếu cần)
-    // Tính số tiền hoàn lại (80%)
-    const refundAmount = price * 0.9;
+    const refundAmount = price * 0.95;
     
     // Cập nhật số tiền vào UI của Modal
     const amountDisplay = document.getElementById('refund-amount');
@@ -420,7 +421,7 @@ function openRefundModal(ticketId, price) {
     // Hiển thị Modal
     const modal = document.getElementById('refund-modal');
     modal.classList.remove('hidden');
-    modal.classList.add('flex'); // Tailwind cần flex để căn giữa
+    modal.classList.add('flex'); 
 }
 
 // 2. Hàm đóng Modal
@@ -444,21 +445,121 @@ function toggleOtherReason() {
 
 // 4. Hàm xác nhận gửi yêu cầu về Admin
 function confirmRefundRequest() {
-    const reason = document.getElementById('refund-reason-select').value;
+    const reasonSelect = document.getElementById('refund-reason-select');
+    const reasonValue = reasonSelect.value;
     const note = document.getElementById('refund-reason-text').value;
     
-    const finalReason = reason === 'other' ? note : reason;
+    const finalReason = reasonValue === 'other' ? note : reasonValue;
 
-    if (reason === 'other' && !note.trim()) {
+    if (reasonValue === 'other' && !note.trim()) {
         alert("Vui lòng nhập lý do cụ thể!");
         return;
     }
 
-    // Giao diện thông báo giả lập
-    alert(`Đã gửi yêu cầu hoàn tiền cho đơn ${selectedTicketId}!\nLý do: ${finalReason}`);
+    const finalRefundAmount = selectedPrice * 0.95;
+
+    // --- ĐỒNG BỘ VỚI ADMIN ---
     
-    // Đóng modal sau khi gửi thành công
-    closeRefundModal();
+    let allOrders = JSON.parse(localStorage.getItem('eventOrders')) || [];
+    const orderIdx = allOrders.findIndex(o => o.id === selectedTicketId);
+
+    if (orderIdx !== -1) {
+        allOrders[orderIdx]._isRefund = true; 
+        allOrders[orderIdx].refundReason = finalReason;
+        allOrders[orderIdx].refundStatus = 'pending'; 
+        allOrders[orderIdx].amountToRefund = finalRefundAmount;
+        
+        // Lưu lại vào LocalStorage
+        localStorage.setItem('eventOrders', JSON.stringify(allOrders));
+
+        // Đóng modal nhập lý do và thông báo thành công
+        closeRefundModal();
+        
+        const successModal = document.getElementById('refund-success-modal');
+        if (successModal) {
+            successModal.classList.remove('hidden');
+            successModal.classList.add('flex');
+        } else {
+            alert("Gửi yêu cầu thành công!");
+        }
+
+        // Cập nhật lại giao diện Dashboard ngay lập tức
+        renderRefundTickets();
+        renderMyTickets();
+
+        // Kích hoạt để các tab khác (Admin) cập nhật theo
+        window.dispatchEvent(new Event('storage_updated'));
+    } else {
+        alert("Không tìm thấy đơn hàng!");
+    }
+}
+
+function markOrderAsRefunding(orderId) {
+    let orders = JSON.parse(localStorage.getItem('eventOrders')) || [];
+    const index = orders.findIndex(o => o.id === orderId);
+    
+    if (index !== -1) {
+        orders[index].status = 'refunding'; // Chuyển trạng thái từ 'paid' sang 'refunding'
+        localStorage.setItem('eventOrders', JSON.stringify(orders));
+        
+        // Cập nhật lại UI trang hoàn tiền và trang kho vé
+        renderRefundTickets();
+        renderMyTickets();
+    }
+}
+
+function renderRefundTickets() {
+    const container = document.getElementById('ticket-list-refund');
+    if (!container) return;
+
+    const orders = JSON.parse(localStorage.getItem('eventOrders')) || [];
+
+    if (orders.length === 0) {
+        container.innerHTML = `<p class="col-span-full text-center text-gray-400 font-bold py-10">Bạn chưa có đơn hàng nào để hoàn tiền.</p>`;
+        return;
+    }
+
+    container.innerHTML = orders.reverse().map(order => {
+        const totalQty = order.tickets.reduce((sum, t) => sum + (t.qty || 1), 0);
+        const seatNames = order.tickets.map(t => t.name).join(', ');
+    
+        const priceValue = parseInt(order.total.replace(/\D/g, ''));
+
+        return `
+        <div class="bg-white p-6 rounded-[2.5rem] border-2 border-gray-50 relative overflow-hidden group hover:shadow-xl transition-all">
+            <div class="flex justify-between items-start mb-4">
+                <div class="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center text-red-500 text-xl">
+                    <i class="fa-solid fa-ticket"></i>
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase leading-none">Mã đơn hàng</p>
+                    <p class="text-xs font-black text-blue-600 font-mono">#${order.id}</p>
+                </div>
+            </div>
+
+            <h4 class="font-black uppercase text-sm text-gray-800 mb-1">${order.event}</h4>
+            
+            <div class="space-y-1 mb-4">
+                <p class="text-[10px] text-gray-500 font-bold">
+                    <i class="fa-regular fa-clock mr-1"></i> Mua lúc: ${order.time}
+                </p>
+                <p class="text-[10px] text-gray-500 font-bold">
+                    <i class="fa-solid fa-chair mr-1"></i> Chỗ ngồi: ${seatNames}
+                </p>
+                <p class="text-[10px] text-gray-500 font-bold">
+                    <i class="fa-solid fa-layer-group mr-1"></i> Số lượng: ${totalQty} vé
+                </p>
+                <p class="text-[10px] text-gray-500 font-bold">
+                    <i class="fa-solid fa-money-bill-wave mr-1"></i> Tổng thanh toán: <span class="text-red-500">${order.total}</span>
+                </p>
+            </div>
+
+            <button onclick="openRefundModal('${order.id}', ${priceValue})" 
+                    class="w-full bg-gray-900 text-white py-3 rounded-2xl text-[10px] font-black uppercase tracking-wider hover:bg-red-600 transition-colors">
+                Yêu cầu hoàn tiền
+            </button>
+        </div>`;
+    }).join('');
 }
 
 // --- 6. CẬP NHẬT PHƠI HÀM RA WINDOW ---
@@ -471,10 +572,16 @@ Object.assign(window, {
         if (method === 'momo') activeBtn.classList.add('border-pink-500', 'bg-pink-50');
         else activeBtn.classList.add('border-blue-500', 'bg-blue-50');
     },
+    openRefundModal,     
+    closeRefundModal,     
+    toggleOtherReason,    
+    confirmRefundRequest, 
+    renderRefundTickets,
     viewOrderDetail,
     renderMyTickets,
     processPayment,
     simulateSuccess,
+    renderRefundTickets,
     showPage: (pageId, element) => {
         document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
@@ -487,6 +594,10 @@ Object.assign(window, {
         // Khi chuyển sang trang Kho vé, cập nhật danh sách vé mới nhất
         if (pageId === 'tickets') {
             renderMyTickets();
+        }
+
+        if (pageId === 'refund-page') { // ID phải khớp với ID thẻ div trang hoàn tiền của bạn
+        renderRefundTickets();
         }
 
         // Xử lý active menu sidebar

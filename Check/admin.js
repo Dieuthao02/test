@@ -2277,11 +2277,12 @@ function replayAdminLogs() {
 function getPendingRefundOrders() {
     const allOrders = JSON.parse(localStorage.getItem('eventOrders')) || [];
     const refundHistory = JSON.parse(localStorage.getItem('admin_refunds')) || [];
+    
+    // Tạo danh sách các ID đã được hoàn tiền xong rồi để loại bỏ
     const completedIds = new Set(refundHistory.map(item => String(item.orderId)));
 
-    return allOrders
-        .filter(order => order._isRefund && !completedIds.has(String(order.id)))
-        .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    // Lọc: Phải có dấu _isRefund là true VÀ chưa nằm trong lịch sử đã hoàn
+    return allOrders.filter(order => order._isRefund === true && !completedIds.has(String(order.id)));
 }
 
 function renderPendingRefundList() {
@@ -2291,39 +2292,38 @@ function renderPendingRefundList() {
     const pendingOrders = getPendingRefundOrders();
 
     if (pendingOrders.length === 0) {
-        listEl.innerHTML = `
-            <div class="p-8 text-center text-gray-500 text-[10px] font-bold uppercase tracking-widest">
-                Không có yêu cầu chờ duyệt
-            </div>
-        `;
+        listEl.innerHTML = `<div class="p-8 text-center text-gray-500 text-[10px] font-bold uppercase tracking-widest">Không có yêu cầu chờ duyệt</div>`;
         return;
     }
 
     listEl.innerHTML = pendingOrders.map(order => {
-        const customerName = order.customer || order.name || 'Khách hàng';
+        const customerName = order.customer || 'Khách hàng';
         const amount = Number(String(order.total || 0).replace(/\D/g, '')) || 0;
-        const initials = customerName
-            .split(' ')
-            .filter(Boolean)
-            .slice(0, 2)
-            .map(part => part[0].toUpperCase())
-            .join('');
+        
+        // Lấy thông tin chi tiết từ đơn hàng
+        const seats = order.tickets ? order.tickets.map(t => t.name).join(', ') : 'N/A';
+        const quantity = order.tickets ? order.tickets.reduce((sum, t) => sum + (t.qty || 1), 0) : 1;
+        const reason = order.refundReason || "Không có lý do";
 
         return `
-            <div class="p-4 rounded-3xl hover:bg-white/[0.02] transition-all flex items-center justify-between group">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500 font-bold text-xs">
-                        ${initials || 'RF'}
+            <div class="p-5 rounded-[2rem] bg-white/[0.03] border border-white/5 mb-4">
+                <div class="flex justify-between items-start mb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500 font-black text-xs">
+                            ${customerName[0].toUpperCase()}
+                        </div>
+                        <div>
+                            <div class="text-white text-[11px] font-black">${customerName}</div>
+                            <div class="text-[9px] text-gray-500">Đơn: #${order.id}</div>
+                        </div>
                     </div>
-                    <div>
-                        <div class="text-white text-xs font-bold">${customerName}</div>
-                        <div class="text-[10px] text-gray-500">Đơn: #${order.id} | ${amount.toLocaleString()}đ</div>
-                    </div>
+                    <div class="text-right text-red-400 text-[11px] font-black">${amount.toLocaleString()}đ</div>
                 </div>
-                <div class="flex gap-2">
-                    <button onclick="openRefundModal('${order.id}', '${customerName.replace(/'/g, "\\'")}', ${amount})" class="px-3 py-1.5 rounded-lg bg-green-500/20 text-green-500 text-[9px] font-black hover:bg-green-500 hover:text-white transition-all">
-                        XỬ LÝ
-                    </button>
+
+                <div class="bg-black/20 p-3 rounded-2xl text-[10px] space-y-1 mb-3 border border-white/5">
+                    <p class="text-gray-400">🎫 Sự kiện: <span class="text-white">${order.event}</span></p>
+                    <p class="text-gray-400">💺 Ghế: <span class="text-blue-400">${seats} (x${quantity})</span></p>
+                    <p class="text-gray-400">💬 Lý do: <span class="text-red-300 italic">"${reason}"</span></p>
                 </div>
             </div>
         `;
@@ -2336,10 +2336,15 @@ function updatePendingRefundUI() {
 
     if (badge) {
         badge.innerText = pendingOrders.length.toString();
-        badge.classList.toggle('hidden', pendingOrders.length === 0);
+        // Ẩn badge nếu không có yêu cầu nào
+        badge.style.display = pendingOrders.length === 0 ? 'none' : 'inline-block';
     }
 
-    renderPendingRefundList();
+    // Nếu Modal đang mở thì render lại luôn
+    const modal = document.getElementById('pending-refund-modal');
+    if (modal && !modal.classList.contains('hidden')) {
+        renderPendingRefundList();
+    }
 }
 
 function loadRefundData() {
@@ -2358,7 +2363,12 @@ function loadRefundData() {
     tbody.innerHTML = displayOrders.map(order => {
         const rawTotal = String(order.total || '0').replace(/\D/g, '');
         let originalPrice = parseInt(rawTotal) || 0;
-        const refundAmount = order._isRefund ? originalPrice : Math.floor(originalPrice * 0.9);
+        let refundAmount = 0;
+        if (order.amountToRefund) {
+            refundAmount = order.amountToRefund;
+        } else {
+            refundAmount = Math.floor(originalPrice * 0.95);
+        }
         const isRefunded = refundHistory.some(r => String(r.orderId) === String(order.id));
 
         return `
