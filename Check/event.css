@@ -1,0 +1,31 @@
+ @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; }
+        
+        /* Hiệu ứng trôi nổi phong cách Cocoon */
+        .floating {
+            animation: floating 4s ease-in-out infinite;
+        }
+        @keyframes floating {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Thanh cuộn ngang cho Category mobile */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+        }
+
+        /* Làm thanh menu ngang mượt hơn */
+.category-scroll {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none; /* Ẩn scrollbar trên Firefox */
+    -ms-overflow-style: none;  /* Ẩn scrollbar trên IE/Edge */
+}
+.category-scroll::-webkit-scrollbar {
+    display: none; /* Ẩn scrollbar trên Chrome/Safari */
+}
