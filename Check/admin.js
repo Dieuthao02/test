@@ -1,7 +1,8 @@
 const BASE_TICKETS = 15402;
 const BASE_REVENUE = 2840000000;
 const BASE_USERS = 8920;
-const MAX_VISIBLE_DUMMY_ORDERS = 50;
+const TOTAL_VISIBLE_ORDERS_LIMIT = 50; 
+const MAX_VISIBLE_DUMMY_ORDERS = 30;   
 
 let totalTickets = parseInt(localStorage.getItem('total_tickets'));
 let totalRevenue = parseFloat(localStorage.getItem('total_revenue'));
@@ -82,22 +83,11 @@ function getMergedOrdersForAdmin() {
 
     let allOrders = [...realOrders, ...dummyOrders].sort((a, b) => b.sortTime - a.sortTime);
     
-    // Enforce total visible limit: slice to 50 newest, prioritize real by sorting real first if tie
     if (allOrders.length > TOTAL_VISIBLE_ORDERS_LIMIT) {
         allOrders = allOrders.slice(0, TOTAL_VISIBLE_ORDERS_LIMIT);
     }
     
     return allOrders;
-    const dummyOrders = dummy
-        .map(order => ({
-            ...order,
-            _isReal: false,
-            sortTime: getOrderSortTime(order, false)
-        }))
-        .sort((a, b) => b.sortTime - a.sortTime)
-        .slice(0, MAX_VISIBLE_DUMMY_ORDERS);
-
-    return [...realOrders, ...dummyOrders].sort((a, b) => b.sortTime - a.sortTime);
 }
 
 function syncDashboard() {
@@ -2047,7 +2037,7 @@ window.addEventListener('storage', (e) => {
 
         /* 2. ĐƠN HÀNG */
         if (e.key === 'eventOrders') {
-            renderAdminTable?.();
+            loadAllAdminData();
             reconcileDashboardFromOrders();
             
             const lastOrder = data[data.length - 1];
@@ -2598,6 +2588,7 @@ document.getElementById('refund-search')?.addEventListener('input', function(e) 
         row.style.display = text.includes(term) ? '' : 'none';
     });
 });
+
 
 /* --- 10. KHỞI CHẠY --- */
 document.addEventListener('DOMContentLoaded', () => {
