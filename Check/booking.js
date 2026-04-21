@@ -648,7 +648,7 @@ function generateTicketListHTML(config) {
 }
 
 // ==========================================
-// 1. KHỞI TẠO VÀ CẤU HÌNH CHÍNH (INIT)
+// 1. KHỞI TẠO VÀ CẤU HÌNH CHÍNH
 // ==========================================
 async function initMap() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -741,12 +741,12 @@ async function initMap() {
         }
     }
 
-    // --- BƯỚC 6: CẬP NHẬT BẢNG GIÁ BÊN PHẢI ---
+    // --- BƯỚC 6: CẬP NHẬT BẢNG GIÁ ---
     renderPriceListSidebar(config);
 }
 
 // ==========================================
-// 2. HÀM HỖ TRỢ XỬ LÝ DỮ LIỆU (DATA HELPERS)
+// 2. HÀM HỖ TRỢ XỬ LÝ DỮ LIỆU
 // ==========================================
 function parsePriceList(priceData, quantityData, detailData) {
     if (!priceData) return [];
@@ -878,7 +878,7 @@ function activateZoomLogic() {
 }
 
 // ==========================================
-// 4. LOGIC THANH TOÁN VÀ HÓA ĐƠN (PAYMENT)
+// 4. LOGIC THANH TOÁN VÀ HÓA ĐƠN 
 // ==========================================
 function showInvoice() {
     const qrModal = document.getElementById('qr-modal');

@@ -2372,7 +2372,7 @@ function loadRefundData() {
         const isRefunded = refundHistory.some(r => String(r.orderId) === String(order.id));
         const refundReason = (order.refundReason || "Khách yêu cầu hủy vé").replace(/'/g, "\\'");
         const customerSafe = (order.customer || 'Khách').replace(/'/g, "\\'");
-        return `
+         return `
             <tr class="hover:bg-white/[0.02] border-b border-white/5 transition-all">
                 <td class="p-6 text-xs font-bold text-white">#${order.id}</td>
                 <td class="p-6 text-xs text-gray-400">${order.customer || 'N/A'}</td>

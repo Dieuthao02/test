@@ -336,41 +336,44 @@
     </div>
 
     <div id="invoice-modal" class="modal-overlay hidden" style="z-index: 500;">
-        <div class="modal-box max-w-sm">
-            <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="fa-solid fa-file-invoice-dollar text-2xl"></i>
-                </div>
-                <h3 class="font-black text-xl">XÁC NHẬN HÓA ĐƠN</h3>
-                <p class="text-[10px] text-gray-400 uppercase tracking-widest mt-1">Vui lòng kiểm tra kỹ thông tin</p>
+    <div class="modal-box max-w-sm flex flex-col max-h-[90vh]">
+        
+        <div class="text-center mb-6 flex-shrink-0">
+            <div class="w-16 h-16 bg-blue-100 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-file-invoice-dollar text-2xl"></i>
+            </div>
+            <h3 class="font-black text-xl">XÁC NHẬN HÓA ĐƠN</h3>
+            <p class="text-[10px] text-gray-400 uppercase tracking-widest mt-1">Vui lòng kiểm tra kỹ thông tin</p>
+        </div>
+
+        <div class="space-y-3 border-t border-b py-4 border-dashed text-sm overflow-y-auto no-scrollbar max-h-[400px]">
+            <div class="bg-gray-50 p-3 rounded-lg mb-2 space-y-1">
+                <div class="flex justify-between text-[11px]"><span class="text-gray-500">Người mua:</span><span
+                        id="inv-user-name" class="font-bold text-black uppercase">---</span></div>
+                <div class="flex justify-between text-[11px]"><span class="text-gray-500">Email:</span><span
+                        id="inv-user-email" class="font-medium text-black">---</span></div>
+                <div class="flex justify-between text-[11px]"><span class="text-gray-500">SĐT:</span><span
+                        id="inv-user-phone" class="font-medium text-black">---</span></div>
+                <div class="flex justify-between text-[11px]"><span class="text-gray-500">Thời gian đặt vé:</span><span
+                        id="inv-order-time" class="font-medium text-black">--:-- --/--/----</span></div>
             </div>
 
-            <div class="space-y-3 border-t border-b py-4 border-dashed text-sm">
-                <div class="bg-gray-50 p-3 rounded-lg mb-2 space-y-1">
-                    <div class="flex justify-between text-[11px]"><span class="text-gray-500">Người mua:</span><span
-                            id="inv-user-name" class="font-bold text-black uppercase">---</span></div>
-                    <div class="flex justify-between text-[11px]"><span class="text-gray-500">Email:</span><span
-                            id="inv-user-email" class="font-medium text-black">---</span></div>
-                    <div class="flex justify-between text-[11px]"><span class="text-gray-500">SĐT:</span><span
-                            id="inv-user-phone" class="font-medium text-black">---</span></div>
-                    <div class="flex justify-between text-[11px]"><span class="text-gray-500">Thời gian đặt vé:</span><span
-                            id="inv-order-time" class="font-medium text-black">--:-- --/--/----</span></div>
-                </div>
-
-                <div class="flex justify-between"><span>Sự kiện:</span><span id="inv-event-name"
-                        class="font-bold text-right ml-4">BTS WORLD TOUR</span></div>
-                <div class="flex justify-between"><span>Vị trí:</span><span
-                        id="inv-seats" class="font-bold text-blue-600 uppercase">VIP (GA)</span></div>
-                <div class="flex justify-between"><span>Số vé:</span><span id="inv-qty" class="font-bold text-lg">x1</span>
-                </div>
-                <div class="flex justify-between"><span>Thời gian sự kiện:</span><span id="inv-event-time" class="font-bold text-right ml-4">---</span></div>
-                <div class="flex justify-between"><span>Địa điểm:</span><span id="inv-event-loc" class="font-bold text-right ml-4 text-[10px]">---</span></div>
-                <div class="flex justify-between pt-2 border-t border-gray-100">
-                    <span class="font-bold">Tổng tiền:</span>
-                    <span id="inv-total" class="font-black text-xl text-red-600">0 đ</span>
-                </div>
+            <div class="flex justify-between"><span>Sự kiện:</span><span id="inv-event-name"
+                    class="font-bold text-right ml-4">BTS WORLD TOUR</span></div>
+            <div class="flex justify-between"><span>Vị trí:</span><span
+                    id="inv-seats" class="font-bold text-blue-600 uppercase">VIP (GA)</span></div>
+            <div class="flex justify-between"><span>Số vé:</span><span id="inv-qty" class="font-bold text-lg">x1</span>
             </div>
+            <div class="flex justify-between"><span>Thời gian sự kiện:</span><span id="inv-event-time" class="font-bold text-right ml-4">---</span></div>
+            <div class="flex justify-between"><span>Địa điểm:</span><span id="inv-event-loc" class="font-bold text-right ml-4 text-[10px]">---</span></div>
+            
+            <div class="flex justify-between pt-2 border-t border-gray-100">
+                <span class="font-bold">Tổng tiền:</span>
+                <span id="inv-total" class="font-black text-xl text-red-600">0 đ</span>
+            </div>
+        </div>
 
+        <div class="flex-shrink-0">
             <button onclick="finishPayment()"
                 class="w-full mt-6 py-4 bg-blue-500 text-white rounded-xl font-black uppercase text-xs shadow-lg shadow-blue-500/20 hover:scale-[1.02] transition-transform">
                 XÁC NHẬN THANH TOÁN
@@ -381,6 +384,7 @@
             </button>
         </div>
     </div>
+</div>
 
     <div id="error-modal" class="modal-overlay hidden" style="z-index: 1000;">
         <div class="modal-box max-w-[320px] p-6 text-center shadow-2xl border border-red-500/20">
