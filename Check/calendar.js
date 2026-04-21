@@ -55,23 +55,16 @@ async function fetchEventsFromSheet() {
             const month = monthMatch ? monthMatch[1].padStart(2, '0') : (new Date().getMonth() + 1).toString().padStart(2, '0');
             const year = yearMatch ? yearMatch[0] : new Date().getFullYear().toString();
 
-            const dateCleaned = fullTimeStr.replace(/\d{1,2}:\d{2}/g, ''); // Xóa bỏ định dạng giờ (hh:mm) trước khi quét ngày
-
-const dayMatches = dateCleaned.match(/(?<![:\d])\d{1,2}(?!\d)/g); 
-
-if (dayMatches) {
-    // Lọc bỏ số tháng (đã lấy ở monthMatch) để không bị trùng
-    const uniqueDays = [...new Set(dayMatches)].filter(d => d !== monthMatch?.[1]);
-
-    uniqueDays.forEach(day => {
-        const d = day.padStart(2, '0');
-        const formattedDate = `${year}-${month}-${d}`;
-        
-        // Luôn mặc định giờ là 00:00 hoặc lấy từ chuỗi ban đầu nếu cần hiển thị
-        const timeMatch = fullTimeStr.match(/(\d{1,2}:\d{2})/);
-        const eventTime = timeMatch ? timeMatch[1] : "00:00";
-
-                    // --- LOGIC KIỂM TRA HẾT VÉ ---
+            const dateCleaned = fullTimeStr.replace(/\d{1,2}:\d{2}/g, ''); 
+            const dayMatches = dateCleaned.match(/(?<![:\d])\d{1,2}(?!\d)/g); 
+            
+            if (dayMatches) {
+                const uniqueDays = [...new Set(dayMatches)].filter(d => d !== monthMatch?.[1]);
+                uniqueDays.forEach(day => {
+                    const d = day.padStart(2, '0');
+                    const formattedDate = `${year}-${month}-${d}`;
+                    const timeMatch = fullTimeStr.match(/(\d{1,2}:\d{2})/);
+                    const eventTime = timeMatch ? timeMatch[1] : "00:00";
                   
                     const ticketQtyStr = ev.ticketQuantity ? String(ev.ticketQuantity) : "";
                     const quantities = ticketQtyStr ? ticketQtyStr.split(',').map(q => q.trim()) : [];
@@ -143,9 +136,9 @@ function renderCalendar() {
     const defaultDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(defaultDay).padStart(2, '0')}`;
     window.showEvents(defaultDateStr);
     const selectedCell = document.getElementById(`day-${defaultDateStr}`);
-if (selectedCell && window.location.search.includes('date')) {
-    selectedCell.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}
+    if (selectedCell && window.location.search.includes('date')) {
+        selectedCell.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
 }
 
 window.showEvents = (dateStr) => {
