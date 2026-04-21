@@ -49,28 +49,27 @@ async function fetchEventsFromSheet() {
 
             const fullTimeStr = ev.time.trim();
             
-            // 1. Tìm Tháng và Năm trước (vì thường 1 chuỗi nhiều ngày sẽ dùng chung 1 tháng/năm)
             const monthMatch = fullTimeStr.match(/[tT]háng\s+(\d{1,2})/);
             const yearMatch = fullTimeStr.match(/\d{4}/);
             
             const month = monthMatch ? monthMatch[1].padStart(2, '0') : (new Date().getMonth() + 1).toString().padStart(2, '0');
             const year = yearMatch ? yearMatch[0] : new Date().getFullYear().toString();
 
-            // 2. Tìm TẤT CẢ các số đứng trước chữ "tháng" hoặc đứng riêng lẻ (đại diện cho ngày)
-            // Regex này tìm các số có 1-2 chữ số mà không phải là năm
-            const dayMatches = fullTimeStr.match(/(?<!\d)\d{1,2}(?!\d{2})/g); 
+            const dateCleaned = fullTimeStr.replace(/\d{1,2}:\d{2}/g, ''); // Xóa bỏ định dạng giờ (hh:mm) trước khi quét ngày
 
-            if (dayMatches) {
-                // Lọc bỏ số trùng (nếu có) và loại bỏ số trùng với số tháng
-                const uniqueDays = [...new Set(dayMatches)].filter(d => d !== monthMatch?.[1]);
+const dayMatches = dateCleaned.match(/(?<![:\d])\d{1,2}(?!\d)/g); 
 
-                uniqueDays.forEach(day => {
-                    const d = day.padStart(2, '0');
-                    const formattedDate = `${year}-${month}-${d}`;
-                    
-                    // Tìm giờ (nếu có)
-                    const timeMatch = fullTimeStr.match(/(\d{1,2}:\d{2})/);
-                    const eventTime = timeMatch ? timeMatch[1] : "00:00";
+if (dayMatches) {
+    // Lọc bỏ số tháng (đã lấy ở monthMatch) để không bị trùng
+    const uniqueDays = [...new Set(dayMatches)].filter(d => d !== monthMatch?.[1]);
+
+    uniqueDays.forEach(day => {
+        const d = day.padStart(2, '0');
+        const formattedDate = `${year}-${month}-${d}`;
+        
+        // Luôn mặc định giờ là 00:00 hoặc lấy từ chuỗi ban đầu nếu cần hiển thị
+        const timeMatch = fullTimeStr.match(/(\d{1,2}:\d{2})/);
+        const eventTime = timeMatch ? timeMatch[1] : "00:00";
 
                     // --- LOGIC KIỂM TRA HẾT VÉ ---
                   

@@ -449,7 +449,7 @@ nav a:hover {
     position: absolute;
     inset: 0;
     transform: rotateY(calc((var(--position) - 1) * (360deg / var(--quantity)))) 
-               translateZ(550px);
+               translateZ(480px);
     backface-visibility: hidden;
     user-select: none;
     -webkit-user-drag: none;
@@ -482,13 +482,12 @@ nav a:hover {
     100% { filter: brightness(1) contrast(1); transform: scale(1); }
 }
 
-/* 8. FOOTER STYLES (ELSYSIUM DARK EDITION) */
+/* 8. FOOTER STYLES  */
 footer {
     background-color: var(--card-bg); /* #1C1F26 */
     border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Tựa đề các cột trong footer */
 footer h4 {
     color: white;
     border-left: 4px solid var(--blue-pastel);

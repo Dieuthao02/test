@@ -80,6 +80,23 @@ function getMergedOrdersForAdmin() {
         .sort((a, b) => b.sortTime - a.sortTime)
         .slice(0, MAX_VISIBLE_DUMMY_ORDERS);
 
+    let allOrders = [...realOrders, ...dummyOrders].sort((a, b) => b.sortTime - a.sortTime);
+    
+    // Enforce total visible limit: slice to 50 newest, prioritize real by sorting real first if tie
+    if (allOrders.length > TOTAL_VISIBLE_ORDERS_LIMIT) {
+        allOrders = allOrders.slice(0, TOTAL_VISIBLE_ORDERS_LIMIT);
+    }
+    
+    return allOrders;
+    const dummyOrders = dummy
+        .map(order => ({
+            ...order,
+            _isReal: false,
+            sortTime: getOrderSortTime(order, false)
+        }))
+        .sort((a, b) => b.sortTime - a.sortTime)
+        .slice(0, MAX_VISIBLE_DUMMY_ORDERS);
+
     return [...realOrders, ...dummyOrders].sort((a, b) => b.sortTime - a.sortTime);
 }
 
@@ -1431,28 +1448,35 @@ function startAutomation() {
 
         /// KỊCH BẢN 1: Bán vé ảo 
         if (randomAction > 0.7) {
+            // Check if we can add dummy: get current merged visible count
+            const currentMerged = getMergedOrdersForAdmin();
+            if (currentMerged.length >= TOTAL_VISIBLE_ORDERS_LIMIT) {
+                console.log("Dummy order skipped: visible limit reached (", currentMerged.length, ")");
+            } else {
+                const originalPrice = (Math.floor(Math.random() * 10) + 5) * 100000; 
+                const salesOrder = { 
+                    id: orderId, 
+                    name: buyer, 
+                    event: event, 
+                    price: originalPrice, 
+                    time: new Date().toLocaleTimeString('vi-VN'),
+                    date: new Date().toLocaleDateString('vi-VN'),
+                    createdAt: now, 
+                    _isReal: false 
+                };
 
-            const originalPrice = (Math.floor(Math.random() * 10) + 5) * 100000; 
-            const salesOrder = { 
-                id: orderId, 
-                name: buyer, 
-                event: event, 
-                price: originalPrice, 
-                time: new Date().toLocaleTimeString('vi-VN'),
-                date: new Date().toLocaleDateString('vi-VN'),
-                createdAt: now, 
-                _isReal: false 
-            };
+                try {
+                    let adminOrders = JSON.parse(localStorage.getItem('admin_orders')) || [];
+                    adminOrders.unshift(salesOrder);
+                    if (adminOrders.length > MAX_VISIBLE_DUMMY_ORDERS) adminOrders.pop();
+                    localStorage.setItem('admin_orders', JSON.stringify(adminOrders));
+                } catch (e) { console.error("Lưu đơn ảo lỗi:", e); }
+                
+                addLiveOrder(buyer, event, originalPrice, true, salesOrder);
+                updateDashboardStats(1, originalPrice, 0);
 
-            try {
-                let adminOrders = JSON.parse(localStorage.getItem('admin_orders')) || [];
-                adminOrders.unshift(salesOrder);
-                if (adminOrders.length > 50) adminOrders.pop();
-                localStorage.setItem('admin_orders', JSON.stringify(adminOrders));
-            } catch (e) { console.error("Lưu đơn ảo lỗi:", e); }
-            
-            addLiveOrder(buyer, event, originalPrice, true, salesOrder);
-            updateDashboardStats(1, originalPrice, 0);
+                logAdminAction('ORDER', `Đơn hàng ảo mới: ${buyer} mua vé ${event} (limit OK)`);
+            }
 
             logAdminAction('ORDER', `Đơn hàng mới: ${buyer} mua vé ${event}`);
             addNotification("Giao dịch", `Khách hàng ${buyer} vừa đặt vé thành công.`);

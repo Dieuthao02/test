@@ -7,6 +7,7 @@
 
     const videoMap = {
         '157': 'video157.mp4',
+        '52': 'video52.mp4',
         '30': 'videos/loading_30.mp4'
     };
 
@@ -19,18 +20,37 @@
 
     if (customVideoPath) {
         videoPlayer.src = customVideoPath;
-        videoPlayer.muted = true;
+        videoPlayer.load(); 
+        
+        // Bắt đầu bằng việc bỏ mute
+        videoPlayer.muted = false; 
+
         videoPlayer.play().then(() => {
-            loaderIcon.classList.add('hidden');
-            const loaderText = document.querySelector('#special-loader h2');
-            if (loaderText) loaderText.style.display = 'none';
+            // FIX ÂM LƯỢNG Ở ĐÂY
+            videoPlayer.volume = 0.3; 
+            
+            console.log("Phát video với âm lượng 0.3");
+            
+            // Ẩn các icon và chữ loading như đã làm
+            if (loaderIcon) loaderIcon.classList.add('hidden');
+            const loaderTexts = specialLoader.querySelectorAll('h2, p, .loading-text');
+            loaderTexts.forEach(el => {
+                el.style.opacity = '0';
+                el.style.visibility = 'hidden';
+            });
+        }).catch(error => {
+            console.log("Trình duyệt chặn tiếng, buộc phải im lặng.");
+            videoPlayer.muted = true;
+            videoPlayer.play();
         });
 
         videoPlayer.onended = () => {
             specialLoader.style.opacity = '0';
             setTimeout(() => { specialLoader.style.display = 'none'; }, 700);
         };
-    } else {
+    }
+    
+    else {
         setTimeout(() => { specialLoader.style.display = 'none'; }, 2000);
     }
 
@@ -46,6 +66,7 @@
         console.error("Lỗi tải Sheet:", error);
         videoPlayer.onended = () => { specialLoader.style.display = 'none'; };
     }
+
 }
 
     function renderPage(ev) {

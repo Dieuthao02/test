@@ -7,8 +7,7 @@ function switchPage(pageId) {
     const detailPages = document.querySelectorAll('[id^="post-detail-"], [id^="offer-"]');
 
     if (pageId === 'home') {
-        // Hiện trang chủ
-        if(hero) hero.style.display = 'block';
+        // Hiện trang chủ        if(hero) hero.style.display = 'block';
         if(container) container.style.display = 'block';
 
         detailPages.forEach(page => {
@@ -20,17 +19,15 @@ function switchPage(pageId) {
     } else {
         const targetPage = document.getElementById(pageId);
         if (targetPage) {
-            // Ẩn trang chủ
+
             if(hero) hero.style.display = 'none';
             if(container) container.style.display = 'none';
             
-            // Ẩn các trang chi tiết khác
             detailPages.forEach(page => {
                  page.classList.add('hidden-page');
                  page.style.display = 'none';
             });
 
-            // Hiện đúng trang cần xem
             targetPage.classList.remove('hidden-page');
             targetPage.style.display = 'block';
             
@@ -43,17 +40,16 @@ function switchPage(pageId) {
     }
 }
 
-/* ============================================================
+/* ==========================
    LOGIC MỞ VIDEO & TIKTOK 
-   ============================================================ */
+   ========================== */
 
 function openTikTokModal(videoId) {
     const modal = document.getElementById('tiktok-modal');
-    // Tìm cái iframe bên trong modal của bạn
     const iframe = modal.querySelector('iframe'); 
     
     if(modal && iframe) {
-        // Nạp link video dựa trên ID được truyền vào từ HTML
+  
         iframe.src = `https://www.tiktok.com/player/v1/${videoId}?autoplay=1&loop=1&controls=1`;
         
         // Hiện Modal
@@ -64,9 +60,9 @@ function openTikTokModal(videoId) {
     }
 }
 
-/* ============================================================
+/* ================
    HÀM ĐÓNG VIDEO
-   ============================================================ */
+   ================*/
 function closeTikTok() {
     const modal = document.getElementById('tiktok-modal');
     const iframe = modal.querySelector('iframe');
@@ -79,22 +75,17 @@ function closeTikTok() {
     }
 }
 
-
-/* ============================================================
+/* =======================
    KHỞI TẠO KHI TẢI TRANG
-   ============================================================ */
+   ======================= */
 document.addEventListener('DOMContentLoaded', () => {
     if ('scrollRestoration' in history) {
         history.scrollRestoration = 'manual';
     }
 
-    // Quay về trang chủ
     switchPage('home');
-
-    // Ép về đầu trang
     window.scrollTo(0, 0);
 
-    // Gán sự kiện cho tiktok (giữ nguyên code cũ của bạn)
     const tiktokCard = document.querySelector('[onclick="openTikTokModal()"]');
     if(tiktokCard) {
         tiktokCard.style.cursor = 'pointer';
@@ -103,18 +94,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function closePost() { switchPage('home'); }
 
-
-/* ============================================================
-   2. HIỆU ỨNG SLIDER 3D (DRAG & ROTATE)
-   ============================================================ */
+/* ======================
+   2. HIỆU ỨNG SLIDER 3D 
+   ====================== */
 const slider = document.querySelector('.slider');
 let isDragging = false;
 let startX, currentRotateY = 0, tempRotateY = 0;
+let autoRotateId; 
+
+function startAutoRotate() {
+    autoRotateId = setInterval(() => {
+        currentRotateY -= 0.15; // Tốc độ quay 
+        slider.style.transform = `rotateX(0deg) rotateY(${currentRotateY}deg)`;
+    }, 20); 
+}
+
+startAutoRotate();
 
 window.addEventListener('mousedown', (e) => {
     isDragging = true;
     startX = e.clientX;
     slider.style.transition = 'none';
+    clearInterval(autoRotateId); 
 });
 
 window.addEventListener('mousemove', (e) => {
@@ -129,10 +130,10 @@ window.addEventListener('mouseup', () => {
         isDragging = false;
         currentRotateY = tempRotateY;
         slider.style.transition = 'transform 0.5s ease-out';
+        startAutoRotate(); 
     }
 });
 
-// Xử lý bấm vào item trong slider (không bị nhầm với kéo)
 document.querySelectorAll('.item').forEach((item) => {
     item.addEventListener('click', function(e) {
         if (Math.abs(e.clientX - startX) < 5) {
@@ -146,9 +147,9 @@ document.querySelectorAll('.item').forEach((item) => {
 });
 
 
-/* ============================================================
-   3. HERO SLIDESHOW (AUTO CHUYỂN SLIDE)
-   ============================================================ */
+/* ===================
+   3. HERO SLIDESHOW 
+   =================== */
 let currentHeroIndex = 0;
 const slides = document.querySelectorAll('.hero-item');
 const dots = document.querySelectorAll('.dot');
@@ -169,9 +170,9 @@ setInterval(() => {
 }, 5000);
 
 
-/* ============================================================
-   4. HỆ THỐNG VOTE (HÀI LÒNG / KHÔNG)
-   ============================================================ */
+/* =================
+   4. HỆ THỐNG VOTE 
+   ================= */
 function handleVote(type) {
     const buttons = document.querySelectorAll('.vote-chip');
     buttons.forEach(btn => {
@@ -204,31 +205,27 @@ function loadSavedVote() {
         });
     }
 }
-/* ============================================================
-   HỆ THỐNG BÌNH LUẬN TỐI ƯU (DÙNG CHO NHIỀU BÀI)
-   ============================================================ */
+/* ====================
+   HỆ THỐNG BÌNH LUẬN 
+   ==================== */
 
 function addComment() {
-    // 1. Tìm trang đang hiển thị (không có class hidden-page hoặc display khác none)
     const activePage = document.querySelector('[id^="post-detail-"]:not(.hidden-page), [id^="offer-"]:not(.hidden-page)');
     
     if (!activePage) {
-        // Dự phòng nếu bạn không dùng class hidden-page để ẩn mà dùng style.display
+   
         const pages = document.querySelectorAll('[id^="post-detail-"], [id^="offer-"]');
         pages.forEach(p => { if(p.style.display === 'block') activePage = p; });
     }
 
     if (!activePage) return console.error("Không xác định được trang đang mở");
-    
     const category = activePage.id;
 
-    // 2. Tìm ô input bên trong trang đó
     const nameInput = activePage.querySelector('#user-name-input');
     const textInput = activePage.querySelector('#comment-input');
 
     if (!textInput || !textInput.value.trim()) return alert("Nhập nội dung đã bạn ơi!");
 
-    // 3. Tạo cấu trúc lưu trữ
     const newComment = {
         id: Date.now(),
         category: category,
@@ -237,12 +234,10 @@ function addComment() {
         time: new Date().toLocaleString('vi-VN', { hour12: false }).replace(',', '')
     };
 
-    // 4. Lưu vào LocalStorage (Dùng thống nhất 1 tên biến elysium_db)
     let allComments = JSON.parse(localStorage.getItem('elysium_db')) || [];
     allComments.unshift(newComment);
     localStorage.setItem('elysium_db', JSON.stringify(allComments));
 
-    // 5. Reset và Vẽ lại
     textInput.value = ''; 
     if(nameInput) nameInput.value = '';
     renderCommentsForCurrentPage();
@@ -278,7 +273,6 @@ function renderCommentsForCurrentPage() {
     `).join('');
 }
 
-// Thêm hàm Xóa chuẩn cho database mới
 function deleteComment(id) {
     if(confirm("Bạn muốn xóa bình luận này?")) {
         let allComments = JSON.parse(localStorage.getItem('elysium_db')) || [];
@@ -288,7 +282,6 @@ function deleteComment(id) {
     }
 }
 
-// Thêm hàm Sửa chuẩn
 function toggleEdit(id) {
     const textElem = document.getElementById(`text-${id}`);
     const isEditing = textElem.getAttribute('contenteditable') === 'true';
@@ -307,7 +300,7 @@ function toggleEdit(id) {
         
         if (index !== -1) {
             allComments[index].text = newText;
-            // Thêm dấu hiệu đã chỉnh sửa nếu chưa có
+
             if (!allComments[index].time.includes("(đã sửa)")) {
                 allComments[index].time += " (đã sửa)";
             }
