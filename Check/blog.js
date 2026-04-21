@@ -325,3 +325,4 @@ function saveAndRender() {
     localStorage.setItem('elysium_comments', JSON.stringify(comments));
     renderComments();
 }
+
