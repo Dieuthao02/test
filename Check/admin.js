@@ -651,7 +651,6 @@ function filterEvents() {
 }
 
 /* LOGIC DUYỆT, TỪ CHỐI & HOÀN TÁC */
-
 // DUYỆT SỰ KIỆN 
 function approveEvent(eventId, btnElement) {
     const card = document.getElementById(`event-card-${eventId}`);
@@ -2589,7 +2588,6 @@ document.getElementById('refund-search')?.addEventListener('input', function(e) 
     });
 });
 
-
 /* --- 10. KHỞI CHẠY --- */
 document.addEventListener('DOMContentLoaded', () => {
     seedProcessedOrdersFromCurrentData();
@@ -2607,5 +2605,4 @@ document.addEventListener('DOMContentLoaded', () => {
     startStatusAutomation();
     setupSupportSearch();
 });
-
 
