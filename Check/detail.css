@@ -75,10 +75,9 @@ body { background-color: #0b0b0b; color: #ffffff; font-family: 'Inter', sans-ser
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* Hiệu ứng hover cho card gợi ý */
         .suggestion-card:hover img { transform: scale(1.05); }
 
-        /* Nhãn hết vé  */
+   
 .sold-out-badge {
     background-color: rgba(239, 68, 68, 0.1);
     color: #ef4444;
@@ -91,7 +90,6 @@ body { background-color: #0b0b0b; color: #ffffff; font-family: 'Inter', sans-ser
     letter-spacing: 0.5px;
 }
 
-/* Hiệu ứng mờ cho cả dòng vé khi hết */
 .ticket-sold-out {
     opacity: 0.6;
     filter: grayscale(0.5);
@@ -116,4 +114,33 @@ body { background-color: #0b0b0b; color: #ffffff; font-family: 'Inter', sans-ser
 .showtime-item.active .ticket-rows-container {
     max-height: 1000px;
     transition: max-height 1s ease-in-out;
+}
+
+#special-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    background: black; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#loading-video-player {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1; 
+}
+
+#loader-icon, .loading-text {
+    position: relative;
+    z-index: 2;
 }

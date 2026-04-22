@@ -7,7 +7,6 @@
 
     const videoMap = {
         '157': 'video157.mp4',
-        '52': 'video52.mp4',
         '30': 'videos/loading_30.mp4'
     };
 
@@ -20,27 +19,24 @@
 
     if (customVideoPath) {
         videoPlayer.src = customVideoPath;
+        videoPlayer.style.display = 'block';
         videoPlayer.load(); 
         
-        // Bắt đầu bằng việc bỏ mute
-        videoPlayer.muted = false; 
+        // --- BƯỚC QUAN TRỌNG: ẨN TRƯỚC KHI PLAY ---
+        if (loaderIcon) loaderIcon.style.display = 'none';
+        const loaderTexts = specialLoader.querySelectorAll('h2, p, .loading-text');
+        loaderTexts.forEach(el => {
+            el.style.display = 'none'; 
+        });
+
+        videoPlayer.muted = false;
+        videoPlayer.volume = 0.3;
 
         videoPlayer.play().then(() => {
-            // FIX ÂM LƯỢNG Ở ĐÂY
-            videoPlayer.volume = 0.3; 
-            
-            console.log("Phát video với âm lượng 0.3");
-            
-            // Ẩn các icon và chữ loading như đã làm
-            if (loaderIcon) loaderIcon.classList.add('hidden');
-            const loaderTexts = specialLoader.querySelectorAll('h2, p, .loading-text');
-            loaderTexts.forEach(el => {
-                el.style.opacity = '0';
-                el.style.visibility = 'hidden';
-            });
+            console.log("Phát video có tiếng thành công");
         }).catch(error => {
-            console.log("Trình duyệt chặn tiếng, buộc phải im lặng.");
-            videoPlayer.muted = true;
+            console.warn("Trình duyệt chặn tiếng, buộc phải im lặng :", error);
+            videoPlayer.muted = true; 
             videoPlayer.play();
         });
 
@@ -48,9 +44,14 @@
             specialLoader.style.opacity = '0';
             setTimeout(() => { specialLoader.style.display = 'none'; }, 700);
         };
-    }
-    
-    else {
+    } else {
+        // Nếu KHÔNG có video, đảm bảo icon và chữ vẫn hiện
+        if (loaderIcon) loaderIcon.style.display = 'block';
+        const loaderTexts = specialLoader.querySelectorAll('h2, p, .loading-text');
+        loaderTexts.forEach(el => {
+            el.style.display = 'block';
+        });
+        
         setTimeout(() => { specialLoader.style.display = 'none'; }, 2000);
     }
 
@@ -70,6 +71,42 @@
 }
 
     function renderPage(ev) {
+
+    const bgVideoMap = {
+        '52': 'video52.mp4',
+        '30': 'assets/videos/art_30.mp4'
+    };
+
+    const bgImageMap = {
+        'default': 'assets/images/default_bg.jpg',
+        '100': 'assets/images/special_event_100.jpg'
+    };
+
+    const bgVideo = document.getElementById('dynamic-bg-video');
+    const bgImage = document.getElementById('dynamic-bg-image');
+    
+    const eventIdStr = String(ev.id);
+
+    if (bgVideoMap[eventIdStr]) {
+        bgVideo.src = bgVideoMap[eventIdStr];
+        bgVideo.style.display = 'block';
+        bgImage.style.display = 'none';
+        bgVideo.muted = false; 
+        bgVideo.volume = 0;  
+        bgVideo.loop = true;
+        bgVideo.playsInline = true;
+        bgVideo.play();
+    } else if (bgImageMap[eventIdStr]) {
+        bgImage.style.backgroundImage = `url('${bgImageMap[eventIdStr]}')`;
+        bgImage.style.display = 'block';
+        bgVideo.style.display = 'none';
+    } else {
+        bgImage.style.backgroundImage = `url('${ev.eventImage || bgImageMap['default']}')`;
+        bgImage.style.filter = "blur(20px)"; 
+        bgImage.style.display = 'block';
+        bgVideo.style.display = 'none';
+    }
+
     const now = new Date();
     let isAllPast = false;
     let minPrice = Infinity;

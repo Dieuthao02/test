@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="responsive.css">
 </head>
 <body class="pb-20">
+    <div id="dynamic-bg-container" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden;">
+    <video id="dynamic-bg-video" autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: cover; display: none;"></video>
+    <div id="dynamic-bg-image" style="width: 100%; height: 100%; background-size: cover; background-position: center; display: none;"></div>
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6);"></div>
+</div>
     
    <div id="special-loader" class="fixed inset-0 z-[1000] bg-black flex items-center justify-center">
     <video id="loading-video-player" 
@@ -421,4 +426,5 @@
 </script>
     <script src="detail.js"></script>
 </body>
+    
 </html>
