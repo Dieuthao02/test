@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Shot Footage - AI Cinematic</title>
+    <style>
+        body {
+            background-color: #050505;
+            color: #00ff41;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .shot-section {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 2px solid #1a1a1a;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* --- SHOT 1: REJECTED IMPACT --- */
+        .status-box {
+            border: 4px solid #ff4b2b;
+            padding: 60px;
+            background: rgba(255, 75, 43, 0.1);
+            animation: impact 1s ease-out forwards;
+        }
+        .rejected-text {
+            color: #ff4b2b;
+            font-size: 6rem;
+            font-weight: bold;
+            animation: shake 0.2s infinite;
+        }
+        @keyframes impact {
+            0% { transform: scale(5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes shake {
+            0% { transform: translate(2px, 2px); }
+            50% { transform: translate(-2px, -2px); }
+            100% { transform: translate(2px, -2px); }
+        }
+
+        /* --- SHOT 2: STOCK CRASH (UP THEN FREE FALL) --- */
+        .stock-container {
+            width: 80%; height: 500px;
+            background: #000; border: 1px solid #333;
+            position: relative;
+        }
+        .stock-line {
+            fill: none;
+            stroke-width: 5;
+            stroke-dasharray: 2000;
+            stroke-dashoffset: 2000;
+            animation: drawPath 5s linear forwards;
+        }
+        @keyframes drawPath {
+            0% { stroke-dashoffset: 2000; stroke: #00ff41; }
+            60% { stroke-dashoffset: 1400; stroke: #00ff41; } /* Đoạn đang tăng */
+            65% { stroke: #ff3333; } /* Chuyển màu ngay khi rơi */
+            100% { stroke-dashoffset: 0; stroke: #ff3333; } /* Rơi tự do */
+        }
+
+        /* --- SHOT 3: AI GLITCH --- */
+        .glitch-wrapper {
+            font-size: 6rem;
+            font-weight: bold;
+            color: white;
+            position: relative;
+        }
+        .glitch-wrapper::before, .glitch-wrapper::after {
+            content: "AI DECISION";
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        }
+        .glitch-wrapper::before {
+            left: 3px; text-shadow: -2px 0 #ff00c1;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim 2s infinite linear alternate-reverse;
+        }
+        .glitch-wrapper::after {
+            left: -3px; text-shadow: -2px 0 #00fff9;
+            clip: rect(44px, 450px, 56px, 0);
+            animation: glitch-anim 3s infinite linear alternate-reverse;
+        }
+        @keyframes glitch-anim {
+            0% { clip: rect(10px, 9999px, 50px, 0); }
+            20% { clip: rect(80px, 9999px, 30px, 0); }
+            100% { clip: rect(40px, 9999px, 90px, 0); }
+        }
+
+        /* --- SHOT 4: SCROLLING CODE (HACKER STYLE) --- */
+        .code-window {
+            width: 70%;
+            height: 400px;
+            background: #0a0a0a;
+            border: 1px solid #00ff41;
+            padding: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+        .code-scroll {
+            position: absolute;
+            width: 100%;
+            animation: scrollUp 10s linear infinite;
+        }
+        .code-line { font-size: 1.4rem; line-height: 1.8; white-space: nowrap; }
+        .red-line { color: #ff4b2b; font-weight: bold; }
+        
+        @keyframes scrollUp {
+            0% { top: 100%; }
+            100% { top: -150%; }
+        }
+    </style>
+</head>
+<body>
+
+    <section class="shot-section">
+        <div class="status-box">
+            <div style="color: #666; font-size: 1.5rem;">CRITICAL ERROR</div>
+            <div class="rejected-text">REJECTED</div>
+            <div style="color: #ff4b2b; font-size: 1.2rem; letter-spacing: 5px;">ACCESS DENIED</div>
+        </div>
+    </section>
+
+    <section class="shot-section">
+        <div class="stock-container">
+            <svg viewBox="0 0 1000 500" style="width: 100%; height: 100%;">
+                <path class="stock-line" d="M0,350 L150,320 L300,340 L450,280 L600,250 L650,260 L700,240 L720,250 L950,600" />
+            </svg>
+            <div style="position: absolute; top: 20px; right: 20px; color: #ff3333; font-size: 2rem;">FALLING...</div>
+        </div>
+    </section>
+
+    <section class="shot-section">
+        <div class="glitch-wrapper">AI DECISION</div>
+        <div style="color: #ff4b2b; margin-top: 20px;">CALCULATING PROBABILITY... 99.9%</div>
+    </section>
+
+    <section class="shot-section">
+        <div class="code-window">
+            <div class="code-scroll">
+                <div class="code-line">GET /api/v1/user/credit_history HTTP/1.1</div>
+                <div class="code-line">Host: secure.finance.ai</div>
+                <div class="code-line">Authorization: Bearer x7f92k...</div>
+                <div class="code-line">Analyzing social_score... OK</div>
+                <div class="code-line">Analyzing spending_habits... OK</div>
+                <div class="code-line red-line">WARNING: UNUSUAL PATTERN DETECTED</div>
+                <div class="code-line">risk_score = 0.89231</div>
+                <div class="code-line">confidence_level = 0.9821</div>
+                <div class="code-line">executing script: /bin/decision_engine</div>
+                <div class="code-line red-line">SYSTEM_OUTPUT: REJECT_USER</div>
+                <div class="code-line">Closing connection...</div>
+                <div class="code-line">GET /api/v1/user/credit_history HTTP/1.1</div>
+                <div class="code-line">Analyzing social_score... OK</div>
+                <div class="code-line red-line">ALERT: DEBT_TO_INCOME_RATIO_HIGH</div>
+                <div class="code-line">Finalizing report...</div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Tự động reload sau 15 giây để bạn quay lại từ đầu nếu muốn
+        // Hoặc bạn có thể tự nhấn F5
+    </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-    const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbx3vQyakJkFfJxkP5XAQ8fQkjmt5lnls2n4N3zjrEUL4JxYIzMumbGmPIZwOTzbjgO-OA/exec';
+    const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwfP_xBGb0qD8-rzlPpgt1JOHmy3t8eTmgF7dKonvrvF4yh4PLFEXIO_3TeaRIExVH7tw/exec';
         let currentEventId = ''; 
 
     async function initEventDetail() {

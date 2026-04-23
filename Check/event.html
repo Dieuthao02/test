@@ -15,7 +15,7 @@
     <div class="max-w-[1400px] mx-auto px-6 py-3 flex items-center justify-between gap-8 relative">
         <div class="flex items-center space-x-10 flex-shrink-0">
             <a href="index.html">
-                <h1 class="text-3xl font-black text-[#F33B26] tracking-tighter cursor-pointer">Elysium</h1>
+                <h1 class="text-3xl font-black tracking-tighter cursor-pointer bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent"> Elysium </h1>
             </a>
             <nav class="hidden xl:flex space-x-6 font-bold text-gray-600 dark:text-gray-300">
                 <a href="event.html" class="hover:text-blue-400 transition">Sự kiện</a>
@@ -37,7 +37,7 @@
                         <span id="location-text">Hà Nội</span>
                         <i class="fa-solid fa-chevron-down text-xs text-gray-400"></i>
                     </div>
-                    <div id="location-dropdown" class="hidden absolute top-[120%] right-0 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 min-w-[160px] z-50">
+                    <div id="location-dropdown" class="hidden absolute top-[120%] right-0 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 min-w-[160px] z-index: 999">
                         <div class="px-3 py-1 text-[10px] font-black text-gray-400 uppercase tracking-widest">Chọn thành phố</div>
                         <div class="location-option px-4 py-2.5 hover:bg-pink-50 cursor-pointer text-sm font-bold text-gray-700 flex items-center gap-2" data-city="Hà Nội">
                             <i class="fa-solid fa-circle text-[6px] text-pink-400"></i> Hà Nội
@@ -149,13 +149,12 @@
                     <a href="auth.html?mode=register" class="text-gray-500 px-3 py-1.5 text-xs hover:text-blue-500 transition">Đăng ký</a>
                 </div>
             </div>
-
-            <a href="create.html" class="hidden lg:flex items-center text-blue-500 border-2 border-blue-100 bg-blue-50/30 px-4 py-1.5 rounded-full hover:bg-blue-100 transition text-xs">
+            <div id="user-nav" class="hidden items-center gap-3">
+         <a href="create.html" class="hidden lg:flex items-center text-blue-500 border-2 border-blue-100 bg-blue-50/30 px-4 py-1.5 rounded-full hover:bg-blue-100 transition text-xs">
                     <i class="fa-solid fa-plus-circle mr-2"></i> Tạo sự kiện
                 </a>
-            <div id="user-nav" class="hidden items-center gap-3">
-        
                 <div class="relative" id="header-avatar-wrap">
+                
                     <button onclick="toggleHeaderMenu()" class="flex items-center gap-2 bg-gray-100 border border-gray-200 rounded-full px-3 py-1.5 hover:bg-gray-200 transition">
     <div class="w-6 h-6 rounded-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-pink-400 to-purple-500 text-white text-xs font-black" id="avatar-container">
         <img id="header-avatar-img" class="w-full h-full object-cover hidden" src="" alt="Avatar">
