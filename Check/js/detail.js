@@ -6,7 +6,7 @@
     currentEventId = urlParams.get('id');
 
     const videoMap = {
-        '157': 'video157.mp4',
+        '157': '...video/video157.mp4',
         '30': 'videos/loading_30.mp4'
     };
 
@@ -73,7 +73,7 @@
     function renderPage(ev) {
 
     const bgVideoMap = {
-        '52': 'video52.mp4',
+        '52': '...video/video52.mp4',
         '30': 'assets/videos/art_30.mp4'
     };
 
