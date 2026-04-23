@@ -358,8 +358,8 @@ const MAP_TEMPLATES = {
     </div>`
     },
 
-    // SƠ ĐỒ ID 174
-    174: {
+    // SƠ ĐỒ ID 150
+    150: {
         eventName: "G-DRAGON WORLD TOUR",
         hasDiagram: true,
         time: "20:00 - 11/08/2026",
