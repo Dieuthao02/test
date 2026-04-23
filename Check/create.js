@@ -2,7 +2,6 @@
 let isEditing = false;
 let currentEditCard = null;
 
-// Khởi chạy khi cửa sổ tải xong
 window.onload = () => { 
     const userData = localStorage.getItem('userLogin');
     let loggedInUser = null;
@@ -59,18 +58,15 @@ function showPage(pageId) {
         cancelCreate();
     }
 }
-
         target.style.animation = 'none';
         target.offsetHeight; 
         target.style.animation = 'fadeIn 0.4s ease-in-out';
     }
     
-    // Cập nhật Sidebar
     document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active', 'text-[#00d2ff]'));
     const activeBtn = document.getElementById('btn-' + pageId);
     if (activeBtn) activeBtn.classList.add('active', 'text-[#00d2ff]');
 
-    // Cập nhật Header
     const titles = {
         'index': 'Trang chủ',
         'my-events': 'Sự kiện của tôi',
@@ -89,7 +85,7 @@ function goToStep(stepNumber) {
         let firstInvalidField = null;
         let isValid = true;
 
-        // 1. Quét các ô bắt buộc (Text, Email, Checkbox...)
+        // 1. Quét các ô bắt buộc 
         const requiredFields = currentStep.querySelectorAll('input[required], select[required], textarea[required]');
         
         requiredFields.forEach(field => {
@@ -104,10 +100,9 @@ function goToStep(stepNumber) {
                     field.parentElement.classList.add('ring-1', 'ring-red-500', 'rounded-lg');
                 }
             } else {
-                // Với input file hoặc text, kiểm tra giá trị rỗng
+
                 if (!field.value || !field.value.trim()) {
                     isFieldInvalid = true;
-                    // Nếu là input file bị ẩn (Mã QR), mình highlight cái khung Upload
                     if (field.type === 'file') {
                         const uploadBox = field.closest('.upload-box');
                         if (uploadBox) uploadBox.classList.add('border-red-500', 'ring-1', 'ring-red-500');
@@ -125,7 +120,6 @@ function goToStep(stepNumber) {
 
         if (!isValid) {
             if (firstInvalidField) {
-                // Nếu là input ẩn, mình focus vào cái khung chứa nó
                 if (firstInvalidField.classList.contains('hidden')) {
                     firstInvalidField.parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 } else {
@@ -137,7 +131,7 @@ function goToStep(stepNumber) {
         }
     }
 
-    // --- PHẦN CHUYỂN BƯỚC (Giữ nguyên giao diện của Thảo) ---
+    // --- PHẦN CHUYỂN BƯỚC ---
     document.querySelectorAll('.step-content').forEach(content => content.classList.add('hidden'));
     const targetStep = document.getElementById(`create-step-${stepNumber}`);
     if (targetStep) targetStep.classList.remove('hidden');
@@ -249,7 +243,7 @@ div.innerHTML = `
     list.appendChild(div);
 }
 
-// --- 5. LƯU TRỮ & XỬ LÝ DỮ LIỆU (STORAGE & CRUD) ---
+// --- 5. LƯU TRỮ & XỬ LÝ DỮ LIỆU  ---
 async function finishCreateEvent(isDraft = false) {
     try {
         const rawName = document.getElementById('event-name-input')?.value.trim() || "";
@@ -335,7 +329,6 @@ async function finishCreateEvent(isDraft = false) {
 
         localStorage.setItem('ticket_events', JSON.stringify(allData));
 
-        // Xử lý hậu kỳ
         if (typeof closeConfirmModal === "function") closeConfirmModal();
 
         if (isDraft) {
@@ -536,18 +529,13 @@ function editEvent(btn) {
 
     // --- HIỂN THỊ LẠI TẤT CẢ ẢNH  ---
     if (typeof renderImagePreview === "function") {
-        // Poster & Banner
         renderImagePreview(ev.img || ev.poster, 'poster-prev', 'poster-wrap', 'poster-prev-ui');
         renderImagePreview(ev.banner || ev.cover, 'cover-prev', 'cover-wrap', 'cover-prev-ui');
-        // Sơ đồ chỗ ngồi
         renderImagePreview(ev.map, 'map-prev', 'map-wrap', 'map-prev-ui');
-        // Logo BTC
         renderImagePreview(ev.btclogo || ev.logo, 'logo-prev', 'logo-wrap', 'logo-prev-ui');
-        // Mã QR Ngân hàng
         renderImagePreview(ev.bankqr || ev.qr, 'qr-prev', 'qr-wrap', 'qr-prev-ui');
     }
 
-    // Đổi tên nút xác nhận
     const mainFinishBtn = document.querySelector('button[onclick="showConfirmModal()"]');
     if (mainFinishBtn) mainFinishBtn.innerText = "CẬP NHẬT SỰ KIỆN";
 }
@@ -1076,7 +1064,6 @@ function syncUserInterface(user) {
     const userNameWelcome = document.getElementById('user-name-welcome');
 
     if (user && userNameEl && userAvatarEl) {
-        // Hiển thị tên
         userNameEl.textContent = user.name;
         if (userNameWelcome) userNameWelcome.textContent = user.name;
         if (user.avatar) {

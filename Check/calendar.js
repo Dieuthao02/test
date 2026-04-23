@@ -1,6 +1,6 @@
 // --- CẤU HÌNH & DỮ LIỆU TĨNH ---
-     const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwfP_xBGb0qD8-rzlPpgt1JOHmy3t8eTmgF7dKonvrvF4yh4PLFEXIO_3TeaRIExVH7tw/exec';
-      const fixedEvents = [
+    const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwfP_xBGb0qD8-rzlPpgt1JOHmy3t8eTmgF7dKonvrvF4yh4PLFEXIO_3TeaRIExVH7tw/exec';
+    const fixedEvents = [
     {
         id: "30", 
         name: "Lễ hội Âm nhạc EventHub 2026",

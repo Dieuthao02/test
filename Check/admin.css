@@ -1,6 +1,6 @@
-/* ==========================================================================
+/* ===========================
    ROOT VARIABLES & BASE RESET 
-   ========================================================================== */
+   =========================== */
 :root {
     --primary-green: #10b981;
     --dark-bg: #0b0f19;
@@ -9,10 +9,10 @@
 }
 
 
-/* ==========================================================================
+/* ==============================
    LAYOUT: SIDEBAR & MAIN CONTENT
-   ========================================================================== */
-/* Sidebar Styling */
+   ============================== */
+
 aside {
     height: 100vh;
     overflow-y: auto;
@@ -40,7 +40,6 @@ aside {
     color: white;
 }
 
-/* Main Content & Scrolling */
 main {
     height: 100vh;
     margin-left: 18rem; 
@@ -67,9 +66,9 @@ main::-webkit-scrollbar-thumb:hover {
     background: var(--primary-green);
 }
 
-/* ==========================================================================
+/* ===================
   GENERAL COMPONENTS
-   ========================================================================== */
+   ===================*/
 .glass {
     background: var(--glass-white);
     backdrop-filter: blur(12px);
@@ -101,9 +100,9 @@ button:active {
     width: 100%;
 }
 
-/* ==========================================================================
+/* ===================
    TABLES & ACTIONS
-   ========================================================================== */
+   ===================*/
 table {
     border-collapse: separate;
     border-spacing: 0;
@@ -128,9 +127,9 @@ table {
     white-space: nowrap;
 }
 
-/* ==========================================================================
+/* =======================
    SUPPORT CARD & GMAIL
-   ========================================================================== */
+   ======================= */
 .glass.group:hover {
     background: rgba(255, 255, 255, 0.05);
     transform: translateY(-2px);
@@ -189,9 +188,9 @@ button[onclick="askAIHelp()"]:hover::after {
     background: linear-gradient(to bottom, #3b82f6, #6366f1);
 }
 
-/* ==========================================================================
+/* =====================
    LIVE ACTIVITY FEED 
-   ========================================================================== */
+   ===================== */
 #live-feed-container .glass {
     background: rgba(255, 255, 255, 0.03);
     backdrop-filter: blur(10px);
@@ -214,9 +213,9 @@ button[onclick="askAIHelp()"]:hover::after {
     border-radius: 10px;
 }
 
-/* ==========================================================================
+/* =======================
    ANIMATIONS & EFFECTS 
-   ========================================================================== */
+   ======================= */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
@@ -252,9 +251,9 @@ button[onclick="askAIHelp()"]:hover::after {
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
 }
 
-/* ==========================================================================
+/* ====================
    FIXES & UTILITIES 
-   ========================================================================== */
+   ==================== */
 #activity .max-w-4xl { 
     min-height: 500px; 
 }
@@ -283,16 +282,16 @@ html {
     scrollbar-width: none;  
 }
 
-    @media print {
-        body * { visibility: hidden; }
-        #invoice-print-area, #invoice-print-area * { visibility: visible; }
-        #invoice-print-area { 
-            position: absolute; 
-            left: 50%; 
-            top: 50%; 
-            transform: translate(-50%, -50%); 
-            width: 100%;
-        }
-        .no-print { display: none !important; }
+@media print {
+    body * { visibility: hidden; }
+    #invoice-print-area, #invoice-print-area * { visibility: visible; }
+    #invoice-print-area { 
+        position: absolute; 
+        left: 50%; 
+        top: 50%; 
+        transform: translate(-50%, -50%); 
+        width: 100%;
     }
+    .no-print { display: none !important; }
+}
 

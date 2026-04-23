@@ -482,122 +482,6 @@ nav a:hover {
     100% { filter: brightness(1) contrast(1); transform: scale(1); }
 }
 
-/* 8. FOOTER STYLES  */
-footer {
-    background-color: var(--card-bg); /* #1C1F26 */
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-footer h4 {
-    color: white;
-    border-left: 4px solid var(--blue-pastel);
-    padding-left: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    font-size: 0.75rem; /* text-xs */
-    font-weight: 900;
-}
-
-/* Danh sách liên kết */
-footer ul li a {
-    color: var(--text-gray);
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-}
-
-footer ul li a:hover {
-    color: white;
-    transform: translateX(5px);
-}
-
-footer ul li a i {
-    color: var(--blue-pastel);
-    font-size: 10px;
-    margin-right: 8px;
-}
-
-/* Social Icons */
-.footer-social-icon {
-    width: 2.75rem; 
-    height: 2.75rem;
-    border-radius: 9999px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    transition: all 0.3s transform;
-}
-
-.footer-social-icon:hover {
-    background: var(--blue-pastel);
-    color: var(--dark-navy);
-    transform: scale(1.1);
-}
-
-/* Hotline & Email */
-.footer-hotline {
-    font-size: 1.875rem;
-    font-weight: 900;
-    color: var(--blue-pastel);
-    letter-spacing: -0.05em;
-}
-
-.footer-email {
-    color: var(--pink-pastel);
-    font-style: italic;
-    text-decoration: underline;
-    opacity: 0.8;
-    transition: 0.3s;
-    cursor: pointer;
-}
-
-.footer-email:hover {
-    opacity: 1;
-}
-
-/* Địa chỉ & Icons */
-.footer-info-text {
-    font-size: 0.75rem;
-    color: var(--text-gray);
-    line-height: 1.6;
-    display: flex;
-    align-items: flex-start;
-}
-
-.footer-info-text i {
-    color: var(--blue-pastel);
-    margin-top: 4px;
-    margin-right: 12px;
-}
-
-/* Bottom Bar & Language Switcher */
-.footer-bottom {
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    padding-top: 2.5rem;
-}
-
-.lang-box {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.5rem 1rem;
-    border-radius: 9999px;
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.lang-box.active {
-    background: rgba(162, 225, 219, 0.1);
-    border: 1px solid rgba(162, 225, 219, 0.2);
-}
-
-.lang-box span {
-    font-size: 10px;
-    font-weight: 900;
-}
-
 /* Modal Background */
 .modal {
     display: none; 
@@ -615,14 +499,14 @@ footer ul li a i {
 
 .modal-content {
     background: rgba(20, 20, 20, 0.95);
-    backdrop-filter: blur(15px); /* Hiệu ứng kính */
+    backdrop-filter: blur(15px); 
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 25px 50px rgba(0,0,0,0.5);
     padding: 40px;
     border-radius: 24px;
 }
 
-/* Category Tag kiểu Elysium */
+/* Category Tag  */
 .category-tag-elysium {
     background: linear-gradient(45deg, var(--blue-pastel), var(--pink-pastel));
     color: #000;
@@ -633,7 +517,7 @@ footer ul li a i {
     text-transform: uppercase;
 }
 
-/* Event Card nâng cấp */
+/* Event Card  */
 .related-event-box {
     background: var(--glass-bg);
     padding: 25px;
@@ -675,10 +559,14 @@ footer ul li a i {
     margin-left: 10px;
 }
 
-.vote-btn:hover { border-color: var(--blue-pastel); }
+.vote-btn:hover { 
+    border-color: var(--blue-pastel); 
+}
 
-/* Fix giao diện bài báo */
-.hidden-page { display: none !important; }
+/* Giao diện bài báo */
+.hidden-page { 
+    display: none !important; 
+}
 
 #post-detail-page {
     animation: fadeIn 0.6s ease-out;

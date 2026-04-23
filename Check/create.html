@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,20 +9,21 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="create.css">
 </head>
+
 <body class="flex h-screen bg-[#050505] text-white font-sans">
 
     <aside class="w-72 bg-[#0a0a0a] border-r border-white/10 flex flex-col shrink-0 overflow-hidden relative">
         <div class="absolute top-[-100px] left-[-100px] w-64 h-64 bg-blue-600/10 rounded-full blur-[100px]"></div>
         
         <a href="index.html" class="p-8 flex items-center gap-3 relative z-10 no-underline group cursor-pointer transition-all active:scale-95">
-    <div class="w-10 h-10 bg-gradient-to-br from-[#00d2ff] to-[#ff007a] rounded-xl flex items-center justify-center font-black text-white shadow-lg shadow-blue-500/20 group-hover:shadow-[#00d2ff]/40 transition-all">
-        T
-    </div>
-    
-    <span class="font-black text-xl tracking-tighter uppercase italic text-white group-hover:text-[#00d2ff] transition-colors">
-        Organizer<span class="text-[#00d2ff]">.</span>
-    </span>
-</a>
+            <div class="w-10 h-10 bg-gradient-to-br from-[#00d2ff] to-[#ff007a] rounded-xl flex items-center justify-center font-black text-white shadow-lg shadow-blue-500/20 group-hover:shadow-[#00d2ff]/40 transition-all">
+                T
+            </div>
+            
+            <span class="font-black text-xl tracking-tighter uppercase italic text-white group-hover:text-[#00d2ff] transition-colors">
+                Organizer<span class="text-[#00d2ff]">.</span>
+            </span>
+        </a>
 
         <nav class="flex-1 px-4 space-y-2 relative z-10">
         
@@ -34,27 +36,27 @@
             </button>
         </nav>
 
-       <div class="p-6 mt-auto border-t border-white/5 relative z-10">
-    <a href="dashboard.html" id="user-profile-sidebar"
-       class="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-all active:scale-95 no-underline block">
-        
-        <div id="user-avatar" class="w-10 h-10 bg-gradient-to-tr from-purple-500 to-pink-500 rounded-full flex items-center justify-center font-bold text-white shadow-lg">
-            --
+        <div class="p-6 mt-auto border-t border-white/5 relative z-10">
+            <a href="dashboard.html" id="user-profile-sidebar"
+               class="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/10 cursor-pointer hover:bg-white/10 transition-all active:scale-95 no-underline block">
+                
+                <div id="user-avatar" class="w-10 h-10 bg-gradient-to-tr from-purple-500 to-pink-500 rounded-full flex items-center justify-center font-bold text-white shadow-lg">
+                    --
+                </div>
+                
+                <div class="flex-1">
+                    <p id="user-name-sidebar" class="text-xs font-bold text-white mb-0 italic">Đang tải...</p>
+                    <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-0">Pro Account</p>
+                </div>
+                
+                <i class="fa-solid fa-chevron-right text-[8px] text-gray-600"></i>
+            </a>
         </div>
-        
-        <div class="flex-1">
-            <p id="user-name-sidebar" class="text-xs font-bold text-white mb-0 italic">Đang tải...</p>
-            <p class="text-[10px] text-gray-500 uppercase tracking-wider mb-0">Pro Account</p>
-        </div>
-        
-        <i class="fa-solid fa-chevron-right text-[8px] text-gray-600"></i>
-    </a>
-</div>
     </aside>
 
     <div class="flex-1 flex flex-col relative overflow-hidden">
         <header class="h-20 border-b border-white/5 flex items-center justify-between px-10 bg-[#050505]/80 backdrop-blur-xl sticky top-0 z-50">
-             <h2 id="page-title" class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">Trang chủ</h2>
+            <h2 id="page-title" class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">Trang chủ</h2>
             <div class="flex items-center gap-6">
                 <button onclick="showPage('create-event')" class="bg-gradient-to-r from-[#00d2ff] to-[#3a7bd5] hover:shadow-[0_0_20px_rgba(0,210,255,0.4)] text-white px-6 py-2.5 rounded-full flex items-center gap-2 font-bold transition-all transform hover:-translate-y-1 active:scale-95">
                     <i class="fa-solid fa-plus-circle"></i> Tạo sự kiện
@@ -64,162 +66,220 @@
 
         <main class="flex-1 overflow-y-auto p-10 custom-scrollbar" id="content-area">
             
-<section id="page-home" class="animate-fade-in">
-    <div class="max-w-5xl mx-auto">
-        <div class="relative overflow-hidden rounded-[40px] bg-gradient-to-br from-[#111] to-[#050505] border border-white/10 p-12 mb-10 shadow-2xl">
-            <div class="relative z-10">
-                <h1 class="text-4xl font-black italic uppercase tracking-tighter mb-4">
-                    Chào mừng trở lại, <span id="user-name-welcome" class="text-[#00d2ff]">Diệu Thảo</span>
-                </h1>
-                <p class="text-gray-500 max-w-xl mb-8 leading-relaxed">
-                    Hôm nay bạn muốn tổ chức sự kiện gì nào? Hãy bắt đầu bằng cách nhấn nút tạo bên dưới hoặc xem lại danh sách sự kiện cũ nhé!
-                </p>
-                <button onclick="showPage('create-event')" class="bg-white text-black px-8 py-4 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-[#00d2ff] transition-all active:scale-95 shadow-xl">
-                    Bắt đầu tạo sự kiện ngay
-                </button>
-            </div>
-            <div class="absolute top-[-50px] right-[-50px] w-80 h-80 bg-[#ff007a]/10 rounded-full blur-[80px]"></div>
-        </div>
-
-        <h3 class="text-xs font-black uppercase tracking-[0.3em] text-gray-600 mb-6 ml-4">Quy trình 3 bước chuyên nghiệp</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white/5 border border-white/10 p-8 rounded-[32px] hover:bg-white/[0.08] transition-all group">
-                <div class="w-12 h-12 bg-blue-500/20 text-[#00d2ff] rounded-2xl flex items-center justify-center mb-6 text-xl font-bold group-hover:scale-110 transition-transform">01</div>
-                <h4 class="font-bold mb-2">Nhập thông tin</h4>
-                <p class="text-xs text-gray-500 leading-relaxed">Chuẩn bị Poster (720x958) và Banner (1280x720) thật xịn xò nhé.</p>
-            </div>
-            <div class="bg-white/5 border border-white/10 p-8 rounded-[32px] hover:bg-white/[0.08] transition-all group">
-                <div class="w-12 h-12 bg-pink-500/20 text-pink-500 rounded-2xl flex items-center justify-center mb-6 text-xl font-bold group-hover:scale-110 transition-transform">02</div>
-                <h4 class="font-bold mb-2">Cài đặt vé</h4>
-                <p class="text-xs text-gray-500 leading-relaxed">Thiết lập giá vé và số lượng. Nhớ thêm sơ đồ chỗ ngồi nếu có.</p>
-            </div>
-            <div class="bg-white/5 border border-white/10 p-8 rounded-[32px] hover:bg-white/[0.08] transition-all group">
-                <div class="w-12 h-12 bg-purple-500/20 text-purple-400 rounded-2xl flex items-center justify-center mb-6 text-xl font-bold group-hover:scale-110 transition-transform">03</div>
-                <h4 class="font-bold mb-2">Đăng & Quản lý</h4>
-                <p class="text-xs text-gray-500 leading-relaxed">Xác nhận thông tin ngân hàng để nhận doanh thu vé từ chúng tôi</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-             <section id="page-create-event" class="hidden">
-    <div class="max-w-5xl mx-auto pb-20">
-        <div class="flex items-center justify-between mb-8 overflow-x-auto gap-4 py-2 border-b border-white/10">
-            <span id="step-1-tab" class="step-item active pb-2 whitespace-nowrap font-bold border-b-2 border-[#00d2ff] text-[#00d2ff]">1. Thông tin sự kiện</span>
-            <span id="step-2-tab" class="step-item text-gray-500 pb-2 whitespace-nowrap">2. Thời gian & Loại vé</span>
-            <span id="step-3-tab" class="step-item text-gray-500 pb-2 whitespace-nowrap">3. Quy định & Chính sách</span>
-            <span id="step-4-tab" class="step-item text-gray-500 pb-2 whitespace-nowrap">4. Thanh toán</span>
-        </div>
-
-        <div id="create-step-1" class="step-content space-y-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-                <div class="md:col-span-1">
-                    <p class="mb-2 font-medium text-sm text-gray-400">* Ảnh sự kiện (720x958)</p>
-                    <div class="upload-box aspect-[720/958] rounded-lg border border-dashed border-white/20 bg-white/5">
-                        <input type="file" id="input-poster" class="hidden" accept="image/*" onchange="previewImg(this, 'poster-prev')">
-                        <div id="poster-prev-ui" class="flex flex-col items-center justify-center h-full p-4 text-center cursor-pointer" onclick="document.getElementById('input-poster').click()">
-                            <i class="fa-regular fa-image text-3xl mb-2 text-gray-500"></i>
-                            <p class="text-xs text-gray-500 italic">Nhấn để tải lên</p>
+            <section id="page-home" class="animate-fade-in">
+                <div class="max-w-5xl mx-auto">
+                    <div class="relative overflow-hidden rounded-[40px] bg-gradient-to-br from-[#111] to-[#050505] border border-white/10 p-12 mb-10 shadow-2xl">
+                        <div class="relative z-10">
+                            <h1 class="text-4xl font-black italic uppercase tracking-tighter mb-4">
+                                Chào mừng trở lại, <span id="user-name-welcome" class="text-[#00d2ff]">Diệu Thảo</span>
+                            </h1>
+                            <p class="text-gray-500 max-w-xl mb-8 leading-relaxed">
+                                Hôm nay bạn muốn tổ chức sự kiện gì nào? Hãy bắt đầu bằng cách nhấn nút tạo bên dưới hoặc xem lại danh sách sự kiện cũ nhé!
+                            </p>
+                            <button onclick="showPage('create-event')" class="bg-white text-black px-8 py-4 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-[#00d2ff] transition-all active:scale-95 shadow-xl">
+                                Bắt đầu tạo sự kiện ngay
+                            </button>
                         </div>
-                        <div id="poster-wrap" class="hidden h-full relative">
-                            <div class="remove-btn absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full cursor-pointer" onclick="removeImg('input-poster', 'poster-prev', 'poster-wrap', 'poster-prev-ui')"><i class="fa-solid fa-xmark"></i></div>
-                            <img id="poster-prev" class="w-full h-full object-cover rounded-lg">
+                        <div class="absolute top-[-50px] right-[-50px] w-80 h-80 bg-[#ff007a]/10 rounded-full blur-[80px]"></div>
+                    </div>
+
+                    <h3 class="text-xs font-black uppercase tracking-[0.3em] text-gray-600 mb-6 ml-4">Quy trình 3 bước chuyên nghiệp</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-white/5 border border-white/10 p-8 rounded-[32px] hover:bg-white/[0.08] transition-all group">
+                            <div class="w-12 h-12 bg-blue-500/20 text-[#00d2ff] rounded-2xl flex items-center justify-center mb-6 text-xl font-bold group-hover:scale-110 transition-transform">01</div>
+                            <h4 class="font-bold mb-2">Nhập thông tin</h4>
+                            <p class="text-xs text-gray-500 leading-relaxed">Chuẩn bị Poster (720x958) và Banner (1280x720) thật xịn xò nhé.</p>
+                        </div>
+                        <div class="bg-white/5 border border-white/10 p-8 rounded-[32px] hover:bg-white/[0.08] transition-all group">
+                            <div class="w-12 h-12 bg-pink-500/20 text-pink-500 rounded-2xl flex items-center justify-center mb-6 text-xl font-bold group-hover:scale-110 transition-transform">02</div>
+                            <h4 class="font-bold mb-2">Cài đặt vé</h4>
+                            <p class="text-xs text-gray-500 leading-relaxed">Thiết lập giá vé và số lượng. Nhớ thêm sơ đồ chỗ ngồi nếu có.</p>
+                        </div>
+                        <div class="bg-white/5 border border-white/10 p-8 rounded-[32px] hover:bg-white/[0.08] transition-all group">
+                            <div class="w-12 h-12 bg-purple-500/20 text-purple-400 rounded-2xl flex items-center justify-center mb-6 text-xl font-bold group-hover:scale-110 transition-transform">03</div>
+                            <h4 class="font-bold mb-2">Đăng & Quản lý</h4>
+                            <p class="text-xs text-gray-500 leading-relaxed">Xác nhận thông tin ngân hàng để nhận doanh thu vé từ chúng tôi</p>
                         </div>
                     </div>
                 </div>
+            </section>
+
+<section id="page-create-event" class="hidden">
+    <div class="max-w-5xl mx-auto pb-20">
+
+        <div class="flex items-center justify-between mb-8 overflow-x-auto gap-4 py-2 border-b border-white/10">
+            <span id="step-1-tab" class="step-item active pb-2 whitespace-nowrap font-bold border-b-2 border-[#00d2ff] text-[#00d2ff]">
+                1. Thông tin sự kiện
+            </span>
+            <span id="step-2-tab" class="step-item text-gray-500 pb-2 whitespace-nowrap">
+                2. Thời gian & Loại vé
+            </span>
+            <span id="step-3-tab" class="step-item text-gray-500 pb-2 whitespace-nowrap">
+                3. Quy định & Chính sách
+            </span>
+            <span id="step-4-tab" class="step-item text-gray-500 pb-2 whitespace-nowrap">
+                4. Thanh toán
+            </span>
+        </div>
+
+        <!-- STEP 1 -->
+        <div id="create-step-1" class="step-content space-y-8">
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="md:col-span-1">
+                    <p class="mb-2 font-medium text-sm text-gray-400">
+                        * Ảnh sự kiện (720x958)
+                    </p>
+
+                    <div class="upload-box aspect-[720/958] rounded-lg border border-dashed border-white/20 bg-white/5">
+
+                        <input type="file" id="input-poster" class="hidden" accept="image/*"
+                            onchange="previewImg(this, 'poster-prev')">
+
+                        <div id="poster-prev-ui"
+                            class="flex flex-col items-center justify-center h-full p-4 text-center cursor-pointer"
+                            onclick="document.getElementById('input-poster').click()">
+
+                            <i class="fa-regular fa-image text-3xl mb-2 text-gray-500"></i>
+                            <p class="text-xs text-gray-500 italic">Nhấn để tải lên</p>
+                        </div>
+
+                        <div id="poster-wrap" class="hidden h-full relative">
+                            <div class="remove-btn absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full cursor-pointer"
+                                onclick="removeImg('input-poster', 'poster-prev', 'poster-wrap', 'poster-prev-ui')">
+                                <i class="fa-solid fa-xmark"></i>
+                            </div>
+
+                            <img id="poster-prev" class="w-full h-full object-cover rounded-lg">
+                        </div>
+
+                    </div>
+                </div>
+
                 <div class="md:col-span-2 space-y-6">
                     <div>
-                        <p class="mb-2 font-medium text-sm text-gray-400">* Ảnh nền (1280x720)</p>
+                        <p class="mb-2 font-medium text-sm text-gray-400">
+                            * Ảnh nền (1280x720)
+                        </p>
+
                         <div class="upload-box aspect-[1280/720] rounded-lg border border-dashed border-white/20 bg-white/5">
-                            <input type="file" id="input-cover" class="hidden" accept="image/*" onchange="previewImg(this, 'cover-prev')">
-                            <div id="cover-prev-ui" class="flex flex-col items-center justify-center h-full p-4 text-center cursor-pointer" onclick="document.getElementById('input-cover').click()">
+
+                            <input type="file" id="input-cover" class="hidden" accept="image/*"
+                                onchange="previewImg(this, 'cover-prev')">
+
+                            <div id="cover-prev-ui"
+                                class="flex flex-col items-center justify-center h-full p-4 text-center cursor-pointer"
+                                onclick="document.getElementById('input-cover').click()">
+
                                 <i class="fa-regular fa-image text-3xl mb-2 text-gray-500"></i>
                                 <p class="text-xs text-gray-500 italic">Nhấn để tải lên</p>
                             </div>
+
                             <div id="cover-wrap" class="hidden h-full relative">
-                                <div class="remove-btn absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full cursor-pointer" onclick="removeImg('input-cover', 'cover-prev', 'cover-wrap', 'cover-prev-ui')"><i class="fa-solid fa-xmark"></i></div>
+                                <div class="remove-btn absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full cursor-pointer"
+                                    onclick="removeImg('input-cover', 'cover-prev', 'cover-wrap', 'cover-prev-ui')">
+                                    <i class="fa-solid fa-xmark"></i>
+                                </div>
+
                                 <img id="cover-prev" class="w-full h-full object-cover rounded-lg">
                             </div>
+
                         </div>
                     </div>
+
+                    <!-- NAME + TYPE -->
                     <div class="space-y-4">
+
                         <div>
                             <label class="text-sm font-medium text-gray-400">* Tên sự kiện</label>
-                            <input type="text" id="event-name-input" required placeholder="Nhập tên sự kiện" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 mt-1 text-white focus:border-[#00d2ff] outline-none">
+
+                            <input type="text" id="event-name-input" required
+                                placeholder="Nhập tên sự kiện"
+                                class="w-full bg-white/5 border border-white/10 rounded-lg p-3 mt-1 text-white focus:border-[#00d2ff] outline-none">
                         </div>
+
                         <div>
                             <label class="text-sm font-medium text-gray-400">* Thể loại</label>
-                            <select id="event-type-input" required class="w-full bg-white/5 border border-white/10 rounded-lg p-3 mt-1 text-white focus:border-[#00d2ff] outline-none">
+
+                            <select id="event-type-input" required
+                                class="w-full bg-white/5 border border-white/10 rounded-lg p-3 mt-1 text-white focus:border-[#00d2ff] outline-none">
+
                                 <option value="" class="bg-[#0a0a0a]">Chọn thể loại</option>
                                 <option class="bg-[#0a0a0a]">Nhạc sống</option>
                                 <option class="bg-[#0a0a0a]">Sân khấu & Nghệ thuật</option>
                                 <option class="bg-[#0a0a0a]">Thể Thao</option>
                                 <option class="bg-[#0a0a0a]">Hội thảo & Workshop</option>
                                 <option class="bg-[#0a0a0a]">Tham quan & Trải nghiệm</option>
+                                <option class="bg-[#0a0a0a]">Khác</option>
                             </select>
+
                         </div>
+
                     </div>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div>
-        <label class="text-sm font-medium text-gray-400">* Hình thức</label>
-        <select id="event-mode-input" required class="w-full bg-white/5 border border-white/10 rounded-lg p-3 mt-1 text-white focus:border-[#00d2ff] outline-none" onchange="toggleLocation(this.value)">
-            <option value="offline" class="bg-[#0a0a0a]">Sự kiện Offline</option>
-            <option value="online" class="bg-[#0a0a0a]">Sự kiện Online</option>
-        </select>
-    </div>
-    <div>
-        <label class="text-sm font-medium text-gray-400">Link Trailer (YouTube/TikTok)</label>
-        <input type="url" id="event-trailer" placeholder="https://..." class="w-full bg-white/5 border border-white/10 rounded-lg p-3 mt-1 text-white focus:border-[#00d2ff] outline-none">
-    </div>
-</div>
+
+                <div>
+                    <label class="text-sm font-medium text-gray-400">* Hình thức</label>
+
+                    <select id="event-mode-input" required
+                        class="w-full bg-white/5 border border-white/10 rounded-lg p-3 mt-1 text-white focus:border-[#00d2ff] outline-none"
+                        onchange="toggleLocation(this.value)">
+
+                        <option value="offline" class="bg-[#0a0a0a]">Sự kiện Offline</option>
+                        <option value="online" class="bg-[#0a0a0a]">Sự kiện Online</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="text-sm font-medium text-gray-400">
+                        Link Trailer (YouTube/TikTok)
+                    </label>
+
+                    <input type="url" id="event-trailer" placeholder="https://..."
+                        class="w-full bg-white/5 border border-white/10 rounded-lg p-3 mt-1 text-white focus:border-[#00d2ff] outline-none">
+                </div>
+
+            </div>
 
             <div class="bg-white/5 p-6 rounded-xl border border-white/10 space-y-6">
-                <h3 class="font-bold border-b border-white/10 pb-2 text-[#00d2ff] uppercase text-sm tracking-wider">Địa điểm sự kiện</h3>
+
+                <h3 class="font-bold border-b border-white/10 pb-2 text-[#00d2ff] uppercase text-sm tracking-wider">
+                    Địa điểm sự kiện
+                </h3>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <input type="text" id="event-location-name" required placeholder="Tên địa điểm (Vd: Nhà thi đấu Hà Nội)" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white outline-none focus:border-[#00d2ff]">
-                    <input type="text" id="event-location-detail" required placeholder="Địa chỉ chi tiết" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white outline-none focus:border-[#00d2ff]">
+
+                    <input type="text" id="event-location-name" required
+                        placeholder="Tên địa điểm (Vd: Nhà thi đấu Hà Nội)"
+                        class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white outline-none focus:border-[#00d2ff]">
+
+                    <input type="text" id="event-location-detail" required
+                        placeholder="Địa chỉ chi tiết"
+                        class="w-full bg-white/5 border border-white/10 rounded-lg p-3 text-white outline-none focus:border-[#00d2ff]">
+
                 </div>
-                <h3 class="font-bold border-b border-white/10 pb-2 text-[#00d2ff] uppercase text-sm tracking-wider">Thông tin chi tiết</h3>
-                <textarea id="event-description" required placeholder="Giới thiệu về sự kiện của bạn..." class="w-full bg-white/5 border border-white/10 rounded-lg p-3 h-40 text-white outline-none focus:border-[#00d2ff] resize-none"></textarea>
+
+                <h3 class="font-bold border-b border-white/10 pb-2 text-[#00d2ff] uppercase text-sm tracking-wider">
+                    Thông tin chi tiết
+                </h3>
+
+                <textarea id="event-description" required
+                    placeholder="Giới thiệu về sự kiện của bạn..."
+                    class="w-full bg-white/5 border border-white/10 rounded-lg p-3 h-40 text-white outline-none focus:border-[#00d2ff] resize-none"></textarea>
+
             </div>
 
-            <div class="bg-white/5 p-6 rounded-2xl border border-white/10 space-y-6">
-                <h3 class="font-bold border-b border-white/10 pb-2 uppercase tracking-widest text-sm text-[#00d2ff]">Thông tin ban tổ chức</h3>
-                <div class="flex flex-col md:flex-row gap-6">
-                    <div class="w-32 h-32 upload-box rounded-xl shrink-0 border border-dashed border-white/20 bg-white/10 flex items-center justify-center relative overflow-hidden transition hover:border-[#00d2ff]">
-                        <input type="file" id="input-logo" class="hidden" accept="image/*" onchange="previewImg(this, 'logo-prev')">
-                        <div id="logo-prev-ui" class="flex flex-col items-center justify-center text-center cursor-pointer h-full w-full" onclick="document.getElementById('input-logo').click()">
-                            <i class="fa-solid fa-plus text-xl text-gray-500 mb-2"></i>
-                            <p class="text-[9px] text-gray-500 font-bold uppercase">Logo BTC</p>
-                        </div>
-                        <div id="logo-wrap" class="hidden absolute inset-0 bg-[#0a0a0a]">
-                            <div class="remove-btn absolute top-1 right-1 bg-red-500 text-white w-5 h-5 flex items-center justify-center rounded-full cursor-pointer z-10" onclick="removeImg('input-logo', 'logo-prev', 'logo-wrap', 'logo-prev-ui')">
-                                <i class="fa-solid fa-xmark text-[10px]"></i>
-                            </div>
-                            <img id="logo-prev" class="w-full h-full object-contain p-2">
-                        </div>
-                    </div>
-                    <div class="flex-1 space-y-4">
-                        <input type="text" id="btc-name" required placeholder="Tên ban tổ chức" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-[#00d2ff]">
-                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <input type="email" id="btc-email" required placeholder="Email liên hệ" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-[#00d2ff]">
-                            <input type="tel" id="btc-phone" required placeholder="Số điện thoại" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-[#00d2ff]">
-                        </div>
-                        <textarea id="btc-info" placeholder="Thông tin thêm về BTC..." class="w-full bg-white/5 border border-white/10 rounded-xl p-3 h-24 text-white outline-none focus:border-[#00d2ff] resize-none"></textarea>
-                    </div>
-                </div>
-            </div>
-
-            <button type="button" onclick="goToStep(2)" class="w-full bg-[#00d2ff] hover:bg-white text-black font-black py-4 rounded-xl transition-all active:scale-[0.98] mt-6 uppercase tracking-widest text-sm shadow-[0_0_20px_rgba(0,210,255,0.2)]">
+            <button type="button" onclick="goToStep(2)"
+                class="w-full bg-[#00d2ff] hover:bg-white text-black font-black py-4 rounded-xl transition-all active:scale-[0.98] mt-6 uppercase tracking-widest text-sm shadow-[0_0_20px_rgba(0,210,255,0.2)]">
                 Tiếp tục
             </button>
+
         </div>
 
-        <div id="create-step-2" class="step-content hidden space-y-8">
+<div id="create-step-2" class="step-content hidden space-y-8">
     <div class="bg-white/5 p-6 rounded-xl border border-white/10 space-y-6">
         <div class="flex justify-between items-center pb-2"> <h3 class="font-bold text-[#00d2ff] uppercase tracking-wider text-sm">Thời gian diễn ra</h3>
             <button type="button" onclick="addTimeSlot()" class="text-[10px] font-bold bg-[#00d2ff]/10 text-[#00d2ff] px-3 py-1 rounded-lg border border-[#00d2ff]/20 hover:bg-[#00d2ff] hover:text-black transition-all">
@@ -293,8 +353,7 @@
     </div>
 </div>
 
-
-              <div id="create-step-3" class="step-content hidden space-y-8 animate-fade-in">
+<div id="create-step-3" class="step-content hidden space-y-8 animate-fade-in">
     <div class="bg-white/5 p-8 rounded-3xl border border-white/10 max-w-3xl mx-auto shadow-2xl">
         
         <div class="flex items-center gap-5 mb-8 border-b border-white/10 pb-6">
@@ -336,13 +395,13 @@
                         </div>
                     </div>
                     <div class="space-y-2">
-    <label class="text-xs text-gray-400 ml-1">Số giấy phép tổ chức / CMND</label>
-    <input type="text" id="legal-id-input" required placeholder="Số hiệu văn bản pháp lý" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#00d2ff]">
-</div>
-<div class="space-y-2">
-    <label class="text-xs text-gray-400 ml-1">Mã số thuế (để xuất hóa đơn)</label>
-    <input type="text" id="tax-id-input" required placeholder="Mã số thuế 10 hoặc 13 số" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#00d2ff]">
-</div>
+                        <label class="text-xs text-gray-400 ml-1">Số giấy phép tổ chức / CMND</label>
+                        <input type="text" id="legal-id-input" required placeholder="Số hiệu văn bản pháp lý" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#00d2ff]">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-xs text-gray-400 ml-1">Mã số thuế (để xuất hóa đơn)</label>
+                        <input type="text" id="tax-id-input" required placeholder="Mã số thuế 10 hoặc 13 số" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#00d2ff]">
+                    </div>
                 </div>
             </div>
 
@@ -358,67 +417,78 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="space-y-2">
-                        <label class="text-xs text-gray-400 ml-1">Chính sách hoàn tiền</label>
-                        <select id="refund-policy" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#00d2ff]">
-                            <option value="none">Không hỗ trợ hoàn trả</option>
-                            <option value="strict">Chặt chẽ (Hoàn trước 7 ngày, phí 30%)</option>
-                            <option value="flexible">Linh hoạt (Hoàn trước 3 ngày, phí 10%)</option>
-                            <option value="custom">Tùy chỉnh theo thỏa thuận riêng</option>
-                        </select>
-                    </div>
-                    <div class="space-y-2">
-                        <label class="text-xs text-gray-400 ml-1">Trách nhiệm bồi thường</label>
-                        <select id="det-compensation" required class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#00d2ff]">
-                            <option value="refund_100">Hoàn tiền 100% nếu sự kiện bị hủy</option>
-                            <option value="reschedule">Dời ngày và bảo lưu giá trị vé</option>
-                        </select>
-                    </div>
+                        <label class="text-xs text-gray-400 ml-1">Chính sách hoàn tiền </label>
+                        <select id="refund-policy" required
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#00d2ff]">
+                        <option value="none">Không hỗ trợ hoàn trả</option>
+                        <option value="strict">Chặt chẽ (Hoàn trước 7 ngày, phí 30%)</option>
+                        <option value="flexible">Linh hoạt (Hoàn trước 3 ngày, phí 10%)</option>
+                        <option value="custom">Tùy chỉnh theo thỏa thuận riêng</option>
+                    </select>
                 </div>
+                <div class="space-y-2">
+                    <label class="text-xs text-gray-400 ml-1">Trách nhiệm bồi thường</label>
+                    <select id="det-compensation" required
+                    class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#00d2ff]">
+                    <option value="refund_100">Hoàn tiền 100% nếu sự kiện bị hủy</option>
+                    <option value="reschedule">Dời ngày và bảo lưu giá trị vé</option>
+                </select>
             </div>
+        </div>
+    </div>
 
-            <div class="space-y-3 mb-8"> 
-    <label class="text-xs text-gray-400 ml-1 uppercase tracking-tighter">Link hồ sơ pháp lý / Hợp đồng (Dán link từ Drive/Cloud)</label>
-    
+<div class="space-y-3 mb-8">
+    <label class="text-xs text-gray-400 ml-1 uppercase tracking-tighter"> Link hồ sơ pháp lý / Hợp đồng (Dán link từ Drive/Cloud)</label>
+
     <div class="relative group">
-    <div class="flex items-center w-full bg-white/5 border border-white/10 rounded-2xl focus-within:border-[#00d2ff]/50 transition-all p-1">
+        <div class="flex items-center w-full bg-white/5 border border-white/10 rounded-2xl focus-within:border-[#00d2ff]/50 transition-all p-1">
             <div class="pl-4 pr-2 text-[#00d2ff] flex items-center justify-center">
                 <i class="fa-solid fa-link text-sm"></i>
             </div>
 
-        <input type="text" id="legal-files-link" 
-               placeholder="Dán đường dẫn hồ sơ tại đây (Google Drive, Dropbox...)" 
-               class="w-full bg-transparent border-none text-white text-xs py-4 pr-4 outline-none placeholder:text-gray-600">
-    </div>
-</div>
-
-    <p class="text-[10px] text-gray-500 ml-1 italic mb-4">* Ưu tiên link Google Drive ở chế độ công khai để BTC dễ kiểm tra.</p>
-</div>
-
-            <div class="p-4 bg-yellow-500/5 border border-yellow-500/20 rounded-2xl space-y-4">
-                <label class="flex items-start gap-3 cursor-pointer group">
-                    <input type="checkbox" required id="legal-confirm" class="w-5 h-5 mt-0.5 rounded border-white/10 bg-white/5 text-[#00d2ff] focus:ring-0">
-                    <span class="text-xs text-gray-400 group-hover:text-gray-300 leading-relaxed">
-                        Tôi xác nhận rằng đơn vị tổ chức đã có đầy đủ giấy phép từ các cơ quan chức năng (Sở Văn hóa, Thể thao...). Nền tảng có quyền gỡ bỏ sự kiện nếu phát hiện vi phạm mà không cần báo trước.
-                    </span>
-                </label>
-                <label class="flex items-start gap-3 cursor-pointer group">
-                    <input type="checkbox" required id="tax-confirm" class="w-5 h-5 mt-0.5 rounded border-white/10 bg-white/5 text-[#00d2ff] focus:ring-0">
-                    <span class="text-xs text-gray-400 group-hover:text-gray-300 leading-relaxed">
-                        BTC cam kết tự chịu trách nhiệm kê khai và nộp các loại thuế (GTGT, TNCN cho nghệ sĩ...) liên quan đến doanh thu bán vé theo quy định pháp luật.
-                    </span>
-                </label>
-            </div>
-        </div>
-
-        <div class="flex gap-4 mt-10">
-            <button type="button" onclick="goToStep(2)" class="px-8 bg-white/5 border border-white/10 hover:bg-white/10 text-gray-400 py-4 rounded-2xl font-bold transition-all uppercase text-xs tracking-widest">Quay lại</button>
-            <button type="button" onclick="goToStep(4)" class="flex-1 bg-[#00d2ff] hover:bg-white text-black font-black py-4 rounded-2xl shadow-[0_10px_30px_rgba(0,210,255,0.3)] transition-all uppercase tracking-widest text-sm">Xác nhận và Chuyển bước cuối</button>
+            <input type="text" id="legal-files-link"
+                placeholder="Dán đường dẫn hồ sơ tại đây (Google Drive, Dropbox...)"
+                class="w-full bg-transparent border-none text-white text-xs py-4 pr-4 outline-none placeholder:text-gray-600">
         </div>
     </div>
+    <p class="text-[10px] text-gray-500 ml-1 italic mb-4"> * Ưu tiên link Google Drive ở chế độ công khai để BTC dễ kiểm tra.</p>
 </div>
 
+<div class="p-4 bg-yellow-500/5 border border-yellow-500/20 rounded-2xl space-y-4">
+    <label class="flex items-start gap-3 cursor-pointer group">
+        <input type="checkbox" required id="legal-confirm"
+            class="w-5 h-5 mt-0.5 rounded border-white/10 bg-white/5 text-[#00d2ff] focus:ring-0">
+        <span class="text-xs text-gray-400 group-hover:text-gray-300 leading-relaxed">
+            Tôi xác nhận rằng đơn vị tổ chức đã có đầy đủ giấy phép từ các cơ quan chức năng (Sở Văn hóa, Thể thao...). 
+            Nền tảng có quyền gỡ bỏ sự kiện nếu phát hiện vi phạm mà không cần báo trước.
+        </span>
+    </label>
+    <label class="flex items-start gap-3 cursor-pointer group">
+        <input type="checkbox" required id="tax-confirm"
+            class="w-5 h-5 mt-0.5 rounded border-white/10 bg-white/5 text-[#00d2ff] focus:ring-0">
+        <span class="text-xs text-gray-400 group-hover:text-gray-300 leading-relaxed">
+            BTC cam kết tự chịu trách nhiệm kê khai và nộp các loại thuế (GTGT, TNCN cho nghệ sĩ...) 
+            liên quan đến doanh thu bán vé theo quy định pháp luật.
+        </span>
+    </label>
+</div>
+</div>
+<div class="flex gap-4 mt-10">
 
-        <div id="create-step-4" class="step-content hidden space-y-8 animate-fade-in">
+    <button type="button" onclick="goToStep(2)"
+        class="px-8 bg-white/5 border border-white/10 hover:bg-white/10 text-gray-400 py-4 rounded-2xl font-bold transition-all uppercase text-xs tracking-widest">
+        Quay lại
+    </button>
+
+    <button type="button" onclick="goToStep(4)"
+        class="flex-1 bg-[#00d2ff] hover:bg-white text-black font-black py-4 rounded-2xl shadow-[0_10px_30px_rgba(0,210,255,0.3)] transition-all uppercase tracking-widest text-sm">
+        Xác nhận và Chuyển bước cuối
+    </button>
+</div>
+</div>
+</div>
+
+<div id="create-step-4" class="step-content hidden space-y-8 animate-fade-in">
     <div class="bg-white/5 p-10 rounded-3xl border border-white/10 max-w-lg mx-auto text-center shadow-2xl">
         <div class="relative w-20 h-20 bg-[#00d2ff]/10 rounded-full flex items-center justify-center mx-auto mb-6">
             <i class="fa-solid fa-wallet text-4xl text-[#00d2ff]"></i>
@@ -539,7 +609,7 @@
     </div>
 </div>
 
-          <section id="page-my-events" class="hidden animate-fade-in w-full">
+        <section id="page-my-events" class="hidden animate-fade-in w-full">
     <div class="flex flex-wrap gap-4 mb-10 items-center">
         <div class="relative w-full"> <div class="search-container">
                 <input type="text" 
@@ -565,17 +635,17 @@
            <button onclick="showPage('create-event'); cancelCreate();" 
                 class="px-8 py-3 bg-black text-white rounded-xl border border-white/10 hover:bg-[#00d2ff] hover:text-black transition-all font-bold">
             TẠO SỰ KIỆN NGAY
-        </button>
+            </button>
         </div>
     </div>
 </section>
 
-            <section id="page-legal" class="hidden animate-slide-up">
-                <div class="max-w-4xl mx-auto space-y-10">
-                    <div class="text-center">
-                        <h3 class="text-4xl font-black italic tracking-tighter uppercase">Quy định <span class="text-pink-500">Đối tác</span></h3>
-                        <p class="text-gray-500 mt-4">Vui lòng tuân thủ nghiêm ngặt để đảm bảo quyền lợi đôi bên</p>
-                    </div>
+        <section id="page-legal" class="hidden animate-slide-up">
+            <div class="max-w-4xl mx-auto space-y-10">
+                <div class="text-center">
+                    <h3 class="text-4xl font-black italic tracking-tighter uppercase">Quy định <span class="text-pink-500">Đối tác</span></h3>
+                    <p class="text-gray-500 mt-4">Vui lòng tuân thủ nghiêm ngặt để đảm bảo quyền lợi đôi bên</p>
+                </div>
                     <div class="grid grid-cols-1 gap-4">
                         <div class="legal-card group">
                             <div class="flex items-center gap-6">
@@ -603,7 +673,6 @@
                     </div>
                 </div>
             </section>
-
         </main>
     </div>
 

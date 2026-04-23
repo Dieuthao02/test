@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +12,7 @@
     <link rel="stylesheet" href="admin.css">
     <link rel="stylesheet" href="responsive.css">
 </head>
+
 <body class="flex min-h-screen bg-[#0b0f19] text-white">
 
     <aside class="w-72 border-r border-white/5 flex flex-col fixed top-0 left-0 h-screen bg-[#0b0f19] z-50">
@@ -80,16 +82,14 @@
     <main id="export-container" class="flex-1 ml-72 px-12 py-10 min-h-screen">
         
         <header class="flex justify-between items-center mb-12">
-    <!-- Cụm bên trái: Tiêu đề -->
+
     <div>
         <h2 id="tab-title" class="text-3xl font-extrabold tracking-tight text-white">Bảng hệ thống</h2>
         <p class="text-gray-500 text-sm mt-1">Chào mừng quay trở lại, <span class="text-white font-bold">Diệu Thảo</span>.</p>
     </div>
 
-    <!-- Cụm bên phải: Admin -->
     <div class="flex items-center gap-6">
 
-        <!-- Khối Admin -->
         <div class="flex items-center gap-4">
             <div class="text-right hidden md:block">
                 <p class="text-sm font-bold text-white">Admin Thảo</p>
@@ -99,7 +99,6 @@
             </div>
             <img src="https://ui-avatars.com/api/?name=Thao&background=10b981&color=fff" class="w-12 h-12 rounded-2xl border-2 border-white/10 shadow-xl">
         </div>
-
     </div>
 </header>
 
@@ -214,30 +213,20 @@
             </div>
         </section>
 
-
         <section id="refund" class="tab-content hidden p-4 md:p-8 animate-fade-in">
-    <div class="flex flex-col md:flex-row justify-between items-stretch md:items-center mb-5 gap-3">
-        
-        <div class="relative flex-1 max-w-md group">
-            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-red-500 text-xs transition-colors"></i>
-            <input type="text" 
-                id="refund-search"
-                placeholder="Tìm mã đơn, tên khách hàng..." 
-                class="w-full h-10 bg-white/5 border border-white/10 pl-11 pr-4 rounded-xl text-xs text-white focus:outline-none focus:border-red-500/50 transition-all placeholder:text-gray-600"
-            >
-        </div>
-        
-        <div class="flex items-center gap-3 h-10">
-            <button onclick="openPendingRefundsModal()" class="h-full flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 rounded-xl text-[10px] font-black transition-all shadow-lg shadow-red-500/20 whitespace-nowrap">
-                <i class="fa-solid fa-bell-concierge"></i>
-                YÊU CẦU CHỜ DUYỆT
-                <span id="pending-count-badge" class="bg-white text-red-500 px-1.5 rounded-md ml-1">0</span>
-            </button>
-
+            <div class="flex flex-col md:flex-row justify-between items-stretch md:items-center mb-5 gap-3">
+                <div class="relative flex-1 max-w-md group">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-red-500 text-xs transition-colors"></i>
+                    <input type="text" id="refund-search" placeholder="Tìm mã đơn, tên khách hàng..." class="w-full h-10 bg-white/5 border border-white/10 pl-11 pr-4 rounded-xl text-xs text-white focus:outline-none focus:border-red-500/50 transition-all placeholder:text-gray-600">
+                </div>
+                <div class="flex items-center gap-3 h-10">
+                    <button onclick="openPendingRefundsModal()" class="h-full flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 rounded-xl text-[10px] font-black transition-all shadow-lg shadow-red-500/20 whitespace-nowrap">
+                        <i class="fa-solid fa-bell-concierge"></i> YÊU CẦU CHỜ DUYỆT <span id="pending-count-badge" class="bg-white text-red-500 px-1.5 rounded-md ml-1">0</span>
+                    </button>
             <div class="glass h-full px-4 rounded-xl border border-white/10 flex items-center gap-3">
                 <div class="flex flex-col justify-center">
                     <span class="text-gray-500 text-[7px] uppercase font-black tracking-widest leading-none mb-1">Nguồn tiền</span>
-                    <span id="admin-balance-display" class="text-green-400 text-[11px] font-black leading-none">1,001,000,000</span>
+                    <span id="admin-balance-display" class="text-green-400 text-[11px] font-black leading-none"> 1,001,000,000 </span>
                 </div>
                 <button onclick="rechargeAdminMoney()" class="text-white/30 hover:text-green-400 transition-colors">
                     <i class="fa-solid fa-circle-plus text-xs"></i>
@@ -245,28 +234,27 @@
             </div>
         </div>
     </div>
-
     <div class="glass rounded-[2rem] border border-white/5 overflow-hidden shadow-2xl">
-    <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse table-fixed">
-            <thead>
-                <tr class="bg-white/[0.02] border-b border-white/5">
-                    <th class="p-5 text-[9px] font-black text-gray-500 uppercase w-[100px]">Mã Đơn</th>
-                    <th class="p-5 text-[9px] font-black text-gray-500 uppercase w-[150px]">Khách Hàng</th>
-                    <th class="p-5 text-[9px] font-black text-gray-500 uppercase ">Sự Kiện/Số Vé</th>
-                    <th class="p-5 text-[9px] font-black text-gray-500 uppercase w-[120px] text-center ">Giá Gốc</th>
-                    <th class="p-5 text-[9px] font-black text-gray-500 uppercase text-red-400 text-center w-[120px]" >Hoàn (95%)</th>
-                    <th class="p-5 text-[9px] font-black text-right text-gray-500 uppercase w-[150px]">Trạng Thái</th>
-                </tr>
-            </thead>
-            <tbody id="refund-table-body" class="divide-y divide-white/[0.02]">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse table-fixed">
+                <thead>
+                    <tr class="bg-white/[0.02] border-b border-white/5">
+                        <th class="p-5 text-[9px] font-black text-gray-500 uppercase w-[100px]"> Mã Đơn </th>
+                        <th class="p-5 text-[9px] font-black text-gray-500 uppercase w-[150px]"> Khách Hàng </th>
+                        <th class="p-5 text-[9px] font-black text-gray-500 uppercase "> Sự Kiện/Số Vé </th>
+                        <th class="p-5 text-[9px] font-black text-gray-500 uppercase w-[120px] text-center "> Giá Gốc</th>
+                        <th class="p-5 text-[9px] font-black text-gray-500 uppercase text-red-400 text-center w-[120px]">Hoàn (95%)</th>
+                        <th class="p-5 text-[9px] font-black text-right text-gray-500 uppercase w-[150px]">Trạng Thái</th>
+                    </tr>
+                </thead>
+                <tbody id="refund-table-body" class="divide-y divide-white/[0.02]">
                 </tbody>
-        </table>
+            </table>
+        </div>
     </div>
-</div>
 </section>
    
-        <section id="support" class="tab-content hidden p-4 md:p-8 animate-fade-in">
+<section id="support" class="tab-content hidden p-4 md:p-8 animate-fade-in">
     <div class="flex flex-col md:flex-row justify-between items-center gap-6 mb-10">
         <div class="relative w-full md:w-[500px]">
             <i class="fa-solid fa-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-blue-500 text-sm"></i>
@@ -301,18 +289,18 @@
                 <div class="space-y-6">
                     <div>
                         <div class="flex justify-between items-center text-[11px] mb-2">
-    <span class="text-gray-400 font-medium">Đang chờ xử lý</span>
-    <span id="support-pending-count" class="text-yellow-500 font-bold">12</span>
-</div>
+                            <span class="text-gray-400 font-medium">Đang chờ xử lý</span>
+                            <span id="support-pending-count" class="text-yellow-500 font-bold">12</span>
+                        </div>
                         <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
                             <div class="bg-yellow-500 h-full shadow-[0_0_10px_rgba(245,158,11,0.5)]" style="width: 40%"></div>
                         </div>
                     </div>
                     <div>
                         <div class="flex justify-between items-center text-[11px] mb-2">
-    <span class="text-gray-400 font-medium">Đã giải quyết</span>
-    <span id="support-resolved-count" class="text-green-500 font-bold">85</span>
-</div>
+                            <span class="text-gray-400 font-medium">Đã giải quyết</span>
+                            <span id="support-resolved-count" class="text-green-500 font-bold">85</span>
+                        </div>
                         <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
                             <div class="bg-green-500 h-full shadow-[0_0_10px_rgba(34,197,94,0.5)]" style="width: 85%"></div>
                         </div>
@@ -323,15 +311,14 @@
     </div>
 </section>
   
-      <section id="activity" class="tab-content hidden p-4 md:p-8 animate-fade-in">
+<section id="activity" class="tab-content hidden p-4 md:p-8 animate-fade-in">
     <div class="flex justify-between items-center mb-10 px-2">
         <div>
             <h2 class="text-2xl font-black text-white tracking-tighter flex items-center gap-3">
                 <span class="relative flex h-3 w-3">
                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                     <span class="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
-                </span>
-                LIVE ACTIVITY FEED
+                </span> LIVE ACTIVITY FEED
             </h2>
             <p class="text-[10px] text-gray-500 uppercase font-bold tracking-[0.2em] mt-1">Cập nhật hệ thống theo thời gian thực</p>
         </div>
@@ -357,7 +344,6 @@
     </div>
 </section>
 
-<!-- TRANG QUẢN LÝ NẠP TIỀN -->
 <section id="deposits" class="tab-content hidden animate-fade-in">
     <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8 px-2">
         <div>
@@ -374,24 +360,23 @@
     <div class="glass rounded-3xl overflow-hidden border border-white/5">
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm">
-                <thead>
-    <tr class="text-gray-500 border-b border-white/5 bg-white/[0.01]">
-        <th class="p-6 font-semibold uppercase text-[10px] text-center">Mã GD</th>
-        <th class="p-6 font-semibold uppercase text-[10px] text-center">Khách hàng</th>
-        <th class="p-6 font-semibold uppercase text-[10px] text-center">Số tiền</th>
-        <th class="p-6 font-semibold uppercase text-[10px] text-center">Nội dung chuyển khoản</th>
-        <th class="p-6 font-semibold uppercase text-[10px] text-center">Thời gian</th>
-        <th class="p-6 font-semibold uppercase text-[10px] text-center">Thao tác</th>
-    </tr>
-</thead>
-                <tbody id="admin-deposit-list">
-</tbody>
+                <thead> 
+                    <tr class="text-gray-500 border-b border-white/5 bg-white/[0.01]">
+                        <th class="p-6 font-semibold uppercase text-[10px] text-center">Mã GD</th>
+                        <th class="p-6 font-semibold uppercase text-[10px] text-center">Khách hàng</th>
+                        <th class="p-6 font-semibold uppercase text-[10px] text-center">Số tiền</th>
+                        <th class="p-6 font-semibold uppercase text-[10px] text-center">Nội dung chuyển khoản</th>
+                        <th class="p-6 font-semibold uppercase text-[10px] text-center">Thời gian</th>
+                        <th class="p-6 font-semibold uppercase text-[10px] text-center">Thao tác</th>
+                    </tr>
+                </thead>
+                    <tbody id="admin-deposit-list">
+                </tbody>
             </table>
         </div>
     </div>
 </section>
-
-    </main>
+</main>
 
 <div id="refund-modal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
     <div class="glass w-full max-w-md rounded-[2.5rem] border border-white/10 overflow-hidden animate-zoom-in">
@@ -480,6 +465,7 @@
         </div>
     </div>
 </div>
+
 <div id="pending-refund-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
     <div class="absolute inset-0 bg-black/60 backdrop-blur-md" onclick="closePendingRefundsModal()"></div>
     

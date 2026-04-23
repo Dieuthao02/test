@@ -1,5 +1,5 @@
     const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwfP_xBGb0qD8-rzlPpgt1JOHmy3t8eTmgF7dKonvrvF4yh4PLFEXIO_3TeaRIExVH7tw/exec';
-        let currentEventId = ''; 
+    let currentEventId = ''; 
 
     async function initEventDetail() {
     const urlParams = new URLSearchParams(window.location.search);

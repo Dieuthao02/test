@@ -1,6 +1,6 @@
-/* ============================================================
+/* ==========================
    1. GLOBAL STYLES & FONTS
-   ============================================================ */
+   ========================== */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap');
 
 * {
@@ -18,14 +18,27 @@ body {
 }
 
 /* Thanh cuộn */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #000000; }
-::-webkit-scrollbar-thumb { background: #222222; border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: #333333; }
+::-webkit-scrollbar { 
+    width: 6px; 
+    height: 6px; 
+}
 
-/* ============================================================
+::-webkit-scrollbar-track { 
+    background: #000000; 
+}
+
+::-webkit-scrollbar-thumb { 
+    background: #222222; 
+    border-radius: 10px; 
+}
+
+::-webkit-scrollbar-thumb:hover { 
+    background: #333333; 
+}
+
+/* ==============================
    2. LAYOUT: VIEWPORT & SIDEBAR
-   ============================================================ */
+   ============================== */
 #viewport, .map-viewport { 
     width: 100%; 
     height: 100vh; 
@@ -60,9 +73,9 @@ body {
     opacity: 0; 
 }
 
-/* ============================================================
+/* =======================
    3. SEATING COMPONENTS 
-   ============================================================ */
+   ======================= */
 .stage { 
     width: 300px; 
     height: 70px; 
@@ -104,10 +117,9 @@ body {
 .color-sky  { background: #e91e63; width: 130px; height: 65px; }
 .color-cat  { background: #bdc3c7; width: 220px; height: 80px; color: #000; }
 
-/* ============================================================
-   4. UI COMPONENTS (FORMS, MODALS, CHECKOUT)
-   ============================================================ */
-/* Modal Overlay */
+/* ==================
+   4. UI COMPONENTS 
+   ================== */
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -118,7 +130,10 @@ body {
     align-items: center;
     justify-content: center;
 }
-.modal-overlay.active { display: flex; }
+
+.modal-overlay.active { 
+    display: flex; 
+}
 
 .modal-box {
     background: white;
@@ -132,7 +147,13 @@ body {
 }
 
 /* Form & Checkout Items */
-.q-card { background: #111; border: 1px solid #222; border-radius: 20px; padding: 30px; }
+.q-card { 
+    background: #111; 
+    border: 1px solid #222; 
+    border-radius: 20px; 
+    padding: 30px; 
+}
+
 .q-input { 
     width: 100%; 
     background: #000; 
@@ -170,13 +191,13 @@ body {
 }
 
 
-/* Ẩn thanh cuộn cho Chrome, Safari và Opera */
+/* Ẩn thanh cuộn */
 .no-scrollbar::-webkit-scrollbar {
     display: none;
 }
 
-/* Ẩn thanh cuộn cho IE, Edge và Firefox */
+/* Ẩn thanh cuộn */
 .no-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;  
+    scrollbar-width: none; 
 }

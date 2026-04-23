@@ -2290,11 +2290,7 @@ function replayAdminLogs() {
 function getPendingRefundOrders() {
     const allOrders = JSON.parse(localStorage.getItem('eventOrders')) || [];
     const refundHistory = JSON.parse(localStorage.getItem('admin_refunds')) || [];
-    
-    // Tạo danh sách các ID đã được hoàn tiền xong rồi để loại bỏ
     const completedIds = new Set(refundHistory.map(item => String(item.orderId)));
-
-    // Lọc: Phải có dấu _isRefund là true VÀ chưa nằm trong lịch sử đã hoàn
     return allOrders.filter(order => order._isRefund === true && !completedIds.has(String(order.id)));
 }
 
@@ -2313,7 +2309,6 @@ function renderPendingRefundList() {
         const customerName = order.customer || 'Khách hàng';
         const amount = Number(String(order.total || 0).replace(/\D/g, '')) || 0;
         
-        // Lấy thông tin chi tiết từ đơn hàng
         const seats = order.tickets ? order.tickets.map(t => t.name).join(', ') : 'N/A';
         const quantity = order.tickets ? order.tickets.reduce((sum, t) => sum + (t.qty || 1), 0) : 1;
         const reason = order.refundReason || "Không có lý do";
@@ -2353,7 +2348,6 @@ function updatePendingRefundUI() {
         badge.style.display = pendingOrders.length === 0 ? 'none' : 'inline-block';
     }
 
-    // Nếu Modal đang mở thì render lại luôn
     const modal = document.getElementById('pending-refund-modal');
     if (modal && !modal.classList.contains('hidden')) {
         renderPendingRefundList();
@@ -2450,7 +2444,7 @@ function confirmRecharge() {
             document.getElementById('invoice-amount').innerText = "+" + amount.toLocaleString() + "đ";
         }
 
-        // C. ĐIỀU KIỂN MODAL 
+        // C. Điều khiển modal
         const inputModal = document.getElementById('recharge-input-modal');
         if (inputModal) inputModal.classList.add('hidden');
         const receiptModal = document.getElementById('recharge-modal');

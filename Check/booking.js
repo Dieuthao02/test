@@ -177,7 +177,7 @@ const MAP_TEMPLATES = {
                      onclick="handleBlockClick('ORIENTAL SUR ALTA', 396000)">OR. SUR ALTA</div>
             </div>
         </div>`
-},
+    },
 
     // SƠ ĐỒ ID 48
     48: {
@@ -295,8 +295,7 @@ const MAP_TEMPLATES = {
             </div>
         </div>
     </div>
-</div>
-`
+</div>`
     },
 
     // SƠ ĐỒ ID 53
@@ -329,32 +328,34 @@ const MAP_TEMPLATES = {
         SÂN KHẤU
     </div>
 
-    <div class="flex flex-col items-center gap-4"> <div class="flex items-end gap-3"> <div class="block color-ga" onclick="handleBlockClick('GA 1A', 2000000)">GA 1A</div>
-        
-        <div class="block color-fan" onclick="handleBlockClick('FANZONE A', 2500000)">FANZONE A</div>
-        
-        <div class="w-48 h-14 border-2 border-dashed border-zinc-700 flex items-center justify-center bg-zinc-900/30 rounded-full mb-1">
-            <span class="text-[10px] text-zinc-500 font-black uppercase">FOH</span>
+    <div class="flex flex-col items-center gap-4">
+        <div class="flex items-end gap-3">
+            <div class="block color-ga" onclick="handleBlockClick('GA 1A', 2000000)">GA 1A</div>
+
+            <div class="block color-fan" onclick="handleBlockClick('FANZONE A', 2500000)">FANZONE A</div>
+
+            <div class="w-48 h-14 border-2 border-dashed border-zinc-700 flex items-center justify-center bg-zinc-900/30 rounded-full mb-1">
+                <span class="text-[10px] text-zinc-500 font-black uppercase">FOH</span>
+            </div>
+
+            <div class="block color-fan" onclick="handleBlockClick('FANZONE B', 2500000)">FANZONE B</div>
+
+            <div class="block color-ga" onclick="handleBlockClick('GA 1B', 2000000)">GA 1B</div>
         </div>
-        
-        <div class="block color-fan" onclick="handleBlockClick('FANZONE B', 2500000)">FANZONE B</div>
-        
-        <div class="block color-ga" onclick="handleBlockClick('GA 1B', 2000000)">GA 1B</div>
-    </div>
 
-    <div class="flex gap-3">
-        <div class="block color-vip" onclick="handleBlockClick('VIP A', 4000000)">VIP A</div>
-        <div class="block color-svip" onclick="handleBlockClick('SVIP A', 5000000)">SVIP A</div>
-        <div class="block color-sky" onclick="handleBlockClick('SKY LOUNGE', 10000000)">SKY LOUNGE</div>
-        <div class="block color-svip" onclick="handleBlockClick('SVIP B', 5000000)">SVIP B</div>
-        <div class="block color-vip" onclick="handleBlockClick('VIP B', 4000000)">VIP B</div>
-    </div>
+        <div class="flex gap-3">
+            <div class="block color-vip" onclick="handleBlockClick('VIP A', 4000000)">VIP A</div>
+            <div class="block color-svip" onclick="handleBlockClick('SVIP A', 5000000)">SVIP A</div>
+            <div class="block color-sky" onclick="handleBlockClick('SKY LOUNGE', 10000000)">SKY LOUNGE</div>
+            <div class="block color-svip" onclick="handleBlockClick('SVIP B', 5000000)">SVIP B</div>
+            <div class="block color-vip" onclick="handleBlockClick('VIP B', 4000000)">VIP B</div>
+        </div>
 
-    <div class="flex gap-3">
-        <div class="block color-cat" onclick="handleBlockClick('CAT 1A', 1500000)">CAT 1A</div>
-        <div class="block color-cat" onclick="handleBlockClick('CAT 1B', 1500000)">CAT 1B</div>
-    </div>
-</div> `
+        <div class="flex gap-3">
+            <div class="block color-cat" onclick="handleBlockClick('CAT 1A', 1500000)">CAT 1A</div>
+            <div class="block color-cat" onclick="handleBlockClick('CAT 1B', 1500000)">CAT 1B</div>
+        </div>
+    </div>`
     },
 
     // SƠ ĐỒ ID 174
@@ -392,44 +393,50 @@ const MAP_TEMPLATES = {
         <p class="text-gray-500 text-[10px] uppercase tracking-[0.3em] mt-1 font-bold">Bấm vào khu vực để chọn vé</p>
     </div>
 
-    <div class="flex flex-col items-center mb-0 relative z-20 mt-2"> 
+    <div class="flex flex-col items-center mb-0 relative z-20 mt-2">
         <div class="bg-white text-black py-4 text-center font-black text-sm uppercase tracking-[0.8em] rounded-t-2xl shadow-xl"
              style="width: 200px;">
             SÂN KHẤU
         </div>
 
         <div class="bg-white w-12 h-[290px] mx-auto shadow-lg rounded-b-lg"></div>
-
     </div>
 
     <div class="flex flex-col items-center gap-2 max-w-6xl mx-auto relative px-4 text-white -mt-[280px]">
-        </div>
+    </div>
 
     <div class="flex flex-col items-center gap-2 max-w-6xl mx-auto relative px-4 text-white">
-        
         <div class="flex items-start gap-1 justify-center relative w-full h-[280px]" style="z-index: 50;">
-            
             <div class="flex items-end gap-1 h-full pt-10 mt-auto">
                 <div class="absolute top-0 left-[140px] flex flex-col items-start gap-1 z-30">
-    <span class="text-[9px] text-red-500 font-black tracking-[0.2em] uppercase">LIVE CAM</span>
-    
-    <div class="w-16 h-px" 
-         style="background: linear-gradient(to left, #EF4444 20%, transparent 100%); 
-                box-shadow: 0 0 10px #EF4444, 0 0 5px #EF4444;">
-    </div>
-</div>
-                <div class="block w-20 h-full flex flex-col items-center justify-center p-2 rounded-md font-bold text-[10px] text-center" style="background-color: #00897B; color: #FFFFFF;" onclick="handleBlockClick('CAT 2A', 5000000)">CAT 2A</div>
-                <div class="block w-20 h-full flex flex-col items-center justify-center p-2 rounded-md font-bold text-[10px] text-center" style="background-color: #FBC02D; color: #000000;" onclick="handleBlockClick('CAT 1A', 6000000)">CAT 1A</div>
-                <div class="block w-28 h-full flex flex-col items-center justify-center p-2 rounded-md font-bold text-[10px] text-center" style="background-color: #03A9F4; color: #FFFFFF;" onclick="handleBlockClick('GA 1A', 3300000)">GA 1A</div>
+                    <span class="text-[9px] text-red-500 font-black tracking-[0.2em] uppercase">LIVE CAM</span>
+
+                    <div class="w-16 h-px"
+                         style="background: linear-gradient(to left, #EF4444 20%, transparent 100%);
+                                box-shadow: 0 0 10px #EF4444, 0 0 5px #EF4444;">
+                    </div>
+                </div>
+
+                <div class="block w-20 h-full flex flex-col items-center justify-center p-2 rounded-md font-bold text-[10px] text-center"
+                     style="background-color: #00897B; color: #FFFFFF;"
+                     onclick="handleBlockClick('CAT 2A', 5000000)">CAT 2A</div>
+
+                <div class="block w-20 h-full flex flex-col items-center justify-center p-2 rounded-md font-bold text-[10px] text-center"
+                     style="background-color: #FBC02D; color: #000000;"
+                     onclick="handleBlockClick('CAT 1A', 6000000)">CAT 1A</div>
+
+                <div class="block w-28 h-full flex flex-col items-center justify-center p-2 rounded-md font-bold text-[10px] text-center"
+                     style="background-color: #03A9F4; color: #FFFFFF;"
+                     onclick="handleBlockClick('GA 1A', 3300000)">GA 1A</div>
             </div>
 
-            <div class="flex items-start justify-center gap-14 h-full"> 
+            <div class="flex items-start justify-center gap-14 h-full">
                 <div class="block w-20 h-[280px] flex flex-col items-center justify-center p-2 rounded-md font-bold text-[10px] text-center"
                      style="background-color: #EC407A; color: #FFFFFF;"
                      onclick="handleBlockClick('VIP T1', 8000000)">
                     VIP
                 </div>
-    
+
                 <div class="block w-20 h-[280px] flex flex-col items-center justify-center p-2 rounded-md font-bold text-[10px] text-center"
                      style="background-color: #EC407A; color: #FFFFFF;"
                      onclick="handleBlockClick('VIP T2', 8000000)">
@@ -438,77 +445,123 @@ const MAP_TEMPLATES = {
             </div>
 
             <div class="flex items-end gap-1 h-full pt-10 mt-auto">
-            <div class="absolute top-0 right-[140px] flex flex-col items-end gap-1 z-30">
-    <span class="text-[9px] text-red-500 font-black tracking-[0.2em] uppercase">LIVE CAM</span>
-    
-    <div class="w-16 h-px" 
-         style="background: linear-gradient(to right, #EF4444 20%, transparent 100%); 
-                box-shadow: 0 0 10px #EF4444, 0 0 5px #EF4444;">
-    </div>
-</div>
-                <div class="block w-28 h-full flex flex-col items-center justify-center p-2 rounded-md font-bold text-[10px] text-center" style="background-color: #03A9F4; color: #FFFFFF;" onclick="handleBlockClick('GA 1B', 3300000)">GA 1B</div>
-                <div class="block w-20 h-full flex flex-col items-center justify-center p-2 rounded-md font-bold text-[10px] text-center" style="background-color: #FBC02D; color: #000000;" onclick="handleBlockClick('CAT 1B', 6000000)">CAT 1B</div>
-                <div class="block w-20 h-full flex flex-col items-center justify-center p-2 rounded-md font-bold text-[10px] text-center" style="background-color: #00897B; color: #FFFFFF;" onclick="handleBlockClick('CAT 2B', 5000000)">CAT 2B</div>
+                <div class="absolute top-0 right-[140px] flex flex-col items-end gap-1 z-30">
+                    <span class="text-[9px] text-red-500 font-black tracking-[0.2em] uppercase">LIVE CAM</span>
+
+                    <div class="w-16 h-px"
+                         style="background: linear-gradient(to right, #EF4444 20%, transparent 100%);
+                                box-shadow: 0 0 10px #EF4444, 0 0 5px #EF4444;">
+                    </div>
+                </div>
+
+                <div class="block w-28 h-full flex flex-col items-center justify-center p-2 rounded-md font-bold text-[10px] text-center"
+                     style="background-color: #03A9F4; color: #FFFFFF;"
+                     onclick="handleBlockClick('GA 1B', 3300000)">GA 1B</div>
+
+                <div class="block w-20 h-full flex flex-col items-center justify-center p-2 rounded-md font-bold text-[10px] text-center"
+                     style="background-color: #FBC02D; color: #000000;"
+                     onclick="handleBlockClick('CAT 1B', 6000000)">CAT 1B</div>
+
+                <div class="block w-20 h-full flex flex-col items-center justify-center p-2 rounded-md font-bold text-[10px] text-center"
+                     style="background-color: #00897B; color: #FFFFFF;"
+                     onclick="handleBlockClick('CAT 2B', 5000000)">CAT 2B</div>
             </div>
         </div>
 
         <div class="flex justify-center gap-10 mt-4 mb-5">
             <div class="block w-20 py-2 border border-zinc-700 rounded-md text-[8px] text-center font-bold uppercase tracking-widest text-zinc-600 bg-zinc-900/40">FOH</div>
-            <div class="block w-32 h-10 flex flex-col items-center justify-center rounded-md font-bold text-[10px] text-center" style="background-color: #EF6C00; color: #FFFFFF;" onclick="handleBlockClick('GA 2A', 3800000)">GA 2A</div>
+
+            <div class="block w-32 h-10 flex flex-col items-center justify-center rounded-md font-bold text-[10px] text-center"
+                 style="background-color: #EF6C00; color: #FFFFFF;"
+                 onclick="handleBlockClick('GA 2A', 3800000)">GA 2A</div>
+
             <div class="block w-20 py-2 border border-zinc-700 rounded-md text-[8px] text-center font-bold uppercase tracking-widest text-zinc-600 bg-zinc-900/40">FOH</div>
-            <div class="block w-32 h-10 flex flex-col items-center justify-center rounded-md font-bold text-[10px] text-center" style="background-color: #EF6C00; color: #FFFFFF;" onclick="handleBlockClick('GA 2B', 3800000)">GA 2B</div>
+
+            <div class="block w-32 h-10 flex flex-col items-center justify-center rounded-md font-bold text-[10px] text-center"
+                 style="background-color: #EF6C00; color: #FFFFFF;"
+                 onclick="handleBlockClick('GA 2B', 3800000)">GA 2B</div>
+
             <div class="block w-20 py-2 border border-zinc-700 rounded-md text-[8px] text-center font-bold uppercase tracking-widest text-zinc-600 bg-zinc-900/40">FOH</div>
         </div>
 
         <div class="flex items-end justify-center gap-1 h-[200px]">
-            <div class="block w-20 h-full flex flex-col items-center justify-center p-2 rounded-md font-bold text-[10px] text-center" style="background-color: #2979FF; color: #FFFFFF;" onclick="handleBlockClick('CAT 4A', 3500000)">CAT 4A</div>
-            <div class="block w-20 h-full flex flex-col items-center justify-center p-2 rounded-md font-bold text-[10px] text-center" style="background-color: #F44336; color: #FFFFFF;" onclick="handleBlockClick('CAT 3A', 4000000)">CAT 3A</div>
-            <div class="block w-32 h-full flex flex-col items-center justify-center p-2 rounded-md font-bold text-[10px] text-center" style="background-color: #7E57C2; color: #FFFFFF;" onclick="handleBlockClick('GA 4A', 2000000)">GA 4A</div>
-            
+            <div class="block w-20 h-full flex flex-col items-center justify-center p-2 rounded-md font-bold text-[10px] text-center"
+                 style="background-color: #2979FF; color: #FFFFFF;"
+                 onclick="handleBlockClick('CAT 4A', 3500000)">CAT 4A</div>
+
+            <div class="block w-20 h-full flex flex-col items-center justify-center p-2 rounded-md font-bold text-[10px] text-center"
+                 style="background-color: #F44336; color: #FFFFFF;"
+                 onclick="handleBlockClick('CAT 3A', 4000000)">CAT 3A</div>
+
+            <div class="block w-32 h-full flex flex-col items-center justify-center p-2 rounded-md font-bold text-[10px] text-center"
+                 style="background-color: #7E57C2; color: #FFFFFF;"
+                 onclick="handleBlockClick('GA 4A', 2000000)">GA 4A</div>
+
             <div class="w-20 h-20 border-2 border-dashed border-zinc-700 flex flex-col items-center justify-center bg-zinc-900/30 rounded-full mb-1 translate-y-2">
                 <span class="text-[9px] text-zinc-500 font-black uppercase">FOH</span>
                 <span class="text-[7px] text-zinc-600 uppercase">LIVE CAM</span>
             </div>
 
-            <div class="block w-32 h-full flex flex-col items-center justify-center p-2 rounded-md font-bold text-[10px] text-center" style="background-color: #7E57C2; color: #FFFFFF;" onclick="handleBlockClick('GA 4B', 2000000)">GA 4B</div>
-            <div class="block w-20 h-full flex flex-col items-center justify-center p-2 rounded-md font-bold text-[10px] text-center" style="background-color: #F44336; color: #FFFFFF;" onclick="handleBlockClick('CAT 3B', 4000000)">CAT 3B</div>
-            <div class="block w-20 h-full flex flex-col items-center justify-center p-2 rounded-md font-bold text-[10px] text-center" style="background-color: #2979FF; color: #FFFFFF;" onclick="handleBlockClick('CAT 4B', 3500000)">CAT 4B</div>
+            <div class="block w-32 h-full flex flex-col items-center justify-center p-2 rounded-md font-bold text-[10px] text-center"
+                 style="background-color: #7E57C2; color: #FFFFFF;"
+                 onclick="handleBlockClick('GA 4B', 2000000)">GA 4B</div>
+
+            <div class="block w-20 h-full flex flex-col items-center justify-center p-2 rounded-md font-bold text-[10px] text-center"
+                 style="background-color: #F44336; color: #FFFFFF;"
+                 onclick="handleBlockClick('CAT 3B', 4000000)">CAT 3B</div>
+
+            <div class="block w-20 h-full flex flex-col items-center justify-center p-2 rounded-md font-bold text-[10px] text-center"
+                 style="background-color: #2979FF; color: #FFFFFF;"
+                 onclick="handleBlockClick('CAT 4B', 3500000)">CAT 4B</div>
         </div>
 
         <div class="flex justify-center gap-10 mt-4 mb-4">
-    <div class="block w-40 h-12 flex items-center justify-center rounded-md font-bold text-[10px] text-center cursor-pointer" 
-         style="background-color: #FFA726; color: #FFFFFF;" 
-         onclick="handleBlockClick('GA 3A', 3300000)">
-        GA 3A
-    </div>
-    <div class="block w-40 h-12 flex items-center justify-center rounded-md font-bold text-[10px] text-center cursor-pointer" 
-         style="background-color: #FFA726; color: #FFFFFF;" 
-         onclick="handleBlockClick('GA 3B', 3300000)">
-        GA 3B
-    </div>
-</div>
-
-        <div class="flex justify-center gap-1 max-w-2xl text-white">
-            <div class="flex flex-col gap-1 items-end w-32">
-                <div class="block w-full py-4 rounded-md font-bold text-[10px] text-center" style="background-color: #A1887F; color: #FFFFFF;" onclick="handleBlockClick('CAT 5A', 5000000)">CAT 5A</div>
-                <div class="block w-full py-4 rounded-md font-bold text-[10px] text-center" style="background-color: #311B92; color: #FFFFFF;" onclick="handleBlockClick('CAT 6A', 4000000)">CAT 6A</div>
-            </div>
-            
-            <div class="flex flex-col gap-1 w-[240px]">
-                <div class="block w-full py-4 rounded-md font-bold text-[10px] text-center" style="background-color: #B71C1C; color: #FFFFFF;" onclick="handleBlockClick('PREMIUM', 6500000)">PREMIUM</div>
-                <div class="block w-full py-4 rounded-md font-bold text-[10px] text-center" style="background-color: #9C27B0; color: #FFFFFF;" onclick="handleBlockClick('SKY LOUNGE', 6000000)">SKY LOUNGE</div>
+            <div class="block w-40 h-12 flex items-center justify-center rounded-md font-bold text-[10px] text-center cursor-pointer"
+                 style="background-color: #FFA726; color: #FFFFFF;"
+                 onclick="handleBlockClick('GA 3A', 3300000)">
+                GA 3A
             </div>
 
-            <div class="flex flex-col gap-1 items-start w-32">
-                <div class="block w-full py-4 rounded-md font-bold text-[10px] text-center" style="background-color: #A1887F; color: #FFFFFF;" onclick="handleBlockClick('CAT 5B', 5000000)">CAT 5B</div>
-                <div class="block w-full py-4 rounded-md font-bold text-[10px] text-center" style="background-color: #311B92; color: #FFFFFF;" onclick="handleBlockClick('CAT 6B', 4000000)">CAT 6B</div>
+            <div class="block w-40 h-12 flex items-center justify-center rounded-md font-bold text-[10px] text-center cursor-pointer"
+                 style="background-color: #FFA726; color: #FFFFFF;"
+                 onclick="handleBlockClick('GA 3B', 3300000)">
+                GA 3B
             </div>
         </div>
 
-    </div>
-`
-    },
+        <div class="flex justify-center gap-1 max-w-2xl text-white">
+            <div class="flex flex-col gap-1 items-end w-32">
+                <div class="block w-full py-4 rounded-md font-bold text-[10px] text-center"
+                     style="background-color: #A1887F; color: #FFFFFF;"
+                     onclick="handleBlockClick('CAT 5A', 5000000)">CAT 5A</div>
 
+                <div class="block w-full py-4 rounded-md font-bold text-[10px] text-center"
+                     style="background-color: #311B92; color: #FFFFFF;"
+                     onclick="handleBlockClick('CAT 6A', 4000000)">CAT 6A</div>
+            </div>
+
+            <div class="flex flex-col gap-1 w-[240px]">
+                <div class="block w-full py-4 rounded-md font-bold text-[10px] text-center"
+                     style="background-color: #B71C1C; color: #FFFFFF;"
+                     onclick="handleBlockClick('PREMIUM', 6500000)">PREMIUM</div>
+
+                <div class="block w-full py-4 rounded-md font-bold text-[10px] text-center"
+                     style="background-color: #9C27B0; color: #FFFFFF;"
+                     onclick="handleBlockClick('SKY LOUNGE', 6000000)">SKY LOUNGE</div>
+            </div>
+
+            <div class="flex flex-col gap-1 items-start w-32">
+                <div class="block w-full py-4 rounded-md font-bold text-[10px] text-center"
+                     style="background-color: #A1887F; color: #FFFFFF;"
+                     onclick="handleBlockClick('CAT 5B', 5000000)">CAT 5B</div>
+
+                <div class="block w-full py-4 rounded-md font-bold text-[10px] text-center"
+                     style="background-color: #311B92; color: #FFFFFF;"
+                     onclick="handleBlockClick('CAT 6B', 4000000)">CAT 6B</div>
+            </div>
+        </div>
+    </div>`
+    },
 
     52: {
     eventName: "OCEAN WHISPER 2026",
@@ -533,13 +586,11 @@ const MAP_TEMPLATES = {
                      style="max-width: 100%; max-height: 100%; object-fit: contain; display: block;"
                      onerror="this.src='https://via.placeholder.com/800x600?text=KHONG+TIM+THAY+ANH+MAP.PNG'">
             </div>
-        </div>
-    `
-},
-
+        </div>`
+    },
 };
 
-// 1. DỮ LIỆU THÔ (RAW DATA)
+// 1. DỮ LIỆU THÔ 
 const allEventsData = [
     { 
         id: 21, 
@@ -567,7 +618,7 @@ function createEventConfig(sourceData) {
     };
 }
 
-// 3. KHỞI TẠO ĐỐI TƯỢNG CONFIG
+// 3. KHỞI TẠO ĐỐI TƯỢNG 
 const eventConfigs = {};
 allEventsData.forEach(item => {
     eventConfigs[item.id] = createEventConfig(item);

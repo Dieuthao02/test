@@ -10,107 +10,96 @@
     <link rel="stylesheet" href="blog.css">
 </head>
 <body>
-
   <header>
-    <div class="logo-box">
-    <a href="index.html" style="text-decoration: none; color: inherit;">Elysium</a> 
-    
-    <span style="font-weight:100; opacity:0.3">|</span> 
-    
-    <a href="blog.html" style="text-decoration: none; color: inherit;" class="blog-brand">Blog</a>
-</div>
-     <div class="mid-line"></div>
-    <nav>
-        <ul>
-            <li><a href="#gi-day-troi">Gì dzậy trời?</a></li>
-            <li><a href="#su-kien">Sự kiện nổi bật</a></li>
-            <li><a href="#tips">Tips giải ngố</a></li>
-            <li><a href="#bantin">Bản tin tối cổ</a></li>
-            <li><a href="#uu-dai">Ưu đãi</a></li>
-            <li><a href="#spotlight">Spotlight</a></li>
-        </ul>
-    </nav>
-</header>
+        <div class="logo-box">
+            <a href="index.html" style="text-decoration: none; color: inherit;">Elysium</a>
+            <span style="font-weight:100; opacity:0.3">|</span>
+            <a href="blog.html" style="text-decoration: none; color: inherit;" class="blog-brand">Blog</a>
+        </div>
+        <div class="mid-line"></div>
+        <nav>
+            <ul>
+                <li><a href="#gi-day-troi">Gì dzậy trời?</a></li>
+                <li><a href="#su-kien">Sự kiện nổi bật</a></li>
+                <li><a href="#tips">Tips giải ngố</a></li>
+                <li><a href="#bantin">Bản tin tối cổ</a></li>
+                <li><a href="#uu-dai">Ưu đãi</a></li>
+                <li><a href="#spotlight">Spotlight</a></li>
+            </ul>
+        </nav>
+    </header>
 
-<div class="header-line"></div>
+    <div class="header-line"></div>
 
   <div class="hero">
-    <div class="hero-slider">
+        <div class="hero-slider">
+            <div class="hero-item active" style="background-image: url('img/vietnam.jpg'); background-position: center 50%;">
+                <div class="hero-overlay"></div>
+                <div class="hero-content">
+                    <h1>Mùa Xuân Đại Thắng 1975: Khi Non Sông Nối Liền Một Dải và Giai Điệu Thống Nhất Vang Lên.</h1>
+                    <a href="#" onclick="switchPage('post-detail-victory')" class="btn-green">Trở về ký ức hào hùng →</a>
+                </div>
+            </div>
 
-  <div class="hero-item active" style="background-image: url('img/vietnam.jpg'); background-position: center 50%;">
-            <div class="hero-overlay" ></div> 
-            <div class="hero-content">
-                  <h1>Mùa Xuân Đại Thắng 1975: Khi Non Sông Nối Liền Một Dải và Giai Điệu Thống Nhất Vang Lên.</h1>
-                <a href="#" onclick="switchPage('post-detail-victory')" class="btn-green">Trở về ký ức hào hùng →</a>
+            <div class="hero-item" style="background-image: url('img/BTS.png');">
+                <div class="hero-overlay"></div>
+                <div class="hero-content">
+                    <h1>BTS "The Eternal Chapter" World Tour: Khi Bản Đồ Tâm Hồn Phủ Kín Các Sân Vận Động.</h1>
+                    <a href="#" onclick="switchPage('post-detail-bts')" class="btn-green">Dấn thân vào hành trình →</a>
+                </div>
+            </div>
+
+            <div class="hero-item" style="background-image: url('img/2026.jpg'); background-position: center 50%; ">
+                <div class="hero-overlay"></div>
+                <div class="hero-content">
+                    <h1>Sự Trở Lại Của "Vị Vua": G-Dragon và Kỷ Nguyên "Beyond The Flower".</h1>
+                    <a href="#" onclick="switchPage('post-detail-gd')" class="btn-green">Khám phá ngay →</a>
+                </div>
             </div>
         </div>
 
-        <div class="hero-item" style="background-image: url('img/BTS.png');">
-            <div class="hero-overlay"></div> 
-            <div class="hero-content">
-                <h1>BTS "The Eternal Chapter" World Tour: Khi Bản Đồ Tâm Hồn Phủ Kín Các Sân Vận Động.</h1>
-                <a href="#" onclick="switchPage('post-detail-bts')" class="btn-green">Dấn thân vào hành trình →</a>
-            </div>
+        <div class="hero-dots">
+            <span class="dot active" onclick="currentSlide(0)"></span>
+            <span class="dot" onclick="currentSlide(1)"></span>
+            <span class="dot" onclick="currentSlide(2)"></span>
         </div>
-
-     
-        <div class="hero-item" style="background-image: url('img/2026.jpg'); background-position: center 50%; ">
-            <div class="hero-overlay"></div>
-            <div class="hero-content">
-                <h1>Sự Trở Lại Của "Vị Vua": G-Dragon và Kỷ Nguyên "Beyond The Flower".</h1>
-                <a href="#" onclick="switchPage('post-detail-gd')" class="btn-green">Khám phá ngay →</a>
-            </div>
-        </div>
-
-
-        </div>
-
-    <!-- Nút điều khiển (Dots) -->
-    <div class="hero-dots">
-        <span class="dot active" onclick="currentSlide(0)"></span>
-        <span class="dot" onclick="currentSlide(1)"></span>
-        <span class="dot" onclick="currentSlide(2)"></span> 
     </div>
-</div>
 
     <div class="container">
-    <div id="gi-day-troi" class="section-header">Gì dzậy trời?</div>
-    <div class="grid-3">
-        <div id="post-indie" class="post-card" onclick="switchPage('post-detail-indie')" style="cursor: pointer;">
-            <img src="img/ninhbinh.jpg" class="post-img">
-            <div class="post-content">Festival Indie Lớn Nhất Mùa Hè 2026 Có Gì Hot?</div>
+        <div id="gi-day-troi" class="section-header">Gì dzậy trời?</div>
+        <div class="grid-3">
+            <div id="post-indie" class="post-card" onclick="switchPage('post-detail-indie')" style="cursor: pointer;">
+                <img src="img/ninhbinh.jpg" class="post-img">
+                <div class="post-content">Festival Indie Lớn Nhất Mùa Hè 2026 Có Gì Hot?</div>
+            </div>
+
+            <div id="post-genz" class="post-card" onclick="switchPage('post-detail-genz')" style="cursor: pointer;">
+                <img src="img/images.jpg" class="post-img">
+                <div class="post-content">Tại Sao Gen Z Bắt Đầu Đổ Xô Đi Xem Kịch Nói?</div>
+            </div>
+
+            <div id="post-mrsiro" class="post-card" onclick="switchPage('post-detail-mrsiro')" style="cursor: pointer;">
+                <img src="img/mr.webp" class="post-img">
+                <div class="post-content">Vì Sao Mr Siro Lại Cháy Vé Trong 10 Phút?</div>
+            </div>
         </div>
-        
-        <div id="post-genz" class="post-card" onclick="switchPage('post-detail-genz')" style="cursor: pointer;">
-            <img src="img/images.jpg" class="post-img">
-            <div class="post-content">Tại Sao Gen Z Bắt Đầu Đổ Xô Đi Xem Kịch Nói?</div>
-        </div>
-        
-        <div id="post-mrsiro" class="post-card" onclick="switchPage('post-detail-mrsiro')" style="cursor: pointer;">
-            <img src="img/mr.webp" class="post-img">
-            <div class="post-content">Vì Sao Mr Siro Lại Cháy Vé Trong 10 Phút?</div>
-        </div>
-    </div>
     
+        <div id="su-kien" class="carousel-header">Sự kiện nổi bật</div>
+        <div class="carousel-section">
+            <div class="slider" style="--quantity: 10;">
+                <div class="item" style="--position: 1;"><img src="img/world.png" alt=""></div>
+                <div class="item" style="--position: 2;"><img src="img/long.png" alt=""></div>
+                <div class="item" style="--position: 3;"><img src="img/cortis.png" alt=""></div>
+                <div class="item" style="--position: 4;"><img src="img/304.jpg" alt=""></div>
+                <div class="item" style="--position: 5;"><img src="img/ninhbinh.jpg" alt=""></div>
+                <div class="item" style="--position: 6;"><img src="img/thuycung.png" alt=""></div>
+                <div class="item" style="--position: 7;"><img src="img/harry.png" alt=""></div>
+                <div class="item" style="--position: 8;"><img src="img/chus.png" alt=""></div>
+                <div class="item" style="--position: 9;"><img src="img/black.png" alt=""></div>
+                <div class="item" style="--position: 10;"><img src="img/vutru.png" alt=""></div>
+            </div>
+        </div>
 
-<!-- PHẦN XOAY  -->
- <div id="su-kien" class="carousel-header">Sự kiện nổi bật</div>
-<div class="carousel-section">
-    <div class="slider" style="--quantity: 10;">
-        <div class="item" style="--position: 1;"><img src="img/world.png" alt=""></div>
-        <div class="item" style="--position: 2;"><img src="img/long.png" alt=""></div>
-        <div class="item" style="--position: 3;"><img src="img/cortis.png" alt=""></div>
-        <div class="item" style="--position: 4;"><img src="img/304.jpg" alt=""></div>
-        <div class="item" style="--position: 5;"><img src="img/ninhbinh.jpg" alt=""></div>
-        <div class="item" style="--position: 6;"><img src="img/thuycung.png" alt=""></div>
-        <div class="item" style="--position: 7;"><img src="img/harry.png" alt=""></div>
-        <div class="item" style="--position: 8;"><img src="img/chus.png" alt=""></div>
-        <div class="item" style="--position: 9;"><img src="img/black.png" alt=""></div>
-        <div class="item" style="--position: 10;"><img src="img/vutru.png" alt=""></div>
-    </div>
-</div>
-
-        <!-- Banner Quảng Cáo -->
         <div class="promo-banner">
             <div class="promo-text">
                 <span class="promo-tag">ƯU ĐÃI 20%</span>
@@ -121,299 +110,272 @@
 
         <!-- Hai cột Tips và Bản tin -->
         <div class="two-columns">
-    <div>
-        <div id="tips" class="section-header">Tips giải ngố</div>
-        <div class="news-item cursor-pointer" onclick="switchPage('post-detail-ticketbox')">
-            <img src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=200" class="news-img">
-            <div class="news-title">Chiến thuật săn vé Ticketbox "bất bại": Canh giờ server chuẩn từng giây</div>
-        </div>
-        <div class="news-item">
-            <img src="https://images.unsplash.com/photo-1551818255-e6e10975bc17?w=200" class="news-img">
-            <div class="news-title">Checklist đồ đi Festival: Mang gì để vừa đẹp vừa không mệt?</div>
-        </div>
-        <div class="news-item">
-            <img src="https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=200" class="news-img">
-            <div class="news-title">Phân biệt vé thật - giả: Đừng để "tiền mất tật mang" phút chót</div>
-        </div>
-        <div class="news-item cursor-pointer" onclick="switchPage('post-detail-barricade')">
-            <img src="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=500" class="news-img" alt="Barricade Culture">
-            <div class="news-title">Văn hóa Barricade: Cách giữ chỗ hàng đầu văn minh cho dân đu show</div>
-        </div>
-    </div>
-    <div>
-        <div id="bantin" class="section-header">Bản tin tối cổ</div>
-        <div class="news-item cursor-pointer" onclick="switchPage('post-detail-pcd')">
-            <img src="https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg?auto=compress&cs=tinysrgb&w=400" class="news-img" alt="PCD Emotion">
-            <div class="news-title">Hội chứng Post-Concert Depression: Cách vượt qua nỗi buồn sau show</div>
-        </div>
-        <div class="news-item">
-            <img src="https://images.unsplash.com/photo-1519750157634-b6d493a0f77c?w=400" class="news-img">
-            <div class="news-title">Yêu cầu phòng chờ (Riders) kỳ quặc nhất của các sao quốc tế năm 2026</div>
-        </div>
-        <div class="news-item">
-        <img src="https://images.pexels.com/photos/433452/pexels-photo-433452.jpeg?auto=compress&cs=tinysrgb&w=400" class="news-img" alt="VIP Ticket">
-        <div class="news-title">Giải mã "Vé mời": Tại sao hàng ghế đầu thường trống đến phút chót?</div>
-    </div>
-        <div class="news-item">
-            <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400" class="news-img">
-            <div class="news-title">Điểm lại những pha "sập web" bán vé chấn động nhất lịch sử V-pop</div>
-        </div>
-    </div>
-</div>
-
-<div class="container">
-    <div id="uu-dai" class="section-header">Ưu đãi độc quyền</div>
-    
-    <div class="uudai-container">
-        <div class="uudai-list">
-            <a href="#" class="uudai-item" onclick="switchPage('offer-vietqr')">
-                <img src="https://images.pexels.com/photos/6207372/pexels-photo-6207372.jpeg?auto=compress&cs=tinysrgb&w=400" class="uudai-img" alt="VietQR Offer">
-                <div class="uudai-info">
-                    <p class="text-[10px] text-[var(--blue-pastel)] font-bold mb-1">FINTECH & PAYMENT</p>
-                    <h4>Quét VietQR - Nhận ngay Voucher giảm 50K cho vé Concert đầu tiên</h4>
+            <div>
+                <div id="tips" class="section-header">Tips giải ngố</div>
+                <div class="news-item cursor-pointer" onclick="switchPage('post-detail-ticketbox')">
+                    <img src="https://images.unsplash.com/photo-1516280440614-37939bbacd81?w=200" class="news-img">
+                    <div class="news-title">Chiến thuật săn vé Ticketbox "bất bại": Canh giờ server chuẩn từng giây</div>
                 </div>
-            </a>
-
-            <a href="#" class="uudai-item" onclick="switchPage('offer-bank')">
-                <img src="https://images.pexels.com/photos/2988232/pexels-photo-2988232.jpeg?auto=compress&cs=tinysrgb&w=400" class="uudai-img" alt="Bank Offer">
-                <div class="uudai-info">
-                    <p class="text-[10px] text-[var(--pink-pastel)] font-bold mb-1">EXCLUSIVE BANKING</p>
-                    <h4>Đặc quyền chủ thẻ TPBank: Hoàn tiền 10% khi săn vé sự kiện quốc tế</h4>
+                <div class="news-item">
+                    <img src="https://images.unsplash.com/photo-1551818255-e6e10975bc17?w=200" class="news-img">
+                    <div class="news-title">Checklist đồ đi Festival: Mang gì để vừa đẹp vừa không mệt?</div>
                 </div>
-            </a>
-
-            <a href="#" class="uudai-item" onclick="switchPage('offer-urbox')">
-                <img src="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=400" class="uudai-img" alt="Urbox Points">
-                <div class="uudai-info">
-                    <p class="text-[10px] text-green-400 font-bold mb-1">LOYALTY PROGRAM</p>
-                    <h4>Tích điểm UP cùng Urbox: Đổi ngàn ưu đãi F&B sau đêm quẩy nhiệt</h4>
+                <div class="news-item">
+                    <img src="https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=200" class="news-img">
+                    <div class="news-title">Phân biệt vé thật - giả: Đừng để "tiền mất tật mang" phút chót</div>
                 </div>
-            </a>
-
-            <a href="#" class="uudai-item" onclick="switchPage('offer-applepay')">
-                <img src="https://images.unsplash.com/photo-1613243555988-441166d4d6fd?w=400" class="uudai-img" alt="Contactless Payment">
-                <div class="uudai-info">
-                    <p class="text-[10px] text-orange-400 font-bold mb-1">MODERN TECH</p>
-                    <h4>Thanh toán "Chạm" Apple Pay: Nhanh - Gọn - Bảo mật cho mọi loại vé</h4>
+                <div class="news-item cursor-pointer" onclick="switchPage('post-detail-barricade')">
+                    <img src="https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=500" class="news-img" alt="Barricade Culture">
+                    <div class="news-title">Văn hóa Barricade: Cách giữ chỗ hàng đầu văn minh cho dân đu show</div>
                 </div>
-            </a>
+            </div>
+            <div>
+                <div id="bantin" class="section-header">Bản tin tối cổ</div>
+                <div class="news-item cursor-pointer" onclick="switchPage('post-detail-pcd')">
+                    <img src="https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg?auto=compress&cs=tinysrgb&w=400" class="news-img" alt="PCD Emotion">
+                    <div class="news-title">Hội chứng Post-Concert Depression: Cách vượt qua nỗi buồn sau show</div>
+                </div>
+                <div class="news-item">
+                    <img src="https://images.unsplash.com/photo-1519750157634-b6d493a0f77c?w=400" class="news-img">
+                    <div class="news-title">Yêu cầu phòng chờ (Riders) kỳ quặc nhất của các sao quốc tế năm 2026</div>
+                </div>
+                <div class="news-item">
+                    <img src="https://images.pexels.com/photos/433452/pexels-photo-433452.jpeg?auto=compress&cs=tinysrgb&w=400" class="news-img" alt="VIP Ticket">
+                    <div class="news-title">Giải mã "Vé mời": Tại sao hàng ghế đầu thường trống đến phút chót?</div>
+                </div>
+                <div class="news-item">
+                    <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400" class="news-img">
+                    <div class="news-title">Điểm lại những pha "sập web" bán vé chấn động nhất lịch sử V-pop</div>
+                </div>
+            </div>
         </div>
+  
+        <div class="container">
+        <div id="uu-dai" class="section-header">Ưu đãi độc quyền</div>
+        <div class="uudai-container">
+            <div class="uudai-list">
+                <a href="#" class="uudai-item" onclick="switchPage('offer-vietqr')">
+                    <img src="https://images.pexels.com/photos/6207372/pexels-photo-6207372.jpeg?auto=compress&cs=tinysrgb&w=400" class="uudai-img" alt="VietQR Offer">
+                    <div class="uudai-info">
+                        <p class="text-[10px] text-[var(--blue-pastel)] font-bold mb-1">FINTECH & PAYMENT</p>
+                        <h4>Quét VietQR - Nhận ngay Voucher giảm 50K cho vé Concert đầu tiên</h4>
+                    </div>
+                </a>
+
+                <a href="#" class="uudai-item" onclick="switchPage('offer-bank')">
+                    <img src="https://images.pexels.com/photos/2988232/pexels-photo-2988232.jpeg?auto=compress&cs=tinysrgb&w=400" class="uudai-img" alt="Bank Offer">
+                    <div class="uudai-info">
+                        <p class="text-[10px] text-[var(--pink-pastel)] font-bold mb-1">EXCLUSIVE BANKING</p>
+                        <h4>Đặc quyền chủ thẻ TPBank: Hoàn tiền 10% khi săn vé sự kiện quốc tế</h4>
+                    </div>
+                </a>
+
+                <a href="#" class="uudai-item" onclick="switchPage('offer-urbox')">
+                    <img src="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=400" class="uudai-img" alt="Urbox Points">
+                    <div class="uudai-info">
+                        <p class="text-[10px] text-green-400 font-bold mb-1">LOYALTY PROGRAM</p>
+                        <h4>Tích điểm UP cùng Urbox: Đổi ngàn ưu đãi F&B sau đêm quẩy nhiệt</h4>
+                    </div>
+                </a>
+
+                <a href="#" class="uudai-item" onclick="switchPage('offer-applepay')">
+                    <img src="https://images.unsplash.com/photo-1613243555988-441166d4d6fd?w=400" class="uudai-img" alt="Contactless Payment">
+                    <div class="uudai-info">
+                        <p class="text-[10px] text-orange-400 font-bold mb-1">MODERN TECH</p>
+                        <h4>Thanh toán "Chạm" Apple Pay: Nhanh - Gọn - Bảo mật cho mọi loại vé</h4>
+                    </div>
+                </a>
+            </div>
    
         <!-- Bên phải: Banner quảng cáo -->
         <div class="uudai-banner-right">
-            <div>
-                <p style="font-size: 12px; text-transform: uppercase; opacity: 0.8;">Đặt vé & Giải trí với thẻ</p>
-                <h3>TPBank Mastercard</h3>
-                <div class="promo-code">GIẢM 50%</div>
-                <p style="font-size: 14px;">Giao dịch đầu tiên</p>
-            </div>
-            
-            <!-- Chỗ này bạn thay bằng ảnh cái thẻ ngân hàng -->
-            <img src="https://img.freepik.com/free-vector/credit-card-design-template_1017-30234.jpg?w=400" class="card-mockup" alt="Bank Card">
-
-            <div style="margin-top: 20px;">
-                <p style="font-size: 13px; color: var(--pink-pastel);">VIBE THE LIFE!</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-       <div class="spotlight-grid">
-   <div class="video-card" onclick="openTikTokModal('7629697465008033044')" style="background-image: url('img/red.png'); background-position: center; background-size: cover; background-repeat: no-repeat;">
-    <div class="play-icon">▶</div>
-    <span class="absolute bottom-2 left-2 text-[10px] bg-black/50 px-2 py-1">TikTok: CORTIS REDRED</span>
-</div>
-
-<div class="video-card" onclick="openTikTokModal('7489104573248982327')" style="background-image: url('img/chus.png'); background-position: center; background-size: cover; background-repeat: no-repeat;">
-    <div class="play-icon">▶</div>
-    <span class="absolute bottom-2 left-2 text-[10px] bg-black/50 px-2 py-1">TikTok: Gen Z vẽ Việt</span>
-</div>
-
-    <div class="video-card" onclick="openTikTokModal('7628181338373311764')" style="background-image: url('img/swim.png'); background-position: center; background-size: cover; background-repeat: no-repeat;">
-        <div class="play-icon">▶</div>
-        <span class="absolute bottom-2 left-2 text-[10px] bg-black/50 px-2 py-1">TikTok: BTS Official</span>
-    </div>
-
-    <div class="video-card" onclick="openTikTokModal('7489705292691803410')" style="background-image: url('img/hoabinh.png'); background-position: center; background-size: cover; background-repeat: no-repeat; ">
-        <div class="play-icon">▶</div>
-        <span class="absolute bottom-2 left-2 text-[10px] bg-black/50 px-2 py-1">TikTok: Colors of Vietnam</span>
-    </div>
-
-</div>
-
-<div id="tiktok-modal" class="hidden-page" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.98); z-index:9999; display:none; align-items:center; justify-content:center;">
-    <button onclick="closeTikTok()" style="position:absolute; top:20px; right:20px; color:white; font-size:40px; border:none; background:none; cursor:pointer; z-index:10001;">&times;</button>
-    
-    <div id="tiktok-container" style="width: 95%; max-width: 440px; height: 85vh; border-radius: 16px; overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.8); background: #000;">
-        <iframe 
-            id="tiktok-iframe"
-            src="" 
-            style="width: 100%; height: 100%; border: none;" 
-            allow="autoplay; encrypted-media" 
-            allowfullscreen>
-        </iframe>
-    </div>
-</div>
-</div>
-
-
-<div id="post-detail-bts" class="hidden-page">
-    <div class="max-w-[850px] mx-auto px-6 py-12">
-        
-        <nav class="flex items-center space-x-4 mb-8 text-sm font-medium">
-            <button onclick="closePost()" class="flex items-center hover:text-[var(--pink-pastel)] transition-colors duration-300">
-                <i class="fa-solid fa-arrow-left mr-2"></i> Quay lại Blog
-            </button>
-            <span class="opacity-20">/</span>
-            <span class="opacity-50">Spotlight</span>
-        </nav>
-
-       <header class="mb-10 text-left"> <div class="mb-4">
-        <span class="inline-block bg-gradient-to-r from-[var(--pink-pastel)] to-[var(--blue-pastel)] text-black text-[10px] font-black px-3 py-1 rounded-sm uppercase tracking-widest">
-            Spotlight
-        </span>
-    </div>
-    
-    <h1 class="text-3xl md:text-4xl font-extrabold leading-snug mb-6 tracking-tight">
-        BTS "The Eternal Chapter" World Tour: Khi Bản Đồ Tâm Hồn Phủ Kín Các Sân Vận Động.
-    </h1>
-    
-    <div class="flex items-center space-x-6 text-[13px] font-bold opacity-60">
-        <span class="flex items-center">
-            <i class="fa-regular fa-calendar mr-2 text-[var(--blue-pastel)]"></i> 
-            Thứ sáu, 20/03/2026
-        </span>
-        <span class="flex items-center">
-            <i class="fa-regular fa-user mr-2 text-[var(--blue-pastel)]"></i> 
-            Bởi Elysium Team
-        </span>
-    </div>
-</header>
-
-        <div class="mb-12">
-            <img src="img/BTS.png" alt="BTS" class="w-11/12 mx-auto rounded-2xl shadow-2xl border border-white/5">
-        </div>
-
-        <div class="prose prose-invert max-w-none text-gray-300 leading-relaxed text-lg mb-16">
-    <p class="mb-8 first-letter:text-5xl first-letter:font-bold first-letter:text-[var(--pink-pastel)] first-letter:mr-3 first-letter:float-left">
-        Sau quãng thời gian dài đằng đẵng chờ đợi, BTS chính thức đánh dấu sự trở lại đầy bùng nổ với World Tour mang tên <strong>"The Eternal Chapter"</strong>. Đây không đơn thuần là một chuỗi concert thương mại, mà là một "hành trình tâm hồn" được thiết kế để hàn gắn và kết nối lại hàng triệu trái tim ARMY sau những năm tháng tạm xa cách. Với quy mô dự kiến lên tới 79 đêm diễn tại những sân vận động (Stadium) biểu tượng nhất hành tinh, chuyến lưu diễn này đang được giới chuyên môn khẳng định là siêu concert lớn nhất lịch sử âm nhạc K-pop từ trước đến nay.
-    </p>
-
-    <div class="my-10 text-center italic text-sm ">
-        <img src="img/BTS-Concert-Goyang-1-01.jpg" alt="BTS" class="w-11/12 mx-auto rounded-2xl shadow-2xl border border-white/5">
- 
-        [Toàn cảnh sân vận động Goyang lung linh trong biển Bomb tím]
-    </div>
-
-    <h2 class="text-2xl font-bold text-white mb-6 mt-12 border-l-4 border-[var(--blue-pastel)] pl-4">
-        Khi "Bản đồ tâm hồn" phủ kín các thánh đường âm nhạc
-    </h2>
-    <p class="mb-6">
-        Mở màn tại sân vận động Goyang (Hàn Quốc), BTS đã chứng minh vì sao họ vẫn là "nhóm nhạc lớn nhất thế giới". Sân khấu 360 độ hoành tráng không một góc chết đã biến mỗi đêm diễn thành một không gian nghệ thuật đa chiều. Tại đây, tinh thần của <i>The Eternal Chapter</i> được hiện thực hóa qua âm nhạc, ánh sáng và những màn trình diễn kéo dài hơn 150 phút mỗi đêm.
-    </p>
-
-    <p class="mb-8">
-        Mọi ánh mắt của ARMY Việt hiện đang đổ dồn về SVĐ Mỹ Đình vào tháng 4 tới. Theo các nguồn tin hành lang, danh sách trình diễn (setlist) sẽ là một bản giao hưởng hoàn hảo giữa những bản hit làm nên tên tuổi như "Blood Sweat & Tears", "Spring Day" và những chương mới đầy sôi động vừa được phát hành.
-    </p>
-
-    <div class="my-10 text-center italic text-sm ">
-        <img src="img/bts1.webp" alt="BTS" class="w-11/12 mx-auto rounded-2xl shadow-2xl border border-white/5">
-
-        [Khoảnh khắc visual của các thành viên trên sân khấu]
-    </div>
-
-    <h2 class="text-2xl font-bold text-white mb-6 mt-12 border-l-4 border-[var(--blue-pastel)] pl-4">
-        150 phút "nuốt đĩa" và những khoảnh khắc dầm mưa huyền thoại
-    </h2>
-    <p class="mb-6">
-        Đêm concert mở màn đã đi vào lịch sử khi các chàng trai Bangtan biểu diễn dưới cơn mưa nặng hạt. Thay vì làm giảm đi sức nóng, những giọt mưa rơi trên tóc, trên áo và ánh đèn LED rực rỡ lại vô tình tạo nên một khung cảnh điện ảnh hiếm thấy. Dàn vocal line gồm Jin, Jimin, V và Jungkook đã có những màn khoe giọng "nuốt đĩa" dù điều kiện thời tiết khắc nghiệt, trong khi rap line (RM, Suga, J-Hope) khiến cả vạn người bùng nổ với nhịp điệu dồn dập của "Run BTS" và "Mic Drop".
-    </p>
-
-    <div class="my-10 text-center italic text-sm ">
-        <img src="img/bts2.webp" alt="BTS" class="w-11/12 mx-auto rounded-2xl shadow-2xl border border-white/5">
- 
-        [BTS cực cháy dưới mưa]
-    </div>
-
-    <p class="mb-8">
-        Đặc biệt, màn trình diễn "Body to Body" của V đã thực sự gây bão mạng xã hội với visual "bén như dao cạo". Những thước phim fancam ghi lại khoảnh khắc các thành viên tương tác với khán giả dưới mưa đã chứng minh đẳng cấp của những ngôi sao hàng đầu: không ngại gian khó, chỉ quan tâm đến việc mang lại cảm xúc trọn vẹn nhất cho người hâm mộ.
-    </p>
-
-    <h2 class="text-2xl font-bold text-white mb-6 mt-12 border-l-4 border-[var(--blue-pastel)] pl-4">
-        Hệ sinh thái "The City" – Khi cả thành phố cùng nhịp đập
-    </h2>
-    <p class="mb-6">
-        Dự án <strong>"BTS THE CITY"</strong> đi kèm với tour diễn đã nâng tầm trải nghiệm concert lên một đẳng cấp mới. Tại mỗi thành phố mà BTS đi qua, từ Seoul cho đến Hà Nội sắp tới, người hâm mộ không chỉ đi xem show rồi về. Cả thành phố sẽ biến thành một "kỳ nghỉ âm nhạc" với các khu vực trưng bày merchandise độc quyền, các khu trải nghiệm stamp rally (thu thập dấu ấn) và không gian nghệ thuật lấy cảm hứng từ âm nhạc của nhóm.
-    </p>
-
-    <p class="mb-6">
-        Sự kết hợp giữa 7 biểu tượng toàn cầu này là minh chứng rõ nét nhất cho việc âm nhạc có thể xóa tan mọi khoảng cách. Từ những hàng ghế xa nhất trên khán đài cho đến khu vực VIP sát sân khấu, tất cả đều hòa chung một biển tím rực rỡ, tạo nên một chương lịch sử mới mà chắc chắn nhiều thập kỷ sau, người ta vẫn sẽ nhắc lại với sự ngưỡng mộ và lòng tự hào.
-    </p>
-
-    <p class="font-bold text-[var(--blue-pastel)] mt-10">
-        Hãy sẵn sàng, vì hành trình vĩnh cửu này chỉ mới bắt đầu.
-    </p>
-</div>
-
-        <div class="bg-white/5 border border-white/10 rounded-3xl p-6 mb-16 flex flex-col md:flex-row items-center gap-6">
-            <img src="img/BTS.png" alt="Ticket" class="w-32 h-32 object-cover rounded-xl">
-            <div class="flex-1 text-center md:text-left">
-                <p class="text-[11px] font-black text-[var(--pink-pastel)] uppercase tracking-widest mb-1">Sự kiện đề xuất</p>
-                <h4 class="text-xl font-bold mb-2">BTS WORLD TOUR ARIRANG</h4>
-                <div class="flex flex-wrap justify-center md:justify-start gap-4 text-xs font-medium opacity-70">
-                    <span><i class="fa-regular fa-clock mr-1"></i> 19:00 - 18/05/2026</span>
-                    <span><i class="fa-solid fa-location-dot mr-1"></i> SVĐ Quốc gia Mỹ Đình</span>
+                <div>
+                    <p style="font-size: 12px; text-transform: uppercase; opacity: 0.8;">Đặt vé & Giải trí với thẻ</p>
+                    <h3>TPBank Mastercard</h3>
+                    <div class="promo-code">GIẢM 50%</div>
+                    <p style="font-size: 14px;">Giao dịch đầu tiên</p>
+                </div>
+                <img src="https://img.freepik.com/free-vector/credit-card-design-template_1017-30234.jpg?w=400" class="card-mockup" alt="Bank Card">
+                <div style="margin-top: 20px;">
+                    <p style="font-size: 13px; color: var(--pink-pastel);">VIBE THE LIFE!</p>
                 </div>
             </div>
-            <a href="detail.html?id=26" target="_blank" class="bg-[var(--blue-pastel)] hover:bg-[var(--pink-pastel)] text-black px-8 py-3 rounded-full font-black text-sm transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg shadow-cyan-500/20">
-                MUA VÉ NGAY
-            </a>
-        </div>
-
-        <section class="border-t border-white/10 pt-12">
-    <div class="flex items-center justify-between mb-10">
-        <h3 class="text-2xl font-bold">Thảo luận</h3>
-        <div class="flex items-center space-x-4">
-            <span class="text-sm opacity-50">Bạn có hài lòng với bài viết này không ?</span>
-            <button onclick="handleVote('yes')" class="vote-chip px-4 py-1.5 rounded-full border border-white/10 text-xs font-bold hover:bg-white/10 transition-all">Có</button>
-            <button onclick="handleVote('no')" class="vote-chip px-4 py-1.5 rounded-full border border-white/10 text-xs font-bold hover:bg-white/10 transition-all">Không</button>
         </div>
     </div>
 
-    <div class="space-y-6">
-        <div class="space-y-3">
-    <input id="user-name-input" type="text" placeholder="Tên của bạn (để trống nếu muốn ẩn danh)" 
-           class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[var(--pink-pastel)] transition-all">
-    
-    <div class="flex flex-col gap-3">
-        <textarea id="comment-input" rows="3" placeholder="Chia sẻ cảm nghĩ của bạn..." 
-                  class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-[var(--blue-pastel)] transition-all resize-none"></textarea>
-        
-        <div class="flex justify-end">
-            <button onclick="addComment()" 
-                    class="bg-[var(--blue-pastel)] hover:bg-[var(--pink-pastel)] text-black px-6 py-2.5 rounded-xl text-xs font-black transition-all transform active:scale-95 shadow-lg">
-                GỬI BÌNH LUẬN
-            </button>
+
+    <div class="spotlight-grid">
+        <div class="video-card" onclick="openTikTokModal('7629697465008033044')" style="background-image: url('img/red.png'); background-position: center; background-size: cover; background-repeat: no-repeat;">
+            <div class="play-icon">▶</div>
+            <span class="absolute bottom-2 left-2 text-[10px] bg-black/50 px-2 py-1">TikTok: CORTIS REDRED</span>
+        </div>
+
+        <div class="video-card" onclick="openTikTokModal('7489104573248982327')" style="background-image: url('img/chus.png'); background-position: center; background-size: cover; background-repeat: no-repeat;">
+            <div class="play-icon">▶</div>
+            <span class="absolute bottom-2 left-2 text-[10px] bg-black/50 px-2 py-1">TikTok: Gen Z vẽ Việt</span>
+        </div>
+
+        <div class="video-card" onclick="openTikTokModal('7628181338373311764')" style="background-image: url('img/swim.png'); background-position: center; background-size: cover; background-repeat: no-repeat;">
+            <div class="play-icon">▶</div>
+            <span class="absolute bottom-2 left-2 text-[10px] bg-black/50 px-2 py-1">TikTok: BTS Official</span>
+        </div>
+
+        <div class="video-card" onclick="openTikTokModal('7489705292691803410')" style="background-image: url('img/hoabinh.png'); background-position: center; background-size: cover; background-repeat: no-repeat; ">
+            <div class="play-icon">▶</div>
+            <span class="absolute bottom-2 left-2 text-[10px] bg-black/50 px-2 py-1">TikTok: Colors of Vietnam</span>
+        </div>
+    </div>
+
+    <div id="tiktok-modal" class="hidden-page" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.98); z-index:9999; display:none; align-items:center; justify-content:center;">
+        <button onclick="closeTikTok()" style="position:absolute; top:20px; right:20px; color:white; font-size:40px; border:none; background:none; cursor:pointer; z-index:10001;">&times;</button>
+        <div id="tiktok-container" style="width: 95%; max-width: 440px; height: 85vh; border-radius: 16px; overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,0.8); background: #000;">
+            <iframe id="tiktok-iframe" src="" style="width: 100%; height: 100%; border: none;" allow="autoplay; encrypted-media" allowfullscreen></iframe>
         </div>
     </div>
 </div>
-        
-        <div id="comments-list" class="space-y-4">
+
+    <div id="post-detail-bts" class="hidden-page">
+        <div class="max-w-[850px] mx-auto px-6 py-12">
+            <nav class="flex items-center space-x-4 mb-8 text-sm font-medium">
+                <button onclick="closePost()" class="flex items-center hover:text-[var(--pink-pastel)] transition-colors duration-300">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> Quay lại Blog
+                </button>
+                <span class="opacity-20">/</span>
+                <span class="opacity-50">Spotlight</span>
+            </nav>
+
+            <header class="mb-10 text-left">
+                <div class="mb-4">
+                    <span class="inline-block bg-gradient-to-r from-[var(--pink-pastel)] to-[var(--blue-pastel)] text-black text-[10px] font-black px-3 py-1 rounded-sm uppercase tracking-widest">
+                        Spotlight
+                    </span>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-extrabold leading-snug mb-6 tracking-tight">
+                    BTS "The Eternal Chapter" World Tour: Khi Bản Đồ Tâm Hồn Phủ Kín Các Sân Vận Động.
+                </h1>
+                <div class="flex items-center space-x-6 text-[13px] font-bold opacity-60">
+                    <span class="flex items-center">
+                        <i class="fa-regular fa-calendar mr-2 text-[var(--blue-pastel)]"></i> 
+                        Thứ sáu, 20/03/2026
+                    </span>
+                    <span class="flex items-center">
+                        <i class="fa-regular fa-user mr-2 text-[var(--blue-pastel)]"></i> 
+                        Bởi Elysium Team
+                    </span>
+                </div>
+            </header>
+
+            <div class="mb-12">
+                <img src="img/BTS.png" alt="BTS" class="w-11/12 mx-auto rounded-2xl shadow-2xl border border-white/5">
             </div>
 
-        <button id="load-more" onclick="renderComments(true)" class="hidden w-full py-3 border border-white/10 rounded-xl text-xs font-bold hover:bg-white/5 transition-all opacity-60">
-            XEM THÊM BÌNH LUẬN
-        </button>
-    </div>
-</section>
+            <div class="prose prose-invert max-w-none text-gray-300 leading-relaxed text-lg mb-16">
+                <p class="mb-8 first-letter:text-5xl first-letter:font-bold first-letter:text-[var(--pink-pastel)] first-letter:mr-3 first-letter:float-left">
+                    Sau quãng thời gian dài đằng đẵng chờ đợi, BTS chính thức đánh dấu sự trở lại đầy bùng nổ với World Tour mang tên <strong>"The Eternal Chapter"</strong>. Đây không đơn thuần là một chuỗi concert thương mại, mà là một "hành trình tâm hồn" được thiết kế để hàn gắn và kết nối lại hàng triệu trái tim ARMY sau những năm tháng tạm xa cách. Với quy mô dự kiến lên tới 79 đêm diễn tại những sân vận động (Stadium) biểu tượng nhất hành tinh, chuyến lưu diễn này đang được giới chuyên môn khẳng định là siêu concert lớn nhất lịch sử âm nhạc K-pop từ trước đến nay.
+                </p>
 
+                <div class="my-10 text-center italic text-sm ">
+                    <img src="img/BTS-Concert-Goyang-1-01.jpg" alt="BTS" class="w-11/12 mx-auto rounded-2xl shadow-2xl border border-white/5">
+                    [Toàn cảnh sân vận động Goyang lung linh trong biển Bomb tím]
+                </div>
+
+                <h2 class="text-2xl font-bold text-white mb-6 mt-12 border-l-4 border-[var(--blue-pastel)] pl-4">
+                    Khi "Bản đồ tâm hồn" phủ kín các thánh đường âm nhạc
+                </h2>
+                <p class="mb-6">
+                    Mở màn tại sân vận động Goyang (Hàn Quốc), BTS đã chứng minh vì sao họ vẫn là "nhóm nhạc lớn nhất thế giới". Sân khấu 360 độ hoành tráng không một góc chết đã biến mỗi đêm diễn thành một không gian nghệ thuật đa chiều. Tại đây, tinh thần của <i>The Eternal Chapter</i> được hiện thực hóa qua âm nhạc, ánh sáng và những màn trình diễn kéo dài hơn 150 phút mỗi đêm.
+                </p>
+
+                <p class="mb-8">
+                    Mọi ánh mắt của ARMY Việt hiện đang đổ dồn về SVĐ Mỹ Đình vào tháng 4 tới. Theo các nguồn tin hành lang, danh sách trình diễn (setlist) sẽ là một bản giao hưởng hoàn hảo giữa những bản hit làm nên tên tuổi như "Blood Sweat & Tears", "Spring Day" và những chương mới đầy sôi động vừa được phát hành.
+                </p>
+
+                <div class="my-10 text-center italic text-sm ">
+                    <img src="img/bts1.webp" alt="BTS" class="w-11/12 mx-auto rounded-2xl shadow-2xl border border-white/5">
+                    [Khoảnh khắc visual của các thành viên trên sân khấu]
+                </div>
+
+                <h2 class="text-2xl font-bold text-white mb-6 mt-12 border-l-4 border-[var(--blue-pastel)] pl-4">
+                    150 phút "nuốt đĩa" và những khoảnh khắc dầm mưa huyền thoại
+                </h2>
+                <p class="mb-6">
+                    Đêm concert mở màn đã đi vào lịch sử khi các chàng trai Bangtan biểu diễn dưới cơn mưa nặng hạt. Thay vì làm giảm đi sức nóng, những giọt mưa rơi trên tóc, trên áo và ánh đèn LED rực rỡ lại vô tình tạo nên một khung cảnh điện ảnh hiếm thấy. Dàn vocal line gồm Jin, Jimin, V và Jungkook đã có những màn khoe giọng "nuốt đĩa" dù điều kiện thời tiết khắc nghiệt, trong khi rap line (RM, Suga, J-Hope) khiến cả vạn người bùng nổ với nhịp điệu dồn dập của "Run BTS" và "Mic Drop".
+                </p>
+
+                <div class="my-10 text-center italic text-sm ">
+                    <img src="img/bts2.webp" alt="BTS" class="w-11/12 mx-auto rounded-2xl shadow-2xl border border-white/5">
+                    [BTS cực cháy dưới mưa]
+                </div>
+
+                <p class="mb-8">
+                    Đặc biệt, màn trình diễn "Body to Body" của V đã thực sự gây bão mạng xã hội với visual "bén như dao cạo". Những thước phim fancam ghi lại khoảnh khắc các thành viên tương tác với khán giả dưới mưa đã chứng minh đẳng cấp của những ngôi sao hàng đầu: không ngại gian khó, chỉ quan tâm đến việc mang lại cảm xúc trọn vẹn nhất cho người hâm mộ.
+                </p>
+
+                <h2 class="text-2xl font-bold text-white mb-6 mt-12 border-l-4 border-[var(--blue-pastel)] pl-4">
+                    Hệ sinh thái "The City" – Khi cả thành phố cùng nhịp đập
+                </h2>
+                <p class="mb-6">
+                    Dự án <strong>"BTS THE CITY"</strong> đi kèm với tour diễn đã nâng tầm trải nghiệm concert lên một đẳng cấp mới. Tại mỗi thành phố mà BTS đi qua, từ Seoul cho đến Hà Nội sắp tới, người hâm mộ không chỉ đi xem show rồi về. Cả thành phố sẽ biến thành một "kỳ nghỉ âm nhạc" với các khu vực trưng bày merchandise độc quyền, các khu trải nghiệm stamp rally (thu thập dấu ấn) và không gian nghệ thuật lấy cảm hứng từ âm nhạc của nhóm.
+                </p>
+
+                <p class="mb-6">
+                    Sự kết hợp giữa 7 biểu tượng toàn cầu này là minh chứng rõ nét nhất cho việc âm nhạc có thể xóa tan mọi khoảng cách. Từ những hàng ghế xa nhất trên khán đài cho đến khu vực VIP sát sân khấu, tất cả đều hòa chung một biển tím rực rỡ, tạo nên một chương lịch sử mới mà chắc chắn nhiều thập kỷ sau, người ta vẫn sẽ nhắc lại với sự ngưỡng mộ và lòng tự hào.
+                </p>
+
+                <p class="font-bold text-[var(--blue-pastel)] mt-10">
+                    Hãy sẵn sàng, vì hành trình vĩnh cửu này chỉ mới bắt đầu.
+                </p>
+            </div>
+
+            <div class="bg-white/5 border border-white/10 rounded-3xl p-6 mb-16 flex flex-col md:flex-row items-center gap-6">
+                <img src="img/BTS.png" alt="Ticket" class="w-32 h-32 object-cover rounded-xl">
+                <div class="flex-1 text-center md:text-left">
+                    <p class="text-[11px] font-black text-[var(--pink-pastel)] uppercase tracking-widest mb-1">Sự kiện đề xuất</p>
+                    <h4 class="text-xl font-bold mb-2">BTS WORLD TOUR ARIRANG</h4>
+                    <div class="flex flex-wrap justify-center md:justify-start gap-4 text-xs font-medium opacity-70">
+                        <span><i class="fa-regular fa-clock mr-1"></i> 19:00 - 18/05/2026</span>
+                        <span><i class="fa-solid fa-location-dot mr-1"></i> SVĐ Quốc gia Mỹ Đình</span>
+                    </div>
+                </div>
+                <a href="detail.html?id=26" target="_blank" class="bg-[var(--blue-pastel)] hover:bg-[var(--pink-pastel)] text-black px-8 py-3 rounded-full font-black text-sm transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg shadow-cyan-500/20">
+                    MUA VÉ NGAY
+                </a>
+            </div>
+
+            <section class="border-t border-white/10 pt-12">
+                <div class="flex items-center justify-between mb-10">
+                    <h3 class="text-2xl font-bold">Thảo luận</h3>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm opacity-50">Bạn có hài lòng với bài viết này không ?</span>
+                        <button onclick="handleVote('yes')" class="vote-chip px-4 py-1.5 rounded-full border border-white/10 text-xs font-bold hover:bg-white/10 transition-all">Có</button>
+                        <button onclick="handleVote('no')" class="vote-chip px-4 py-1.5 rounded-full border border-white/10 text-xs font-bold hover:bg-white/10 transition-all">Không</button>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="space-y-3">
+                        <input id="user-name-input" type="text" placeholder="Tên của bạn (để trống nếu muốn ẩn danh)" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[var(--pink-pastel)] transition-all">
+                        <div class="flex flex-col gap-3">
+                            <textarea id="comment-input" rows="3" placeholder="Chia sẻ cảm nghĩ của bạn..." class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-[var(--blue-pastel)] transition-all resize-none"></textarea>
+                            <div class="flex justify-end">
+                                <button onclick="addComment()" class="bg-[var(--blue-pastel)] hover:bg-[var(--pink-pastel)] text-black px-6 py-2.5 rounded-xl text-xs font-black transition-all transform active:scale-95 shadow-lg">
+                                    GỬI BÌNH LUẬN
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="comments-list" class="space-y-4"></div>
+                    <button id="load-more" onclick="renderComments(true)" class="hidden w-full py-3 border border-white/10 rounded-xl text-xs font-bold hover:bg-white/5 transition-all opacity-60">
+                        XEM THÊM BÌNH LUẬN
+                    </button>
+                </div>
+            </section>
+        </div>
     </div>
-</div>
 
 <div id="post-detail-gd" class="hidden-page">
     <div class="max-w-[850px] mx-auto px-6 py-12">
-        
+
         <nav class="flex items-center space-x-4 mb-8 text-sm font-medium">
             <button onclick="closePost()" class="flex items-center hover:text-[var(--pink-pastel)] transition-colors duration-300">
                 <i class="fa-solid fa-arrow-left mr-2"></i> Quay lại Blog
@@ -422,24 +384,24 @@
             <span class="opacity-50">Spotlight</span>
         </nav>
 
-        <header class="mb-10 text-left"> 
+        <header class="mb-10 text-left">
             <div class="mb-4">
                 <span class="inline-block bg-gradient-to-r from-[var(--pink-pastel)] to-[var(--blue-pastel)] text-black text-[10px] font-black px-3 py-1 rounded-sm uppercase tracking-widest">
                     Spotlight
                 </span>
             </div>
-            
+
             <h1 class="text-3xl md:text-4xl font-extrabold leading-snug mb-6 tracking-tight">
                 Sự Trở Lại Của "Vị Vua": G-Dragon và Kỷ Nguyên "Übermensch" Càn Quét Sân Vận Động Goyang.
             </h1>
-            
+
             <div class="flex items-center space-x-6 text-[13px] font-bold opacity-60">
                 <span class="flex items-center">
-                    <i class="fa-regular fa-calendar mr-2 text-[var(--blue-pastel)]"></i> 
+                    <i class="fa-regular fa-calendar mr-2 text-[var(--blue-pastel)]"></i>
                     Thứ bảy, 29/03/2025
                 </span>
                 <span class="flex items-center">
-                    <i class="fa-regular fa-user mr-2 text-[var(--blue-pastel)]"></i> 
+                    <i class="fa-regular fa-user mr-2 text-[var(--blue-pastel)]"></i>
                     Bởi Elysium Team
                 </span>
             </div>
@@ -503,48 +465,43 @@
         </div>
 
         <section class="border-t border-white/10 pt-12">
-    <div class="flex items-center justify-between mb-10">
-        <h3 class="text-2xl font-bold">Thảo luận</h3>
-        <div class="flex items-center space-x-4">
-            <span class="text-sm opacity-50">Bạn có hài lòng với bài viết này không ?</span>
-            <button onclick="handleVote('yes')" class="vote-chip px-4 py-1.5 rounded-full border border-white/10 text-xs font-bold hover:bg-white/10 transition-all">Có</button>
-            <button onclick="handleVote('no')" class="vote-chip px-4 py-1.5 rounded-full border border-white/10 text-xs font-bold hover:bg-white/10 transition-all">Không</button>
-        </div>
-    </div>
-
-    <div class="space-y-6">
-        <div class="space-y-3">
-    <input id="user-name-input" type="text" placeholder="Tên của bạn (để trống nếu muốn ẩn danh)" 
-           class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[var(--pink-pastel)] transition-all">
-    
-    <div class="flex flex-col gap-3">
-        <textarea id="comment-input" rows="3" placeholder="Chia sẻ cảm nghĩ của bạn..." 
-                  class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-[var(--blue-pastel)] transition-all resize-none"></textarea>
-        
-        <div class="flex justify-end">
-            <button onclick="addComment()" 
-                    class="bg-[var(--blue-pastel)] hover:bg-[var(--pink-pastel)] text-black px-6 py-2.5 rounded-xl text-xs font-black transition-all transform active:scale-95 shadow-lg">
-                GỬI BÌNH LUẬN
-            </button>
-        </div>
-    </div>
-</div>
-        
-        <div id="comments-list" class="space-y-4">
+            <div class="flex items-center justify-between mb-10">
+                <h3 class="text-2xl font-bold">Thảo luận</h3>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm opacity-50">Bạn có hài lòng với bài viết này không ?</span>
+                    <button onclick="handleVote('yes')" class="vote-chip px-4 py-1.5 rounded-full border border-white/10 text-xs font-bold hover:bg-white/10 transition-all">Có</button>
+                    <button onclick="handleVote('no')" class="vote-chip px-4 py-1.5 rounded-full border border-white/10 text-xs font-bold hover:bg-white/10 transition-all">Không</button>
+                </div>
             </div>
 
-        <button id="load-more" onclick="renderComments(true)" class="hidden w-full py-3 border border-white/10 rounded-xl text-xs font-bold hover:bg-white/5 transition-all opacity-60">
-            XEM THÊM BÌNH LUẬN
-        </button>
-    </div>
-</section>
+            <div class="space-y-6">
+                <div class="space-y-3">
+                    <input id="user-name-input" type="text" placeholder="Tên của bạn (để trống nếu muốn ẩn danh)" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[var(--pink-pastel)] transition-all">
+
+                    <div class="flex flex-col gap-3">
+                        <textarea id="comment-input" rows="3" placeholder="Chia sẻ cảm nghĩ của bạn..." class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-[var(--blue-pastel)] transition-all resize-none"></textarea>
+
+                        <div class="flex justify-end">
+                            <button onclick="addComment()" class="bg-[var(--blue-pastel)] hover:bg-[var(--pink-pastel)] text-black px-6 py-2.5 rounded-xl text-xs font-black transition-all transform active:scale-95 shadow-lg">
+                                GỬI BÌNH LUẬN
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="comments-list" class="space-y-4"></div>
+
+                <button id="load-more" onclick="renderComments(true)" class="hidden w-full py-3 border border-white/10 rounded-xl text-xs font-bold hover:bg-white/5 transition-all opacity-60">
+                    XEM THÊM BÌNH LUẬN
+                </button>
+            </div>
+        </section>
     </div>
 </div>
-
 
 <div id="post-detail-victory" class="hidden-page">
     <div class="max-w-[850px] mx-auto px-6 py-12">
-        
+
         <nav class="flex items-center space-x-4 mb-8 text-sm font-medium">
             <button onclick="closePost()" class="flex items-center hover:text-[var(--pink-pastel)] transition-colors duration-300">
                 <i class="fa-solid fa-arrow-left mr-2"></i> Quay lại Blog
@@ -553,24 +510,24 @@
             <span class="opacity-50">Ký ức hào hùng</span>
         </nav>
 
-        <header class="mb-10 text-left"> 
+        <header class="mb-10 text-left">
             <div class="mb-4">
                 <span class="inline-block bg-gradient-to-r from-[var(--pink-pastel)] to-[var(--blue-pastel)] text-black text-[10px] font-black px-3 py-1 rounded-sm uppercase tracking-widest">
                     Kỷ niệm 30/04
                 </span>
             </div>
-            
+
             <h1 class="text-3xl md:text-4xl font-extrabold leading-snug mb-6 tracking-tight">
                 Mùa Xuân Đại Thắng 1975: Khi Bản Giao Hưởng Thống Nhất Nối Liền Hai Miền Đất Nước.
             </h1>
-            
+
             <div class="flex items-center space-x-6 text-[13px] font-bold opacity-60">
                 <span class="flex items-center">
-                    <i class="fa-regular fa-calendar mr-2 text-[var(--blue-pastel)]"></i> 
+                    <i class="fa-regular fa-calendar mr-2 text-[var(--blue-pastel)]"></i>
                     Thứ tư, 30/04/1975 (Tái hiện 2026)
                 </span>
                 <span class="flex items-center">
-                    <i class="fa-regular fa-user mr-2 text-[var(--blue-pastel)]"></i> 
+                    <i class="fa-regular fa-user mr-2 text-[var(--blue-pastel)]"></i>
                     Bởi Elysium Team
                 </span>
             </div>
@@ -600,12 +557,12 @@
             <p class="mb-6">
                 Chữ "Độc lập" đã thực sự được khẳng định khi cả thế giới phải ngỡ ngàng trước ý chí thép của một dân tộc nhỏ bé nhưng gan góc. Sự chân thực đó mới là thứ đáng được ghi lại nhất. Và từ trong chính những giây phút oanh liệt ấy, một nền văn hóa mới được hình thành – nền văn hóa của tự do, nơi cá tính độc lập của mỗi nghệ sĩ được tôn vinh.
             </p>
-            
+
             <h2 class="text-2xl font-bold text-white mb-6 mt-12 border-l-4 border-[var(--pink-pastel)] pl-4">
                 "Khóc Cùng Em" – Những bản Ballad xoa dịu vết thương
             </h2>
             <p class="mb-6">
-                Và trong chính những giây phút hào hùng đó, một nền văn hóa mới được hình thành – nền văn hóa của tự do, nơi cá tính độc lập của mỗi nghệ sĩ trẻ được tôn vinh, giúp họ dũng cảm dấn thân vào hành trình vĩnh cửu này.
+                And trong chính những giây phút hào hùng đó, một nền văn hóa mới được hình thành – nền văn hóa của tự do, nơi cá tính độc lập của mỗi nghệ sĩ trẻ được tôn vinh, giúp họ dũng cảm dấn thân vào hành trình vĩnh cửu này.
             </p>
 
             <div class="my-10 text-center italic text-sm">
@@ -622,7 +579,7 @@
             <img src="img/vietnam.jpg" alt="Victory Event" class="w-32 h-32 object-cover rounded-xl">
             <div class="flex-1 text-center md:text-left">
                 <p class="text-[11px] font-black text-[var(--pink-pastel)] uppercase tracking-widest mb-1">Sự kiện tiêu điểm</p>
-            <h4 class="text-xl font-bold mb-2">CONCERT QUỐC GIA 30/4</h4>
+                <h4 class="text-xl font-bold mb-2">CONCERT QUỐC GIA 30/4</h4>
                 <div class="flex flex-wrap justify-center md:justify-start gap-4 text-xs font-medium opacity-70">
                     <span><i class="fa-regular fa-clock mr-1"></i> 20:00 - 22:30, 30 tháng 04, 2026</span>
                     <span><i class="fa-solid fa-location-dot mr-1"></i> Quảng trường Ba Đình, Hà Nội</span>
@@ -634,48 +591,43 @@
         </div>
 
         <section class="border-t border-white/10 pt-12">
-    <div class="flex items-center justify-between mb-10">
-        <h3 class="text-2xl font-bold">Thảo luận</h3>
-        <div class="flex items-center space-x-4">
-            <span class="text-sm opacity-50">Bạn có hài lòng với bài viết này không ?</span>
-            <button onclick="handleVote('yes')" class="vote-chip px-4 py-1.5 rounded-full border border-white/10 text-xs font-bold hover:bg-white/10 transition-all">Có</button>
-            <button onclick="handleVote('no')" class="vote-chip px-4 py-1.5 rounded-full border border-white/10 text-xs font-bold hover:bg-white/10 transition-all">Không</button>
-        </div>
-    </div>
-
-    <div class="space-y-6">
-        <div class="space-y-3">
-    <input id="user-name-input" type="text" placeholder="Tên của bạn (để trống nếu muốn ẩn danh)" 
-           class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[var(--pink-pastel)] transition-all">
-    
-    <div class="flex flex-col gap-3">
-        <textarea id="comment-input" rows="3" placeholder="Chia sẻ cảm nghĩ của bạn..." 
-                  class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-[var(--blue-pastel)] transition-all resize-none"></textarea>
-        
-        <div class="flex justify-end">
-            <button onclick="addComment()" 
-                    class="bg-[var(--blue-pastel)] hover:bg-[var(--pink-pastel)] text-black px-6 py-2.5 rounded-xl text-xs font-black transition-all transform active:scale-95 shadow-lg">
-                GỬI BÌNH LUẬN
-            </button>
-        </div>
-    </div>
-</div>
-        
-        <div id="comments-list" class="space-y-4">
+            <div class="flex items-center justify-between mb-10">
+                <h3 class="text-2xl font-bold">Thảo luận</h3>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm opacity-50">Bạn có hài lòng với bài viết này không ?</span>
+                    <button onclick="handleVote('yes')" class="vote-chip px-4 py-1.5 rounded-full border border-white/10 text-xs font-bold hover:bg-white/10 transition-all">Có</button>
+                    <button onclick="handleVote('no')" class="vote-chip px-4 py-1.5 rounded-full border border-white/10 text-xs font-bold hover:bg-white/10 transition-all">Không</button>
+                </div>
             </div>
 
-        <button id="load-more" onclick="renderComments(true)" class="hidden w-full py-3 border border-white/10 rounded-xl text-xs font-bold hover:bg-white/5 transition-all opacity-60">
-            XEM THÊM BÌNH LUẬN
-        </button>
-    </div>
-</section>
+            <div class="space-y-6">
+                <div class="space-y-3">
+                    <input id="user-name-input" type="text" placeholder="Tên của bạn (để trống nếu muốn ẩn danh)" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[var(--pink-pastel)] transition-all">
+
+                    <div class="flex flex-col gap-3">
+                        <textarea id="comment-input" rows="3" placeholder="Chia sẻ cảm nghĩ của bạn..." class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-[var(--blue-pastel)] transition-all resize-none"></textarea>
+
+                        <div class="flex justify-end">
+                            <button onclick="addComment()" class="bg-[var(--blue-pastel)] hover:bg-[var(--pink-pastel)] text-black px-6 py-2.5 rounded-xl text-xs font-black transition-all transform active:scale-95 shadow-lg">
+                                GỬI BÌNH LUẬN
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="comments-list" class="space-y-4"></div>
+
+                <button id="load-more" onclick="renderComments(true)" class="hidden w-full py-3 border border-white/10 rounded-xl text-xs font-bold hover:bg-white/5 transition-all opacity-60">
+                    XEM THÊM BÌNH LUẬN
+                </button>
+            </div>
+        </section>
     </div>
 </div>
-
-
+     
 <div id="post-detail-genz" class="hidden-page">
     <div class="max-w-[850px] mx-auto px-6 py-12">
-        
+
         <nav class="flex items-center space-x-4 mb-8 text-sm font-medium">
             <button onclick="closePost()" class="flex items-center hover:text-[var(--pink-pastel)] transition-colors duration-300">
                 <i class="fa-solid fa-arrow-left mr-2"></i> Quay lại Blog
@@ -684,24 +636,24 @@
             <span class="opacity-50">Gì dzậy trời?</span>
         </nav>
 
-        <header class="mb-10 text-left"> 
+        <header class="mb-10 text-left">
             <div class="mb-4">
                 <span class="inline-block bg-gradient-to-r from-[var(--pink-pastel)] to-[var(--blue-pastel)] text-black text-[10px] font-black px-3 py-1 rounded-sm uppercase tracking-widest">
                     Gì dzậy trời?
                 </span>
             </div>
-            
+
             <h1 class="text-3xl md:text-4xl font-extrabold leading-snug mb-6 tracking-tight">
                 "Đảo Hoa Hậu" – Tất Cả Vé Kịch Sold Out Trong 10 Phút: Tại Sao Gen Z Bắt Đầu Đi Xem Kịch?
             </h1>
-            
+
             <div class="flex items-center space-x-6 text-[13px] font-bold opacity-60">
                 <span class="flex items-center">
-                    <i class="fa-regular fa-calendar mr-2 text-[var(--blue-pastel)]"></i> 
+                    <i class="fa-regular fa-calendar mr-2 text-[var(--blue-pastel)]"></i>
                     Thứ sáu, 27/03/2026
                 </span>
                 <span class="flex items-center">
-                    <i class="fa-regular fa-user mr-2 text-[var(--blue-pastel)]"></i> 
+                    <i class="fa-regular fa-user mr-2 text-[var(--blue-pastel)]"></i>
                     Bởi Elysium Team
                 </span>
             </div>
@@ -719,6 +671,7 @@
             <h2 class="text-2xl font-bold text-white mb-6 mt-12 border-l-4 border-[var(--blue-pastel)] pl-4">
                 Khi sân khấu nói bằng ngôn ngữ của thời đại 4.0
             </h2>
+
             <p class="mb-6">
                 Thời của những vở kịch cổ điển, nặng về giáo điều đã qua rồi. Kịch nói năm 2026 đang khai thác những vấn đề cực kỳ "chạm" đến giới trẻ: từ áp lực đồng trang lứa (peer pressure), chuyện tình yêu thời app hẹn hò, cho đến những mối quan hệ độc hại... Tất cả được lồng ghép bằng những miếng hài văn minh, nhạy bén và không hề phán xét.
             </p>
@@ -731,6 +684,7 @@
             <h2 class="text-2xl font-bold text-white mb-6 mt-12 border-l-4 border-[var(--blue-pastel)] pl-4">
                 Trải nghiệm sống động không thể thay thế bởi AI
             </h2>
+
             <p class="mb-6">
                 Trong một thế giới tràn ngập bộ lọc và trí tuệ nhân tạo, Gen Z khao khát những gì "thật" nhất. Kịch sống không có diễn lại, từng cảm xúc, từng tiếng cười, từng khoảnh khắc bất ngờ đều xảy ra một lần duy nhất. Bên cạnh đó, mức giá vé chỉ bằng 1/10 concert K-pop nhưng mang lại một buổi tối hẹn hò "sang chảnh" và giàu trải nghiệm đã khiến kịch nói trở thành lựa chọn hàng đầu.
             </p>
@@ -760,48 +714,46 @@
         </div>
 
         <section class="border-t border-white/10 pt-12">
-    <div class="flex items-center justify-between mb-10">
-        <h3 class="text-2xl font-bold">Thảo luận</h3>
-        <div class="flex items-center space-x-4">
-            <span class="text-sm opacity-50">Bạn có hài lòng với bài viết này không ?</span>
-            <button onclick="handleVote('yes')" class="vote-chip px-4 py-1.5 rounded-full border border-white/10 text-xs font-bold hover:bg-white/10 transition-all">Có</button>
-            <button onclick="handleVote('no')" class="vote-chip px-4 py-1.5 rounded-full border border-white/10 text-xs font-bold hover:bg-white/10 transition-all">Không</button>
-        </div>
-    </div>
-
-    <div class="space-y-6">
-        <div class="space-y-3">
-    <input id="user-name-input" type="text" placeholder="Tên của bạn (để trống nếu muốn ẩn danh)" 
-           class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[var(--pink-pastel)] transition-all">
-    
-    <div class="flex flex-col gap-3">
-        <textarea id="comment-input" rows="3" placeholder="Chia sẻ cảm nghĩ của bạn..." 
-                  class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-[var(--blue-pastel)] transition-all resize-none"></textarea>
-        
-        <div class="flex justify-end">
-            <button onclick="addComment()" 
-                    class="bg-[var(--blue-pastel)] hover:bg-[var(--pink-pastel)] text-black px-6 py-2.5 rounded-xl text-xs font-black transition-all transform active:scale-95 shadow-lg">
-                GỬI BÌNH LUẬN
-            </button>
-        </div>
-    </div>
-</div>
-        
-        <div id="comments-list" class="space-y-4">
+            <div class="flex items-center justify-between mb-10">
+                <h3 class="text-2xl font-bold">Thảo luận</h3>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm opacity-50">Bạn có hài lòng với bài viết này không ?</span>
+                    <button onclick="handleVote('yes')" class="vote-chip px-4 py-1.5 rounded-full border border-white/10 text-xs font-bold hover:bg-white/10 transition-all">Có</button>
+                    <button onclick="handleVote('no')" class="vote-chip px-4 py-1.5 rounded-full border border-white/10 text-xs font-bold hover:bg-white/10 transition-all">Không</button>
+                </div>
             </div>
 
-        <button id="load-more" onclick="renderComments(true)" class="hidden w-full py-3 border border-white/10 rounded-xl text-xs font-bold hover:bg-white/5 transition-all opacity-60">
-            XEM THÊM BÌNH LUẬN
-        </button>
-    </div>
-</section>
+            <div class="space-y-6">
+                <div class="space-y-3">
+                    <input id="user-name-input" type="text" placeholder="Tên của bạn (để trống nếu muốn ẩn danh)"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[var(--pink-pastel)] transition-all">
+
+                    <div class="flex flex-col gap-3">
+                        <textarea id="comment-input" rows="3" placeholder="Chia sẻ cảm nghĩ của bạn..."
+                            class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-[var(--blue-pastel)] transition-all resize-none"></textarea>
+
+                        <div class="flex justify-end">
+                            <button onclick="addComment()"
+                                class="bg-[var(--blue-pastel)] hover:bg-[var(--pink-pastel)] text-black px-6 py-2.5 rounded-xl text-xs font-black transition-all transform active:scale-95 shadow-lg">
+                                GỬI BÌNH LUẬN
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="comments-list" class="space-y-4"></div>
+
+                <button id="load-more" onclick="renderComments(true)" class="hidden w-full py-3 border border-white/10 rounded-xl text-xs font-bold hover:bg-white/5 transition-all opacity-60">
+                    XEM THÊM BÌNH LUẬN
+                </button>
+            </div>
+        </section>
     </div>
 </div>
-
 
 <div id="post-detail-mrsiro" class="hidden-page">
     <div class="max-w-[850px] mx-auto px-6 py-12">
-        
+
         <nav class="flex items-center space-x-4 mb-8 text-sm font-medium">
             <button onclick="closePost()" class="flex items-center hover:text-[var(--pink-pastel)] transition-colors duration-300">
                 <i class="fa-solid fa-arrow-left mr-2"></i> Quay lại Blog
@@ -810,24 +762,24 @@
             <span class="opacity-50">Gì dzậy trời?</span>
         </nav>
 
-        <header class="mb-10 text-left"> 
+        <header class="mb-10 text-left">
             <div class="mb-4">
                 <span class="inline-block bg-gradient-to-r from-[var(--pink-pastel)] to-[var(--blue-pastel)] text-black text-[10px] font-black px-3 py-1 rounded-sm uppercase tracking-widest">
                     Gì dzậy trời?
                 </span>
             </div>
-            
+
             <h1 class="text-3xl md:text-4xl font-extrabold leading-snug mb-6 tracking-tight">
                 Mr. Siro bán sạch vé 4 đêm nhạc liên tiếp trong nửa đầu 2026: Sức hút từ "Tảng băng" lộ diện.
             </h1>
-            
+
             <div class="flex items-center space-x-6 text-[13px] font-bold opacity-60">
                 <span class="flex items-center">
-                    <i class="fa-regular fa-calendar mr-2 text-[var(--blue-pastel)]"></i> 
+                    <i class="fa-regular fa-calendar mr-2 text-[var(--blue-pastel)]"></i>
                     Thứ ba, 07/04/2026
                 </span>
                 <span class="flex items-center">
-                    <i class="fa-regular fa-user mr-2 text-[var(--blue-pastel)]"></i> 
+                    <i class="fa-regular fa-user mr-2 text-[var(--blue-pastel)]"></i>
                     Bởi Elysium Team
                 </span>
             </div>
@@ -845,6 +797,7 @@
             <h2 class="text-2xl font-bold text-white mb-6 mt-12 border-l-4 border-[var(--blue-pastel)] pl-4">
                 Tại sao sau một thập kỷ ẩn mình mới làm show?
             </h2>
+
             <p class="mb-6">
                 Hơn 10 năm hoạt động, Mr. Siro gần như là một "ẩn sĩ" của V-pop. Anh không đi event, không gameshow, hiếm khi lộ mặt trước công chúng. Những bản hit quốc dân như <i>"Dưới Những Cơn Mưa"</i> hay <i>"Khóc Cùng Em"</i> lan truyền như một phần hơi thở của giới trẻ nhưng người đứng sau chúng lại luôn chọn góc tối của cánh gà.
             </p>
@@ -856,6 +809,7 @@
             <h2 class="text-2xl font-bold text-white mb-6 mt-12 border-l-4 border-[var(--blue-pastel)] pl-4">
                 Dự định tiếp theo cho nửa cuối năm 2026
             </h2>
+
             <p class="mb-6">
                 Với phản hồi bùng nổ và tỉ lệ 4/4 đêm sold out liên tiếp, khả năng "ông hoàng ballad" tiếp tục tổ chức thêm show tại các thành phố khác là rất cao. Đây là tin vui cho những ai đã lỡ hẹn với những tấm vé đầu năm.
             </p>
@@ -881,48 +835,46 @@
         </div>
 
         <section class="border-t border-white/10 pt-12">
-    <div class="flex items-center justify-between mb-10">
-        <h3 class="text-2xl font-bold">Thảo luận</h3>
-        <div class="flex items-center space-x-4">
-            <span class="text-sm opacity-50">Bạn có hài lòng với bài viết này không ?</span>
-            <button onclick="handleVote('yes')" class="vote-chip px-4 py-1.5 rounded-full border border-white/10 text-xs font-bold hover:bg-white/10 transition-all">Có</button>
-            <button onclick="handleVote('no')" class="vote-chip px-4 py-1.5 rounded-full border border-white/10 text-xs font-bold hover:bg-white/10 transition-all">Không</button>
-        </div>
-    </div>
-
-    <div class="space-y-6">
-        <div class="space-y-3">
-    <input id="user-name-input" type="text" placeholder="Tên của bạn (để trống nếu muốn ẩn danh)" 
-           class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[var(--pink-pastel)] transition-all">
-    
-    <div class="flex flex-col gap-3">
-        <textarea id="comment-input" rows="3" placeholder="Chia sẻ cảm nghĩ của bạn..." 
-                  class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-[var(--blue-pastel)] transition-all resize-none"></textarea>
-        
-        <div class="flex justify-end">
-            <button onclick="addComment()" 
-                    class="bg-[var(--blue-pastel)] hover:bg-[var(--pink-pastel)] text-black px-6 py-2.5 rounded-xl text-xs font-black transition-all transform active:scale-95 shadow-lg">
-                GỬI BÌNH LUẬN
-            </button>
-        </div>
-    </div>
-</div>
-        
-        <div id="comments-list" class="space-y-4">
+            <div class="flex items-center justify-between mb-10">
+                <h3 class="text-2xl font-bold">Thảo luận</h3>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm opacity-50">Bạn có hài lòng với bài viết này không ?</span>
+                    <button onclick="handleVote('yes')" class="vote-chip px-4 py-1.5 rounded-full border border-white/10 text-xs font-bold hover:bg-white/10 transition-all">Có</button>
+                    <button onclick="handleVote('no')" class="vote-chip px-4 py-1.5 rounded-full border border-white/10 text-xs font-bold hover:bg-white/10 transition-all">Không</button>
+                </div>
             </div>
 
-        <button id="load-more" onclick="renderComments(true)" class="hidden w-full py-3 border border-white/10 rounded-xl text-xs font-bold hover:bg-white/5 transition-all opacity-60">
-            XEM THÊM BÌNH LUẬN
-        </button>
-    </div>
-</section>
+            <div class="space-y-6">
+                <div class="space-y-3">
+                    <input id="user-name-input" type="text" placeholder="Tên của bạn (để trống nếu muốn ẩn danh)"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[var(--pink-pastel)] transition-all">
+
+                    <div class="flex flex-col gap-3">
+                        <textarea id="comment-input" rows="3" placeholder="Chia sẻ cảm nghĩ của bạn..."
+                            class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-[var(--blue-pastel)] transition-all resize-none"></textarea>
+
+                        <div class="flex justify-end">
+                            <button onclick="addComment()"
+                                class="bg-[var(--blue-pastel)] hover:bg-[var(--pink-pastel)] text-black px-6 py-2.5 rounded-xl text-xs font-black transition-all transform active:scale-95 shadow-lg">
+                                GỬI BÌNH LUẬN
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="comments-list" class="space-y-4"></div>
+
+                <button id="load-more" onclick="renderComments(true)" class="hidden w-full py-3 border border-white/10 rounded-xl text-xs font-bold hover:bg-white/5 transition-all opacity-60">
+                    XEM THÊM BÌNH LUẬN
+                </button>
+            </div>
+        </section>
     </div>
 </div>
-
 
 <div id="post-detail-indie" class="hidden-page">
     <div class="max-w-[850px] mx-auto px-6 py-12">
-        
+
         <nav class="flex items-center space-x-4 mb-8 text-sm font-medium">
             <button onclick="closePost()" class="flex items-center hover:text-[var(--pink-pastel)] transition-colors duration-300">
                 <i class="fa-solid fa-arrow-left mr-2"></i> Quay lại Blog
@@ -931,24 +883,24 @@
             <span class="opacity-50">Gì dzậy trời?</span>
         </nav>
 
-        <header class="mb-10 text-left"> 
+        <header class="mb-10 text-left">
             <div class="mb-4">
                 <span class="inline-block bg-gradient-to-r from-[var(--blue-pastel)] to-[var(--pink-pastel)] text-black text-[10px] font-black px-3 py-1 rounded-sm uppercase tracking-widest">
                     Gì dzậy trời?
                 </span>
             </div>
-            
+
             <h1 class="text-3xl md:text-4xl font-extrabold leading-snug mb-6 tracking-tight">
                 Festival Indie Lớn Nhất Mùa Hè 2026: Khi Âm Nhạc Hòa Cùng Di Sản Và Thiên Nhiên
             </h1>
-            
+
             <div class="flex items-center space-x-6 text-[13px] font-bold opacity-60">
                 <span class="flex items-center">
-                    <i class="fa-regular fa-calendar mr-2 text-[var(--blue-pastel)]"></i> 
+                    <i class="fa-regular fa-calendar mr-2 text-[var(--blue-pastel)]"></i>
                     Thứ bảy, 18/04/2026
                 </span>
                 <span class="flex items-center">
-                    <i class="fa-regular fa-user mr-2 text-[var(--blue-pastel)]"></i> 
+                    <i class="fa-regular fa-user mr-2 text-[var(--blue-pastel)]"></i>
                     Bởi Elysium Team
                 </span>
             </div>
@@ -966,6 +918,7 @@
             <h2 class="text-2xl font-bold text-white mb-6 mt-12 border-l-4 border-[var(--pink-pastel)] pl-4">
                 Forestival 2026 – "Chiến Binh Bình Minh" tại Tràng An
             </h2>
+
             <p class="mb-6">
                 Diễn ra vào ngày <strong>30/05/2026</strong> tại Quảng trường Bình Minh, Tràng An, lễ hội quy tụ dàn line-up "trong mơ" với 12 cái tên hàng đầu. Sự kết hợp giữa những "lão làng" như <strong>Hà Anh Tuấn, Đen Vâu</strong> cùng những làn gió mới như <strong>HIEUTHUHAI, Grey D, MAYDAYs</strong> hứa hẹn tạo nên một đêm nhạc đa sắc thái.
             </p>
@@ -978,6 +931,7 @@
             <h2 class="text-2xl font-bold text-white mb-6 mt-12 border-l-4 border-[var(--pink-pastel)] pl-4">
                 Trải nghiệm đa giác quan: "Indie × Dance" và Creative Camp
             </h2>
+
             <p class="mb-6">
                 Điểm khác biệt nhất chính là mô hình <strong>Creative Camp</strong> (Trại sáng tạo), nơi khán giả có thể cùng nghệ sĩ tham gia hoạt động trồng rừng thực tế. Bên cạnh đó, sự kết hợp giữa nhạc Indie và vũ đạo đường phố tại <i>Super24 Vietnam</i> cũng tạo nên một sân khấu tôn vinh cá tính tự do chưa từng có.
             </p>
@@ -985,6 +939,7 @@
             <h2 class="text-2xl font-bold text-white mb-6 mt-12 border-l-4 border-[var(--pink-pastel)] pl-4">
                 Tầm nhìn quốc tế cho Indie Việt
             </h2>
+
             <p class="mb-6">
                 Không chỉ quẩy trong nước, các nghệ sĩ tham gia showcase <strong>INDIEAF</strong> vào tháng 7 tới sẽ có cơ hội giành vé đại diện Việt Nam biểu diễn tại <i>AXEAN Festival</i> tại Bali. Đây thực sự là cú hích lớn đưa âm nhạc độc lập của chúng ta vươn tầm châu lục.
             </p>
@@ -1010,44 +965,44 @@
         </div>
 
         <section class="border-t border-white/10 pt-12">
-        <section class="border-t border-white/10 pt-12">
-    <div class="flex items-center justify-between mb-10">
-        <h3 class="text-2xl font-bold">Thảo luận</h3>
-        <div class="flex items-center space-x-4">
-            <span class="text-sm opacity-50">Bạn có hài lòng với bài viết này không ?</span>
-            <button onclick="handleVote('yes')" class="vote-chip px-4 py-1.5 rounded-full border border-white/10 text-xs font-bold hover:bg-white/10 transition-all">Có</button>
-            <button onclick="handleVote('no')" class="vote-chip px-4 py-1.5 rounded-full border border-white/10 text-xs font-bold hover:bg-white/10 transition-all">Không</button>
+            <section class="border-t border-white/10 pt-12">
+                <div class="flex items-center justify-between mb-10">
+                    <h3 class="text-2xl font-bold">Thảo luận</h3>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm opacity-50">Bạn có hài lòng với bài viết này không ?</span>
+                        <button onclick="handleVote('yes')" class="vote-chip px-4 py-1.5 rounded-full border border-white/10 text-xs font-bold hover:bg-white/10 transition-all">Có</button>
+                        <button onclick="handleVote('no')" class="vote-chip px-4 py-1.5 rounded-full border border-white/10 text-xs font-bold hover:bg-white/10 transition-all">Không</button>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="space-y-3">
+                        <input id="user-name-input" type="text" placeholder="Tên của bạn (để trống nếu muốn ẩn danh)"
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[var(--pink-pastel)] transition-all">
+
+                        <div class="flex flex-col gap-3">
+                            <textarea id="comment-input" rows="3" placeholder="Chia sẻ cảm nghĩ của bạn..."
+                                class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-[var(--blue-pastel)] transition-all resize-none"></textarea>
+
+                            <div class="flex justify-end">
+                                <button onclick="addComment()"
+                                    class="bg-[var(--blue-pastel)] hover:bg-[var(--pink-pastel)] text-black px-6 py-2.5 rounded-xl text-xs font-black transition-all transform active:scale-95 shadow-lg">
+                                    GỬI BÌNH LUẬN
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="comments-list" class="space-y-4">
+                    </div>
+
+                    <button id="load-more" onclick="renderComments(true)" class="hidden w-full py-3 border border-white/10 rounded-xl text-xs font-bold hover:bg-white/5 transition-all opacity-60">
+                        XEM THÊM BÌNH LUẬN
+                    </button>
+                </div>
+            </section>
         </div>
     </div>
-
-    <div class="space-y-6">
-        <div class="space-y-3">
-    <input id="user-name-input" type="text" placeholder="Tên của bạn (để trống nếu muốn ẩn danh)" 
-           class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[var(--pink-pastel)] transition-all">
-    
-    <div class="flex flex-col gap-3">
-        <textarea id="comment-input" rows="3" placeholder="Chia sẻ cảm nghĩ của bạn..." 
-                  class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-[var(--blue-pastel)] transition-all resize-none"></textarea>
-        
-        <div class="flex justify-end">
-            <button onclick="addComment()" 
-                    class="bg-[var(--blue-pastel)] hover:bg-[var(--pink-pastel)] text-black px-6 py-2.5 rounded-xl text-xs font-black transition-all transform active:scale-95 shadow-lg">
-                GỬI BÌNH LUẬN
-            </button>
-        </div>
-    </div>
-</div>
-        
-        <div id="comments-list" class="space-y-4">
-            </div>
-
-        <button id="load-more" onclick="renderComments(true)" class="hidden w-full py-3 border border-white/10 rounded-xl text-xs font-bold hover:bg-white/5 transition-all opacity-60">
-            XEM THÊM BÌNH LUẬN
-        </button>
-    </div>
-</section>
-    </div>
-</div>
 
 <div id="post-detail-ticketbox" class="hidden-page">
     <div class="max-w-[850px] mx-auto px-6 py-12">
@@ -1070,13 +1025,13 @@
             <p class="mb-6 first-letter:text-5xl first-letter:text-[var(--blue-pastel)] first-letter:font-bold first-letter:mr-3 first-letter:float-left">
                 Săn vé concert tại Việt Nam năm 2026 đã trở thành một "cuộc chiến" thực sự. Khi hàng chục ngàn người cùng đổ xô vào một hệ thống, chỉ nhanh hơn 0.1 giây cũng đủ để bạn có chỗ ngồi VIP hay phải ngậm ngùi mua vé pass giá cao.
             </p>
-            
+
             <h3 class="text-[var(--pink-pastel)] font-bold text-xl mt-8 mb-4">1. Tuyệt chiêu "F5 thần thánh"</h3>
             <p>Đừng đợi đến đúng giờ mới load lại trang. Hãy sử dụng các trang web đếm ngược thời gian chính xác của server (như Time.is) và bắt đầu F5 trước khoảng 2 giây để bù đắp độ trễ mạng.</p>
 
             <h3 class="text-[var(--pink-pastel)] font-bold text-xl mt-8 mb-4">2. Một tài khoản - Nhiều thiết bị?</h3>
             <p>Sai lầm lớn nhất là đăng nhập 1 tài khoản trên nhiều trình duyệt cùng lúc. Hệ thống Ticketbox 2026 sẽ nhận diện đây là spam và đẩy bạn ra sau cùng. Thay vào đó, hãy huy động bạn bè với các tài khoản khác nhau trên các đường truyền mạng khác nhau (4G và Wi-Fi).</p>
-            
+
             <blockquote class="border-l-4 border-[var(--blue-pastel)] pl-6 my-8 italic">
                 "Kinh nghiệm xương máu: Luôn lưu sẵn thông tin thanh toán và địa chỉ trong hồ sơ để bước Checkout diễn ra trong chưa đầy 5 giây."
             </blockquote>
@@ -1117,8 +1072,8 @@
                     <li>Bắt đầu lên kế hoạch săn vé cho show tiếp theo.</li>
                 </ul>
             </div>
- </div>
- </div>
+        </div>
+    </div>
 </div>
 
 <div id="offer-vietqr" class="hidden-page">
@@ -1140,7 +1095,7 @@
 
         <div class="prose prose-invert max-w-none text-gray-300 text-lg leading-relaxed">
             <p class="mb-6">Trong kỷ nguyên số, việc chờ đợi nhập số thẻ hay mã OTP đã trở nên lỗi thời. Với <strong>VietQR</strong>, hành trình sở hữu tấm vé concert của bạn chỉ gói gọn trong một thao tác quét duy nhất.</p>
-            
+
             <h3 class="text-[var(--blue-pastel)] font-bold text-xl mt-8 mb-4">Lợi ích khi dùng VietQR trên Elysium:</h3>
             <ul class="list-disc ml-6 space-y-3">
                 <li><strong>Tốc độ tuyệt đối:</strong> Giảm thiểu rủi ro bị "văng" khỏi hàng chờ do thao tác thanh toán chậm.</li>
@@ -1150,7 +1105,6 @@
         </div>
     </div>
 </div>
-
 
 <div id="offer-bank" class="hidden-page">
     <div class="max-w-[850px] mx-auto px-6 py-12">
@@ -1171,7 +1125,7 @@
 
         <div class="prose prose-invert max-w-none text-gray-300 text-lg leading-relaxed">
             <p class="mb-6">Dành riêng cho cộng đồng yêu âm nhạc và công nghệ, TPBank cùng Elysium mang đến giải pháp tài chính tối ưu cho những chuyến "đu show" xuyên biên giới.</p>
-            
+
             <div class="my-10 bg-white/5 p-8 rounded-3xl border border-white/10">
                 <h4 class="text-white font-bold mb-4">Chi tiết chương trình:</h4>
                 <p>• <strong>Cashback 10%:</strong> Hoàn tiền trực tiếp vào tài khoản cho mọi giao dịch mua vé concert quốc tế qua thẻ TPBank Visa/Mastercard.</p>
@@ -1181,7 +1135,6 @@
         </div>
     </div>
 </div>
-
 
 <div id="offer-urbox" class="hidden-page">
     <div class="max-w-[850px] mx-auto px-6 py-12">
@@ -1202,16 +1155,16 @@
 
         <div class="prose prose-invert max-w-none text-gray-300 text-lg leading-relaxed">
             <p class="mb-6">Mỗi tấm vé bạn mua tại Elysium không chỉ là một trải nghiệm âm nhạc, mà còn là một khoản đầu tư cho những sở thích khác thông qua hệ sinh thái <strong>Urbox</strong>.</p>
-            
+
             <h3 class="text-[var(--pink-pastel)] font-bold text-xl mt-8 mb-4">Cơ chế tích lũy:</h3>
             <p>Với mỗi 100,000đ chi tiêu, bạn sẽ nhận được 1,000 điểm UP. Điểm này có thể dùng để đổi Voucher tại hơn 300 thương hiệu hàng đầu như Phúc Long, Highlands Coffee, hay các nhà hàng cao cấp sau đêm diễn.</p>
+
             <blockquote class="border-l-4 border-[var(--pink-pastel)] pl-6 my-8 italic">
                 "Đi quẩy mệt nghỉ, ăn uống miễn phí – Đặc quyền chỉ có tại hệ sinh thái đối tác của chúng tôi."
             </blockquote>
         </div>
     </div>
 </div>
-
 
 <div id="offer-applepay" class="hidden-page">
     <div class="max-w-[850px] mx-auto px-6 py-12">
@@ -1232,7 +1185,7 @@
 
         <div class="prose prose-invert max-w-none text-gray-300 text-lg leading-relaxed">
             <p class="mb-6">An toàn và riêng tư là ưu tiên hàng đầu. Khi sử dụng Apple Pay hoặc Google Pay tại Elysium, thông tin thẻ thực tế của bạn không bao giờ được lưu trữ trên server hoặc chia sẻ với bất kỳ ai.</p>
-            
+
             <h3 class="text-white font-bold text-xl mt-8 mb-4">Vì sao nên chọn thanh toán Contactless?</h3>
             <ul class="list-disc ml-6 space-y-3">
                 <li><strong>FaceID/TouchID:</strong> Xác thực sinh trắc học giúp bảo vệ bạn khỏi các rủi ro giả mạo.</li>
@@ -1378,7 +1331,7 @@
     </script>
 </footer>
 
- <script src="blog.js"></script>
- <script async src="https://www.tiktok.com/embed.js"></script>
+    <script src="blog.js"></script>
+    <script async src="https://www.tiktok.com/embed.js"></script>
 </body>
 </html>

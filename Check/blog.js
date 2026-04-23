@@ -7,7 +7,6 @@ function switchPage(pageId) {
     const detailPages = document.querySelectorAll('[id^="post-detail-"], [id^="offer-"]');
 
     if (pageId === 'home') {
-        // Hiện trang chủ        if(hero) hero.style.display = 'block';
         if(container) container.style.display = 'block';
 
         detailPages.forEach(page => {
@@ -51,8 +50,7 @@ function openTikTokModal(videoId) {
     if(modal && iframe) {
   
         iframe.src = `https://www.tiktok.com/player/v1/${videoId}?autoplay=1&loop=1&controls=1`;
-        
-        // Hiện Modal
+
         modal.style.display = 'flex';
         modal.classList.remove('hidden-page');
         
@@ -104,7 +102,7 @@ let autoRotateId;
 
 function startAutoRotate() {
     autoRotateId = setInterval(() => {
-        currentRotateY -= 0.15; // Tốc độ quay 
+        currentRotateY -= 0.15;
         slider.style.transform = `rotateX(0deg) rotateY(${currentRotateY}deg)`;
     }, 20); 
 }
@@ -278,7 +276,7 @@ function deleteComment(id) {
         let allComments = JSON.parse(localStorage.getItem('elysium_db')) || [];
         allComments = allComments.filter(c => c.id !== id);
         localStorage.setItem('elysium_db', JSON.stringify(allComments));
-        renderCommentsForCurrentPage(); // Vẽ lại giao diện
+        renderCommentsForCurrentPage(); 
     }
 }
 
