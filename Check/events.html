@@ -87,44 +87,44 @@
                         </button>
                     </div>
                     <div id="panel-genre" class="grid grid-cols-4 gap-3 pb-4">
-                        <a href="thinh/events.html" class="relative rounded-xl overflow-hidden aspect-video group cursor-pointer">
+                        <a href="events.html" class="relative rounded-xl overflow-hidden aspect-video group cursor-pointer">
                             <img src="https://via.placeholder.com/200x112/222/fff?text=Nhạc+sống" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                             <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition"></div>
                             <span class="absolute bottom-2 left-2 text-white text-xs font-black">Nhạc sống</span>
                         </a>
-                        <a href="thinh/events.html" class="relative rounded-xl overflow-hidden aspect-video group cursor-pointer">
+                        <a href="events.html" class="relative rounded-xl overflow-hidden aspect-video group cursor-pointer">
                             <img src="https://via.placeholder.com/200x112/333/fff?text=Sân+khấu" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                             <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition"></div>
                             <span class="absolute bottom-2 left-2 text-white text-xs font-black">Sân khấu & Nghệ thuật</span>
                         </a>
-                        <a href="thinh/events.html" class="relative rounded-xl overflow-hidden aspect-video group cursor-pointer">
+                        <a href="events.html" class="relative rounded-xl overflow-hidden aspect-video group cursor-pointer">
                             <img src="https://via.placeholder.com/200x112/444/fff?text=Thể+thao" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                             <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition"></div>
                             <span class="absolute bottom-2 left-2 text-white text-xs font-black">Thể Thao</span>
                         </a>
-                        <a href="thinh/events.html" class="relative rounded-xl overflow-hidden aspect-video group cursor-pointer">
+                        <a href="events.html" class="relative rounded-xl overflow-hidden aspect-video group cursor-pointer">
                             <img src="https://via.placeholder.com/200x112/555/fff?text=Hội+thảo" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                             <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition"></div>
                             <span class="absolute bottom-2 left-2 text-white text-xs font-black">Hội thảo & Workshop</span>
                         </a>
                     </div>
                     <div id="panel-city" class="grid grid-cols-4 gap-3 pb-4 hidden">
-                        <a href="thinh/events.html" class="relative rounded-xl overflow-hidden aspect-video group cursor-pointer">
+                        <a href="events.html" class="relative rounded-xl overflow-hidden aspect-video group cursor-pointer">
                             <img src="https://via.placeholder.com/200x112/1a3a2a/fff?text=Hà+Nội" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                             <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition"></div>
                             <span class="absolute bottom-2 left-2 text-white text-xs font-black">Hà Nội</span>
                         </a>
-                        <a href="thinh/events.html" class="relative rounded-xl overflow-hidden aspect-video group cursor-pointer">
+                        <a href="events.html" class="relative rounded-xl overflow-hidden aspect-video group cursor-pointer">
                             <img src="https://via.placeholder.com/200x112/3a1a2a/fff?text=TP.HCM" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                             <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition"></div>
                             <span class="absolute bottom-2 left-2 text-white text-xs font-black">TP. Hồ Chí Minh</span>
                         </a>
-                        <a href="thinh/events.html" class="relative rounded-xl overflow-hidden aspect-video group cursor-pointer">
+                        <a href="events.html" class="relative rounded-xl overflow-hidden aspect-video group cursor-pointer">
                             <img src="https://via.placeholder.com/200x112/1a2a3a/fff?text=Đà+Nẵng" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                             <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition"></div>
                             <span class="absolute bottom-2 left-2 text-white text-xs font-black">Đà Nẵng</span>
                         </a>
-                        <a href="thinh/events.html" class="relative rounded-xl overflow-hidden aspect-video group cursor-pointer">
+                        <a href="events.html" class="relative rounded-xl overflow-hidden aspect-video group cursor-pointer">
                             <img src="https://via.placeholder.com/200x112/2a2a1a/fff?text=Toàn+quốc" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                             <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition"></div>
                             <span class="absolute bottom-2 left-2 text-white text-xs font-black">Toàn quốc</span>
@@ -256,6 +256,10 @@
                         <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-gray-50 rounded-lg">
                             <input type="radio" name="loc" value="Hà Nội" class="w-4 h-4 text-blue-600">
                             <span class="text-sm">Hà Nội</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer p-2 hover:bg-gray-50 rounded-lg">
+                            <input type="radio" name="loc" value="Đà Nẵng" class="w-4 h-4 text-blue-600">
+                            <span class="text-sm">Đà Nẵng</span>
                         </label>
                     </div>
                 </div>
@@ -416,7 +420,7 @@
     <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { firebaseConfig } from './firebase-config.js';
+    import { firebaseConfig } from './js/firebase-config.js';
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -425,19 +429,17 @@
     window.handleLogout = async () => {
         try {
             await signOut(auth);
-            localStorage.removeItem('user_data'); // Xóa dữ liệu tạm nếu có
+            localStorage.removeItem('user_data'); 
             window.location.reload();
         } catch (error) {
             console.error("Lỗi đăng xuất:", error);
         }
     };
 
-    // Theo dõi trạng thái đăng nhập
     onAuthStateChanged(auth, (user) => {
     const guestNav = document.getElementById('guest-nav');
     const userNav = document.getElementById('user-nav');
     
-    // Các phần tử hiển thị
     const headerUsername = document.getElementById('header-username');
     const avatarImg = document.getElementById('header-avatar-img');
     const avatarInitial = document.getElementById('header-avatar-initial');
@@ -453,8 +455,7 @@
         headerUsername.textContent = displayName;
         menuName.textContent = displayName;
         menuEmail.textContent = user.email;
-
-        // --- XỬ LÝ ẢNH ĐẠI DIỆN ---
+        
         if (user.photoURL) {
             avatarImg.src = user.photoURL; 
             avatarImg.classList.remove('hidden'); 

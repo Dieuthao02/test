@@ -1,216 +1,532 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" class="">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EventHub - Full Pastel Experience</title>
+    <title>Elysium - Nền tảng sự kiện hàng đầu Việt Nam</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { darkMode: 'class' }</script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        .blob-shape {
-            border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%;
-            background: linear-gradient(135deg, #FFDEE9 0%, #B5FFFC 100%);
-        }
-        
-        #search-suggestions {
-            transition: opacity 0.2s ease-in-out, transform 0.2s ease-out;
-        }
-
-        /* Hiệu ứng cho Tab Active */
-        .tab-btn.active {
-            color: #ec4899; /* pink-500 */
-            border-bottom: 2px solid #ec4899;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body class="bg-slate-50">
 
-<header class="sticky top-0 z-[100] bg-white/90 backdrop-blur-lg border-b border-white shadow-sm">
+ <header class="sticky top-0 z-[100] bg-white/90 backdrop-blur-lg border-b border-white shadow-sm">
     <div class="max-w-[1400px] mx-auto px-6 py-3 flex items-center justify-between gap-8 relative">
-        
         <div class="flex items-center space-x-10 flex-shrink-0">
-            <h1 class="text-3xl font-black text-[#F33B26] tracking-tighter cursor-pointer">EventHub</h1>
-            <nav class="hidden xl:flex space-x-6 font-bold text-gray-600">
-                <a href="#" class="text-pink-500 relative after:content-[''] after:absolute after:-bottom-1 after:left-0 after:w-full after:h-0.5 after:bg-pink-500">Trang chủ</a>
-                <a href="detail.html" class="hover:text-blue-400 transition">Sự kiện</a>
+            <a href="index.html">
+                <h1 class="text-3xl font-black tracking-tighter cursor-pointer bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent"> Elysium </h1>
+            </a>
+            <nav class="hidden xl:flex space-x-6 font-bold text-gray-600 dark:text-gray-300">
+                <a href="events.html" class="hover:text-blue-400 transition">Sự kiện</a>
                 <a href="calendar.html" class="hover:text-blue-400 transition">Lịch</a>
             </nav>
         </div>
 
-        <!-- SEARCH CONTAINER -->
-        <div class="flex-1 max-w-xl relative" id="search-container">
-            <div class="relative group">
-                <input type="text" id="search-input" autocomplete="off"
-                       placeholder="Bạn tìm gì hôm nay?..." 
-                       class="w-full bg-gray-100/80 border border-gray-200 rounded-full py-2 px-12 focus:ring-4 focus:ring-pink-100 focus:bg-white outline-none transition-all shadow-inner font-medium text-sm">
-                <i class="fa-solid fa-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-pink-400"></i>
+        <div class="flex-1 max-w-2xl relative">
+            <div class="flex items-center bg-white border-2 border-gray-200 rounded-full shadow-md overflow-hidden hover:border-pink-300 transition-all">
+                <div class="flex items-center flex-1 px-4 py-2 border-r border-gray-200">
+                    <i class="fa-solid fa-magnifying-glass text-gray-400 mr-3 text-sm"></i>
+                    <input type="text" id="search-input"
+                           placeholder="Tìm kiếm sự kiện, nghệ sĩ..."
+                           class="w-full outline-none bg-transparent font-medium text-sm text-gray-700 placeholder-gray-400">
+                </div>
+                <div class="relative px-4 py-2 cursor-pointer hover:bg-gray-50 transition" id="location-btn" style="z-index: 100;">
+            <div class="flex items-center gap-2 text-sm font-bold text-gray-600 whitespace-nowrap">
+                <i class="fa-solid fa-location-dot text-pink-400"></i>
+                <span id="location-text">Hà Nội</span>
+                <i class="fa-solid fa-chevron-down text-xs text-gray-400"></i>
             </div>
-
-            <!-- Bảng Gợi ý Mega Menu -->
-            <div id="search-suggestions" class="absolute top-[120%] left-1/2 -translate-x-1/2 w-[160%] max-w-[850px] bg-white rounded-3xl shadow-2xl border border-gray-100 p-8 hidden z-[1000] max-h-[85vh] overflow-y-auto no-scrollbar">
-                
-                <div class="mb-8">
-                    <p class="text-[10px] font-black text-gray-400 uppercase mb-4 tracking-widest">Tìm kiếm phổ biến 🔥</p>
-                    <div class="flex flex-wrap gap-3">
-                        <span class="px-4 py-2 bg-gray-50 rounded-full text-xs font-bold text-gray-600 hover:bg-pink-50 hover:text-pink-500 cursor-pointer transition">#anh-trai-say-hi</span>
-                        <span class="px-4 py-2 bg-gray-50 rounded-full text-xs font-bold text-gray-600 hover:bg-blue-50 hover:text-blue-500 cursor-pointer transition">#concert-9</span>
-                        <span class="px-4 py-2 bg-gray-50 rounded-full text-xs font-bold text-gray-600 hover:bg-yellow-50 hover:text-yellow-600 cursor-pointer transition">#workshop-lam-gom</span>
-                    </div>
+            
+            <div id="location-dropdown" class="hidden absolute top-[120%] right-0 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 min-w-[180px]" style="z-index: 9999 !important;">
+                <div class="px-3 py-1 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-50 mb-1">Chọn thành phố</div>
+                <div class="location-option px-4 py-2.5 hover:bg-pink-50 cursor-pointer text-sm font-bold text-gray-700 flex items-center gap-2" data-city="Hà Nội">
+                    <i class="fa-solid fa-circle text-[6px] text-pink-400"></i> Hà Nội
                 </div>
+                <div class="location-option px-4 py-2.5 hover:bg-pink-50 cursor-pointer text-sm font-bold text-gray-700 flex items-center gap-2" data-city="TP. Hồ Chí Minh">
+                    <i class="fa-solid fa-circle text-[6px] text-gray-300"></i> TP. Hồ Chí Minh
+                </div>
+                <div class="location-option px-4 py-2.5 hover:bg-pink-50 cursor-pointer text-sm font-bold text-gray-700 flex items-center gap-2" data-city="Đà Nẵng">
+                    <i class="fa-solid fa-circle text-[6px] text-gray-300"></i> Đà Nẵng
+                </div>
+                <div class="location-option px-4 py-2.5 hover:bg-pink-50 cursor-pointer text-sm font-bold text-gray-700 flex items-center gap-2" data-city="Toàn quốc">
+                    <i class="fa-solid fa-circle text-[6px] text-gray-300"></i> Toàn quốc
+                </div>
+            </div>
+        </div>
+    </div>
 
-                <div class="mb-10">
-                    <!-- TABS HEADER -->
-                    <div class="flex space-x-8 border-b border-gray-100 mb-6">
-                        <button class="tab-btn active pb-3 text-sm font-black transition-all" data-tab="the-loai">THEO THỂ LOẠI</button>
-                        <button class="tab-btn pb-3 text-sm font-black text-gray-400 hover:text-gray-600 transition-all" data-tab="thanh-pho">THEO THÀNH PHỐ</button>
-                    </div>
-
-                    <!-- TAB THỂ LOẠI -->
-                    <div id="tab-the-loai" class="tab-content grid grid-cols-4 gap-4">
-                        <div class="group cursor-pointer">
-                            <div class="aspect-video bg-blue-100 rounded-2xl mb-2 overflow-hidden relative">
-                                <img src="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=300" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
-                                <div class="absolute inset-0 bg-black/30 flex items-center justify-center text-white font-black text-[10px] uppercase">Nhạc sống</div>
-                            </div>
+            <!-- DROPDOWN SEARCH -->
+            <div id="search-suggestions" class="absolute top-[115%] left-0 right-0 bg-[#2a2a2a] rounded-2xl shadow-2xl hidden z-50 overflow-hidden" style="min-width:600px">
+                <div class="px-5 pt-4 pb-3 border-b border-white/10">
+                    <div class="space-y-1" id="trending-list">
+                        <div class="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-white/10 cursor-pointer transition group suggestion-item" data-value="Concert quốc gia">
+                            <i class="fa-solid fa-arrow-trend-up text-pink-400 text-sm w-4"></i>
+                            <span class="text-sm text-gray-200 group-hover:text-white transition">Concert quốc gia</span>
                         </div>
-                        <div class="group cursor-pointer">
-                            <div class="aspect-video bg-pink-100 rounded-2xl mb-2 overflow-hidden relative">
-                                <img src="https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?w=300" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
-                                <div class="absolute inset-0 bg-black/30 flex items-center justify-center text-white font-black text-[10px] uppercase">Sân khấu</div>
-                            </div>
+                        <div class="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-white/10 cursor-pointer transition group suggestion-item" data-value="BTS World Tour">
+                            <i class="fa-solid fa-arrow-trend-up text-pink-400 text-sm w-4"></i>
+                            <span class="text-sm text-gray-200 group-hover:text-white transition">BTS World Tour</span>
                         </div>
-                        <div class="group cursor-pointer">
-                            <div class="aspect-video bg-yellow-100 rounded-2xl mb-2 overflow-hidden relative">
-                                <img src="https://images.unsplash.com/photo-1459749411177-042180ce673c?w=300" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
-                                <div class="absolute inset-0 bg-black/30 flex items-center justify-center text-white font-black text-[10px] uppercase">Giải trí</div>
-                            </div>
-                        </div>
-                        <div class="group cursor-pointer">
-                            <div class="aspect-video bg-purple-100 rounded-2xl mb-2 overflow-hidden relative">
-                                <img src="https://images.unsplash.com/photo-1514525253361-bee8718a34a1?w=300" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
-                                <div class="absolute inset-0 bg-black/30 flex items-center justify-center text-white font-black text-[10px] uppercase">Workshop</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- TAB THÀNH PHỐ -->
-                    <div id="tab-thanh-pho" class="tab-content hidden grid grid-cols-4 gap-4">
-                        <div class="group cursor-pointer text-center">
-                            <div class="w-16 h-16 mx-auto bg-gray-100 rounded-full mb-2 overflow-hidden border-2 border-white shadow-sm group-hover:border-pink-300 transition">
-                                <img src="https://api.dicebear.com/7.x/initials/svg?seed=HN" class="w-full h-full">
-                            </div>
-                            <span class="text-[11px] font-bold text-gray-600">Hà Nội</span>
-                        </div>
-                        <div class="group cursor-pointer text-center">
-                            <div class="w-16 h-16 mx-auto bg-gray-100 rounded-full mb-2 overflow-hidden border-2 border-white shadow-sm group-hover:border-pink-300 transition">
-                                <img src="https://api.dicebear.com/7.x/initials/svg?seed=SG" class="w-full h-full">
-                            </div>
-                            <span class="text-[11px] font-bold text-gray-600">TP. Hồ Chí Minh</span>
-                        </div>
-                        <div class="group cursor-pointer text-center">
-                            <div class="w-16 h-16 mx-auto bg-gray-100 rounded-full mb-2 overflow-hidden border-2 border-white shadow-sm group-hover:border-pink-300 transition">
-                                <img src="https://api.dicebear.com/7.x/initials/svg?seed=DN" class="w-full h-full">
-                            </div>
-                            <span class="text-[11px] font-bold text-gray-600">Đà Nẵng</span>
-                        </div>
-                        <div class="group cursor-pointer text-center">
-                            <div class="w-16 h-16 mx-auto bg-gray-100 rounded-full mb-2 overflow-hidden border-2 border-white shadow-sm group-hover:border-pink-300 transition">
-                                <img src="https://api.dicebear.com/7.x/initials/svg?seed=DL" class="w-full h-full">
-                            </div>
-                            <span class="text-[11px] font-bold text-gray-600">Đà Lạt</span>
+                        <div class="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-white/10 cursor-pointer transition group suggestion-item" data-value="G-Dragon">
+                            <i class="fa-solid fa-arrow-trend-up text-pink-400 text-sm w-4"></i>
+                            <span class="text-sm text-gray-200 group-hover:text-white transition">G-Dragon</span>
                         </div>
                     </div>
                 </div>
-
-                <div>
-                    <p class="text-[10px] font-black text-gray-400 uppercase mb-4 tracking-widest">Sự kiện dành cho bạn ✨</p>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-2xl transition cursor-pointer group">
-                            <div class="w-16 h-16 bg-pink-100 rounded-xl overflow-hidden shrink-0">
-                                <img src="https://via.placeholder.com/150" class="w-full h-full object-cover group-hover:scale-110 transition">
-                            </div>
-                            <div>
-                                <p class="text-xs font-black text-gray-800 leading-tight">Lễ hội Ánh sáng 2026</p>
-                                <p class="text-[10px] text-gray-400 mt-1">Sân vận động Mỹ Đình</p>
-                            </div>
-                        </div>
+                <div id="live-results" class="px-5 py-3 hidden"></div>
+                <div class="px-5 pt-4">
+                    <div class="flex gap-6 border-b border-white/10 mb-4">
+                        <button id="tab-genre" onclick="switchSearchTab('genre')"
+                            class="pb-2 text-sm font-black text-white border-b-2 border-white transition">
+                            Khám phá theo Thể loại
+                        </button>
+                        <button id="tab-city" onclick="switchSearchTab('city')"
+                            class="pb-2 text-sm font-bold text-gray-400 border-b-2 border-transparent hover:text-white transition">
+                            Khám phá theo Thành phố
+                        </button>
+                    </div>
+                    <div id="panel-genre" class="grid grid-cols-4 gap-3 pb-4">
+                        <a href="events.html?category=Nhạc sống" class="relative rounded-xl overflow-hidden aspect-video group cursor-pointer">
+                            <img src="https://via.placeholder.com/200x112/222/fff?text=Nhạc+sống" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                            <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition"></div>
+                            <span class="absolute bottom-2 left-2 text-white text-xs font-black">Nhạc sống</span>
+                        </a>
+                        <a href="events.html?category=Sân khấu %26 Nghệ thuật" class="relative rounded-xl overflow-hidden aspect-video group cursor-pointer">
+                            <img src="https://via.placeholder.com/200x112/333/fff?text=Sân+khấu" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                            <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition"></div>
+                            <span class="absolute bottom-2 left-2 text-white text-xs font-black">Sân khấu & Nghệ thuật</span>
+                        </a>
+                        <a href="events.html?category=Thể thao" class="relative rounded-xl overflow-hidden aspect-video group cursor-pointer">
+                            <img src="https://via.placeholder.com/200x112/444/fff?text=Thể+thao" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                            <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition"></div>
+                            <span class="absolute bottom-2 left-2 text-white text-xs font-black">Thể Thao</span>
+                        </a>
+                        <a href="events.html?category=Hội thảo %26 Workshop" class="relative rounded-xl overflow-hidden aspect-video group cursor-pointer">
+                            <img src="https://via.placeholder.com/200x112/555/fff?text=Hội+thảo" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                            <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition"></div>
+                            <span class="absolute bottom-2 left-2 text-white text-xs font-black">Hội thảo & Workshop</span>
+                        </a>
+                    </div>
+                    <div id="panel-city" class="grid grid-cols-4 gap-3 pb-4 hidden">
+                        <a href="events.html?location=Hà+Nội" class="relative rounded-xl overflow-hidden aspect-video group cursor-pointer">
+                            <img src="https://via.placeholder.com/200x112/1a3a2a/fff?text=Hà+Nội" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                            <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition"></div>
+                            <span class="absolute bottom-2 left-2 text-white text-xs font-black">Hà Nội</span>
+                        </a>
+                        <a href="events.html?location=Hồ+Chí+Minh" class="relative rounded-xl overflow-hidden aspect-video group cursor-pointer">
+                            <img src="https://via.placeholder.com/200x112/3a1a2a/fff?text=TP.HCM" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                            <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition"></div>
+                            <span class="absolute bottom-2 left-2 text-white text-xs font-black">TP. Hồ Chí Minh</span>
+                        </a>
+                        <a href="events.html?location=Đà+Nẵng"" class="relative rounded-xl overflow-hidden aspect-video group cursor-pointer">
+                            <img src="https://via.placeholder.com/200x112/1a2a3a/fff?text=Đà+Nẵng" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                            <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition"></div>
+                            <span class="absolute bottom-2 left-2 text-white text-xs font-black">Đà Nẵng</span>
+                        </a>
+                        <a href="events.html" class="relative rounded-xl overflow-hidden aspect-video group cursor-pointer">
+                            <img src="https://via.placeholder.com/200x112/2a2a1a/fff?text=Toàn+quốc" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                            <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition"></div>
+                            <span class="absolute bottom-2 left-2 text-white text-xs font-black">Toàn quốc</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="px-5 pb-5 border-t border-white/10 pt-4">
+                    <p class="text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Gợi ý dành cho bạn</p>
+                    <div class="grid grid-cols-3 gap-3" id="search-suggestions-grid">
                     </div>
                 </div>
             </div>
         </div>
 
-        <div id="auth-zone" class="flex items-center space-x-5 flex-shrink-0 font-bold text-sm">
-    <div class="flex items-center bg-gray-100/80 rounded-full p-1 border border-gray-200">
-        <a href="auth.html?mode=login&redirect=index.html" 
-           class="bg-white text-gray-700 px-4 py-1.5 rounded-full shadow-sm text-xs hover:text-pink-500 transition">
-           Đăng nhập
-        </a>
-        
-        <a href="auth.html?mode=register&redirect=index.html" 
-           class="text-gray-500 px-3 py-1.5 text-xs hover:text-blue-500 transition">
-           Đăng ký
-        </a>
+        <!-- Nhóm 3: Chức năng cá nhân -->
+        <div class="flex items-center space-x-4 flex-shrink-0 font-bold text-sm">
+            <div id="guest-nav" class="flex items-center gap-3">
+                <a href="create.html" class="hidden lg:flex items-center text-blue-500 border-2 border-blue-100 bg-blue-50/30 px-4 py-1.5 rounded-full hover:bg-blue-100 transition text-xs">
+                    <i class="fa-solid fa-plus-circle mr-2"></i> Tạo sự kiện
+                </a>
+                <div class="flex items-center bg-gray-100/80 rounded-full p-1 border border-gray-200">
+                    <a href="auth.html?mode=login" class="bg-white text-gray-700 px-4 py-1.5 rounded-full shadow-sm text-xs hover:text-pink-500 transition">Đăng nhập</a>
+                    <a href="auth.html?mode=register" class="text-gray-500 px-3 py-1.5 text-xs hover:text-blue-500 transition">Đăng ký</a>
+                </div>
+            </div>
+            <div id="user-nav" class="hidden items-center gap-3">
+         <a href="create.html" class="hidden lg:flex items-center text-blue-500 border-2 border-blue-100 bg-blue-50/30 px-4 py-1.5 rounded-full hover:bg-blue-100 transition text-xs">
+                    <i class="fa-solid fa-plus-circle mr-2"></i> Tạo sự kiện
+                </a>
+                <div class="relative" id="header-avatar-wrap">
+                
+                    <button onclick="toggleHeaderMenu()" class="flex items-center gap-2 bg-gray-100 border border-gray-200 rounded-full px-3 py-1.5 hover:bg-gray-200 transition">
+    <div class="w-6 h-6 rounded-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-pink-400 to-purple-500 text-white text-xs font-black" id="avatar-container">
+        <img id="header-avatar-img" class="w-full h-full object-cover hidden" src="" alt="Avatar">
+        <span id="header-avatar-initial">U</span>
     </div>
-</div>
+    <span class="text-xs text-gray-700 max-w-[80px] truncate" id="header-username">User</span>
+    <i class="fa-solid fa-chevron-down text-xs text-gray-400"></i>
+</button>
+                    <div id="header-user-menu" class="hidden absolute right-0 top-[130%] bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 min-w-[200px] z-[200]">
+                        <div class="px-4 py-3 border-b border-gray-100">
+                            <p class="font-black text-gray-800 text-sm" id="menu-name">Người dùng</p>
+                            <p class="text-xs text-gray-400" id="menu-email">user@email.com</p>
+                            
+                        </div>
+                        <a href="login/dashboard.html?tab=profile" class="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition text-sm text-gray-700">
+                            <i class="fa-solid fa-user w-4 text-blue-400"></i> Cập nhật hồ sơ
+                        </a>
+                        <a href="login/dashboard.html" class="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition text-sm text-gray-700">
+                            <i class="fa-solid fa-ticket w-4 text-pink-400"></i> Vé của tôi
+                        </a>
+                        <a href="login/dashboard.html?tab=topup" class="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 transition text-sm text-gray-700">
+                            <i class="fa-solid fa-wallet w-4 text-green-400"></i> Nạp tiền
+                        </a>
+                        <div class="border-t border-gray-100 mt-1 pt-1">
+                            <button onclick="handleLogout()" class="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-red-50 transition text-sm text-red-500 font-bold">
+                                <i class="fa-solid fa-right-from-bracket w-4"></i> Đăng xuất
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TẦNG 2: DANH MỤC SỰ KIỆN  -->
+    <div class="bg-[#1a1a1a] text-white py-2.5 overflow-x-auto no-scrollbar">
+        <div class="max-w-[1400px] mx-auto px-6 flex space-x-10 text-[11px] font-bold whitespace-nowrap uppercase tracking-[0.15em]">
+            <div class="bg-[#1a1a1a] text-white py-2.5 overflow-x-auto no-scrollbar sticky top-16 z-40">
+    <div id="categoryMenu" class="max-w-[1400px] mx-auto px-6 flex space-x-10 text-[11px] font-bold whitespace-nowrap uppercase tracking-[0.15em] items-center">
+        <a href="events.html?category=all" class="category-btn text-pink-400 border-b border-pink-400 pb-1">Tất cả</a>
+            <a href="events.html?category=Nhạc sống" class="category-btn text-gray-400 hover:text-white transition pb-1">Nhạc sống</a>
+            <a href="events.html?category=Sân khấu & Nghệ thuật" class="category-btn text-gray-400 hover:text-white transition pb-1">Sân khấu</a>
+            <a href="events.html?category=Thể Thao" class="category-btn text-gray-400 hover:text-white transition pb-1">Thể Thao</a>
+            <a href="events.html?category=Hội thảo & Workshop" class="category-btn text-gray-400 hover:text-white transition pb-1">Hội thảo & Workshop</a>
+            <a href="events.html?category=Tham quan & Trải nghiệm" class="category-btn text-gray-400 hover:text-white transition pb-1">Tham quan & Trải nghiệm</a>
+            <a href="events.html?category=Khác" class="category-btn text-gray-400 hover:text-white transition pb-1">Khác</a>
+        <div class="h-4 w-[1px] bg-gray-700 mx-2"></div> <a href="blog.html" class="text-gray-400 hover:text-white transition">Blog</a>
+        </div>
     </div>
 </header>
 
-<main class="max-w-[1400px] mx-auto px-6 py-10">
-    <!-- Hero Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 min-h-[70vh] items-center">
-        <div class="space-y-10">
-            <div class="space-y-4">
-                <h2 class="text-7xl font-black text-gray-900 leading-[0.9]">CONCERT<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-blue-400">CỰC HOTT</span></h2>
-                <p class="text-2xl font-bold text-gray-500 uppercase tracking-tighter">18.04.2026 | VẠN PHÚC CITY</p>
-                <button class="bg-[#FBD719] text-black px-10 py-4 rounded-xl font-black text-xl shadow-lg hover:scale-105 transition active:scale-95">Đăng ký ngay</button>
+<main class="max-w-[1400px] mx-auto px-4 py-10">
+    <!-- HERO -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 min-h-[65vh] items-center mb-20">
+        <div class="space-y-8">
+            <div class="inline-flex items-center gap-2 bg-pink-50 text-pink-600 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border border-pink-100">
+                <span class="w-2 h-2 bg-pink-500 rounded-full animate-pulse"></span> Hot Event 2026
+            </div>
+            <h2 class="text-6xl xl:text-7xl font-black text-gray-900 leading-[0.9]">CONCERT<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-blue-400">CỰC HOTT</span></h2>
+            <p class="text-xl font-bold text-gray-500 uppercase tracking-tighter">18.04.2026 | VẠN PHÚC CITY, HÀ ĐÔNG</p>
+            <div class="flex gap-4 flex-wrap">
+                <button onclick="openTicketModal('Concert Cực Hott 2026')" class="bg-[#FBD719] text-black px-8 py-4 rounded-xl font-black text-lg shadow-lg hover:scale-105 transition active:scale-95">🎫 Đặt vé ngay</button>
+                <a href="detail.html?id=21" class="border-2 border-gray-800 text-gray-800 px-8 py-4 rounded-xl font-black text-lg hover:bg-gray-800 hover:text-white transition inline-block">Xem thêm →</a>
+            </div>
+            <div class="flex items-center gap-6 pt-2">
+                <div class="flex -space-x-2">
+                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=A1" class="w-9 h-9 rounded-full border-2 border-white">
+                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=B2" class="w-9 h-9 rounded-full border-2 border-white">
+                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=C3" class="w-9 h-9 rounded-full border-2 border-white">
+                </div>
+                <p class="text-sm font-bold text-gray-400">+2.847 người đã đặt vé</p>
             </div>
         </div>
-        <div class="space-y-12 flex flex-col items-center">
-            <div class="w-72 h-72 blob-shape border-8 border-white shadow-2xl flex items-center justify-center overflow-hidden">
-                <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Event" class="w-full h-full object-cover">
+        <div class="flex flex-col items-center gap-6">
+            <div class="w-72 h-72 blob-shape border-8 border-white shadow-2xl overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=600" class="w-full h-full object-cover">
+            </div>
+            <div class="flex gap-4 justify-center">
+                <div class="glass-card px-5 py-3 rounded-2xl text-center"><p class="text-2xl font-black text-pink-500">50+</p><p class="text-[10px] text-gray-400 font-bold uppercase">Sự kiện</p></div>
+                <div class="glass-card px-5 py-3 rounded-2xl text-center"><p class="text-2xl font-black text-blue-500">10K+</p><p class="text-[10px] text-gray-400 font-bold uppercase">Người dùng</p></div>
+                <div class="glass-card px-5 py-3 rounded-2xl text-center"><p class="text-2xl font-black text-green-500">4.9⭐</p><p class="text-[10px] text-gray-400 font-bold uppercase">Đánh giá</p></div>
             </div>
         </div>
     </div>
+
+    <hr class="border-gray-200 my-12">
+
+   <section id="special-events-section" class="space-y-8 mb-16 relative">
+    <div class="flex items-center justify-between">
+        <h3 class="text-3xl font-black text-gray-800">SỰ KIỆN ĐẶC BIỆT ✨</h3>
+        <div class="flex gap-2">
+            <button class="swiper-prev-btn w-10 h-10 rounded-full border-2 border-gray-200 flex items-center justify-center hover:bg-pink-500 hover:border-pink-500 hover:text-white transition-all">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button class="swiper-next-btn w-10 h-10 rounded-full border-2 border-gray-200 flex items-center justify-center hover:bg-pink-500 hover:border-pink-500 hover:text-white transition-all">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="swiper specialSwiper">
+        <div id="special-events-wrapper" class="swiper-wrapper">
+            <div class="swiper-slide animate-pulse bg-gray-200 rounded-3xl aspect-video"></div>
+            <div class="swiper-slide animate-pulse bg-gray-200 rounded-3xl aspect-video"></div>
+        </div>
+    </div>
+</section>
+
+<section class="space-y-6 mb-16">
+    <div class="flex items-center justify-between">
+        <div>
+            <h3 class="text-3xl font-black text-gray-800">SỰ KIỆN SẮP DIỄN RA</h3>
+            <p class="text-sm text-gray-400 font-medium mt-1">Đừng bỏ lỡ những sự kiện hot nhất</p>
+        </div>
+        <a href="events.html" class="text-sm font-bold text-pink-500 flex items-center gap-1">
+            Xem tất cả <i class="fa-solid fa-arrow-right text-xs"></i>
+        </a>
+    </div>
+    
+    <div id="upcoming-events-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="animate-pulse bg-gray-100 rounded-xl h-[300px]"></div>
+        <div class="animate-pulse bg-gray-100 rounded-xl h-[300px]"></div>
+        <div class="animate-pulse bg-gray-100 rounded-xl h-[300px]"></div>
+        <div class="animate-pulse bg-gray-100 rounded-xl h-[300px]"></div>
+    </div>
+</section>
+
+    <!-- THỂ LOẠI -->
+    <section class="space-y-6 mb-16">
+        <h3 class="text-3xl font-black text-gray-800">KHÁM PHÁ THEO THỂ LOẠI</h3>
+        <div class="grid grid-cols-3 md:grid-cols-6 gap-4">
+            <a href="events.html?cat=music" class="group flex flex-col items-center gap-3 p-5 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300"><div class="w-14 h-14 rounded-2xl bg-pink-100 flex items-center justify-center group-hover:bg-pink-400 transition-colors"><i class="fa-solid fa-music text-2xl text-pink-400 group-hover:text-white transition-colors"></i></div><span class="text-xs font-black text-gray-700">Âm nhạc</span></a>
+            <a href="events.html?cat=theater" class="group flex flex-col items-center gap-3 p-5 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300"><div class="w-14 h-14 rounded-2xl bg-purple-100 flex items-center justify-center group-hover:bg-purple-400 transition-colors"><i class="fa-solid fa-masks-theater text-2xl text-purple-400 group-hover:text-white transition-colors"></i></div><span class="text-xs font-black text-gray-700">Sân khấu</span></a>
+            <a href="events.html?cat=workshop" class="group flex flex-col items-center gap-3 p-5 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300"><div class="w-14 h-14 rounded-2xl bg-blue-100 flex items-center justify-center group-hover:bg-blue-400 transition-colors"><i class="fa-solid fa-chalkboard-user text-2xl text-blue-400 group-hover:text-white transition-colors"></i></div><span class="text-xs font-black text-gray-700">Workshop</span></a>
+            <a href="events.html?cat=sport" class="group flex flex-col items-center gap-3 p-5 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300"><div class="w-14 h-14 rounded-2xl bg-green-100 flex items-center justify-center group-hover:bg-green-400 transition-colors"><i class="fa-solid fa-futbol text-2xl text-green-400 group-hover:text-white transition-colors"></i></div><span class="text-xs font-black text-gray-700">Thể thao</span></a>
+            <a href="events.html?cat=expo" class="group flex flex-col items-center gap-3 p-5 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300"><div class="w-14 h-14 rounded-2xl bg-yellow-100 flex items-center justify-center group-hover:bg-yellow-400 transition-colors"><i class="fa-solid fa-person-hiking text-2xl text-yellow-500 group-hover:text-white transition-colors"></i></div><span class="text-xs font-black text-gray-700">Tham quan</span></a>
+            <a href="events.html?cat=workshop" class="group flex flex-col items-center gap-3 p-5 bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300"><div class="w-14 h-14 rounded-2xl bg-orange-100 flex items-center justify-center group-hover:bg-orange-400 transition-colors"><i class="fa-solid fa-mug-hot text-2xl text-orange-400 group-hover:text-white transition-colors"></i></div><span class="text-xs font-black text-gray-700">Hội thảo</span></a>
+        </div>
+    </section>
+
+    <!-- MIỄN PHÍ -->
+    <section id="free-events-section" class="space-y-6 mb-16">
+        <div class="flex items-center justify-between">
+            <div><h3 class="text-3xl font-black text-gray-800">SỰ KIỆN MIỄN PHÍ 🎉</h3><p class="text-sm text-gray-400 font-medium mt-1">Tham gia hoàn toàn miễn phí, chỉ cần đăng ký</p></div>
+            <a href="events.html" class="text-sm font-bold text-pink-500 flex items-center gap-1">Xem tất cả <i class="fa-solid fa-arrow-right text-xs"></i></a>
+        </div>
+        <div class="space-y-3">
+            <a href="detail.html" class="group flex items-center gap-4 bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-pink-200 transition-all"><div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0"><img src="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=100" class="w-full h-full object-cover"></div><div class="flex-1 min-w-0"><p class="font-black text-gray-800 text-sm group-hover:text-pink-500 transition truncate">Lễ Hội Văn Hoá Dân Gian 2026</p><p class="text-xs text-gray-400 mt-0.5">📅 15.04.2026 · 📍 Văn Miếu, Hà Nội</p></div><span class="text-xs font-black text-green-500 bg-green-50 px-3 py-1 rounded-full flex-shrink-0">Miễn phí</span></a>
+            <a href="detail.html" class="group flex items-center gap-4 bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-pink-200 transition-all"><div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100" class="w-full h-full object-cover"></div><div class="flex-1 min-w-0"><p class="font-black text-gray-800 text-sm group-hover:text-pink-500 transition truncate">Tech Meetup Hà Nội - Tháng 4/2026</p><p class="text-xs text-gray-400 mt-0.5">📅 22.04.2026 · 📍 Cầu Giấy, Hà Nội</p></div><span class="text-xs font-black text-green-500 bg-green-50 px-3 py-1 rounded-full flex-shrink-0">Miễn phí</span></a>
+            <a href="detail.html" class="group flex items-center gap-4 bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-pink-200 transition-all"><div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0"><img src="https://images.unsplash.com/photo-1464207687429-7505649dae38?w=100" class="w-full h-full object-cover"></div><div class="flex-1 min-w-0"><p class="font-black text-gray-800 text-sm group-hover:text-pink-500 transition truncate">Triển Lãm Nghệ Thuật Đương Đại 2026</p><p class="text-xs text-gray-400 mt-0.5">📅 28.04.2026 · 📍 Bảo tàng Mỹ thuật, HN</p></div><span class="text-xs font-black text-green-500 bg-green-50 px-3 py-1 rounded-full flex-shrink-0">Miễn phí</span></a>
+        </div>
+    </section>
+
+    <!-- BANNER TẠO SỰ KIỆN -->
+    <section class="mb-16">
+        <div class="relative rounded-3xl overflow-hidden p-10 flex flex-col md:flex-row items-center justify-between shadow-xl gap-6" style="background:linear-gradient(135deg,#F33B26,#ff8c69)">
+            <div class="space-y-3 text-white">
+                <p class="text-xs font-black uppercase tracking-widest opacity-80">Bạn có sự kiện?</p>
+                <h3 class="text-4xl font-black leading-tight">TẠO SỰ KIỆN<br>CỦA BẠN</h3>
+                <p class="text-sm opacity-80 font-medium">Dễ dàng tạo và quản lý sự kiện ngay trên EventHub</p>
+                <a href="create.html" class="inline-flex items-center gap-2 bg-white text-[#F33B26] px-6 py-3 rounded-xl font-black text-sm hover:scale-105 transition shadow-lg mt-2"><i class="fa-solid fa-plus-circle"></i> Tạo ngay miễn phí</a>
+            </div>
+            <div class="hidden md:block text-white/20 text-[120px] font-black leading-none select-none">🎪</div>
+        </div>
+    </section>
 </main>
+
+<footer class="mt-10 py-10 px-6 bg-white"> <div class="max-w-[1400px] mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-8">
+            
+            <div class="space-y-6">
+                <h1 class="text-4xl font-black text-blue-600 tracking-tighter">Elysium</h1>
+                <p class="text-sm text-gray-600 font-medium leading-relaxed">
+                    Nền tảng quản lý và phân phối vé sự kiện hàng đầu Đông Nam Á, ứng dụng Fintech và Blockchain để bảo vệ quyền lợi người hâm mộ.
+                </p>
+                <div class="flex space-x-4">
+                    <a href="#" class="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-600 hover:text-white transition-all transform hover:scale-110 border border-gray-200"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-600 hover:text-white transition-all transform hover:scale-110 border border-gray-200"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-600 hover:text-white transition-all transform hover:scale-110 border border-gray-200"><i class="fa-brands fa-tiktok"></i></a>
+                    <a href="#" class="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 hover:bg-blue-600 hover:text-white transition-all transform hover:scale-110 border border-gray-200"><i class="fa-brands fa-linkedin-in"></i></a>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="text-xs font-black uppercase tracking-widest mb-8 text-gray-900 border-l-4 border-blue-600 pl-4">Liên kết nhanh</h4>
+                <ul class="space-y-4 text-sm font-bold text-gray-600">
+                    <li><a href="index.html" class="hover:text-blue-600 transition flex items-center"><i class="fa-solid fa-chevron-right text-[10px] mr-2 text-gray-400"></i>Trang chủ</a></li>
+                    <li><a href="calendar.html" class="hover:text-blue-600 transition flex items-center"><i class="fa-solid fa-chevron-right text-[10px] mr-2 text-gray-400"></i>Lịch</a></li>
+                    <li><a href="about.html" class="hover:text-blue-600 transition flex items-center"><i class="fa-solid fa-chevron-right text-[10px] mr-2 text-gray-400"></i>Về chúng tôi</a></li>
+                    <li><a href="contact.html" class="hover:text-blue-600 transition flex items-center"><i class="fa-solid fa-chevron-right text-[10px] mr-2 text-gray-400"></i>Hỗ trợ</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-xs font-black uppercase tracking-widest mb-8 text-gray-900 border-l-4 border-blue-600 pl-4">Trung tâm hỗ trợ</h4>
+                <ul class="space-y-4 text-sm font-bold text-gray-600">
+                    <li><button onclick="openPdfModal('https://docs.google.com/document/d/177EF9A9gt4BjZAYq8NtQ1gtA-7hTd7ExTPdRdaw9hSw/preview')" class="group flex items-center hover:text-blue-600 transition-colors text-left"><i class="fa-solid fa-chevron-right text-[10px] mr-2 text-gray-400 group-hover:text-blue-600"></i><span>Chính sách bảo mật</span></button></li>
+                    <li><button onclick="openPdfModal('https://docs.google.com/document/d/1QcZXeuVDVnVJvj879xttXXqoTWwqZvqEWxsJ5iXf5u0/preview')" class="group flex items-center hover:text-blue-600 transition-colors text-left"><i class="fa-solid fa-chevron-right text-[10px] mr-2 text-gray-400 group-hover:text-blue-600"></i><span>Cơ chế giải quyết tranh chấp</span></button></li>
+                    <li><button onclick="openPdfModal('https://docs.google.com/document/d/1esuN33zRznlz8qbYLhuuCTIOaXUG_FIhDo2iS0P8msk/preview')" class="group flex items-center hover:text-blue-600 transition-colors text-left"><i class="fa-solid fa-chevron-right text-[10px] mr-2 text-gray-400 group-hover:text-blue-600"></i><span>Quy chế hoạt động</span></button></li>
+                    <li><button onclick="openPdfModal('https://docs.google.com/document/d/1foPttdcU_1C1-K4liXvcmpmvSlznVYkyFHwAA1an3cY/preview')" class="group flex items-center hover:text-blue-600 transition-colors text-left"><i class="fa-solid fa-chevron-right text-[10px] mr-2 text-gray-400 group-hover:text-blue-600"></i><span>Phương thức thanh toán</span></button></li>
+                    <li><button onclick="openPdfModal('https://docs.google.com/document/d/1w1qM0sWXhTx_geqZfebsDPBs5j3egwzoYdjQbye_iSY/preview')" class="group flex items-center hover:text-blue-600 transition-colors text-left"><i class="fa-solid fa-chevron-right text-[10px] mr-2 text-gray-400 group-hover:text-blue-600"></i><span>Bảo mật thanh toán</span></button></li>
+                    <li><button onclick="openPdfModal('https://docs.google.com/document/d/15CJAOltYje2ccf8VUnuRYZoHU5di5M1nry-wtnhLDfw/preview')" class="group flex items-center hover:text-blue-600 transition-colors text-left"><i class="fa-solid fa-chevron-right text-[10px] mr-2 text-gray-400 group-hover:text-blue-600"></i><span>Điều kiện vận chuyển</span></button></li>
+                    <li><button onclick="openPdfModal('https://docs.google.com/document/d/1fN2WR16lEjpwNBvv8l93v5WrWzHpOOT0m9MKvBV14ZQ/preview')" class="group flex items-center hover:text-blue-600 transition-colors text-left"><i class="fa-solid fa-chevron-right text-[10px] mr-2 text-gray-400 group-hover:text-blue-600"></i><span>Điều khoản khách hàng</span></button></li>
+                    <li><button onclick="openPdfModal('https://docs.google.com/document/d/1IX9xZghIf8AB9z9JYyAmEIJgy192QkqYoRjrOzvIAkM/preview')" class="group flex items-center hover:text-blue-600 transition-colors text-left"><i class="fa-solid fa-chevron-right text-[10px] mr-2 text-gray-400 group-hover:text-blue-600"></i><span>Điều khoản nhà tổ chức</span></button></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-xs font-black uppercase tracking-widest mb-8 text-gray-900 border-l-4 border-blue-600 pl-4">Thông tin liên hệ</h4>
+                <p class="text-3xl font-black text-blue-600 mb-2 tracking-tighter">1900.6408</p>
+                <p class="text-sm text-gray-500 font-bold mb-6 italic underline hover:text-pink-500 cursor-pointer transition">support@elysium.vn</p>
+                <div class="space-y-4">
+                    <p class="text-xs text-gray-700 font-bold leading-relaxed flex items-start">
+                        <i class="fa-solid fa-location-dot mt-1 mr-3 text-blue-600"></i>
+                        Tòa nhà VNU-IS, 144 Xuân Thủy, Cầu Giấy, Hà Nội.
+                    </p>
+                    <p class="text-xs text-gray-700 font-bold leading-relaxed flex items-start">
+                        <i class="fa-solid fa-building mt-1 mr-3 text-blue-600"></i>
+                        Tòa nhà Viettel, 285 CMT8, Quận 10, TP. Hồ Chí Minh.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div id="pdfModal" class="fixed inset-0 z-[9999] hidden flex-col bg-white">
+            <div class="w-full h-[70px] px-8 flex items-center justify-between bg-white border-b border-gray-100 shadow-sm">
+                <div class="text-3xl font-black tracking-tighter bg-gradient-to-r from-blue-600 to-pink-500 bg-clip-text text-transparent">ELYSIUM</div>
+                <button onclick="closePdfModal()" class="flex items-center space-x-2 text-gray-400 hover:text-red-500 transition-all">
+                    <span class="text-xs font-bold uppercase tracking-widest">Đóng</span>
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-50"><i class="fa-solid fa-xmark text-lg"></i></div>
+                </button>
+            </div>
+            <div class="flex-grow w-full bg-gray-100">
+                <iframe id="pdfViewer" src="" class="w-full h-full border-none"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes gradient-x { 0%, 100% { background-position: left center; } 50% { background-position: right center; } }
+        .animate-gradient-x { background-size: 200% 200%; animation: gradient-x 4s ease infinite; }
+        #legalModal.active { display: flex; opacity: 1; }
+        #legalModal.active #modalContent { transform: scale(1); opacity: 1; }
+    </style>
+
+    <script>
+        function openPdfModal(fileName) {
+            const modal = document.getElementById('pdfModal');
+            const viewer = document.getElementById('pdfViewer');
+            viewer.src = fileName; 
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+        function closePdfModal() {
+            const modal = document.getElementById('pdfModal');
+            const viewer = document.getElementById('pdfViewer');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            viewer.src = ''; 
+            document.body.style.overflow = 'auto';
+        }
+        function openDocModal(url) {
+            const modal = document.getElementById('docModal');
+            const iframe = document.getElementById('docFrame');
+            iframe.src = url;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeDocModal() {
+            const modal = document.getElementById('docModal');
+            const iframe = document.getElementById('docFrame');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            iframe.src = '';
+            document.body.style.overflow = 'auto';
+        }
+        function openLegalModal() {
+            const modal = document.getElementById('legalModal');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.add('active'), 10);
+            document.body.style.overflow = 'hidden';
+        }
+        function closeLegalModal() {
+            const modal = document.getElementById('legalModal');
+            modal.classList.remove('active');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+            document.body.style.overflow = 'auto';
+        }
+        window.onclick = function(e) {
+            if (e.target.id === 'legalModal') closeLegalModal();
+            if (e.target.id === 'docModal') closeDocModal();
+            if (e.target.id === 'pdfModal') closePdfModal();
+        }
+    </script>
+</footer>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { firebaseConfig } from './firebase-config.js';
+    import { firebaseConfig } from './js/firebase-config.js';
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    const authZone = document.getElementById('auth-zone');
+    window.toggleHeaderMenu = () => {
+        const menu = document.getElementById('header-user-menu');
+        if(menu) menu.classList.toggle('hidden');
+    };
+    window.handleLogout = () => {
+        signOut(auth).then(() => {
+            localStorage.removeItem('userLogin');
+            location.reload();
+        });
+    };
 
     onAuthStateChanged(auth, (user) => {
-        if (user) {
+
+    const guestNav = document.getElementById('guest-nav');
+    const userNav = document.getElementById('user-nav');
+    
+    if (user) {
+        if (guestNav) guestNav.classList.add('hidden');
+        if (userNav) {
+            userNav.classList.remove('hidden');
+            userNav.classList.add('flex'); 
+        }
+
         const userObj = {
-            name: user.displayName || "User",
+            name: user.displayName || "Người dùng",
             email: user.email,
             uid: user.uid,
-            avatar: user.photoURL
+            avatar: user.photoURL || `https://api.dicebear.com/7.x/adventurer/svg?seed=${user.uid}`
         };
         localStorage.setItem('userLogin', JSON.stringify(userObj));
-            authZone.innerHTML = `
-                <div class="flex items-center gap-3 bg-white/50 backdrop-blur-sm p-1 pr-4 rounded-full border border-pink-100 shadow-sm">
-                    <img src="${user.photoURL || 'https://api.dicebear.com/7.x/adventurer/svg?seed=' + user.uid}" 
-                         class="w-8 h-8 rounded-full border-2 border-white shadow-sm">
-                    <div class="flex flex-col">
-                        <span class="text-[10px] text-gray-400 leading-none uppercase">Thành viên</span>
-                        <span class="text-xs text-pink-600 truncate max-w-[100px]">${user.displayName || 'User'}</span>
-                    </div>
-                    <button id="logout-btn" class="ml-2 text-gray-400 hover:text-red-500 transition">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                    </button>
-                </div>
-            `;
-            document.getElementById('logout-btn').onclick = () => signOut(auth).then(() => location.reload());
+
+        const avatarImg = document.getElementById('header-avatar-img');
+        const avatarInitial = document.getElementById('header-avatar-initial');
+        
+        if (user.photoURL) {
+            avatarImg.src = user.photoURL;
+            avatarImg.classList.remove('hidden');
+            if(avatarInitial) avatarInitial.classList.add('hidden');
+        } else {
+            if(avatarInitial) {
+                avatarInitial.textContent = userObj.name.charAt(0).toUpperCase();
+                avatarInitial.classList.remove('hidden');
+            }
+            if(avatarImg) avatarImg.classList.add('hidden');
         }
-    });
+
+        if(document.getElementById('header-username')) 
+            document.getElementById('header-username').textContent = userObj.name;
+        if(document.getElementById('menu-name')) 
+            document.getElementById('menu-name').textContent = userObj.name;
+        if(document.getElementById('menu-email')) 
+            document.getElementById('menu-email').textContent = user.email;
+
+    } else {
+
+        if (guestNav) guestNav.classList.remove('hidden');
+        if (userNav) userNav.classList.add('hidden');
+        console.log("Chưa đăng nhập");
+    }
+});
 </script>
+<script src="js/index.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
 </body>
 </html>

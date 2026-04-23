@@ -7,43 +7,59 @@ async function fetchEvents() {
         const data = await response.json();
         
         const now = new Date();
-        now.setHours(0, 0, 0, 0); // Đặt về đầu ngày để so sánh chính xác theo ngày
+        now.setHours(0, 0, 0, 0); 
 
         allEvents = data.sort((a, b) => {
             const dateA = parseDate(a.time);
             const dateB = parseDate(b.time);
             
-            // Kiểm tra trạng thái HOT (dựa trên hasDiagram như logic Card của bạn)
             const isHotA = a.hasDiagram === "TRUE" || a.hasDiagram === true;
             const isHotB = b.hasDiagram === "TRUE" || b.hasDiagram === true;
 
-            // Kiểm tra xem sự kiện đã qua chưa
             const isPastA = dateA && dateA < now;
             const isPastB = dateB && dateB < now;
 
-            // --- BẮT ĐẦU LOGIC ƯU TIÊN ---
-
-            // 1. Ưu tiên theo trạng thái "Đã qua": Sự kiện chưa diễn ra luôn đứng trước sự kiện đã qua
             if (isPastA !== isPastB) {
                 return isPastA ? 1 : -1;
             }
 
-            // 2. Nếu cả 2 đều CHƯA diễn ra:
             if (!isPastA && !isPastB) {
                 // Ưu tiên HOT lên trước
                 if (isHotA !== isHotB) {
                     return isHotA ? -1 : 1;
                 }
-                // Nếu cùng HOT hoặc cùng không HOT: Cái nào gần ngày hiện tại hơn xếp trước
                 return dateA - dateB;
             }
 
-            // 3. Nếu cả 2 đều ĐÃ diễn ra:
-            // Cái nào mới diễn ra gần đây nhất (mới qua) thì xếp trên các cái đã qua lâu rồi
             return dateB - dateA;
         });
 
-        renderEvents(allEvents);
+        const urlParams = new URLSearchParams(window.location.search);
+        let categoryFromUrl = urlParams.get('category');
+        let locationFromUrl = urlParams.get('location');
+
+        if (categoryFromUrl) {
+            categoryFromUrl = decodeURIComponent(categoryFromUrl).trim();
+            const buttons = document.querySelectorAll('.category-btn');
+            let targetButton = null;
+            buttons.forEach(btn => {
+                if (btn.innerText.trim().toLowerCase() === categoryFromUrl.toLowerCase()) {
+                    targetButton = btn;
+                }
+            });
+            filterCategory(categoryFromUrl, targetButton);
+        } 
+        else if (locationFromUrl) {
+
+            const locationName = decodeURIComponent(locationFromUrl).trim();
+            filterByLocationFromUrl(locationName);
+        } 
+        else {
+            renderEvents(allEvents);
+        
+        }
+        
+        renderSearchSuggestions();
         document.getElementById('loading').classList.add('hidden');
     } catch (error) {
         console.error("Lỗi khi tải dữ liệu:", error);
@@ -122,21 +138,58 @@ function getMinPrice(priceString) {
     return minPrice;
 }
 
-function filterCategory(category) {
-    document.getElementById('categoryTitle').innerText = category === 'all' ? 'Tất cả sự kiện' : category;
-    
-    if (category === 'all') {
-        renderEvents(allEvents);
+function filterCategory(category, btn = null) {
+
+    const title = document.getElementById('categoryTitle');
+    if (title) title.innerText = category === 'all' ? 'Tất cả sự kiện' : category;
+
+    let filtered;
+    if (category === 'all' || !category) {
+        filtered = allEvents;
     } else {
-        const filtered = allEvents.filter(e => {
+        const targetCat = category.toString().trim().toLowerCase();
+        filtered = allEvents.filter(e => {
             if (!e.category) return false;
-            
             const sheetCat = e.category.toString().trim().toLowerCase();
-            const targetCat = category.toString().trim().toLowerCase();
-            
             return sheetCat === targetCat;
         });
-        renderEvents(filtered);
+    }
+
+    renderEvents(filtered);
+    updateActiveButton(btn);
+}
+
+function filterByLocationFromUrl(locationName) {
+    
+    const title = document.getElementById('categoryTitle');
+    if (title) title.innerText = `Sự kiện tại ${locationName}`;
+
+    const filtered = allEvents.filter(e => {
+        if (!e.location) return false;
+        return e.location.toLowerCase().includes(locationName.toLowerCase());
+    });
+
+    renderEvents(filtered);
+
+    const cityRadios = document.querySelectorAll('input[name="loc"]');
+    cityRadios.forEach(radio => {
+
+        if (locationName.toLowerCase().includes(radio.value.toLowerCase())) {
+            radio.checked = true;
+        }
+    });
+}
+
+function updateActiveButton(activeBtn) {
+    const buttons = document.querySelectorAll('.category-btn');
+    buttons.forEach(btn => {
+        btn.classList.remove('text-pink-400', 'border-b', 'border-pink-400');
+        btn.classList.add('text-gray-400');
+    });
+    
+    if (activeBtn) {
+        activeBtn.classList.add('text-pink-400', 'border-b', 'border-pink-400');
+        activeBtn.classList.remove('text-gray-400');
     }
 }
 
@@ -146,6 +199,46 @@ function formatCurrency(value) {
 }
 
 fetchEvents();
+renderSearchSuggestions();
+
+searchInput.addEventListener('input', function() {
+    const q = this.value.trim().toLowerCase();
+    const trendingSection = document.getElementById('trending-list').parentElement;
+    const liveResults = document.getElementById('live-results');
+    
+    if (q.length > 0) {
+        trendingSection.classList.add('hidden');
+        // Tìm kiếm trong mảng allEvents thực tế
+        const matches = allEvents.filter(e => 
+            e.eventName.toLowerCase().includes(q) || 
+            e.location.toLowerCase().includes(q)
+        );
+        
+        liveResults.classList.remove('hidden');
+        if (matches.length > 0) {
+            liveResults.innerHTML = '<div class="text-gray-400 text-[10px] font-black mb-2 uppercase tracking-widest">Kết quả tìm kiếm</div>' +
+                matches.slice(0, 6).map(e => {
+                    const rawPrice = getMinPrice(e.priceList);
+                    const displayPrice = typeof rawPrice === 'number' ? formatCurrency(rawPrice) : rawPrice;
+                    
+                    return `
+                        <div class="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-white/10 cursor-pointer transition group"
+                             onclick="goToDetail('${e.id}')">
+                            <i class="fa-solid fa-magnifying-glass text-gray-400 text-sm w-4"></i>
+                            <span class="text-sm text-gray-200 group-hover:text-white">
+                                ${e.eventName.replace(new RegExp(q, 'gi'), m => `<mark style="background:transparent;color:#f472b6;font-weight:900">${m}</mark>`)}
+                            </span>
+                            <span class="ml-auto text-pink-400 text-xs font-bold">${displayPrice}</span>
+                        </div>`;
+                }).join('');
+        } else {
+            liveResults.innerHTML = '<div class="text-gray-400 text-sm text-center py-3">Không tìm thấy kết quả nào</div>';
+        }
+    } else {
+        trendingSection.classList.remove('hidden');
+        liveResults.classList.add('hidden');
+    }
+});
 
 function toggleDropdown(id) {
     const target = document.getElementById(id);
@@ -284,22 +377,29 @@ document.addEventListener('click', (e) => {
 });
 
 function renderSearchSuggestions() {
-    const hotItems = eventsData.filter(e => e.hot).slice(0, 3);
+    // Lấy 3 sự kiện HOT từ dữ liệu thực tế
+    const hotItems = allEvents.filter(e => e.hasDiagram === "TRUE" || e.hasDiagram === true).slice(0, 3);
     const grid = document.getElementById('search-suggestions-grid');
-    if (!grid) return;
-    grid.innerHTML = hotItems.map(e => `
-        <div class="flex gap-3 group cursor-pointer" onclick="openTicketModal('${e.title.replace(/'/g,"\\'")}')">
-            <img src="${e.img || 'https://via.placeholder.com/72x48/FFDEE9/555?text=E'}"
-                 class="w-18 h-12 rounded-lg object-cover flex-shrink-0"
-                 style="width:72px;height:48px"
-                 onerror="this.src='https://via.placeholder.com/72x48/FFDEE9/555?text=E'">
-            <div class="min-w-0">
-                <p class="text-xs font-bold text-gray-200 group-hover:text-white transition line-clamp-2 leading-tight">${e.title}</p>
-                <p class="text-[10px] text-pink-400 font-bold mt-1">Từ ${e.price}</p>
-                <p class="text-[10px] text-gray-500">${e.date}</p>
+    if (!grid || hotItems.length === 0) return;
+
+    grid.innerHTML = hotItems.map(e => {
+        const rawPrice = getMinPrice(e.priceList);
+        const displayPrice = typeof rawPrice === 'number' ? "Từ " + formatCurrency(rawPrice) : rawPrice;
+        
+        return `
+            <div class="flex gap-3 group cursor-pointer" onclick="goToDetail('${e.id}')">
+                <img src="${e.eventImage || 'https://via.placeholder.com/72x48'}"
+                     class="w-18 h-12 rounded-lg object-cover flex-shrink-0"
+                     style="width:72px;height:48px"
+                     onerror="this.src='https://via.placeholder.com/72x48'">
+                <div class="min-w-0">
+                    <p class="text-xs font-bold text-gray-200 group-hover:text-white transition line-clamp-2 leading-tight">${e.eventName}</p>
+                    <p class="text-[10px] text-pink-400 font-bold mt-1">${displayPrice}</p>
+                    <p class="text-[10px] text-gray-500">${e.time}</p>
+                </div>
             </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
 }
 
 // ===== SEARCH TABS =====
@@ -310,16 +410,6 @@ function switchSearchTab(tab) {
     document.getElementById('panel-genre').classList.toggle('hidden', !isGenre);
     document.getElementById('panel-city').classList.toggle('hidden', isGenre);
 }
-
-// ===== SEARCH SUGGESTIONS =====
-const searchInput = document.getElementById('search-input');
-const suggestions = document.getElementById('search-suggestions');
-searchInput.addEventListener('focus', () => { suggestions.classList.remove('hidden'); });
-document.addEventListener('click', (e) => {
-    if (!searchInput.contains(e.target) && !suggestions.contains(e.target)) {
-        suggestions.classList.add('hidden');
-    }
-});
 
 // ===== LOCATION DROPDOWN =====
 const locationBtn = document.getElementById('location-btn');
@@ -340,35 +430,119 @@ document.querySelectorAll('.location-option').forEach(opt => {
 });
 document.addEventListener('click', () => locationDropdown.classList.add('hidden'));
 
-// ===== LIVE SEARCH =====
-searchInput.addEventListener('input', function() {
-    const q = this.value.trim().toLowerCase();
-    const trendingSection = document.getElementById('trending-list').parentElement;
-    const liveResults = document.getElementById('live-results');
-    if (q.length > 0) {
-        trendingSection.classList.add('hidden');
-        const matches = eventsData.filter(e => e.title.toLowerCase().includes(q));
-        liveResults.classList.remove('hidden');
-        if (matches.length > 0) {
-            liveResults.innerHTML = '<div class="text-gray-400 text-[10px] font-black mb-2 uppercase tracking-widest">Kết quả tìm kiếm</div>' +
-                matches.slice(0,6).map(e => `
-                    <div class="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-white/10 cursor-pointer transition group"
-                         onclick="document.getElementById('search-input').value='${e.title.replace(/'/g,"\\'")}';document.getElementById('search-suggestions').classList.add('hidden');openTicketModal('${e.title.replace(/'/g,"\\'")}')">
-                        <i class="fa-solid fa-magnifying-glass text-gray-400 text-sm w-4"></i>
-                        <span class="text-sm text-gray-200 group-hover:text-white">${e.title.replace(new RegExp(q,'gi'), m => `<mark style="background:transparent;color:#f472b6;font-weight:900">${m}</mark>`)}</span>
-                        <span class="ml-auto text-pink-400 text-xs font-bold">${e.price}</span>
-                    </div>`).join('');
+// ===== LIVE SEARCH (Dùng dữ liệu thật từ Google Sheets) =====
+if (searchInput) {
+    searchInput.addEventListener('input', function() {
+        const q = this.value.trim().toLowerCase();
+        // Lấy đúng các phần tử giao diện
+        const trendingSection = document.getElementById('trending-list').parentElement;
+        const liveResults = document.getElementById('live-results');
+        const discoveryTabs = document.querySelector('.px-5.pt-4'); // Khu vực tabs khám phá
+
+        if (q.length > 0) {
+            // Ẩn các phần không liên quan khi đang gõ
+            if (trendingSection) trendingSection.classList.add('hidden');
+            if (discoveryTabs) discoveryTabs.classList.add('hidden');
+            
+            // TÌM KIẾM TRÊN DỮ LIỆU THẬT allEvents
+            const matches = allEvents.filter(e => 
+                (e.eventName && e.eventName.toLowerCase().includes(q)) || 
+                (e.location && e.location.toLowerCase().includes(q))
+            );
+
+            liveResults.classList.remove('hidden');
+            if (matches.length > 0) {
+                liveResults.innerHTML = '<div class="text-gray-400 text-[10px] font-black mb-2 uppercase tracking-widest">Kết quả tìm kiếm</div>' +
+                    matches.slice(0, 6).map(e => {
+                        const rawPrice = getMinPrice(e.priceList);
+                        const displayPrice = typeof rawPrice === 'number' ? formatCurrency(rawPrice) : rawPrice;
+                        
+                        return `
+                            <div class="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-white/10 cursor-pointer transition group"
+                                 onclick="goToDetail('${e.id}')">
+                                <i class="fa-solid fa-magnifying-glass text-gray-400 text-sm w-4"></i>
+                                <span class="text-sm text-gray-200 group-hover:text-white">
+                                    ${e.eventName.replace(new RegExp(q, 'gi'), m => `<mark style="background:transparent;color:#f472b6;font-weight:900">${m}</mark>`)}
+                                </span>
+                                <span class="ml-auto text-pink-400 text-xs font-bold">${displayPrice}</span>
+                            </div>`;
+                    }).join('');
+            } else {
+                liveResults.innerHTML = '<div class="text-gray-400 text-sm text-center py-3">Không tìm thấy kết quả nào</div>';
+            }
         } else {
-            liveResults.innerHTML = '<div class="text-gray-400 text-sm text-center py-3">Không tìm thấy kết quả nào</div>';
+            // Hiện lại các phần ban đầu khi xóa trắng ô search
+            if (trendingSection) trendingSection.classList.remove('hidden');
+            if (discoveryTabs) discoveryTabs.classList.remove('hidden');
+            liveResults.classList.add('hidden');
         }
-    } else {
-        trendingSection.classList.remove('hidden');
-        liveResults.classList.add('hidden');
-    }
-});
-document.querySelectorAll('.suggestion-item').forEach(item => {
-    item.addEventListener('click', () => {
-        searchInput.value = item.dataset.value;
-        suggestions.classList.add('hidden');
     });
-});
+}
+
+const searchInput = document.getElementById('search-input');
+const suggestions = document.getElementById('search-suggestions');
+
+if (searchInput && suggestions) {
+    // 1. Hiện bảng khi focus hoặc click vào input
+    searchInput.addEventListener('focus', (e) => {
+        suggestions.classList.remove('hidden');
+        console.log("Đã mở bảng search");
+    });
+
+    // 2. Click ra ngoài để đóng bảng
+    document.addEventListener('click', (e) => {
+        // Kiểm tra nếu click KHÔNG nằm trong searchInput và KHÔNG nằm trong bảng gợi ý
+        if (!searchInput.contains(e.target) && !suggestions.contains(e.target)) {
+            suggestions.classList.add('hidden');
+        }
+    });
+
+    // Ngăn việc click bên trong bảng gợi ý làm bảng bị đóng
+    suggestions.addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
+}
+
+// 3. Xử lý logic search khi gõ (Input Event)
+if (searchInput) {
+    searchInput.addEventListener('input', function() {
+        const q = this.value.trim().toLowerCase();
+        const trendingSection = document.getElementById('trending-list').parentElement;
+        const liveResults = document.getElementById('live-results');
+        const discoveryTabs = document.querySelector('.px-5.pt-4'); 
+
+        if (q.length > 0) {
+            if (trendingSection) trendingSection.classList.add('hidden');
+            if (discoveryTabs) discoveryTabs.classList.add('hidden');
+            
+            const matches = allEvents.filter(e => 
+                (e.eventName && e.eventName.toLowerCase().includes(q)) || 
+                (e.location && e.location.toLowerCase().includes(q))
+            );
+
+            liveResults.classList.remove('hidden');
+            if (matches.length > 0) {
+                liveResults.innerHTML = '<div class="text-gray-400 text-[10px] font-black mb-2 uppercase tracking-widest">Kết quả tìm kiếm</div>' +
+                    matches.slice(0, 6).map(e => {
+                        const rawPrice = getMinPrice(e.priceList);
+                        const displayPrice = typeof rawPrice === 'number' ? formatCurrency(rawPrice) : rawPrice;
+                        return `
+                            <div class="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-white/10 cursor-pointer transition group"
+                                 onclick="goToDetail('${e.id}')">
+                                <i class="fa-solid fa-magnifying-glass text-gray-400 text-sm w-4"></i>
+                                <span class="text-sm text-gray-200 group-hover:text-white">
+                                    ${e.eventName.replace(new RegExp(q, 'gi'), m => `<mark style="background:transparent;color:#f472b6;font-weight:900">${m}</mark>`)}
+                                </span>
+                                <span class="ml-auto text-pink-400 text-xs font-bold">${displayPrice}</span>
+                            </div>`;
+                    }).join('');
+            } else {
+                liveResults.innerHTML = '<div class="text-gray-400 text-sm text-center py-3">Không tìm thấy kết quả nào</div>';
+            }
+        } else {
+            if (trendingSection) trendingSection.classList.remove('hidden');
+            if (discoveryTabs) discoveryTabs.classList.remove('hidden');
+            liveResults.classList.add('hidden');
+        }
+    });
+}
