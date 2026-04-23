@@ -1,31 +1,98 @@
  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; }
-        
-        /* Hiệu ứng trôi nổi phong cách Cocoon */
-        .floating {
-            animation: floating 4s ease-in-out infinite;
-        }
-        @keyframes floating {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
 
-        /* Thanh cuộn ngang cho Category mobile */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
+body { 
+    font-family: 'Inter', sans-serif; 
+    background-color: #f8f9fa; 
+}
         
-        .card-hover:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
-        }
+.floating {
+    animation: floating 4s ease-in-out infinite;
+}
 
-        /* Làm thanh menu ngang mượt hơn */
+@keyframes floating {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+.no-scrollbar::-webkit-scrollbar { 
+    display: none; 
+}
+        
+.card-hover:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+}
+
 .category-scroll {
     display: flex;
     overflow-x: auto;
     white-space: nowrap;
-    scrollbar-width: none; /* Ẩn scrollbar trên Firefox */
-    -ms-overflow-style: none;  /* Ẩn scrollbar trên IE/Edge */
+    scrollbar-width: none; 
+    -ms-overflow-style: none;  
 }
+
 .category-scroll::-webkit-scrollbar {
-    display: none; /* Ẩn scrollbar trên Chrome/Safari */
+    display: none; 
+}
+     
+.flatpickr-calendar {
+    box-shadow: none !important;
+    border: none !important;
+    font-family: inherit !important;
+    width: 310px !important;
+}
+
+.flatpickr-month {
+    height: 45px !important;
+    color: #1f2937 !important; 
+}
+
+.flatpickr-current-month {
+    font-weight: 700 !important;
+    font-size: 110% !important;
+}
+
+span.flatpickr-weekday {
+    color: #9ca3af !important; 
+    font-weight: 600 !important;
+    font-size: 12px !important;
+}
+
+.flatpickr-day {
+    border-radius: 10px !important; 
+    color: #374151 !important;
+    border: none !important;
+    transition: all 0.2s;
+}
+
+.flatpickr-day.selected, 
+.flatpickr-day.startRange, 
+.flatpickr-day.endRange,
+.flatpickr-day.selected:hover,
+.flatpickr-day.startRange:hover,
+.flatpickr-day.endRange:hover {
+    background: #2563eb !important; 
+    color: white !important;
+    border-color: #2563eb !important;
+}
+
+.flatpickr-day.inRange {
+    background: #eff6ff !important; 
+    box-shadow: none !important;
+}
+
+.flatpickr-day.today {
+    border-bottom: 2px solid #2563eb !important;
+}
+
+.flatpickr-prev-month, .flatpickr-next-month {
+    padding: 10px !important;
+}
+
+.flatpickr-prev-month:hover svg, .flatpickr-next-month:hover svg {
+    fill: #2563eb !important;
+}
+
+#dateRangeInput {
+    display: none;
 }

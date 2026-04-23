@@ -1,22 +1,55 @@
 const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbx3vQyakJkFfJxkP5XAQ8fQkjmt5lnls2n4N3zjrEUL4JxYIzMumbGmPIZwOTzbjgO-OA/exec';
-
 let allEvents = [];
 
-// 1. Hàm lấy dữ liệu từ Google Sheets
 async function fetchEvents() {
     try {
         const response = await fetch(SHEET_API_URL);
         const data = await response.json();
-        allEvents = data;
+        
+        const now = new Date();
+        now.setHours(0, 0, 0, 0); // Đặt về đầu ngày để so sánh chính xác theo ngày
+
+        allEvents = data.sort((a, b) => {
+            const dateA = parseDate(a.time);
+            const dateB = parseDate(b.time);
+            
+            // Kiểm tra trạng thái HOT (dựa trên hasDiagram như logic Card của bạn)
+            const isHotA = a.hasDiagram === "TRUE" || a.hasDiagram === true;
+            const isHotB = b.hasDiagram === "TRUE" || b.hasDiagram === true;
+
+            // Kiểm tra xem sự kiện đã qua chưa
+            const isPastA = dateA && dateA < now;
+            const isPastB = dateB && dateB < now;
+
+            // --- BẮT ĐẦU LOGIC ƯU TIÊN ---
+
+            // 1. Ưu tiên theo trạng thái "Đã qua": Sự kiện chưa diễn ra luôn đứng trước sự kiện đã qua
+            if (isPastA !== isPastB) {
+                return isPastA ? 1 : -1;
+            }
+
+            // 2. Nếu cả 2 đều CHƯA diễn ra:
+            if (!isPastA && !isPastB) {
+                // Ưu tiên HOT lên trước
+                if (isHotA !== isHotB) {
+                    return isHotA ? -1 : 1;
+                }
+                // Nếu cùng HOT hoặc cùng không HOT: Cái nào gần ngày hiện tại hơn xếp trước
+                return dateA - dateB;
+            }
+
+            // 3. Nếu cả 2 đều ĐÃ diễn ra:
+            // Cái nào mới diễn ra gần đây nhất (mới qua) thì xếp trên các cái đã qua lâu rồi
+            return dateB - dateA;
+        });
+
         renderEvents(allEvents);
         document.getElementById('loading').classList.add('hidden');
     } catch (error) {
         console.error("Lỗi khi tải dữ liệu:", error);
-        document.getElementById('loading').innerHTML = "Lỗi tải dữ liệu. Vui lòng kiểm tra lại link Script!";
+        document.getElementById('loading').innerHTML = "Lỗi tải dữ liệu!";
     }
 }
-
-// 2. Hàm hiển thị danh sách sự kiện lên giao diện
 
 function renderEvents(events) {
     const grid = document.getElementById('eventGrid');
@@ -32,17 +65,14 @@ function renderEvents(events) {
         const loc = event.location || "Đang cập nhật";
         const isHot = event.hasDiagram === "TRUE" || event.hasDiagram === true;
 
-        // XỬ LÝ GIÁ Ở ĐÂY:
         const rawPrice = getMinPrice(event.priceList);
-
-let displayPrice = "";
-if (typeof rawPrice === 'number') {
-    // Chỉ thêm chữ "Từ" nếu là giá tiền thật
-    displayPrice = "Từ " + formatCurrency(rawPrice);
-} else {
-    // Nếu là "Miễn phí", "Liên hệ" thì hiện thẳng luôn
-    displayPrice = rawPrice;
-}
+        let displayPrice = "";
+        if (typeof rawPrice === 'number') {
+    
+            displayPrice = "Từ " + formatCurrency(rawPrice);
+        } else {
+            displayPrice = rawPrice;
+        }
 
         const card = `
             <div onclick="goToDetail('${event.id}')" class="bg-white rounded-2xl overflow-hidden shadow-sm card-hover transition-all duration-300 cursor-pointer border border-gray-100 flex flex-col">
@@ -75,32 +105,24 @@ function goToDetail(id) {
         console.error("Không tìm thấy ID của sự kiện này!");
         return;
     }
-    // Chuyển hướng sang trang detail.html kèm tham số id trên URL
     window.location.href = `detail.html?id=${id}`;
 }
 
 function getMinPrice(priceString) {
     if (!priceString || priceString.toString().toLowerCase().includes("miễn phí")) return "Miễn phí";
-
-    // Bước 1: Xóa bỏ tất cả dấu chấm (.) phân cách hàng nghìn để tránh hiểu nhầm
-    // Bước 2: Chỉ lấy các chuỗi số có độ dài từ 4 chữ số trở lên (để bỏ qua các số lẻ như 1, 9, 10...)
     const prices = priceString.toString().replace(/\./g, '').match(/\d{4,}/g);
 
     if (!prices || prices.length === 0) {
-        // Nếu không tìm thấy số lớn nào, kiểm tra xem có số 0 không
         const zeros = priceString.toString().match(/\b0\b/);
         return zeros ? "Miễn phí" : "Liên hệ";
     }
 
-    // Chuyển sang kiểu số và tìm số nhỏ nhất
     const minPrice = Math.min(...prices.map(Number));
 
     return minPrice;
 }
 
-// 3. Hàm lọc theo Thể loại
 function filterCategory(category) {
-    // Cập nhật tiêu đề hiển thị
     document.getElementById('categoryTitle').innerText = category === 'all' ? 'Tất cả sự kiện' : category;
     
     if (category === 'all') {
@@ -109,7 +131,6 @@ function filterCategory(category) {
         const filtered = allEvents.filter(e => {
             if (!e.category) return false;
             
-            // Chuẩn hóa: bỏ khoảng trắng 2 đầu và chuyển về chữ thường để so sánh
             const sheetCat = e.category.toString().trim().toLowerCase();
             const targetCat = category.toString().trim().toLowerCase();
             
@@ -119,53 +140,40 @@ function filterCategory(category) {
     }
 }
 
-// 4. Tiện ích: Định dạng tiền Việt Nam
 function formatCurrency(value) {
     if (isNaN(value)) return value;
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value).replace('₫', 'đ');
 }
 
-
-// Khởi tạo trang
 fetchEvents();
 
-
-// 1. Hàm đóng mở Dropdown mượt mà
 function toggleDropdown(id) {
     const target = document.getElementById(id);
     const isShowing = !target.classList.contains('hidden');
     
-    // Đóng tất cả các bảng khác trước khi mở cái mới
     document.getElementById('dropdownDate').classList.add('hidden');
     document.getElementById('dropdownMain').classList.add('hidden');
     
     if (!isShowing) target.classList.remove('hidden');
 }
 
-// 2. Xử lý chọn Ngày nhanh
 function setDateFilter(type) {
     const labels = { 'today': 'Hôm nay', 'weekend': 'Cuối tuần này', 'month': 'Tháng này', 'all': 'Tất cả các ngày' };
     document.getElementById('dateLabel').innerText = labels[type];
-    
-    // Ở đây Thảo có thể thêm logic lọc theo ngày nếu trong Sheet có cột ngày chuẩn
-    // Tạm thời gọi hàm lọc chung
     applyTicketboxFilters();
     document.getElementById('dropdownDate').classList.add('hidden');
 }
 
-// 3. Hàm áp dụng bộ lọc tổng hợp (Vị trí + Miễn phí)
 function applyTicketboxFilters() {
     const locValue = document.querySelector('input[name="loc"]:checked').value;
     const isFreeOnly = document.getElementById('checkFree').checked;
 
     let filtered = allEvents;
 
-    // Lọc theo Vị trí
     if (locValue !== 'all') {
         filtered = filtered.filter(e => e.location?.includes(locValue));
     }
 
-    // Lọc theo Miễn phí
     if (isFreeOnly) {
         filtered = filtered.filter(e => getMinPrice(e.priceList) === "Miễn phí");
     }
@@ -174,7 +182,6 @@ function applyTicketboxFilters() {
     document.getElementById('dropdownMain').classList.add('hidden');
 }
 
-// 4. Thiết lập lại tất cả
 function resetAllFilters() {
     document.querySelector('input[name="loc"][value="all"]').checked = true;
     document.getElementById('checkFree').checked = false;
@@ -183,20 +190,19 @@ function resetAllFilters() {
     document.getElementById('dropdownMain').classList.add('hidden');
 }
 
-// Đóng bảng nếu bấm ra ngoài vùng dropdown
 window.addEventListener('click', function(e) {
     if (!e.target.closest('.relative')) {
         document.getElementById('dropdownDate').classList.add('hidden');
         document.getElementById('dropdownMain').classList.add('hidden');
     }
 });
+
 let datePicker;
 let selectedDates = [];
 
-// Khởi tạo lịch
 function initCalendar() {
     const container = document.getElementById('calendarContainer');
-    if (!container) return; // Tránh lỗi nếu chưa có HTML
+    if (!container) return; 
 
     datePicker = flatpickr("#dateRangeInput", {
         mode: "range",
@@ -205,51 +211,61 @@ function initCalendar() {
         appendTo: container,
         onChange: function(dates) {
             selectedDates = dates;
+            applyDateFilter();
         }
     });
 }
 
-// Gọi khởi tạo sau khi window load xong
 window.onload = initCalendar;
 
 function applyDateFilter() {
-    if (selectedDates.length === 0) {
+    if (!selectedDates || selectedDates.length === 0) {
         renderEvents(allEvents);
-    } else {
-        const startDate = new Date(selectedDates[0].setHours(0,0,0,0));
-        const endDate = selectedDates[1] ? new Date(selectedDates[1].setHours(23,59,59,999)) : new Date(selectedDates[0].setHours(23,59,59,999));
-
-        const filtered = allEvents.filter(event => {
-            // Lấy chuỗi ngày từ dữ liệu. Ví dụ: "24/04/2026"
-            // Nếu Sheet của bạn ghi "17:00, 30/05/2026", split(',') sẽ lấy phần sau
-            const timeParts = event.time?.split(',') || [];
-            const dateStr = timeParts.length > 1 ? timeParts[1].trim() : timeParts[0]?.trim();
-            
-            const eventDate = parseDate(dateStr);
-            if (!eventDate) return false;
-
-            return eventDate >= startDate && eventDate <= endDate;
-        });
-
-        renderEvents(filtered);
-        
-        // Cập nhật chữ trên nút
-        document.getElementById('dateLabel').innerText = selectedDates.length === 2 
-            ? `${flatpickr.formatDate(startDate, "d/m")} - ${flatpickr.formatDate(endDate, "d/m")}`
-            : flatpickr.formatDate(startDate, "d/m/Y");
+        document.getElementById('dateLabel').innerText = 'Tất cả các ngày';
+        return;
     }
-    document.getElementById('dropdownDate').classList.add('hidden');
+
+    const startDate = new Date(selectedDates[0]);
+    startDate.setHours(0, 0, 0, 0);
+    
+    const endDate = selectedDates[1] ? new Date(selectedDates[1]) : new Date(selectedDates[0]);
+    endDate.setHours(23, 59, 59, 999);
+
+    const filtered = allEvents.filter(event => {
+        const eventDate = parseDate(event.time); 
+        if (!eventDate) return false;
+        return eventDate >= startDate && eventDate <= endDate;
+    });
+
+    renderEvents(filtered);
+    const label = selectedDates.length === 2 
+        ? `${flatpickr.formatDate(startDate, "d/m")} - ${flatpickr.formatDate(endDate, "d/m")}`
+        : flatpickr.formatDate(startDate, "d/m/Y");
+    document.getElementById('dateLabel').innerText = label;
 }
 
-// Hàm đọc ngày tháng cực kỳ quan trọng
 function parseDate(dateStr) {
     if (!dateStr) return null;
-    // Tách ngày/tháng/năm từ chuỗi "30/05/2026"
-    const parts = dateStr.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
-    if (!parts) return null;
-    
-    // JS dùng tháng từ 0-11 nên phải -1
-    return new Date(parts[3], parts[2] - 1, parts[1]);
+
+    const monthTextMatch = dateStr.match(/(\d{1,2})\s+tháng\s+(\d{1,2}),\s+(\d{4})/i);
+    if (monthTextMatch) {
+        const day = parseInt(monthTextMatch[1]);
+        const month = parseInt(monthTextMatch[2]) - 1; 
+        const year = parseInt(monthTextMatch[3]);
+        return new Date(year, month, day);
+    }
+
+    const slashMatch = dateStr.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+    if (slashMatch) {
+        return new Date(slashMatch[3], slashMatch[2] - 1, slashMatch[1]);
+    }
+
+    const isoDate = new Date(dateStr);
+    if (!isNaN(isoDate.getTime())) {
+        return isoDate;
+    }
+
+    return null;
 }
 
 function toggleHeaderMenu() {
@@ -259,7 +275,6 @@ function toggleHeaderMenu() {
     }
 }
 
-// Đóng menu khi bấm ra ngoài
 document.addEventListener('click', (e) => {
     const wrap = document.getElementById('header-avatar-wrap');
     const menu = document.getElementById('header-user-menu');

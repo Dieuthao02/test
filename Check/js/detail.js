@@ -6,8 +6,7 @@
     currentEventId = urlParams.get('id');
 
     const videoMap = {
-        '157': '...video/video157.mp4',
-        '30': 'videos/loading_30.mp4'
+        '157': 'video/video157.mp4'
     };
 
     const specialLoader = document.getElementById('special-loader');
@@ -22,7 +21,6 @@
         videoPlayer.style.display = 'block';
         videoPlayer.load(); 
         
-        // --- BƯỚC QUAN TRỌNG: ẨN TRƯỚC KHI PLAY ---
         if (loaderIcon) loaderIcon.style.display = 'none';
         const loaderTexts = specialLoader.querySelectorAll('h2, p, .loading-text');
         loaderTexts.forEach(el => {
@@ -45,7 +43,6 @@
             setTimeout(() => { specialLoader.style.display = 'none'; }, 700);
         };
     } else {
-        // Nếu KHÔNG có video, đảm bảo icon và chữ vẫn hiện
         if (loaderIcon) loaderIcon.style.display = 'block';
         const loaderTexts = specialLoader.querySelectorAll('h2, p, .loading-text');
         loaderTexts.forEach(el => {
@@ -73,8 +70,7 @@
     function renderPage(ev) {
 
     const bgVideoMap = {
-        '52': '...video/video52.mp4',
-        '30': 'assets/videos/art_30.mp4'
+        '52': 'video/video52.mp4'
     };
 
     const bgImageMap = {
@@ -298,7 +294,7 @@
         if (priceDisplay) priceDisplay.innerHTML = `<span class="line-through opacity-50">${finalMinDisplay} đ</span>`;
     } else {
         if (bookingBtn) {
-            // KIỂM TRA SỐ LƯỢNG LỊCH DIỄN
+    
             if (timeArray.length === 1) {
                 bookingBtn.innerHTML = "Mua vé ngay";
                 bookingBtn.onclick = () => goToBooking(timeArray[0]);
@@ -322,7 +318,6 @@
         if (priceDisplay) priceDisplay.innerHTML = `${finalMinDisplay} `;
     }
 
-    // --- 7. TỔ CHỨC ---
     document.getElementById('org-name').innerText = ev.organizerName || "EventHub Partner";
     document.getElementById('org-desc').innerText = ev.organizerDesc || "Đơn vị tổ chức chuyên nghiệp.";
     const orgLogoContainer = document.getElementById('org-logo');
@@ -382,7 +377,6 @@
         url += `&date=${encodeURIComponent(selectedDate)}`;
     }
     
-    // Chuyển trang
     window.location.href = url;
 }
 
