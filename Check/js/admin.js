@@ -1923,13 +1923,115 @@ function initLiveFeed() {
     const container = document.getElementById('live-feed-container');
     if (!container) return;
 
-    if (container.children.length === 0) {
-        const now = new Date();
-        const timeStr = `${now.getHours()}:${now.getMinutes()} - ${now.getDate()}/${now.getMonth()+1}/${now.getFullYear()}`;
-        pushToFeed('EVENT', 'Hệ thống', timeStr, 'Admin đã kết nối và sẵn sàng.');
-    }
-    syncRealDataToFeed();
+    container.innerHTML = ''; // Reset để load lại đầy đủ
 
+    // Gom tất cả sự kiện từ mọi nguồn vào 1 mảng rồi sort theo thời gian
+    const allItems = [];
+
+    // 1. Đơn hàng thật (eventOrders)
+    const realOrders = JSON.parse(localStorage.getItem('eventOrders')) || [];
+    realOrders.filter(o => !o._isRefund).forEach(o => {
+        const ts = o.createdAt || new Date(o.time || '').getTime() || 0;
+        allItems.push({
+            ts,
+            type: 'TICKET',
+            title: o.customer || 'Khách hàng',
+            content: `Mua vé ${o.event} — ${o.total}`,
+            time: o.time || new Date(ts).toLocaleString('vi-VN'),
+            isReal: true
+        });
+        // Nếu có yêu cầu hoàn tiền
+        if (o._isRefund || o.refundStatus === 'pending') {
+            allItems.push({
+                ts: ts + 1,
+                type: 'SUPPORT',
+                title: o.customer || 'Khách hàng',
+                content: `Yêu cầu hoàn tiền vé ${o.event} — Lý do: ${o.refundReason || 'Không rõ'}`,
+                time: o.time || new Date(ts).toLocaleString('vi-VN'),
+                isReal: true
+            });
+        }
+    });
+
+    // 2. Lịch sử nạp tiền (admin_deposit_logs)
+    const depositLogs = JSON.parse(localStorage.getItem('admin_deposit_logs')) || [];
+    depositLogs.filter(l => Number(l.amount) > 0).forEach(l => {
+        const ts = new Date(l.time || '').getTime() || 0;
+        allItems.push({
+            ts,
+            type: 'TICKET',
+            title: l.user || 'Khách hàng',
+            content: `Nạp tiền ${Number(l.amount).toLocaleString()}đ — ${l.content || 'ElysiumPay'}`,
+            time: l.time || '',
+            isReal: true
+        });
+    });
+
+    // 3. User mới đăng ký (ticket_users)
+    const realUsers = JSON.parse(localStorage.getItem('ticket_users')) || [];
+    realUsers.forEach(u => {
+        const ts = u.createdAt || new Date(u.time || '').getTime() || 0;
+        allItems.push({
+            ts,
+            type: 'USER',
+            title: u.fullName || u.name || 'Thành viên mới',
+            content: `Đăng ký tài khoản — ${u.email || ''}`,
+            time: u.time || new Date(ts).toLocaleString('vi-VN'),
+            isReal: true
+        });
+    });
+
+    // 4. Support / Contact messages
+    const contacts = JSON.parse(localStorage.getItem('contact_messages')) || [];
+    contacts.forEach(m => {
+        const ts = new Date(m.time || '').getTime() || 0;
+        allItems.push({
+            ts,
+            type: 'SUPPORT',
+            title: m.name || 'Khách hàng',
+            content: `"${m.message || m.subject || 'Gửi yêu cầu hỗ trợ'}"`,
+            time: m.time || '',
+            isReal: true
+        });
+    });
+
+    // 5. Admin logs (hành động ảo từ automation)
+    const adminLogs = getAdminLogs().slice(0, 30);
+    adminLogs.forEach(log => {
+        const ts = new Date(log.time || '').getTime() || 0;
+        const typeMap = { ORDER: 'TICKET', USER: 'USER', EVENT: 'EVENT', SUPPORT: 'SUPPORT' };
+        allItems.push({
+            ts,
+            type: typeMap[log.type] || 'EVENT',
+            title: log.extra?.name || log.message?.split(' ')[0] || 'Hệ thống',
+            content: log.message || '',
+            time: log.time || '',
+            isReal: false
+        });
+    });
+
+    // Sort mới nhất lên đầu
+    allItems.sort((a, b) => b.ts - a.ts);
+
+    // Giới hạn 60 item
+    const limited = allItems.slice(0, 60);
+
+    if (limited.length === 0) {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'}) + ' - ' + now.getDate() + '/' + (now.getMonth()+1) + '/' + now.getFullYear();
+        pushToFeed('EVENT', 'Hệ thống', timeStr, 'Chưa có hoạt động nào. Đang chờ dữ liệu...', true);
+        return;
+    }
+
+    // Render theo thứ tự cũ → mới (insertAdjacentHTML afterbegin sẽ đảo lên)
+    [...limited].reverse().forEach(item => {
+        let displayTime = item.time;
+        if (!displayTime && item.ts) {
+            const d = new Date(item.ts);
+            displayTime = d.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'}) + ' - ' + d.getDate() + '/' + (d.getMonth()+1) + '/' + d.getFullYear();
+        }
+        pushToFeed(item.type, item.title, displayTime, item.content, item.isReal);
+    });
 }
 function clearFeed() {
     document.getElementById('live-feed-container').innerHTML = '';
@@ -2002,6 +2104,54 @@ function loadDeposits() {
 
 
 /* --- HỆ THỐNG LẮNG NGHE DỮ LIỆU --- */
+
+// Bắt sự kiện thay đổi localStorage từ CÙNG TAB (storage event không bắt được)
+function notifyFeedFromSameTab(key, data) {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'}) + ' - ' + now.getDate() + '/' + (now.getMonth()+1) + '/' + now.getFullYear();
+
+    if (key === 'admin_deposit_logs') {
+        const last = Array.isArray(data) ? data[0] : null;
+        if (last && Number(last.amount) > 0) {
+            pushToFeed('TICKET', last.user || 'Khách hàng', timeStr, `Nạp tiền ${Number(last.amount).toLocaleString()}đ — ${last.content || 'ElysiumPay'}`, true);
+        }
+    }
+    if (key === 'eventOrders') {
+        const last = Array.isArray(data) ? data[data.length - 1] : null;
+        if (last && !last._isRefund) {
+            pushToFeed('TICKET', last.customer || 'Khách hàng', timeStr, `Mua vé ${last.event} — ${last.total}`, true);
+        }
+        if (last && (last._isRefund || last.refundStatus === 'pending')) {
+            pushToFeed('SUPPORT', last.customer || 'Khách hàng', timeStr, `Yêu cầu hoàn tiền vé ${last.event}`, true);
+        }
+    }
+    if (key === 'ticket_users') {
+        const last = Array.isArray(data) ? data[data.length - 1] : null;
+        if (last) {
+            const name = last.fullName || last.name || 'Thành viên mới';
+            pushToFeed('USER', name, timeStr, `Đăng ký tài khoản — ${last.email || ''}`, true);
+        }
+    }
+    if (key === 'contact_messages') {
+        const last = Array.isArray(data) ? data[data.length - 1] : null;
+        if (last) {
+            pushToFeed('SUPPORT', last.name || 'Khách hàng', timeStr, `"${last.message || last.subject || 'Gửi yêu cầu'}"`, true);
+        }
+    }
+}
+
+// Monkey-patch localStorage.setItem để bắt cùng tab
+const _origSetItem = localStorage.setItem.bind(localStorage);
+localStorage.setItem = function(key, value) {
+    _origSetItem(key, value);
+    const watchKeys = ['admin_deposit_logs', 'eventOrders', 'ticket_users', 'contact_messages'];
+    if (watchKeys.includes(key)) {
+        try {
+            notifyFeedFromSameTab(key, JSON.parse(value));
+        } catch(e) {}
+    }
+};
+
 window.addEventListener('storage', (e) => {
     if (!e.newValue) return;
 
@@ -2272,19 +2422,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function replayAdminLogs() {
-    const logs = getAdminLogs();
-
-    logs.slice(0, 20).reverse().forEach(log => {
-        if (typeof pushToFeed === 'function') {
-            pushToFeed(
-                log.type,
-                log.type,
-                log.time,
-                log.message,
-                false
-            );
-        }
-    });
+    // initLiveFeed đã xử lý tất cả rồi, hàm này giữ để không lỗi khi gọi
 }
 
 function getPendingRefundOrders() {
@@ -2599,4 +2737,3 @@ document.addEventListener('DOMContentLoaded', () => {
     startStatusAutomation();
     setupSupportSearch();
 });
-

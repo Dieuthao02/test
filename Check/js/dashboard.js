@@ -1,4 +1,4 @@
- // --- 1. NHẬP LIỆU FIREBASE ---
+// --- 1. NHẬP LIỆU FIREBASE ---
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { firebaseConfig } from './firebase-config.js';
@@ -40,16 +40,58 @@
         }
     }
 
+    // Hàm render avatar-btn dùng chung
+    function renderAuthZone(userObj) {
+        authZone.innerHTML = `
+            <div id="avatar-btn" class="flex items-center gap-3 bg-white/50 backdrop-blur-sm p-1 pr-4 rounded-full border border-pink-100 shadow-sm cursor-pointer">
+                <img id="header-avatar-img"
+                     src="https://api.dicebear.com/7.x/adventurer/svg?seed=${userObj.uid || 'default'}" 
+                     class="w-8 h-8 rounded-full border-2 border-white shadow-sm object-cover">
+                <div class="flex flex-col">
+                    <span class="text-[10px] text-gray-400 leading-none uppercase">Thành viên</span>
+                    <span id="header-name" class="text-xs text-pink-600 truncate max-w-[100px] font-bold">${userObj.name || 'User'}</span>
+                </div>
+                <button id="logout-btn" class="ml-2 text-gray-400 hover:text-red-500 transition">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
+        `;
+
+        // Gán avatar SAU khi render — tránh lỗi parse base64 dài trong template literal
+        const headerAvatarImg = document.getElementById('header-avatar-img');
+        if (headerAvatarImg && userObj.avatar) {
+            headerAvatarImg.src = userObj.avatar;
+        }
+
+        document.getElementById('avatar-btn').onclick = (e) => {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('active');
+        };
+
+        document.getElementById('logout-btn').onclick = (e) => {
+            e.stopPropagation();
+            signOut(auth).then(() => {
+                localStorage.removeItem('userLogin');
+                location.reload();
+            });
+        };
+    }
+
     // Chạy cập nhật ngay khi load trang
     updateRealTime();
     updateTopBarUI();
 
-    // Theo dõi trạng thái đăng nhập
+    // ✅ Hiện avatar NGAY từ localStorage — không chờ Firebase
+    const cachedUser = JSON.parse(localStorage.getItem('userLogin'));
+    if (cachedUser) {
+        renderAuthZone(cachedUser);
+    }
+
+    // Theo dõi trạng thái đăng nhập — cập nhật lại sau khi Firebase xác nhận
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            // Lấy dữ liệu cũ nếu có để không ghi đè mất SĐT/Địa chỉ khi login lại
             let existingData = JSON.parse(localStorage.getItem('userLogin')) || {};
-            
+
             const userObj = {
                 ...existingData,
                 name: existingData.name || user.displayName || "User",
@@ -57,41 +99,12 @@
                 uid: user.uid,
                 avatar: existingData.avatar || user.photoURL
             };
-            
+
             localStorage.setItem('userLogin', JSON.stringify(userObj));
-            
-
             updateTopBarUI();
-
-            authZone.innerHTML = `
-                <div id="avatar-btn" class="flex items-center gap-3 bg-white/50 backdrop-blur-sm p-1 pr-4 rounded-full border border-pink-100 shadow-sm cursor-pointer">
-                    <img src="${userObj.avatar || 'https://api.dicebear.com/7.x/adventurer/svg?seed=' + user.uid}" 
-                         class="w-8 h-8 rounded-full border-2 border-white shadow-sm object-cover">
-                    <div class="flex flex-col">
-                        <span class="text-[10px] text-gray-400 leading-none uppercase">Thành viên</span>
-                        <span class="text-xs text-pink-600 truncate max-w-[100px] font-bold">${userObj.name}</span>
-                    </div>
-                    <button id="logout-btn" class="ml-2 text-gray-400 hover:text-red-500 transition">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                    </button>
-                </div>
-            `;
-
-            // Gán sự kiện click cho Avatar mới tạo
-            document.getElementById('avatar-btn').onclick = (e) => {
-                e.stopPropagation();
-                dropdownMenu.classList.toggle('active');
-            };
-
-            document.getElementById('logout-btn').onclick = (e) => {
-                e.stopPropagation();
-                signOut(auth).then(() => {
-                    localStorage.removeItem('userLogin');
-                    location.reload();
-                });
-            };
+            renderAuthZone(userObj);
         }
-    });
+    });;
 
     // --- 3. CÁC HÀM LOGIC  ---
 
@@ -243,17 +256,28 @@ function updateUserProfile() {
     }
 
     localStorage.setItem('userLogin', JSON.stringify(userLocal));
+    window.tempAvatar = null; // ✅ Reset sau khi lưu
 
-    const welcomeName = document.querySelector('h2 span');
+    // ✅ Fix: dùng id thay vì querySelector h2 span (dễ bắt nhầm)
+    const welcomeName = document.getElementById('user-welcome-name');
     if (welcomeName) welcomeName.innerText = newName + " ✨";
-    
+
+    // Địa chỉ dưới ngày tháng
+    const locationEl = document.getElementById('user-location');
+    if (locationEl) locationEl.innerText = newAddress || "Việt Nam";
+
+    // Tên + avatar trên nút header
     const headerName = document.querySelector('#avatar-btn .text-pink-600');
-    const headerImg = document.querySelector('#avatar-btn img');
+    const headerImg  = document.querySelector('#avatar-btn img');
     if (headerName) headerName.innerText = newName;
     if (headerImg && userLocal.avatar) headerImg.src = userLocal.avatar;
 
+    // Tên + avatar trên card profile (cột trái)
     const profileName = document.getElementById('profile-name-display');
     if (profileName) profileName.innerText = newName;
+
+    const previewImg = document.getElementById('profile-avatar-preview');
+    if (previewImg && userLocal.avatar) previewImg.src = userLocal.avatar;
 
     alert("Cập nhật hồ sơ thành công!");
 }
@@ -278,14 +302,32 @@ function changePassword() {
 // Hàm đổ dữ liệu từ LocalStorage vào các ô Input khi mở trang Profile
 function loadProfileToInputs() {
     const userLocal = JSON.parse(localStorage.getItem('userLogin'));
-    if (userLocal) {
-        if (document.getElementById('edit-fullname')) document.getElementById('edit-fullname').value = userLocal.name || "";
-        if (document.getElementById('edit-phone')) document.getElementById('edit-phone').value = userLocal.phone || "";
-        if (document.getElementById('edit-address')) document.getElementById('edit-address').value = userLocal.address || "";
-        if (userLocal.avatar && document.getElementById('profile-avatar-preview')) {
-            document.getElementById('profile-avatar-preview').src = userLocal.avatar;
-        }
+    if (!userLocal) return;
+
+    // Đổ vào form inputs
+    if (document.getElementById('edit-fullname')) document.getElementById('edit-fullname').value = userLocal.name    || "";
+    if (document.getElementById('edit-phone'))    document.getElementById('edit-phone').value    = userLocal.phone   || "";
+    if (document.getElementById('edit-address'))  document.getElementById('edit-address').value  = userLocal.address || "";
+    if (document.getElementById('edit-email'))    document.getElementById('edit-email').value    = userLocal.email   || "";
+
+    // Tên trên card avatar bên trái
+    const profileName = document.getElementById('profile-name-display');
+    if (profileName) profileName.innerText = userLocal.name || "Thành viên";
+
+    // Avatar đã lưu (base64 hoặc URL Google)
+    const previewImg = document.getElementById('profile-avatar-preview');
+    if (previewImg) {
+        previewImg.src = userLocal.avatar
+            || 'https://api.dicebear.com/7.x/adventurer/svg?seed=' + (userLocal.uid || 'default');
     }
+
+    // Mini info card (email, SĐT, địa chỉ) cột trái
+    const emailDisplay   = document.getElementById('profile-email-display');
+    const phoneDisplay   = document.getElementById('profile-phone-display');
+    const addressDisplay = document.getElementById('profile-address-display');
+    if (emailDisplay)   emailDisplay.innerText   = userLocal.email   || "—";
+    if (phoneDisplay)   phoneDisplay.innerText   = userLocal.phone   || "—";
+    if (addressDisplay) addressDisplay.innerText = userLocal.address || "—";
 }
 
 function renderMyTickets() {

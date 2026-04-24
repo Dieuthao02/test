@@ -158,44 +158,112 @@
             <!-- 2. HỒ SƠ -->
             <div id="profile" class="page-content">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- CỘT TRÁI: Avatar Card -->
         <div class="lg:col-span-1 space-y-6">
             <div class="glass-card p-8 rounded-[3rem] text-center border-none">
-                <div class="relative inline-block">
-                    <img id="profile-avatar-preview" src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix" class="w-32 h-32 rounded-[2.5rem] bg-blue-50 border-4 border-white mx-auto shadow-lg object-cover">
-                    <label for="avatar-upload" class="absolute -bottom-2 -right-2 bg-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:bg-pink-50 transition-all border border-pink-100">
-                        <i class="fa-solid fa-camera text-pink-500 text-sm"></i>
-                        <input type="file" id="avatar-upload" class="hidden" accept="image/*">
+                <div class="relative inline-block group">
+                    <img id="profile-avatar-preview" 
+                         src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix" 
+                         class="w-36 h-36 rounded-[2.5rem] bg-blue-50 border-4 border-white mx-auto shadow-lg object-cover transition-all duration-300">
+                    
+                    <!-- Overlay khi hover -->
+                    <label for="avatar-upload" 
+                           class="absolute inset-0 rounded-[2.5rem] bg-black/40 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center cursor-pointer gap-1">
+                        <i class="fa-solid fa-camera text-white text-xl"></i>
+                        <span class="text-white text-[10px] font-black uppercase">Đổi ảnh</span>
+                    </label>
+                    <input type="file" id="avatar-upload" class="hidden" accept="image/*">
+
+                    <!-- Badge camera nhỏ góc dưới -->
+                    <label for="avatar-upload" 
+                           class="absolute -bottom-2 -right-2 bg-pink-500 w-10 h-10 rounded-full shadow-lg flex items-center justify-center cursor-pointer hover:bg-pink-600 transition-all border-2 border-white">
+                        <i class="fa-solid fa-camera text-white text-sm"></i>
                     </label>
                 </div>
-                <h4 id="profile-name-display" class="text-xl font-black mt-4">Diệu Thảo</h4>
-                <p class="text-xs font-bold text-gray-400 uppercase">Platinum Member</p>
+
+                <h4 id="profile-name-display" class="text-xl font-black mt-6">Thành viên</h4>
+                <p class="text-xs font-bold text-gray-400 uppercase mt-1">Platinum Member</p>
+
+                <!-- Hint text -->
+                <p class="text-[10px] text-gray-300 font-bold mt-3">Nhấn vào ảnh để thay đổi</p>
+            </div>
+
+            <!-- Mini info card -->
+            <div class="bg-white/70 p-6 rounded-[2rem] border border-white shadow-sm space-y-3">
+                <p class="text-[10px] font-black text-gray-400 uppercase mb-2">Thông tin nhanh</p>
+                <div class="flex items-center gap-3 text-xs font-bold text-gray-600">
+                    <i class="fa-solid fa-envelope w-4 text-pink-400"></i>
+                    <span id="profile-email-display" class="truncate">—</span>
+                </div>
+                <div class="flex items-center gap-3 text-xs font-bold text-gray-600">
+                    <i class="fa-solid fa-phone w-4 text-blue-400"></i>
+                    <span id="profile-phone-display">—</span>
+                </div>
+                <div class="flex items-center gap-3 text-xs font-bold text-gray-600">
+                    <i class="fa-solid fa-location-dot w-4 text-green-400"></i>
+                    <span id="profile-address-display">—</span>
+                </div>
             </div>
         </div>
+
+        <!-- CỘT PHẢI: Form -->
         <div class="lg:col-span-2 space-y-8">
+            <!-- Thông tin cá nhân -->
             <div class="bg-white/80 p-10 rounded-[3rem] border-2 border-white shadow-sm">
                 <h3 class="text-xl font-black mb-8 uppercase italic">Thông tin cá nhân</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="space-y-2 md:col-span-2">
-                        <label class="text-[10px] font-black text-gray-400 uppercase ml-4">Họ và tên</label>
-                        <input type="text" id="edit-fullname" placeholder="Nhập tên của bạn" class="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-pink-200 rounded-[2rem] outline-none font-bold">
+                        <label class="text-[10px] font-black text-gray-400 uppercase ml-4">Họ và tên <span class="text-pink-500">*</span></label>
+                        <input type="text" id="edit-fullname" placeholder="Nhập tên của bạn" 
+                               class="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-pink-300 rounded-[2rem] outline-none font-bold transition-colors">
                     </div>
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-gray-400 uppercase ml-4">Số điện thoại</label>
-                        <input type="text" id="edit-phone" placeholder="09xx.xxx.xxx" class="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-pink-200 rounded-[2rem] outline-none font-bold">
+                        <input type="tel" id="edit-phone" placeholder="09xx.xxx.xxx" 
+                               class="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-pink-300 rounded-[2rem] outline-none font-bold transition-colors">
                     </div>
                     <div class="space-y-2">
                         <label class="text-[10px] font-black text-gray-400 uppercase ml-4">Địa chỉ</label>
-                        <input type="text" id="edit-address" placeholder="Hà Nội, Việt Nam" class="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-[2rem] outline-none font-bold">
+                        <input type="text" id="edit-address" placeholder="Hà Nội, Việt Nam" 
+                               class="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-blue-200 rounded-[2rem] outline-none font-bold transition-colors">
+                    </div>
+                    <div class="space-y-2 md:col-span-2">
+                        <label class="text-[10px] font-black text-gray-400 uppercase ml-4">Email (không thể chỉnh sửa)</label>
+                        <input type="email" id="edit-email" readonly
+                               class="w-full px-6 py-4 bg-gray-100 border-2 border-transparent rounded-[2rem] outline-none font-bold text-gray-400 cursor-not-allowed">
                     </div>
                 </div>
-                <button onclick="updateUserProfile()" class="w-full bg-black text-white py-4 rounded-[2rem] font-black text-sm uppercase mt-6 shadow-lg active:scale-95 transition-all">Lưu thông tin</button>
+                <button onclick="updateUserProfile()" 
+                        class="w-full bg-black text-white py-4 rounded-[2rem] font-black text-sm uppercase mt-6 shadow-lg hover:shadow-xl active:scale-[0.98] transition-all hover:bg-gray-800">
+                    <i class="fa-solid fa-floppy-disk mr-2"></i> Lưu thông tin
+                </button>
             </div>
+
+            <!-- Đổi mật khẩu -->
             <div class="bg-white/80 p-10 rounded-[3rem] border-2 border-white shadow-sm">
-                <h3 class="text-xl font-black mb-8 uppercase italic">Đổi mật khẩu</h3>
+                <h3 class="text-xl font-black mb-2 uppercase italic">Đổi mật khẩu</h3>
+                <p class="text-xs text-gray-400 font-bold mb-8">Mật khẩu mới phải có ít nhất 6 ký tự.</p>
                 <div class="space-y-4">
-                    <input type="password" id="old-pass" placeholder="Mật khẩu cũ" class="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-red-200 rounded-[2rem] outline-none font-bold text-sm">
-                    <input type="password" id="new-pass" placeholder="Mật khẩu mới" class="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-red-200 rounded-[2rem] outline-none font-bold text-sm">
-                    <button onclick="changePassword()" class="w-full bg-gray-100 hover:bg-red-500 hover:text-white py-4 rounded-[2rem] font-black text-sm uppercase transition-all">Cập nhật mật khẩu</button>
+                    <div class="relative">
+                        <input type="password" id="old-pass" placeholder="Mật khẩu hiện tại" 
+                               class="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-orange-200 rounded-[2rem] outline-none font-bold text-sm transition-colors pr-14">
+                        <button type="button" onclick="togglePassVis('old-pass', this)" 
+                                class="absolute right-5 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-600 transition-colors">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="relative">
+                        <input type="password" id="new-pass" placeholder="Mật khẩu mới" 
+                               class="w-full px-6 py-4 bg-gray-50 border-2 border-transparent focus:border-orange-200 rounded-[2rem] outline-none font-bold text-sm transition-colors pr-14">
+                        <button type="button" onclick="togglePassVis('new-pass', this)" 
+                                class="absolute right-5 top-1/2 -translate-y-1/2 text-gray-300 hover:text-gray-600 transition-colors">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <button onclick="changePassword()" 
+                            class="w-full bg-gray-100 hover:bg-red-500 hover:text-white py-4 rounded-[2rem] font-black text-sm uppercase transition-all active:scale-[0.98]">
+                        <i class="fa-solid fa-lock mr-2"></i> Cập nhật mật khẩu
+                    </button>
                 </div>
             </div>
         </div>
@@ -308,8 +376,8 @@
             <button onclick="confirmRefundRequest()" class="flex-1 py-3 bg-red-500 text-white rounded-2xl font-black">XÁC NHẬN</button>
         </div>
     </div>
+</div>
 
-    
     <!-- MODALS -->
     <!-- Chi tiết vé -->
    <div id="modal-ticket-detail" class="modal hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onclick="closeModal('modal-ticket-detail')">

@@ -270,12 +270,37 @@
                     class="w-full bg-white/5 border border-white/10 rounded-lg p-3 h-40 text-white outline-none focus:border-[#00d2ff] resize-none"></textarea>
 
             </div>
-
+             
+            <div class="bg-white/5 p-6 rounded-2xl border border-white/10 space-y-6">
+                <h3 class="font-bold border-b border-white/10 pb-2 uppercase tracking-widest text-sm text-[#00d2ff]">Thông tin ban tổ chức</h3>
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="w-32 h-32 upload-box rounded-xl shrink-0 border border-dashed border-white/20 bg-white/10 flex items-center justify-center relative overflow-hidden transition hover:border-[#00d2ff]">
+                        <input type="file" id="input-logo" class="hidden" accept="image/*" onchange="previewImg(this, 'logo-prev')">
+                        <div id="logo-prev-ui" class="flex flex-col items-center justify-center text-center cursor-pointer h-full w-full" onclick="document.getElementById('input-logo').click()">
+                            <i class="fa-solid fa-plus text-xl text-gray-500 mb-2"></i>
+                            <p class="text-[9px] text-gray-500 font-bold uppercase">Logo BTC</p>
+                        </div>
+                        <div id="logo-wrap" class="hidden absolute inset-0 bg-[#0a0a0a]">
+                            <div class="remove-btn absolute top-1 right-1 bg-red-500 text-white w-5 h-5 flex items-center justify-center rounded-full cursor-pointer z-10" onclick="removeImg('input-logo', 'logo-prev', 'logo-wrap', 'logo-prev-ui')">
+                                <i class="fa-solid fa-xmark text-[10px]"></i>
+                            </div>
+                            <img id="logo-prev" class="w-full h-full object-contain p-2">
+                        </div>
+                    </div>
+                    <div class="flex-1 space-y-4">
+                        <input type="text" id="btc-name" placeholder="Tên ban tổ chức" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-[#00d2ff]">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input type="email" id="btc-email" placeholder="Email liên hệ" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-[#00d2ff]">
+                            <input type="tel" id="btc-phone" placeholder="Số điện thoại" class="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-[#00d2ff]">
+                        </div>
+                        <textarea id="btc-info" placeholder="Thông tin thêm về BTC..." class="w-full bg-white/5 border border-white/10 rounded-xl p-3 h-24 text-white outline-none focus:border-[#00d2ff] resize-none"></textarea>
+                    </div>
+                </div>
+            </div>
             <button type="button" onclick="goToStep(2)"
                 class="w-full bg-[#00d2ff] hover:bg-white text-black font-black py-4 rounded-xl transition-all active:scale-[0.98] mt-6 uppercase tracking-widest text-sm shadow-[0_0_20px_rgba(0,210,255,0.2)]">
                 Tiếp tục
             </button>
-
         </div>
 
 <div id="create-step-2" class="step-content hidden space-y-8">
