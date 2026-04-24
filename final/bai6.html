@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxury Bookstore Final - Diệu Thảo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Poppins:wght@300;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #c5a059;
+            /* Mặc định chế độ tối cho "chill" */
+            --bg: #0a0a0a;
+            --text: #ffffff;
+            --nav-bg: rgba(255, 255, 255, 0.03);
+        }
+
+        /* Class để đổi sang Light Mode */
+        body.light-theme {
+            --bg: #fcfcfc;
+            --text: #1a1a1a;
+            --nav-bg: rgba(0, 0, 0, 0.03);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Vùng di chuột sát mép trên để hiện Menu */
+        .hover-zone {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 25px;
+            z-index: 1001;
+        }
+
+        nav {
+            position: fixed;
+            top: -100px; /* Giấu menu */
+            left: 0; width: 100%;
+            background: var(--nav-bg);
+            backdrop-filter: blur(20px);
+            padding: 25px 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(197, 160, 89, 0.1);
+            transition: 0.5s ease;
+        }
+
+        /* Hover hiện menu */
+        .hover-zone:hover + nav, nav:hover { top: 0; }
+
+        ul {
+            display: flex; justify-content: center; align-items: center;
+            list-style: none; gap: 20px; margin: 0; padding: 0;
+        }
+
+        li a {
+            text-decoration: none; color: inherit;
+            font-size: 11px; text-transform: uppercase;
+            letter-spacing: 2px; opacity: 0.6;
+            transition: 0.3s; cursor: pointer;
+        }
+
+        li a:hover, li a.active {
+            opacity: 1; color: var(--gold);
+            text-shadow: 0 0 10px rgba(197, 160, 89, 0.3);
+        }
+
+        .bullet { color: var(--gold); margin: 0 5px; }
+
+        /* Content Area */
+        .container {
+            height: 100vh; display: flex;
+            justify-content: center; align-items: center;
+            text-align: center;
+        }
+
+        .tab-content {
+            display: none;
+            animation: smoothIn 0.8s ease forwards;
+            max-width: 600px; padding: 20px;
+        }
+
+        .tab-content.active { display: block; }
+
+        @keyframes smoothIn {
+            from { opacity: 0; transform: translateY(20px); filter: blur(10px); }
+            to { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+
+        h1 { font-family: 'Playfair Display', serif; font-size: 55px; margin: 0; color: var(--gold); }
+        p { opacity: 0.7; font-weight: 300; line-height: 1.8; letter-spacing: 0.5px; }
+
+        /* Nút chuyển đổi Theme */
+        .theme-toggle {
+            position: fixed;
+            bottom: 30px; right: 30px;
+            background: var(--gold);
+            color: white;
+            border: none; padding: 12px 20px;
+            border-radius: 30px; cursor: pointer;
+            font-size: 10px; text-transform: uppercase;
+            letter-spacing: 1px; z-index: 1002;
+            box-shadow: 0 10px 20px rgba(197, 160, 89, 0.2);
+            transition: 0.3s;
+        }
+
+        .theme-toggle:hover { transform: translateY(-3px); box-shadow: 0 15px 25px rgba(197, 160, 89, 0.4); }
+    </style>
+</head>
+<body>
+
+    <div class="hover-zone"></div>
+    
+    <nav id="bookNav">
+        <ul>
+            <li><a onclick="switchTab(event, 'home')" class="active">Home</a> <span class="bullet">•</span></li>
+            <li><a onclick="switchTab(event, 'books')">Books ©</a> <span class="bullet">•</span></li>
+            <li><a onclick="switchTab(event, 'authors')">Authors ™</a> <span class="bullet">•</span></li>
+            <li><a onclick="switchTab(event, 'contact')">Contact</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div id="home" class="tab-content active">
+            <h1>Thảo's Library</h1>
+            <p>Di chuyển chuột lên mép trên để khám phá menu. Một không gian tối giản cho những tâm hồn yêu sách.</p>
+        </div>
+        <div id="books" class="tab-content">
+            <h1>Curated ©</h1>
+            <p>Bộ sưu tập những cuốn sách quý giá nhất, được đóng dấu bản quyền riêng cho độc giả thượng lưu.</p>
+        </div>
+        <div id="authors" class="tab-content">
+            <h1>Authors ™</h1>
+            <p>Những tác giả đại thụ và những tư duy đột phá trong kỷ nguyên số.</p>
+        </div>
+        <div id="contact" class="tab-content">
+            <h1>Contact</h1>
+            <p>Kết nối cùng chúng tôi để nhận những bản tin văn hóa và công nghệ sớm nhất.</p>
+        </div>
+    </div>
+
+    <button class="theme-toggle" onclick="toggleTheme()">Switch Appearance</button>
+
+<script>
+    // 1. Hàm Chuyển Tab (Sử dụng classList để add/remove)
+    function switchTab(event, id) {
+        const tabs = document.getElementsByClassName('tab-content');
+        const links = document.querySelectorAll('li a');
+        
+        // Ẩn tất cả tab
+        for(let tab of tabs) {
+            tab.classList.remove('active');
+        }
+        
+        // Bỏ active tất cả link
+        links.forEach(link => link.classList.remove('active'));
+
+        // Hiện tab đúng và active link đúng
+        document.getElementById(id).classList.add('active');
+        event.currentTarget.classList.add('active');
+    }
+
+    // 2. Hàm Đổi Theme (Sáng/Tối) dùng getElementsByTagName
+    function toggleTheme() {
+        const bodyElement = document.getElementsByTagName('body')[0];
+        
+        // Sử dụng toggle để thêm/xóa class light-theme
+        bodyElement.classList.toggle('light-theme');
+        
+        // Đổi tên nút cho "ngầu"
+        const btn = document.querySelector('.theme-toggle');
+        if (bodyElement.classList.contains('light-theme')) {
+            btn.innerText = "Dark Mode";
+        } else {
+            btn.innerText = "Light Mode";
+        }
+    }
+</script>
+
+</body>
+</html>

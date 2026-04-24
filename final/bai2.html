@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer Price List - Diệu Thảo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent-gold: #c5a059;
+            --text-dark: #1a1a1a;
+            --border-color: #eee;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .table-container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+            width: 450px;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+
+        th {
+            padding: 15px;
+            color: var(--accent-gold);
+            border-bottom: 2px solid var(--accent-gold);
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            color: #555;
+        }
+
+        .btn-luxury {
+            background: var(--text-dark);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .text-red, .text-red td, .text-red th {
+            color: #d63031 !important;
+        }
+        
+    </style>
+</head>
+<body>
+
+<div class="table-container">
+    <table id="priceTable">
+        <thead>
+            <tr>
+                <th>Part Name</th>
+                <th>Brand</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>Core i9</td><td>Intel ©</td><td>$599</td></tr>
+            <tr><td>RTX 4090</td><td>NVIDIA ™</td><td>$1,599</td></tr>
+            <tr><td>RAM 32GB</td><td>Corsair •</td><td>$120</td></tr>
+            <tr><td>980 Pro</td><td>Samsung ©</td><td>$150</td></tr>
+        </tbody>
+    </table>
+    <button class="btn-luxury" onclick="changeColor()">Change Color</button>
+</div>
+
+<script>
+    function changeColor() {
+        var table = document.getElementById("priceTable");
+        table.classList.toggle("text-red");
+    }
+</script>
+
+</body>
+</html>

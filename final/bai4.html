@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu - Diệu Thảo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #c5a059;
+            --dark-gray: #1a1a1a;
+            --soft-white: #f5f5f5;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #0f0f0f;
+            color: var(--soft-white);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .menu-wrapper {
+            width: 400px;
+            height: 550px;
+            background: #161616;
+            padding: 40px;
+            border-radius: 2px;
+            position: relative;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            border: 1px solid #222;
+        }
+
+        .menu-wrapper::before {
+            content: "";
+            position: absolute;
+            top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border: 1px solid rgba(197, 160, 89, 0.2);
+            pointer-events: none;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            text-align: center;
+            color: var(--gold);
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            font-size: 24px;
+            margin-bottom: 40px;
+        }
+
+        h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--gold);
+            font-size: 18px;
+            margin-top: 30px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+        }
+
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 18px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            opacity: 1;
+        }
+
+        .item-info { flex: 1; }
+        .item-name { font-size: 14px; font-weight: 300; letter-spacing: 0.5px; }
+        .dots { flex: 1; border-bottom: 1px dotted #444; margin: 0 10px; }
+        .item-price { color: var(--gold); font-family: 'Playfair Display'; }
+
+        .not-veg {
+            filter: blur(2px) grayscale(100%);
+            opacity: 0.2;
+            transform: scale(0.95);
+        }
+
+        .is-veg {
+            transform: scale(1.05);
+            color: #fff;
+            text-shadow: 0 0 10px rgba(197, 160, 89, 0.3);
+        }
+
+        .btn-container {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        button {
+            background: transparent;
+            color: var(--gold);
+            border: 1px solid var(--gold);
+            padding: 12px 30px;
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: 0.4s;
+        }
+
+        button:hover {
+            background: var(--gold);
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+
+<div class="menu-wrapper">
+    <h1>Le Menu §</h1>
+
+    <section>
+        <h3>Appetizers ®</h3>
+        <div class="menu-item veg">
+            <span class="item-name">Truffle Edamame</span>
+            <div class="dots"></div>
+            <span class="item-price">≥ 14</span>
+        </div>
+        <div class="menu-item">
+            <span class="item-name">Wagyu Beef Carpaccio</span>
+            <div class="dots"></div>
+            <span class="item-price">≥ 28</span>
+        </div>
+    </section>
+
+    <section>
+        <h3>Main Course §</h3>
+        <div class="menu-item">
+            <span class="item-name">Black Cod Miso</span>
+            <div class="dots"></div>
+            <span class="item-price">≥ 42</span>
+        </div>
+        <div class="menu-item veg">
+            <span class="item-name">Wild Mushroom Risotto</span>
+            <div class="dots"></div>
+            <span class="item-price">≥ 35</span>
+        </div>
+    </section>
+
+    <section>
+        <h3>Sweet & Sips</h3>
+        <div class="menu-item veg">
+            <span class="item-name">Matcha Fondant</span>
+            <div class="dots"></div>
+            <span class="item-price">≥ 16</span>
+        </div>
+        <div class="menu-item">
+            <span class="item-name">Golden Espresso Martini</span>
+            <div class="dots"></div>
+            <span class="item-price">≥ 22</span>
+        </div>
+    </section>
+
+    <div class="btn-container">
+        <button onclick="filterMenu()" id="filterBtn">Show Vegetarian Only</button>
+    </div>
+</div>
+
+<script>
+    let activeFilter = false;
+
+    function filterMenu() {
+
+        const items = document.getElementsByClassName('menu-item');
+        const btn = document.getElementById('filterBtn');
+        
+        activeFilter = !activeFilter;
+
+        for (let i = 0; i < items.length; i++) {
+            const isVegetarian = items[i].classList.contains('veg');
+            
+            if (activeFilter) {
+                if (!isVegetarian) {
+                    items[i].classList.add('not-veg');
+                } else {
+                    items[i].classList.add('is-veg');
+                }
+                btn.innerText = "Show All Dishes";
+            } else {
+                items[i].classList.remove('not-veg');
+                items[i].classList.remove('is-veg');
+                btn.innerText = "Show Vegetarian Only";
+            }
+        }
+    }
+</script>
+
+</body>
+</html>

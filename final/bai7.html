@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Form - Diệu Thảo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #c5a059;
+            --dark: #1a1a1a;
+            --input-bg: #ffffff;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .contact-card {
+            background: white;
+            padding: 40px;
+            width: 350px;
+            border-radius: 4px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            border-top: 5px solid var(--gold);
+        }
+
+        h2 {
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 18px;
+            margin-bottom: 30px;
+            text-align: center;
+            color: var(--dark);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #eee;
+            border-radius: 2px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 13px;
+            box-sizing: border-box; /* Giữ input không bị tràn khung */
+            transition: 0.3s;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--gold);
+            background: #fffcf9;
+        }
+
+        textarea {
+            height: 100px;
+            resize: none; /* Không cho kéo giãn lung tung */
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--dark);
+            color: white;
+            border: none;
+            padding: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.4s;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            background: var(--gold);
+            transform: translateY(-2px);
+        }
+
+        /* Thông báo thành công */
+        #successMsg {
+            display: none;
+            margin-top: 20px;
+            padding: 10px;
+            background: #f0fff4;
+            color: #27ae60;
+            font-size: 12px;
+            border: 1px solid #c6f6d5;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="contact-card">
+    <h2>Contact Us</h2>
+    
+    <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" placeholder="Your Name">
+    </div>
+
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="email@example.com">
+    </div>
+
+    <div class="form-group">
+        <label for="message">Message</label>
+        <textarea id="message" placeholder="How can we help?"></textarea>
+    </div>
+
+    <button class="submit-btn" onclick="validateForm()">Send Message</button>
+
+    <div id="successMsg">
+        Thành công! Tin nhắn của bạn đã được gửi.
+    </div>
+</div>
+
+<script>
+    function validateForm() {
+        // Lấy giá trị từ các ô input
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const message = document.getElementById('message').value.trim();
+        const successBox = document.getElementById('successMsg');
+
+        // Kiểm tra xem có trường nào trống không
+        if (name === "" || email === "" || message === "") {
+            alert("Vui lòng điền đầy đủ các thông tin!");
+            successBox.style.display = "none";
+        } else {
+            // Nếu đã điền đủ, hiện thông báo thành công
+            successBox.style.display = "block";
+            
+            // Xóa nội dung trong form sau khi gửi (Optional cho chuyên nghiệp)
+            document.getElementById('name').value = "";
+            document.getElementById('email').value = "";
+            document.getElementById('message').value = "";
+        }
+    }
+</script>
+
+</body>
+</html>

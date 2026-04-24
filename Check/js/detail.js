@@ -6,7 +6,8 @@
     currentEventId = urlParams.get('id');
 
     const videoMap = {
-        '157': 'video/video157.mp4'
+        '151': 'video/video151.mp4',
+        '30': 'videos/loading_30.mp4'
     };
 
     const specialLoader = document.getElementById('special-loader');
@@ -70,7 +71,8 @@
     function renderPage(ev) {
 
     const bgVideoMap = {
-        '52': 'video/video52.mp4'
+        '52': 'video52.mp4',
+        '30': 'assets/videos/art_30.mp4'
     };
 
     const bgImageMap = {
@@ -82,6 +84,50 @@
     const bgImage = document.getElementById('dynamic-bg-image');
     
     const eventIdStr = String(ev.id);
+
+    const setActiveCategory = (categoryText) => {
+        const navLinks = document.querySelectorAll('.category-nav-pastel a');
+        if (!navLinks.length || !categoryText) return;
+
+        const normalizedCategory = categoryText.trim().toLowerCase();
+        let matched = false;
+
+        navLinks.forEach(link => {
+            const linkText = link.textContent.trim().toLowerCase();
+            const isSame = linkText === normalizedCategory;
+            const isRelated = (
+                (linkText === 'nhạc sống' && normalizedCategory.includes('nhạc')) ||
+                (linkText === 'sân khấu & nghệ thuật' && (normalizedCategory.includes('sân khấu') || normalizedCategory.includes('nghệ thuật'))) ||
+                (linkText === 'thể thao' && normalizedCategory.includes('thể thao')) ||
+                (linkText === 'hội thảo & workshop' && normalizedCategory.includes('hội thảo')) ||
+                (linkText === 'tham quan & trải nghiệm' && (normalizedCategory.includes('tham quan') || normalizedCategory.includes('trải nghiệm')))
+            );
+
+            if (isSame || isRelated) {
+                link.classList.add('text-pink-600', 'font-black');
+                link.classList.remove('text-gray-500', 'hover:text-pink-400');
+                matched = true;
+            } else {
+                link.classList.remove('text-pink-600', 'font-black');
+                link.classList.add('text-gray-500', 'font-bold');
+            }
+        });
+
+        if (!matched) {
+            const navWrapper = document.querySelector('.category-nav-pastel .flex');
+            if (navWrapper) {
+                const customLink = document.createElement('a');
+                customLink.href = '#';
+                customLink.textContent = categoryText;
+                customLink.className = 'text-pink-600 font-black text-xs uppercase';
+                navWrapper.insertBefore(customLink, navWrapper.firstChild);
+            }
+        }
+    };
+
+    if (ev.category) {
+        setActiveCategory(ev.category);
+    }
 
     if (bgVideoMap[eventIdStr]) {
         bgVideo.src = bgVideoMap[eventIdStr];
@@ -294,7 +340,6 @@
         if (priceDisplay) priceDisplay.innerHTML = `<span class="line-through opacity-50">${finalMinDisplay} đ</span>`;
     } else {
         if (bookingBtn) {
-    
             if (timeArray.length === 1) {
                 bookingBtn.innerHTML = "Mua vé ngay";
                 bookingBtn.onclick = () => goToBooking(timeArray[0]);
@@ -318,6 +363,7 @@
         if (priceDisplay) priceDisplay.innerHTML = `${finalMinDisplay} `;
     }
 
+    // --- 7. TỔ CHỨC ---
     document.getElementById('org-name').innerText = ev.organizerName || "EventHub Partner";
     document.getElementById('org-desc').innerText = ev.organizerDesc || "Đơn vị tổ chức chuyên nghiệp.";
     const orgLogoContainer = document.getElementById('org-logo');
@@ -377,6 +423,7 @@
         url += `&date=${encodeURIComponent(selectedDate)}`;
     }
     
+    // Chuyển trang
     window.location.href = url;
 }
 
