@@ -29,71 +29,85 @@
     
 </div>
 
-    <header class="p-6 flex justify-between items-center max-w-[1400px] mx-auto">
-        <h1 class="text-3xl font-black text-[#F33B26]">Elysium</h1>
-        <nav class="hidden md:flex space-x-6 font-bold text-gray-400 text-sm">
-            <a href="events.html" class="hover:text-white">Sự kiện</a>
-            <a href="calendar.html" class="hover:text-white">Lịch</a>
-            <a href="contact.html" class="hover:text-white">Hỗ trợ</a>
-        </nav>
-        <div class="flex items-center gap-4 font-['Inter']">
-    <div id="auth-buttons" class="flex items-center gap-2">
-        <a href="auth.html?mode=login" class="text-[11px] font-bold text-gray-400 hover:text-white transition-all uppercase tracking-wider px-3 py-2">
-            Đăng nhập
+    <header class="p-6 flex justify-between items-center max-w-[1400px] mx-auto relative z-[100]">
+    <div class="flex items-center gap-10">
+        <a href="index.html">
+            <h1 class="text-3xl font-black tracking-tighter cursor-pointer bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">Elysium</h1>
         </a>
-        <div class="w-[1px] h-3 bg-gray-700"></div>
-        <a href="auth.html?mode=register" class="px-5 py-2 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white text-[11px] font-black rounded-full transition-all shadow-lg shadow-pink-500/20 uppercase tracking-wider">
-            Đăng ký
-        </a>
-    </div>
-
-    <div id="user-profile" class="hidden flex items-center gap-3 group relative cursor-pointer">
-        <div class="text-right hidden md:block">
-            <p id="user-display-name" class="text-[13px] font-black text-white leading-none tracking-tight">
-                DIỆU THẢO
-            </p>
-            <p class="text-[8px] text-pink-400 font-black uppercase tracking-[0.1em] mt-1.5 bg-pink-500/10 px-2 py-0.5 rounded-full inline-block">
-               Thành viên Elysium
-            </p>
-        </div>
         
-        <div class="relative">
-            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-500 to-violet-500 p-[2px]">
-                <img src="" alt="Avatar" class="w-full h-full rounded-full border-2 border-[#0b0b0b] object-cover">
-            </div>
-            <div class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 border-[3px] border-[#0b0b0b] rounded-full"></div>
+        <nav class="hidden md:flex space-x-6 font-bold text-gray-400 text-sm">
+            <a href="events.html" class="hover:text-white transition-all">Sự kiện</a>
+            <a href="calendar.html" class="hover:text-white transition-all">Lịch</a>
+            <a href="contact.html" class="hover:text-white transition-all">Hỗ trợ</a>
+        </nav>
+    </div>
+
+    <div class="flex items-center gap-4 font-['Inter']">
+        <a href="create.html" class="hidden lg:flex items-center text-pink-400 border border-pink-400/20 bg-pink-400/5 px-4 py-2 rounded-full hover:bg-pink-400/10 transition text-[11px] font-bold uppercase tracking-wider">
+            <i class="fa-solid fa-plus-circle mr-2"></i> Tạo sự kiện
+        </a>
+
+        <div id="auth-buttons" class="flex items-center gap-2">
+            <a href="auth.html?mode=login" class="text-[11px] font-bold text-gray-400 hover:text-white transition-all uppercase tracking-wider px-3 py-2">
+                Đăng nhập
+            </a>
+            <div class="w-[1px] h-3 bg-gray-700"></div>
+            <a href="auth.html?mode=register" class="px-5 py-2 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white text-[11px] font-black rounded-full transition-all shadow-lg shadow-pink-500/20 uppercase tracking-wider">
+                Đăng ký
+            </a>
         </div>
 
-        <div class="absolute top-[130%] right-0 w-52 bg-[#141414]/95 backdrop-blur-xl border border-white/10 rounded-2xl hidden group-hover:block overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-[100] animate-in fade-in slide-in-from-top-2 duration-300">
-            <div class="p-2.5 space-y-1">
-                <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-gray-300 hover:bg-white/5 hover:text-pink-400 rounded-xl transition-all">
-                    <i class="fa-solid fa-user-gear w-4"></i> Tài khoản của tôi
-                </a>
-                <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-gray-400 hover:bg-white/5 hover:text-white rounded-xl transition-all">
-                    <i class="fa-solid fa-ticket-simple w-4 text-pink-500"></i> Vé của tôi
-                </a>
-                <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-gray-400 hover:bg-white/5 hover:text-white rounded-xl transition-all">
-                    <i class="fa-solid fa-heart w-4 text-pink-500"></i> Sự kiện của tôi
-                </a>
-                <div class="h-[1px] bg-white/5 my-1.5 mx-2"></div>
-                <button onclick="window.logout()" class="w-full flex items-center gap-3 px-4 py-3 text-[11px] font-black text-rose-400 hover:bg-rose-500/10 rounded-xl transition-all uppercase">
-                    <i class="fa-solid fa-power-off w-4"></i> Đăng xuất
-                </button>
+        <div id="user-profile" class="hidden flex items-center gap-3 group relative cursor-pointer">
+            <div class="text-right hidden md:block">
+                <p id="user-display-name" class="text-[13px] font-black text-white leading-none tracking-tight">
+                    DIỆU THẢO
+                </p>
+                <p class="text-[8px] text-pink-400 font-black uppercase tracking-[0.1em] mt-1.5 bg-pink-500/10 px-2 py-0.5 rounded-full inline-block">
+                   Thành viên Elysium
+                </p>
+            </div>
+            
+            <div class="relative">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-pink-500 to-violet-500 p-[2px]">
+                    <img id="header-avatar-img" src="" alt="Avatar" class="w-full h-full rounded-full border-2 border-[#0b0b0b] object-cover">
+                </div>
+                <div class="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 border-[3px] border-[#0b0b0b] rounded-full"></div>
+            </div>
+
+            <div class="absolute top-[130%] right-0 w-56 bg-[#141414]/95 backdrop-blur-xl border border-white/10 rounded-2xl hidden group-hover:block overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-[100] animate-in fade-in slide-in-from-top-2 duration-300">
+                <div class="p-2.5 space-y-1">
+                    <a href="dashboard.html?tab=profile" class="flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-gray-300 hover:bg-white/5 hover:text-pink-400 rounded-xl transition-all">
+                        <i class="fa-solid fa-user-gear w-4"></i> Cập nhật hồ sơ
+                    </a>
+                    <a href="dashboard.html?tab=tickets" class="flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-gray-400 hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                        <i class="fa-solid fa-ticket-simple w-4 text-pink-500"></i> Vé của tôi
+                    </a>
+                    <a href="dashboard.html?tab=topup" class="flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-gray-400 hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                        <i class="fa-solid fa-wallet w-4 text-green-500"></i> Nạp tiền
+                    </a>
+                    <a href="dashboard.html?tab=events" class="flex items-center gap-3 px-4 py-3 text-[11px] font-bold text-gray-400 hover:bg-white/5 hover:text-white rounded-xl transition-all">
+                        <i class="fa-solid fa-heart w-4 text-pink-500"></i> Sự kiện của tôi
+                    </a>
+                    <div class="h-[1px] bg-white/5 my-1.5 mx-2"></div>
+                    <button onclick="window.logout()" class="w-full flex items-center gap-3 px-4 py-3 text-[11px] font-black text-rose-400 hover:bg-rose-500/10 rounded-xl transition-all uppercase">
+                        <i class="fa-solid fa-power-off w-4"></i> Đăng xuất
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-    </header>
+</header>
 
     <main class="max-w-[1200px] mx-auto px-6 space-y-10">
         
         <div class="category-nav-pastel p-1">
             <div class="flex justify-between items-center px-8 py-3 overflow-x-auto no-scrollbar whitespace-nowrap">
                 <a href="#" class="text-pink-600 font-black text-xs uppercase">Nhạc sống</a>
-                <a href="#" class="text-gray-500 font-bold text-xs uppercase hover:text-pink-400">Sân khấu</a>
+                <a href="#" class="text-gray-500 font-bold text-xs uppercase hover:text-pink-400">Sân khấu & Nghệ thuật</a>
                 <a href="#" class="text-gray-500 font-bold text-xs uppercase hover:text-pink-400">Thể thao</a>
-                <a href="#" class="text-gray-500 font-bold text-xs uppercase hover:text-pink-400">Workshop</a>
-                <a href="#" class="text-gray-500 font-bold text-xs uppercase hover:text-pink-400">Blog</a>
+                <a href="#" class="text-gray-500 font-bold text-xs uppercase hover:text-pink-400">Hội thảo & Workshop</a>
+                <a href="#" class="text-gray-500 font-bold text-xs uppercase hover:text-pink-400">Tham quan & Trải nghiệm</a>
+                <a href="#" class="text-gray-500 font-bold text-xs uppercase hover:text-pink-400">Khác</a>
             </div>
         </div>
 
