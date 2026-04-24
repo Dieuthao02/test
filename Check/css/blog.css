@@ -5,6 +5,7 @@
     --dark-navy: #11141B;
     --card-bg: #1C1F26;
     --text-gray: #B0B3B8;
+    --glass-bg: rgba(255, 255, 255, 0.05); 
 }
 
 body {
@@ -490,11 +491,6 @@ nav a:hover {
     inset: 0;
     background-color: rgba(0,0,0,0.9);
     overflow-y: auto;
-}
-:root {
-    --blue-pastel: #A0CED9;
-    --pink-pastel: #FFC4D6;
-    --glass-bg: rgba(255, 255, 255, 0.05);
 }
 
 .modal-content {

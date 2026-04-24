@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELYSIUM BLOG</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="blog.css">
+
+</head>
+<body>
+  <header>
+        <div class="logo-box">
+            <a href="index.html" style="text-decoration: none; color: inherit;">Elysium</a>
+            <span style="font-weight:100; opacity:0.3">|</span>
+            <a href="blog.html" style="text-decoration: none; color: inherit;" class="blog-brand">Blog</a>
+        </div>
+        <div class="mid-line"></div>
+        <nav>
+            <ul>
+                <li><a href="#gi-day-troi">Gì dzậy trời?</a></li>
+                <li><a href="#su-kien">Sự kiện nổi bật</a></li>
+                <li><a href="#tips">Tips giải ngố</a></li>
+                <li><a href="#bantin">Bản tin tối cổ</a></li>
+                <li><a href="#uu-dai">Ưu đãi</a></li>
+                <li><a href="#spotlight">Spotlight</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="header-line"></div>
+
+  <div class="hero">
+        <div class="hero-slider">
+            <div class="hero-item active" style="background-image: url('Check/img/vietnam.jpg'); background-position: center 50%;">
+                <div class="hero-overlay"></div>
+                <div class="hero-content">
+                    <h1>Mùa Xuân Đại Thắng 1975: Khi Non Sông Nối Liền Một Dải và Giai Điệu Thống Nhất Vang Lên.</h1>
+                    <a href="#" onclick="switchPage('post-detail-victory')" class="btn-green">Trở về ký ức hào hùng →</a>
+                </div>
+            </div>
+
+            <div class="hero-item" style="background-image: url('Check/img/BTS.png');">
+                <div class="hero-overlay"></div>
+                <div class="hero-content">
+                    <h1>BTS "The Eternal Chapter" World Tour: Khi Bản Đồ Tâm Hồn Phủ Kín Các Sân Vận Động.</h1>
+                    <a href="#" onclick="switchPage('post-detail-bts')" class="btn-green">Dấn thân vào hành trình →</a>
+                </div>
+            </div>
+
+            <div class="hero-item" style="background-image: url('Check/img/2026.jpg'); background-position: center 50%; ">
+                <div class="hero-overlay"></div>
+                <div class="hero-content">
+                    <h1>Sự Trở Lại Của "Vị Vua": G-Dragon và Kỷ Nguyên "Beyond The Flower".</h1>
+                    <a href="#" onclick="switchPage('post-detail-gd')" class="btn-green">Khám phá ngay →</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-dots">
+            <span class="dot active" onclick="currentSlide(0)"></span>
+            <span class="dot" onclick="currentSlide(1)"></span>
+            <span class="dot" onclick="currentSlide(2)"></span>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="gi-day-troi" class="section-header">Gì dzậy trời?</div>
+        <div class="grid-3">
+            <div id="post-indie" class="post-card" onclick="switchPage('post-detail-indie')" style="cursor: pointer;">
+                <img src="Check/img/ninhbinh.jpg" class="post-img">
+                <div class="post-content">Festival Indie Lớn Nhất Mùa Hè 2026 Có Gì Hot?</div>
+            </div>
+
+            <div id="post-genz" class="post-card" onclick="switchPage('post-detail-genz')" style="cursor: pointer;">
+                <img src="Check/img/images.jpg" class="post-img">
+                <div class="post-content">Tại Sao Gen Z Bắt Đầu Đổ Xô Đi Xem Kịch Nói?</div>
+            </div>
+
+            <div id="post-mrsiro" class="post-card" onclick="switchPage('post-detail-mrsiro')" style="cursor: pointer;">
+                <img src="Check/img/mr.webp" class="post-img">
+                <div class="post-content">Vì Sao Mr Siro Lại Cháy Vé Trong 10 Phút?</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="post-detail-bts" class="hidden-page">
+        <div class="max-w-[850px] mx-auto px-6 py-12">
+            <nav class="flex items-center space-x-4 mb-8 text-sm font-medium">
+                <button onclick="closePost()" class="flex items-center hover:text-[var(--pink-pastel)] transition-colors duration-300">
+                    <i class="fa-solid fa-arrow-left mr-2"></i> Quay lại Blog
+                </button>
+                <span class="opacity-20">/</span>
+                <span class="opacity-50">Spotlight</span>
+            </nav>
+
+            <header class="mb-10 text-left">
+                <div class="mb-4">
+                    <span class="inline-block bg-gradient-to-r from-[var(--pink-pastel)] to-[var(--blue-pastel)] text-black text-[10px] font-black px-3 py-1 rounded-sm uppercase tracking-widest">
+                        Spotlight
+                    </span>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-extrabold leading-snug mb-6 tracking-tight">
+                    BTS "The Eternal Chapter" World Tour: Khi Bản Đồ Tâm Hồn Phủ Kín Các Sân Vận Động.
+                </h1>
+                <div class="flex items-center space-x-6 text-[13px] font-bold opacity-60">
+                    <span class="flex items-center">
+                        <i class="fa-regular fa-calendar mr-2 text-[var(--blue-pastel)]"></i> 
+                        Thứ sáu, 20/03/2026
+                    </span>
+                    <span class="flex items-center">
+                        <i class="fa-regular fa-user mr-2 text-[var(--blue-pastel)]"></i> 
+                        Bởi Elysium Team
+                    </span>
+                </div>
+            </header>
+
+            <div class="mb-12">
+                <img src="Check/img/BTS.png" alt="BTS" class="w-11/12 mx-auto rounded-2xl shadow-2xl border border-white/5">
+            </div>
+
+            <div class="prose prose-invert max-w-none text-gray-300 leading-relaxed text-lg mb-16">
+                <p class="mb-8 first-letter:text-5xl first-letter:font-bold first-letter:text-[var(--pink-pastel)] first-letter:mr-3 first-letter:float-left">
+                    Sau quãng thời gian dài đằng đẵng chờ đợi, BTS chính thức đánh dấu sự trở lại đầy bùng nổ với World Tour mang tên <strong>"The Eternal Chapter"</strong>. Đây không đơn thuần là một chuỗi concert thương mại, mà là một "hành trình tâm hồn" được thiết kế để hàn gắn và kết nối lại hàng triệu trái tim ARMY sau những năm tháng tạm xa cách. Với quy mô dự kiến lên tới 79 đêm diễn tại những sân vận động (Stadium) biểu tượng nhất hành tinh, chuyến lưu diễn này đang được giới chuyên môn khẳng định là siêu concert lớn nhất lịch sử âm nhạc K-pop từ trước đến nay.
+                </p>
+
+                <div class="my-10 text-center italic text-sm ">
+                    <img src="Check/img/BTS-Concert-Goyang-1-01.jpg" alt="BTS" class="w-11/12 mx-auto rounded-2xl shadow-2xl border border-white/5">
+                    [Toàn cảnh sân vận động Goyang lung linh trong biển Bomb tím]
+                </div>
+
+                <h2 class="text-2xl font-bold text-white mb-6 mt-12 border-l-4 border-[var(--blue-pastel)] pl-4">
+                    Khi "Bản đồ tâm hồn" phủ kín các thánh đường âm nhạc
+                </h2>
+                <p class="mb-6">
+                    Mở màn tại sân vận động Goyang (Hàn Quốc), BTS đã chứng minh vì sao họ vẫn là "nhóm nhạc lớn nhất thế giới". Sân khấu 360 độ hoành tráng không một góc chết đã biến mỗi đêm diễn thành một không gian nghệ thuật đa chiều. Tại đây, tinh thần của <i>The Eternal Chapter</i> được hiện thực hóa qua âm nhạc, ánh sáng và những màn trình diễn kéo dài hơn 150 phút mỗi đêm.
+                </p>
+
+                <p class="mb-8">
+                    Mọi ánh mắt của ARMY Việt hiện đang đổ dồn về SVĐ Mỹ Đình vào tháng 4 tới. Theo các nguồn tin hành lang, danh sách trình diễn (setlist) sẽ là một bản giao hưởng hoàn hảo giữa những bản hit làm nên tên tuổi như "Blood Sweat & Tears", "Spring Day" và những chương mới đầy sôi động vừa được phát hành.
+                </p>
+
+                <div class="my-10 text-center italic text-sm ">
+                    <img src="Check/img/bts1.webp" alt="BTS" class="w-11/12 mx-auto rounded-2xl shadow-2xl border border-white/5">
+                    [Khoảnh khắc visual của các thành viên trên sân khấu]
+                </div>
+
+                <h2 class="text-2xl font-bold text-white mb-6 mt-12 border-l-4 border-[var(--blue-pastel)] pl-4">
+                    150 phút "nuốt đĩa" và những khoảnh khắc dầm mưa huyền thoại
+                </h2>
+                <p class="mb-6">
+                    Đêm concert mở màn đã đi vào lịch sử khi các chàng trai Bangtan biểu diễn dưới cơn mưa nặng hạt. Thay vì làm giảm đi sức nóng, những giọt mưa rơi trên tóc, trên áo và ánh đèn LED rực rỡ lại vô tình tạo nên một khung cảnh điện ảnh hiếm thấy. Dàn vocal line gồm Jin, Jimin, V và Jungkook đã có những màn khoe giọng "nuốt đĩa" dù điều kiện thời tiết khắc nghiệt, trong khi rap line (RM, Suga, J-Hope) khiến cả vạn người bùng nổ với nhịp điệu dồn dập của "Run BTS" và "Mic Drop".
+                </p>
+
+                <div class="my-10 text-center italic text-sm ">
+                    <img src="Check/img/bts2.webp" alt="BTS" class="w-11/12 mx-auto rounded-2xl shadow-2xl border border-white/5">
+                    [BTS cực cháy dưới mưa]
+                </div>
+
+                <p class="mb-8">
+                    Đặc biệt, màn trình diễn "Body to Body" của V đã thực sự gây bão mạng xã hội với visual "bén như dao cạo". Những thước phim fancam ghi lại khoảnh khắc các thành viên tương tác với khán giả dưới mưa đã chứng minh đẳng cấp của những ngôi sao hàng đầu: không ngại gian khó, chỉ quan tâm đến việc mang lại cảm xúc trọn vẹn nhất cho người hâm mộ.
+                </p>
+
+                <h2 class="text-2xl font-bold text-white mb-6 mt-12 border-l-4 border-[var(--blue-pastel)] pl-4">
+                    Hệ sinh thái "The City" – Khi cả thành phố cùng nhịp đập
+                </h2>
+                <p class="mb-6">
+                    Dự án <strong>"BTS THE CITY"</strong> đi kèm với tour diễn đã nâng tầm trải nghiệm concert lên một đẳng cấp mới. Tại mỗi thành phố mà BTS đi qua, từ Seoul cho đến Hà Nội sắp tới, người hâm mộ không chỉ đi xem show rồi về. Cả thành phố sẽ biến thành một "kỳ nghỉ âm nhạc" với các khu vực trưng bày merchandise độc quyền, các khu trải nghiệm stamp rally (thu thập dấu ấn) và không gian nghệ thuật lấy cảm hứng từ âm nhạc của nhóm.
+                </p>
+
+                <p class="mb-6">
+                    Sự kết hợp giữa 7 biểu tượng toàn cầu này là minh chứng rõ nét nhất cho việc âm nhạc có thể xóa tan mọi khoảng cách. Từ những hàng ghế xa nhất trên khán đài cho đến khu vực VIP sát sân khấu, tất cả đều hòa chung một biển tím rực rỡ, tạo nên một chương lịch sử mới mà chắc chắn nhiều thập kỷ sau, người ta vẫn sẽ nhắc lại với sự ngưỡng mộ và lòng tự hào.
+                </p>
+
+                <p class="font-bold text-[var(--blue-pastel)] mt-10">
+                    Hãy sẵn sàng, vì hành trình vĩnh cửu này chỉ mới bắt đầu.
+                </p>
+            </div>
+
+            <div class="bg-white/5 border border-white/10 rounded-3xl p-6 mb-16 flex flex-col md:flex-row items-center gap-6">
+                <img src="Check/img/BTS.png" alt="Ticket" class="w-32 h-32 object-cover rounded-xl">
+                <div class="flex-1 text-center md:text-left">
+                    <p class="text-[11px] font-black text-[var(--pink-pastel)] uppercase tracking-widest mb-1">Sự kiện đề xuất</p>
+                    <h4 class="text-xl font-bold mb-2">BTS WORLD TOUR ARIRANG</h4>
+                    <div class="flex flex-wrap justify-center md:justify-start gap-4 text-xs font-medium opacity-70">
+                        <span><i class="fa-regular fa-clock mr-1"></i> 19:00 - 18/05/2026</span>
+                        <span><i class="fa-solid fa-location-dot mr-1"></i> SVĐ Quốc gia Mỹ Đình</span>
+                    </div>
+                </div>
+                <a href="detail.html?id=26" target="_blank" class="bg-[var(--blue-pastel)] hover:bg-[var(--pink-pastel)] text-black px-8 py-3 rounded-full font-black text-sm transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg shadow-cyan-500/20">
+                    MUA VÉ NGAY
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+<div id="post-detail-gd" class="hidden-page">
+    <div class="max-w-[850px] mx-auto px-6 py-12">
+
+        <nav class="flex items-center space-x-4 mb-8 text-sm font-medium">
+            <button onclick="closePost()" class="flex items-center hover:text-[var(--pink-pastel)] transition-colors duration-300">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Quay lại Blog
+            </button>
+            <span class="opacity-20">/</span>
+            <span class="opacity-50">Spotlight</span>
+        </nav>
+
+        <header class="mb-10 text-left">
+            <div class="mb-4">
+                <span class="inline-block bg-gradient-to-r from-[var(--pink-pastel)] to-[var(--blue-pastel)] text-black text-[10px] font-black px-3 py-1 rounded-sm uppercase tracking-widest">
+                    Spotlight
+                </span>
+            </div>
+
+            <h1 class="text-3xl md:text-4xl font-extrabold leading-snug mb-6 tracking-tight">
+                Sự Trở Lại Của "Vị Vua": G-Dragon và Kỷ Nguyên "Übermensch" Càn Quét Sân Vận Động Goyang.
+            </h1>
+
+            <div class="flex items-center space-x-6 text-[13px] font-bold opacity-60">
+                <span class="flex items-center">
+                    <i class="fa-regular fa-calendar mr-2 text-[var(--blue-pastel)]"></i>
+                    Thứ bảy, 29/03/2025
+                </span>
+                <span class="flex items-center">
+                    <i class="fa-regular fa-user mr-2 text-[var(--blue-pastel)]"></i>
+                    Bởi Elysium Team
+                </span>
+            </div>
+        </header>
+
+        <div class="mb-12">
+            <img src="Check/img/2026.jpg" alt="G-Dragon Übermensch" class="w-11/12 mx-auto rounded-2xl shadow-2xl border border-white/5">
+        </div>
+
+        <div class="prose prose-invert max-w-none text-gray-300 leading-relaxed text-lg mb-16">
+            <p class="mb-8 first-letter:text-5xl first-letter:font-bold first-letter:text-[var(--pink-pastel)] first-letter:mr-3 first-letter:float-left">
+                19 giờ ngày 29/3/2025, <strong>G-Dragon</strong> chính thức khởi động chuyến lưu diễn thế giới thứ 3 trong sự nghiệp mang tên <strong>Übermensch</strong>. Sau 8 năm vắng bóng trên bản đồ lưu diễn cá nhân, "Vị vua" của K-pop đã trở lại với một diện mạo hoàn toàn mới, biến SVĐ Goyang thành một thánh đường âm nhạc rực rỡ sắc màu của kỷ nguyên "Beyond The Flower".
+            </p>
+
+            <h2 class="text-2xl font-bold text-white mb-6 mt-12 border-l-4 border-[var(--blue-pastel)] pl-4">
+                Visual "lão hóa ngược" và chiếc vương miện tỷ đồng
+            </h2>
+            <p class="mb-6">
+                Xuất hiện với mái tóc bạch kim rực rỡ, G-Dragon khiến 41.000 khán giả có mặt tại sân vận động phải choáng ngợp bởi khí chất áp đảo. Không chỉ dừng lại ở âm nhạc, thủ lĩnh BIGBANG còn khẳng định vị thế biểu tượng thời trang khi diện chiếc áo đỏ rực rỡ và đội chiếc vương miện đính hồng ngọc trị giá hàng tỷ đồng.
+            </p>
+
+            <div class="my-10 text-center italic text-sm">
+                <img src="Check/img/gd-concert-1.jpg" alt="G-Dragon Crown" class="w-11/12 mx-auto rounded-2xl shadow-2xl border border-white/5 mb-4">
+                [Cận cảnh vương miện đính đá quý khẳng định ngôi vương của G-Dragon]
+            </div>
+
+            <h2 class="text-2xl font-bold text-white mb-6 mt-12 border-l-4 border-[var(--blue-pastel)] pl-4">
+                Màn tái hợp huyền thoại cùng CL và Setlist bùng nổ
+            </h2>
+            <p class="mb-6">
+                Đêm diễn không chỉ là sân khấu cá nhân mà còn là nơi hội ngộ của những biểu tượng. <strong>CL</strong> đã xuất hiện với tư cách khách mời đặc biệt, cùng G-Dragon tái hiện bản hit <i>"The Leaders"</i> khiến toàn bộ khán đài vỡ òa. Setlist của đêm diễn là sự giao thoa hoàn hảo giữa 8 ca khúc mới trong album vừa ra mắt và những bản hit cũ như Heartbreaker, Who You, Today...
+            </p>
+
+            <div class="my-10 text-center italic text-sm">
+                <img src="Check/img/CL.webp" alt="GD and CL" class="w-11/12 mx-auto rounded-2xl shadow-2xl border border-white/5 mb-4">
+                [Bộ đôi huyền thoại nhà YG]
+            </div>
+
+            <p class="mb-8">
+                Giữa biển lightstick hoa cúc mất cánh, người hâm mộ đã thực sự sống lại những giây phút rực rỡ nhất của tuổi trẻ. Khả năng làm chủ sân khấu của G-Dragon vẫn là một "đẳng cấp" khác biệt – khi thì lạnh lùng áp đảo, khi lại ngại ngùng đáng yêu bất chấp tuổi U40.
+            </p>
+
+            <p class="font-bold text-[var(--blue-pastel)] mt-10">
+                Chương tiếp theo của Übermensch sẽ sớm đổ bộ các thành phố châu Á. Bạn đã sẵn sàng săn vé?
+            </p>
+        </div>
+
+        <div class="bg-white/5 border border-white/10 rounded-3xl p-6 mb-16 flex flex-col md:flex-row items-center gap-6">
+            <img src="Check/img/2026.jpg" alt="Ticket GD" class="w-32 h-32 object-cover rounded-xl">
+            <div class="flex-1 text-center md:text-left">
+                <p class="text-[11px] font-black text-[var(--pink-pastel)] uppercase tracking-widest mb-1">Sự kiện đề xuất</p>
+                <h4 class="text-xl font-bold mb-2">G-DRAGON WORLD TOUR: ÜBERMENSCH</h4>
+                <div class="flex flex-wrap justify-center md:justify-start gap-4 text-xs font-medium opacity-70">
+                    <span><i class="fa-regular fa-clock mr-1"></i> 20:00 - 23:00 - 11/08/2026</span>
+                    <span><i class="fa-solid fa-location-dot mr-1"></i> Vinhomes Ocean Park 3, Hưng Yên</span>
+                </div>
+            </div>
+            <a href="detail.html?id=150" target="_blank" class="bg-[var(--blue-pastel)] hover:bg-[var(--pink-pastel)] text-black px-8 py-3 rounded-full font-black text-sm transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg shadow-cyan-500/20">
+                MUA VÉ NGAY
+            </a>
+        </div>
+    </div>
+</div>
+
+<div id="post-detail-victory" class="hidden-page">
+    <div class="max-w-[850px] mx-auto px-6 py-12">
+
+        <nav class="flex items-center space-x-4 mb-8 text-sm font-medium">
+            <button onclick="closePost()" class="flex items-center hover:text-[var(--pink-pastel)] transition-colors duration-300">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Quay lại Blog
+            </button>
+            <span class="opacity-20">/</span>
+            <span class="opacity-50">Ký ức hào hùng</span>
+        </nav>
+
+        <header class="mb-10 text-left">
+            <div class="mb-4">
+                <span class="inline-block bg-gradient-to-r from-[var(--pink-pastel)] to-[var(--blue-pastel)] text-black text-[10px] font-black px-3 py-1 rounded-sm uppercase tracking-widest">
+                    Kỷ niệm 30/04
+                </span>
+            </div>
+
+            <h1 class="text-3xl md:text-4xl font-extrabold leading-snug mb-6 tracking-tight">
+                Mùa Xuân Đại Thắng 1975: Khi Bản Giao Hưởng Thống Nhất Nối Liền Hai Miền Đất Nước.
+            </h1>
+
+            <div class="flex items-center space-x-6 text-[13px] font-bold opacity-60">
+                <span class="flex items-center">
+                    <i class="fa-regular fa-calendar mr-2 text-[var(--blue-pastel)]"></i>
+                    Thứ tư, 30/04/1975 (Tái hiện 2026)
+                </span>
+                <span class="flex items-center">
+                    <i class="fa-regular fa-user mr-2 text-[var(--blue-pastel)]"></i>
+                    Bởi Elysium Team
+                </span>
+            </div>
+        </header>
+
+        <div class="mb-12">
+            <img src="Check/img/vietnam.jpg" alt="Victory Hanoi" class="w-11/12 mx-auto rounded-2xl shadow-2xl border border-white/5">
+        </div>
+
+        <div class="prose prose-invert max-w-none text-gray-300 leading-relaxed text-lg mb-16">
+            <p class="mb-8 first-letter:text-5xl first-letter:font-bold first-letter:text-[var(--pink-pastel)] first-letter:mr-3 first-letter:float-left">
+                Ngày 30/4/1975 không chỉ là một dấu mốc vàng son trong lịch sử quân sự của dân tộc Việt Nam, mà còn là một "bản giao hưởng hòa bình" được viết nên bằng sự hy sinh của hàng triệu trái tim yêu nước. Mùa xuân năm ấy, cả non sông nối liền một dải, không còn sự ngăn cách của vĩ tuyến 17. Đó là một chiến thắng của lẽ phải, của khát vọng tự do cháy bỏng, biến khát vọng ấy thành một sự thật đẹp đẽ.
+            </p>
+
+            <h2 class="text-2xl font-bold text-white mb-6 mt-12 border-l-4 border-[var(--blue-pastel)] pl-4">
+                Khi "Bản đồ tâm hồn" phủ kín các thánh đường âm nhạc
+            </h2>
+            <p class="mb-6">
+                Thời của những vở kịch cổ điển, nặng về giáo điều đã qua rồi. Kịch sống không có diễn lại, từng cảm xúc, từng tiếng cười, từng khoảnh khắc bất ngờ đều xảy ra một lần duy nhất và hoàn toàn chân thực. Bên cạnh đó, mức giá vé chỉ bằng 1/10 concert K-pop nhưng mang lại một buổi tối hẹn hò "sang chảnh" và giàu trải nghiệm.
+            </p>
+
+            <div class="my-10 text-center italic text-sm">
+                <img src="Check/img/Poster Quốc Khánh 2-9.jpg" alt="Hanoi Flagtower" class="w-11/12 mx-auto rounded-2xl shadow-2xl border border-white/5 mb-4">
+                [Cột cờ Hà Nội – Biểu tượng vĩnh cửu của độc lập và thống nhất dân tộc]
+            </div>
+
+            <p class="mb-6">
+                Chữ "Độc lập" đã thực sự được khẳng định khi cả thế giới phải ngỡ ngàng trước ý chí thép của một dân tộc nhỏ bé nhưng gan góc. Sự chân thực đó mới là thứ đáng được ghi lại nhất. Và từ trong chính những giây phút oanh liệt ấy, một nền văn hóa mới được hình thành – nền văn hóa của tự do, nơi cá tính độc lập của mỗi nghệ sĩ được tôn vinh.
+            </p>
+
+            <h2 class="text-2xl font-bold text-white mb-6 mt-12 border-l-4 border-[var(--pink-pastel)] pl-4">
+                "Khóc Cùng Em" – Những bản Ballad xoa dịu vết thương
+            </h2>
+            <p class="mb-6">
+                And trong chính những giây phút hào hùng đó, một nền văn hóa mới được hình thành – nền văn hóa của tự do, nơi cá tính độc lập của mỗi nghệ sĩ trẻ được tôn vinh, giúp họ dũng cảm dấn thân vào hành trình vĩnh cửu này.
+            </p>
+
+            <div class="my-10 text-center italic text-sm">
+                <img src="Check/img/Poster Quốc Khánh 2-9, Giải phóng miền Nam 30-4.jpg" alt="Reunification" class="w-11/12 mx-auto rounded-2xl shadow-2xl border border-white/5 mb-4">
+                [Lễ diễu binh kỷ niệm 30/04 tại TP.HCM – Kết nối hào hùng lịch sử với hiện tại]
+            </div>
+
+            <p class="font-bold text-[var(--blue-pastel)] mt-10">
+                Hãy cùng chúng mình "trở về ký ức hào hùng", vì hành trình này là sự giao thoa mạnh mẽ giữa nghệ thuật biểu diễn và ý thức bảo tồn di sản!
+            </p>
+        </div>
+
+        <div class="bg-white/5 border border-white/10 rounded-3xl p-6 mb-16 flex flex-col md:flex-row items-center gap-6">
+            <img src="Check/img/vietnam.jpg" alt="Victory Event" class="w-32 h-32 object-cover rounded-xl">
+            <div class="flex-1 text-center md:text-left">
+                <p class="text-[11px] font-black text-[var(--pink-pastel)] uppercase tracking-widest mb-1">Sự kiện tiêu điểm</p>
+                <h4 class="text-xl font-bold mb-2">CONCERT QUỐC GIA 30/4</h4>
+                <div class="flex flex-wrap justify-center md:justify-start gap-4 text-xs font-medium opacity-70">
+                    <span><i class="fa-regular fa-clock mr-1"></i> 20:00 - 22:30, 30 tháng 04, 2026</span>
+                    <span><i class="fa-solid fa-location-dot mr-1"></i> Quảng trường Ba Đình, Hà Nội</span>
+                </div>
+            </div>
+            <a href="detail.html?id=48" class="bg-[var(--blue-pastel)] hover:bg-[var(--pink-pastel)] text-black px-8 py-3 rounded-full font-black text-sm transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg shadow-cyan-500/20">
+                SĂN VÉ NGAY
+            </a>
+        </div>
+    </div>
+</div>
+     
+    <script src="blog.js"></script>
+</body>
+</html>

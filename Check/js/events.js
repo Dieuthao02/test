@@ -1,5 +1,9 @@
 const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbx3vQyakJkFfJxkP5XAQ8fQkjmt5lnls2n4N3zjrEUL4JxYIzMumbGmPIZwOTzbjgO-OA/exec';
 let allEvents = [];
+const searchInput = document.getElementById('search-input');
+const suggestions = document.getElementById('search-suggestions');
+let datePicker; 
+let selectedDates = [];
 
 async function fetchEvents() {
     try {
@@ -180,6 +184,11 @@ function filterByLocationFromUrl(locationName) {
     });
 }
 
+function btnApplyDate() {
+    applyDateFilter(); // Gọi hàm lọc thực tế
+    toggleDropdown('dropdownDate'); // Đóng bảng lịch sau khi chọn
+}
+
 function updateActiveButton(activeBtn) {
     const buttons = document.querySelectorAll('.category-btn');
     buttons.forEach(btn => {
@@ -242,12 +251,14 @@ searchInput.addEventListener('input', function() {
 
 function toggleDropdown(id) {
     const target = document.getElementById(id);
-    const isShowing = !target.classList.contains('hidden');
+    if (!target) return;
     
-    document.getElementById('dropdownDate').classList.add('hidden');
-    document.getElementById('dropdownMain').classList.add('hidden');
-    
-    if (!isShowing) target.classList.remove('hidden');
+    // Đóng các dropdown khác trước
+    document.querySelectorAll('.dropdown-content').forEach(d => {
+        if (d.id !== id) d.classList.add('hidden');
+    });
+
+    target.classList.toggle('hidden');
 }
 
 function setDateFilter(type) {
@@ -290,20 +301,23 @@ window.addEventListener('click', function(e) {
     }
 });
 
-let datePicker;
-let selectedDates = [];
-
 function initCalendar() {
     const container = document.getElementById('calendarContainer');
-    if (!container) return; 
+    if (!container) return;
 
+    // Khởi tạo flatpickr
     datePicker = flatpickr("#dateRangeInput", {
         mode: "range",
-        inline: true,
+        inline: true, // Hiển thị lịch ngay lập tức
         dateFormat: "d/m/Y",
-        appendTo: container,
-        onChange: function(dates) {
+        locale: "vn", // Nếu bạn muốn tiếng Việt (cần nạp thêm script locale)
+        onChange: function(dates, dateStr) {
             selectedDates = dates;
+            // Cập nhật text cho nhãn hiển thị
+            const dateLabel = document.getElementById('dateLabel');
+            if (dateLabel) dateLabel.textContent = dateStr || 'Tất cả các ngày';
+            
+            // Gọi hàm lọc dữ liệu
             applyDateFilter();
         }
     });
@@ -312,47 +326,59 @@ function initCalendar() {
 window.onload = initCalendar;
 
 function applyDateFilter() {
+    const dateLabel = document.getElementById('dateLabel');
+    
+    // Nếu không chọn ngày hoặc xóa lựa chọn, hiện tất cả sự kiện
     if (!selectedDates || selectedDates.length === 0) {
         renderEvents(allEvents);
-        document.getElementById('dateLabel').innerText = 'Tất cả các ngày';
+        if (dateLabel) dateLabel.innerText = 'Tất cả các ngày';
         return;
     }
 
     const startDate = new Date(selectedDates[0]);
     startDate.setHours(0, 0, 0, 0);
     
+    // Nếu chọn dải ngày thì lấy ngày kết thúc, nếu chọn 1 ngày thì dùng luôn ngày đó
     const endDate = selectedDates[1] ? new Date(selectedDates[1]) : new Date(selectedDates[0]);
     endDate.setHours(23, 59, 59, 999);
 
     const filtered = allEvents.filter(event => {
         const eventDate = parseDate(event.time); 
         if (!eventDate) return false;
+        // Kiểm tra xem ngày của sự kiện có nằm trong khoảng đã chọn không
         return eventDate >= startDate && eventDate <= endDate;
     });
 
     renderEvents(filtered);
-    const label = selectedDates.length === 2 
-        ? `${flatpickr.formatDate(startDate, "d/m")} - ${flatpickr.formatDate(endDate, "d/m")}`
-        : flatpickr.formatDate(startDate, "d/m/Y");
-    document.getElementById('dateLabel').innerText = label;
+
+    // Cập nhật text hiển thị trên nút bấm
+    if (dateLabel) {
+        const label = selectedDates.length === 2 
+            ? `${flatpickr.formatDate(startDate, "d/m")} - ${flatpickr.formatDate(endDate, "d/m")}`
+            : flatpickr.formatDate(startDate, "d/m/Y");
+        dateLabel.innerText = label;
+    }
 }
 
 function parseDate(dateStr) {
     if (!dateStr) return null;
+    
+    // Làm sạch chuỗi: xóa khoảng trắng thừa, chuyển về chữ thường
+    const cleanStr = dateStr.toString().trim().toLowerCase();
 
-    const monthTextMatch = dateStr.match(/(\d{1,2})\s+tháng\s+(\d{1,2}),\s+(\d{4})/i);
+    // 1. Định dạng "24 tháng 04, 2026" hoặc "24 thg 4, 2026"
+    const monthTextMatch = cleanStr.match(/(\d{1,2})\s+(?:tháng|thg)\s+(\d{1,2})[,\s/]+(\d{4})/i);
     if (monthTextMatch) {
-        const day = parseInt(monthTextMatch[1]);
-        const month = parseInt(monthTextMatch[2]) - 1; 
-        const year = parseInt(monthTextMatch[3]);
-        return new Date(year, month, day);
+        return new Date(parseInt(monthTextMatch[3]), parseInt(monthTextMatch[2]) - 1, parseInt(monthTextMatch[1]));
     }
 
-    const slashMatch = dateStr.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+    // 2. Định dạng "24/04/2026" hoặc "24-04-2026"
+    const slashMatch = cleanStr.match(/(\d{1,2})[/-](\d{1,2})[/-](\d{4})/);
     if (slashMatch) {
-        return new Date(slashMatch[3], slashMatch[2] - 1, slashMatch[1]);
+        return new Date(parseInt(slashMatch[3]), parseInt(slashMatch[2]) - 1, parseInt(slashMatch[1]));
     }
 
+    // 3. Định dạng ISO chuẩn
     const isoDate = new Date(dateStr);
     if (!isNaN(isoDate.getTime())) {
         return isoDate;
@@ -374,6 +400,19 @@ document.addEventListener('click', (e) => {
     if (wrap && !wrap.contains(e.target)) {
         menu.classList.add('hidden');
     }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    flatpickr("#dateRangeInput", {
+        mode: "range",
+        inline: true, // Hiển thị lịch luôn mà không cần click vào input
+        appendTo: document.getElementById('calendarContainer'),
+        dateFormat: "d/m/Y",
+        onChange: function(selectedDates, dateStr) {
+            // Cập nhật text cho nút bấm khi chọn ngày
+            document.getElementById('dateLabel').textContent = dateStr;
+        }
+    });
 });
 
 function renderSearchSuggestions() {
@@ -478,9 +517,6 @@ if (searchInput) {
         }
     });
 }
-
-const searchInput = document.getElementById('search-input');
-const suggestions = document.getElementById('search-suggestions');
 
 if (searchInput && suggestions) {
     // 1. Hiện bảng khi focus hoặc click vào input
