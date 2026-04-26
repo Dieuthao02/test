@@ -19,7 +19,7 @@
                 <h1 class="text-3xl font-black tracking-tighter cursor-pointer bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent"> Elysium </h1>
             </a>
             <nav class="hidden xl:flex space-x-6 font-bold text-gray-600 dark:text-gray-300">
-                <a href="event.html" class="hover:text-blue-400 transition">Sự kiện</a>
+                <a href="events.html" class="hover:text-blue-400 transition">Sự kiện</a>
                 <a href="calendar.html" class="hover:text-blue-400 transition">Lịch</a>
             </nav>
         </div>
@@ -142,7 +142,7 @@
         <!-- Nhóm 3: Chức năng cá nhân -->
         <div class="flex items-center space-x-4 flex-shrink-0 font-bold text-sm">
             <div id="guest-nav" class="flex items-center gap-3">
-                <a href="create.html" class="hidden lg:flex items-center text-blue-500 border-2 border-blue-100 bg-blue-50/30 px-4 py-1.5 rounded-full hover:bg-blue-100 transition text-xs">
+                <a href="create.html" id="create-event-btn" class="hidden lg:flex items-center text-blue-500 border-2 border-blue-100 bg-blue-50/30 px-4 py-1.5 rounded-full hover:bg-blue-100 transition text-xs">
                     <i class="fa-solid fa-plus-circle mr-2"></i> Tạo sự kiện
                 </a>
                 <div class="flex items-center bg-gray-100/80 rounded-full p-1 border border-gray-200">
@@ -151,19 +151,19 @@
                 </div>
             </div>
             <div id="user-nav" class="hidden items-center gap-3">
-         <a href="create.html" class="hidden lg:flex items-center text-blue-500 border-2 border-blue-100 bg-blue-50/30 px-4 py-1.5 rounded-full hover:bg-blue-100 transition text-xs">
+                <a href="create.html" class="hidden lg:flex items-center text-blue-500 border-2 border-blue-100 bg-blue-50/30 px-4 py-1.5 rounded-full hover:bg-blue-100 transition text-xs">
                     <i class="fa-solid fa-plus-circle mr-2"></i> Tạo sự kiện
                 </a>
                 <div class="relative" id="header-avatar-wrap">
                 
                     <button onclick="toggleHeaderMenu()" class="flex items-center gap-2 bg-gray-100 border border-gray-200 rounded-full px-3 py-1.5 hover:bg-gray-200 transition">
-    <div class="w-6 h-6 rounded-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-pink-400 to-purple-500 text-white text-xs font-black" id="avatar-container">
-        <img id="header-avatar-img" class="w-full h-full object-cover hidden" src="" alt="Avatar">
-        <span id="header-avatar-initial">U</span>
-    </div>
-    <span class="text-xs text-gray-700 max-w-[80px] truncate" id="header-username">User</span>
-    <i class="fa-solid fa-chevron-down text-xs text-gray-400"></i>
-</button>
+                        <div class="w-6 h-6 rounded-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-pink-400 to-purple-500 text-white text-xs font-black" id="avatar-container">
+                            <img id="header-avatar-img" class="w-full h-full object-cover hidden" src="" alt="Avatar">
+                            <span id="header-avatar-initial">U</span>
+                        </div>
+                        <span class="text-xs text-gray-700 max-w-[80px] truncate" id="header-username">User</span>
+                        <i class="fa-solid fa-chevron-down text-xs text-gray-400"></i>
+                    </button>
                     <div id="header-user-menu" class="hidden absolute right-0 top-[130%] bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 min-w-[200px] z-[200]">
                         <div class="px-4 py-3 border-b border-gray-100">
                             <p class="font-black text-gray-800 text-sm" id="menu-name">Người dùng</p>
@@ -191,23 +191,36 @@
     </div>
 
     <!-- TẦNG 2: DANH MỤC SỰ KIỆN  -->
-    <div class="bg-[#1a1a1a] text-white py-1 overflow-x-auto no-scrollbar">
-        <div class="max-w-[1400px] mx-auto px-6 flex space-x-10 text-[11px] font-bold whitespace-nowrap uppercase tracking-[0.1em] items-center">
-            <div class="bg-[#1a1a1a] text-white py-2 overflow-x-auto no-scrollbar sticky top-16 z-40">
-    <div id="categoryMenu" class="max-w-[1400px] mx-auto px-6 flex space-x-10 text-[11px] font-bold whitespace-nowrap uppercase tracking-[0.1em] items-center">
-        <button onclick="filterCategory('all', this)" class="category-btn text-pink-400 border-b border-pink-400 pb-1">Tất cả</button>
-        <button onclick="filterCategory('Nhạc sống', this)" class="category-btn text-gray-400 hover:text-white transition pb-1">Nhạc sống</button>
-        <button onclick="filterCategory('Sân khấu & Nghệ thuật', this)" class="category-btn text-gray-400 hover:text-white transition pb-1">Sân khấu</button>
-        <button onclick="filterCategory('Thể Thao', this)" class="category-btn text-gray-400 hover:text-white transition pb-1">Thể Thao</button>
-        <button onclick="filterCategory('Hội thảo & Workshop', this)" class="category-btn text-gray-400 hover:text-white transition pb-1">Hội thảo & Workshop</button>
-        <button onclick="filterCategory('Tham quan & Trải nghiệm', this)" class="category-btn text-gray-400 hover:text-white transition pb-1">Tham quan & Trải nghiệm</button>
-        <button onclick="filterCategory('Khác', this)" class="category-btn text-gray-400 hover:text-white transition pb-1">Khác</button>
-        <div class="h-4 w-[1px] bg-gray-700 mx-2"></div> <a href="blog.html" class="text-gray-400 hover:text-white transition">Blog</a>
+    <div id="cat-nav-wrapper" class="sticky top-[60px] z-40 overflow-hidden transition-all duration-300 ease-in-out" style="max-height:0;opacity:0;">
+        <div class="bg-[#1a1a1a] text-white overflow-x-auto no-scrollbar">
+            <div id="categoryMenu" class="max-w-[1400px] mx-auto px-6 py-2 flex space-x-8 text-[10px] font-bold whitespace-nowrap uppercase tracking-[0.12em] items-center">
+                <a href="events.html?category=all" class="category-btn text-pink-400 border-b border-pink-400 pb-0.5">Tất cả</a>
+                <a href="events.html?category=Nhạc sống" class="category-btn text-gray-400 hover:text-white transition pb-0.5">Nhạc sống</a>
+                <a href="events.html?category=Sân khấu & Nghệ thuật" class="category-btn text-gray-400 hover:text-white transition pb-0.5">Sân khấu & Nghệ thuật</a>
+                <a href="events.html?category=Thể Thao" class="category-btn text-gray-400 hover:text-white transition pb-0.5">Thể Thao</a>
+                <a href="events.html?category=Hội thảo & Workshop" class="category-btn text-gray-400 hover:text-white transition pb-0.5">Hội thảo & Workshop</a>
+                <a href="events.html?category=Tham quan & Trải nghiệm" class="category-btn text-gray-400 hover:text-white transition pb-0.5">Tham quan & Trải nghiệm</a>
+                <a href="events.html?category=Khác" class="category-btn text-gray-400 hover:text-white transition pb-0.5">Khác</a>
+                <div class="h-3 w-[1px] bg-gray-700 mx-1"></div>
+                <a href="blog.html" class="text-gray-400 hover:text-white transition">Blog</a>
+            </div>
         </div>
     </div>
+    <script>
+    (function(){
+        const wrapper = document.getElementById('cat-nav-wrapper');
+        const header = document.querySelector('header');
+        let hideTimer;
+        function showNav(){ clearTimeout(hideTimer); wrapper.style.maxHeight='40px'; wrapper.style.opacity='1'; }
+        function hideNav(){ hideTimer=setTimeout(()=>{ wrapper.style.maxHeight='0'; wrapper.style.opacity='0'; },300); }
+        header.addEventListener('mouseenter', showNav);
+        header.addEventListener('mouseleave', hideNav);
+        wrapper.addEventListener('mouseenter', showNav);
+        wrapper.addEventListener('mouseleave', hideNav);
+    })();
+    </script>
 </header>
     
- 
     <main class="max-w-7xl mx-auto px-4 py-12">
         <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
     <h2 id="categoryTitle" class="text-2xl font-bold text-gray-800">Tất cả sự kiện</h2>

@@ -222,13 +222,21 @@ document.addEventListener('DOMContentLoaded', () => {
     loadEvents();
 });
 
-function switchSearchTab(tab){
-    const g=tab==='genre';
-    document.getElementById('tab-genre').className=`pb-1 text-sm font-black border-b-2 transition ${g?'border-gray-800 text-gray-800':'border-transparent text-gray-400 hover:text-gray-600'}`;
-    document.getElementById('tab-city').className=`pb-1 text-sm font-black border-b-2 transition ${!g?'border-gray-800 text-gray-800':'border-transparent text-gray-400 hover:text-gray-600'}`;
-    document.getElementById('panel-genre').classList.toggle('hidden',!g);
-    document.getElementById('panel-city').classList.toggle('hidden',g);
+function switchSearchTab(tab) {
+    const isGenre = tab === 'genre';
+    const activeTab = document.getElementById(isGenre ? 'tab-genre' : 'tab-city');
+    const inactiveTab = document.getElementById(isGenre ? 'tab-city' : 'tab-genre');
+
+    activeTab.classList.remove('text-white/60', 'text-gray-400', 'border-transparent');
+    activeTab.classList.add('text-white', 'border-white');
+
+    inactiveTab.classList.remove('text-white', 'border-white');
+    inactiveTab.classList.add('text-white/60', 'border-transparent');
+
+    document.getElementById('panel-genre').classList.toggle('hidden', !isGenre);
+    document.getElementById('panel-city').classList.toggle('hidden', isGenre);
 }
+
 function searchBy(v){document.getElementById('search-input').value=v;document.getElementById('search-suggestions').classList.add('hidden')}
 
 const si = document.getElementById('search-input');

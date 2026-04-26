@@ -12,7 +12,7 @@
 </head>
 <body class="bg-slate-50">
 
- <header class="sticky top-0 z-[100] bg-white/90 backdrop-blur-lg border-b border-white shadow-sm">
+<header class="sticky top-0 z-[100] bg-white/90 backdrop-blur-lg border-b border-white shadow-sm">
     <div class="max-w-[1400px] mx-auto px-6 py-3 flex items-center justify-between gap-8 relative">
         <div class="flex items-center space-x-10 flex-shrink-0">
             <a href="index.html">
@@ -32,30 +32,29 @@
                            placeholder="Tìm kiếm sự kiện, nghệ sĩ..."
                            class="w-full outline-none bg-transparent font-medium text-sm text-gray-700 placeholder-gray-400">
                 </div>
-                <div class="relative px-4 py-2 cursor-pointer hover:bg-gray-50 transition" id="location-btn" style="z-index: 100;">
-            <div class="flex items-center gap-2 text-sm font-bold text-gray-600 whitespace-nowrap">
-                <i class="fa-solid fa-location-dot text-pink-400"></i>
-                <span id="location-text">Hà Nội</span>
-                <i class="fa-solid fa-chevron-down text-xs text-gray-400"></i>
+                <div class="relative px-4 py-2 border-r border-gray-200 cursor-pointer hover:bg-gray-50 transition" id="location-btn">
+                    <div class="flex items-center gap-2 text-sm font-bold text-gray-600 whitespace-nowrap">
+                        <i class="fa-solid fa-location-dot text-pink-400"></i>
+                        <span id="location-text">Hà Nội</span>
+                        <i class="fa-solid fa-chevron-down text-xs text-gray-400"></i>
+                    </div>
+                    <div id="location-dropdown" class="hidden absolute top-[120%] right-0 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 min-w-[160px] z-index: 999">
+                        <div class="px-3 py-1 text-[10px] font-black text-gray-400 uppercase tracking-widest">Chọn thành phố</div>
+                        <div class="location-option px-4 py-2.5 hover:bg-pink-50 cursor-pointer text-sm font-bold text-gray-700 flex items-center gap-2" data-city="Hà Nội">
+                            <i class="fa-solid fa-circle text-[6px] text-pink-400"></i> Hà Nội
+                        </div>
+                        <div class="location-option px-4 py-2.5 hover:bg-pink-50 cursor-pointer text-sm font-bold text-gray-700 flex items-center gap-2" data-city="TP. Hồ Chí Minh">
+                            <i class="fa-solid fa-circle text-[6px] text-gray-300"></i> TP. Hồ Chí Minh
+                        </div>
+                        <div class="location-option px-4 py-2.5 hover:bg-pink-50 cursor-pointer text-sm font-bold text-gray-700 flex items-center gap-2" data-city="Đà Nẵng">
+                            <i class="fa-solid fa-circle text-[6px] text-gray-300"></i> Đà Nẵng
+                        </div>
+                        <div class="location-option px-4 py-2.5 hover:bg-pink-50 cursor-pointer text-sm font-bold text-gray-700 flex items-center gap-2" data-city="Toàn quốc">
+                            <i class="fa-solid fa-circle text-[6px] text-gray-300"></i> Toàn quốc
+                        </div>
+                    </div>
+                    </div>
             </div>
-            
-            <div id="location-dropdown" class="hidden absolute top-[120%] right-0 bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 min-w-[180px]" style="z-index: 9999 !important;">
-                <div class="px-3 py-1 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-50 mb-1">Chọn thành phố</div>
-                <div class="location-option px-4 py-2.5 hover:bg-pink-50 cursor-pointer text-sm font-bold text-gray-700 flex items-center gap-2" data-city="Hà Nội">
-                    <i class="fa-solid fa-circle text-[6px] text-pink-400"></i> Hà Nội
-                </div>
-                <div class="location-option px-4 py-2.5 hover:bg-pink-50 cursor-pointer text-sm font-bold text-gray-700 flex items-center gap-2" data-city="TP. Hồ Chí Minh">
-                    <i class="fa-solid fa-circle text-[6px] text-gray-300"></i> TP. Hồ Chí Minh
-                </div>
-                <div class="location-option px-4 py-2.5 hover:bg-pink-50 cursor-pointer text-sm font-bold text-gray-700 flex items-center gap-2" data-city="Đà Nẵng">
-                    <i class="fa-solid fa-circle text-[6px] text-gray-300"></i> Đà Nẵng
-                </div>
-                <div class="location-option px-4 py-2.5 hover:bg-pink-50 cursor-pointer text-sm font-bold text-gray-700 flex items-center gap-2" data-city="Toàn quốc">
-                    <i class="fa-solid fa-circle text-[6px] text-gray-300"></i> Toàn quốc
-                </div>
-            </div>
-        </div>
-    </div>
 
             <!-- DROPDOWN SEARCH -->
             <div id="search-suggestions" class="absolute top-[115%] left-0 right-0 bg-[#2a2a2a] rounded-2xl shadow-2xl hidden z-50 overflow-hidden" style="min-width:600px">
@@ -79,14 +78,14 @@
                 <div class="px-5 pt-4">
                     <div class="flex gap-6 border-b border-white/10 mb-4">
                         <button id="tab-genre" onclick="switchSearchTab('genre')"
-                            class="pb-2 text-sm font-black text-white border-b-2 border-white transition">
-                            Khám phá theo Thể loại
-                        </button>
+                        class="pb-2 text-sm font-black text-white border-b-2 border-white transition">
+                        Khám phá theo Thể loại
+                    </button>
                         <button id="tab-city" onclick="switchSearchTab('city')"
-                            class="pb-2 text-sm font-bold text-gray-400 border-b-2 border-transparent hover:text-white transition">
-                            Khám phá theo Thành phố
-                        </button>
-                    </div>
+                        class="pb-2 text-sm font-bold text-white/60 border-b-2 border-transparent hover:text-white transition">
+                        Khám phá theo Thành phố
+                    </button>
+                </div>
                     <div id="panel-genre" class="grid grid-cols-4 gap-3 pb-4">
                         <a href="events.html?category=Nhạc sống" class="relative rounded-xl overflow-hidden aspect-video group cursor-pointer">
                             <img src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=300&q=80" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
@@ -143,7 +142,7 @@
         <!-- Nhóm 3: Chức năng cá nhân -->
         <div class="flex items-center space-x-4 flex-shrink-0 font-bold text-sm">
             <div id="guest-nav" class="flex items-center gap-3">
-                <a href="create.html" data-create-event-link class="hidden lg:flex items-center text-blue-500 border-2 border-blue-100 bg-blue-50/30 px-4 py-1.5 rounded-full hover:bg-blue-100 transition text-xs">
+                <a href="create.html" id="create-event-btn" class="hidden lg:flex items-center text-blue-500 border-2 border-blue-100 bg-blue-50/30 px-4 py-1.5 rounded-full hover:bg-blue-100 transition text-xs">
                     <i class="fa-solid fa-plus-circle mr-2"></i> Tạo sự kiện
                 </a>
                 <div class="flex items-center bg-gray-100/80 rounded-full p-1 border border-gray-200">
@@ -152,19 +151,19 @@
                 </div>
             </div>
             <div id="user-nav" class="hidden items-center gap-3">
-         <a href="create.html" data-create-event-link class="hidden lg:flex items-center text-blue-500 border-2 border-blue-100 bg-blue-50/30 px-4 py-1.5 rounded-full hover:bg-blue-100 transition text-xs">
+                <a href="create.html" class="hidden lg:flex items-center text-blue-500 border-2 border-blue-100 bg-blue-50/30 px-4 py-1.5 rounded-full hover:bg-blue-100 transition text-xs">
                     <i class="fa-solid fa-plus-circle mr-2"></i> Tạo sự kiện
                 </a>
                 <div class="relative" id="header-avatar-wrap">
                 
                     <button onclick="toggleHeaderMenu()" class="flex items-center gap-2 bg-gray-100 border border-gray-200 rounded-full px-3 py-1.5 hover:bg-gray-200 transition">
-    <div class="w-6 h-6 rounded-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-pink-400 to-purple-500 text-white text-xs font-black" id="avatar-container">
-        <img id="header-avatar-img" class="w-full h-full object-cover hidden" src="" alt="Avatar">
-        <span id="header-avatar-initial">U</span>
-    </div>
-    <span class="text-xs text-gray-700 max-w-[80px] truncate" id="header-username">User</span>
-    <i class="fa-solid fa-chevron-down text-xs text-gray-400"></i>
-</button>
+                        <div class="w-6 h-6 rounded-full overflow-hidden flex items-center justify-center bg-gradient-to-br from-pink-400 to-purple-500 text-white text-xs font-black" id="avatar-container">
+                            <img id="header-avatar-img" class="w-full h-full object-cover hidden" src="" alt="Avatar">
+                            <span id="header-avatar-initial">U</span>
+                        </div>
+                        <span class="text-xs text-gray-700 max-w-[80px] truncate" id="header-username">User</span>
+                        <i class="fa-solid fa-chevron-down text-xs text-gray-400"></i>
+                    </button>
                     <div id="header-user-menu" class="hidden absolute right-0 top-[130%] bg-white rounded-2xl shadow-2xl border border-gray-100 py-2 min-w-[200px] z-[200]">
                         <div class="px-4 py-3 border-b border-gray-100">
                             <p class="font-black text-gray-800 text-sm" id="menu-name">Người dùng</p>
@@ -191,7 +190,7 @@
         </div>
     </div>
 
-    <!-- TẦNG 2: DANH MỤC SỰ KIỆN-->
+    <!-- TẦNG 2: DANH MỤC SỰ KIỆN  -->
     <div id="cat-nav-wrapper" class="sticky top-[60px] z-40 overflow-hidden transition-all duration-300 ease-in-out" style="max-height:0;opacity:0;">
         <div class="bg-[#1a1a1a] text-white overflow-x-auto no-scrollbar">
             <div id="categoryMenu" class="max-w-[1400px] mx-auto px-6 py-2 flex space-x-8 text-[10px] font-bold whitespace-nowrap uppercase tracking-[0.12em] items-center">
@@ -230,10 +229,10 @@
                 <span class="w-2 h-2 bg-pink-500 rounded-full animate-pulse"></span> Hot Event 2026
             </div>
             <h2 class="text-6xl xl:text-7xl font-black text-gray-900 leading-[0.9]">CONCERT<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-blue-400">CỰC HOTT</span></h2>
-            <p class="text-xl font-bold text-gray-500 uppercase tracking-tighter">18.04.2026 | VẠN PHÚC CITY, HÀ ĐÔNG</p>
+            <p class="text-xl font-bold text-gray-500 uppercase tracking-tighter">18.05.2026 | SVĐ QUỐC GIA MỸ ĐÌNH, HÀ NỘI</p>
             <div class="flex gap-4 flex-wrap">
-                <button onclick="openTicketModal('Concert Cực Hott 2026')" class="bg-[#FBD719] text-black px-8 py-4 rounded-xl font-black text-lg shadow-lg hover:scale-105 transition active:scale-95">🎫 Đặt vé ngay</button>
-                <a href="detail.html?id=21" class="border-2 border-gray-800 text-gray-800 px-8 py-4 rounded-xl font-black text-lg hover:bg-gray-800 hover:text-white transition inline-block">Xem thêm →</a>
+                <button onclick="window.location.href='detail.html?id=48'" class="bg-[#FBD719] text-black px-8 py-4 rounded-xl font-black text-lg shadow-lg hover:scale-105 transition active:scale-95">🎫 Đặt vé ngay</button>
+                <a href="events.html" class="border-2 border-gray-800 text-gray-800 px-8 py-4 rounded-xl font-black text-lg hover:bg-gray-800 hover:text-white transition inline-block">Xem thêm sự kiện→</a>
             </div>
             <div class="flex items-center gap-6 pt-2">
                 <div class="flex -space-x-2">

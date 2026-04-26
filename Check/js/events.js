@@ -74,7 +74,6 @@ function renderEvents(events) {
     const grid = document.getElementById('eventGrid');
     if (!grid) return;
     grid.innerHTML = ''; 
-   
 
     events.forEach(event => {
         const id = event.id;
@@ -100,13 +99,13 @@ function renderEvents(events) {
                     ${isHot ? '<span class="absolute top-3 left-3 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded">HOT</span>' : ''}
                 </div>
                 <div class="p-5 flex-grow flex flex-col">
-                    <h3 class="font-bold text-gray-900 text-lg mb-2 line-clamp-2 h-14">${name}</h3>
+                    <h3 class="font-semibold text-gray-900 text-base mb-1 line-clamp-2">${name}</h3>
                     <div class="text-sm text-gray-500 space-y-2 mb-4">
                         <p class="flex items-start"><i class="fa-regular fa-calendar-check mt-1 mr-2"></i><span>${time}</span></p>
                         <p class="flex items-start"><i class="fa-solid fa-location-dot mt-1 mr-2"></i><span>${loc}</span></p>
                     </div>
                     <div class="mt-auto flex justify-between items-center border-t pt-4">
-                        <span class="text-red-500 font-bold text-lg">${displayPrice}</span>
+                        <span class="font-bold text-lg bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">${displayPrice}</span>
                         <button onclick="event.stopPropagation(); goToDetail('${event.id}')" 
                         class="bg-blue-50 text-blue-600 px-4 py-2 rounded-lg font-semibold text-sm hover:bg-blue-600 hover:text-white transition-colors">
                     Mua vé
@@ -371,7 +370,6 @@ document.addEventListener('click', (e) => {
     }
 });
 
-
 function renderSearchSuggestions() {
     const hotItems = allEvents.filter(e => e.hasDiagram === "TRUE" || e.hasDiagram === true).slice(0, 3);
     const grid = document.getElementById('search-suggestions-grid');
@@ -400,8 +398,15 @@ function renderSearchSuggestions() {
 // ===== SEARCH TABS =====
 function switchSearchTab(tab) {
     const isGenre = tab === 'genre';
-    document.getElementById('tab-genre').className = `pb-2 text-sm font-black border-b-2 transition ${isGenre ? 'text-white border-white' : 'text-gray-400 border-transparent hover:text-white'}`;
-    document.getElementById('tab-city').className  = `pb-2 text-sm font-black border-b-2 transition ${!isGenre ? 'text-white border-white' : 'text-gray-400 border-transparent hover:text-white'}`;
+    const activeTab = document.getElementById(isGenre ? 'tab-genre' : 'tab-city');
+    const inactiveTab = document.getElementById(isGenre ? 'tab-city' : 'tab-genre');
+
+    activeTab.classList.remove('text-white/60', 'text-gray-400', 'border-transparent');
+    activeTab.classList.add('text-white', 'border-white');
+
+    inactiveTab.classList.remove('text-white', 'border-white');
+    inactiveTab.classList.add('text-white/60', 'border-transparent');
+
     document.getElementById('panel-genre').classList.toggle('hidden', !isGenre);
     document.getElementById('panel-city').classList.toggle('hidden', isGenre);
 }
@@ -568,3 +573,20 @@ function resetDatePicker() {
     if (dateLabel) dateLabel.textContent = 'Tất cả các ngày';
     renderEvents(allEvents);
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const createBtn = document.getElementById('create-event-btn');
+    if (!createBtn) return;
+
+    const user = localStorage.getItem('user');
+
+    if (!user) {
+     
+        createBtn.classList.add('opacity-50', 'pointer-events-none', 'cursor-not-allowed');
+        createBtn.href = "#";
+    } else {
+    
+        createBtn.classList.remove('opacity-50', 'pointer-events-none', 'cursor-not-allowed');
+        createBtn.href = "create.html";
+    }
+});

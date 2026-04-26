@@ -1,28 +1,13 @@
-html.dark body{background:linear-gradient(135deg,#1a0a10,#0f0f1a,#051a18)!important;color:#e5e7eb!important}
-        html.dark header{background-color:rgba(10,10,15,.95)!important;border-color:rgba(255,255,255,.08)!important}
-        html.dark #search-suggestions{background:rgba(20,20,30,.98)!important;border-color:rgba(255,255,255,.1)!important}
-        html.dark .text-gray-900{color:#f3f4f6!important}html.dark .text-gray-800{color:#e5e7eb!important}html.dark .text-gray-600{color:#9ca3af!important}
-        html.dark .bg-white{background-color:#1e1e2e!important}html.dark .bg-slate-50{background-color:#0f0f1a!important}
-        html.dark .event-card{background:#1e1e2e!important;border-color:rgba(255,255,255,.08)!important}
-        html.dark .modal-box{background:#1e1e2e!important;color:#e5e7eb!important}
-        body{background:linear-gradient(135deg,#fdf2f8,#eff6ff,#f0fdf4);min-height:100vh}
-        .no-scrollbar::-webkit-scrollbar{display:none}.no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
-        .blob-shape{border-radius:42% 58% 70% 30%/45% 45% 55% 55%;background:linear-gradient(135deg,#FFDEE9,#B5FFFC)}
-        .glass-card{background:rgba(255,255,255,.7);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.8)}
-        .cat-nav{background:#1a1a1a}
-        .cat-nav a{color:#999;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:0 14px;white-space:nowrap;transition:color .2s;text-decoration:none}
-        .cat-nav a:hover,.cat-nav a.active{color:#fff}
-        .event-card{background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);border:1px solid #f3f4f6;transition:all .3s;text-decoration:none;display:block}
-        .event-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.12);transform:translateY(-2px)}
-        .seat{width:22px;height:22px;border-radius:5px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:8px;font-weight:900;transition:all .15s;margin:2px;border:1.5px solid transparent}
-        .seat.vip{background:#fef9c3;border-color:#f59e0b;color:#92400e}
-        .seat.regular{background:#dcfce7;border-color:#22c55e;color:#166534}
-        .seat.sold{background:#e5e7eb;border-color:#d1d5db;color:#9ca3af;cursor:not-allowed}
-        .seat.selected{background:linear-gradient(135deg,#00f2fe,#fb00ff);border-color:transparent;color:white;transform:scale(1.15)}
-        .seat:not(.sold):hover{transform:scale(1.1)}
-        .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:1000;overflow-y:auto}
-        .modal-box{background:white;border-radius:24px;width:90%;max-width:940px;margin:24px auto;overflow:hidden}
-        #pay-modal{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:1100;overflow-y:auto;display:none}
-        #pay-modal.show{display:block}
-        @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-        .animate-fadeIn{animation:fadeIn .3s ease}
+body{background:linear-gradient(135deg,#fdf2f8,#eff6ff,#f0fdf4);min-height:100vh}
+.no-scrollbar::-webkit-scrollbar{display:none}.no-scrollbar{-ms-overflow-style:none;scrollbar-width:none}
+.blob-shape{border-radius:42% 58% 70% 30%/45% 45% 55% 55%;background:linear-gradient(135deg,#FFDEE9,#B5FFFC)}
+.glass-card{background:rgba(255,255,255,.7);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.8)}
+.cat-nav{background:#1a1a1a}
+.cat-nav a{color:#999;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:0 14px;white-space:nowrap;transition:color .2s;text-decoration:none}
+.cat-nav a:hover,.cat-nav a.active{color:#fff}
+.event-card{background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06);border:1px solid #f3f4f6;transition:all .3s;text-decoration:none;display:block}
+.event-card:hover{box-shadow:0 8px 24px rgba(0,0,0,.12);transform:translateY(-2px)}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);z-index:1000;overflow-y:auto}
+.modal-box{background:white;border-radius:24px;width:90%;max-width:940px;margin:24px auto;overflow:hidden}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.animate-fadeIn{animation:fadeIn .3s ease}
