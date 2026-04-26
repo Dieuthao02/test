@@ -1,4 +1,4 @@
-    const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbwfP_xBGb0qD8-rzlPpgt1JOHmy3t8eTmgF7dKonvrvF4yh4PLFEXIO_3TeaRIExVH7tw/exec';
+    const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbx3vQyakJkFfJxkP5XAQ8fQkjmt5lnls2n4N3zjrEUL4JxYIzMumbGmPIZwOTzbjgO-OA/exec';
     let currentEventId = ''; 
 
     async function initEventDetail() {
@@ -6,8 +6,7 @@
     currentEventId = urlParams.get('id');
 
     const videoMap = {
-        '151': 'video/video151.mp4',
-        '30': 'videos/loading_30.mp4'
+        '151': 'video/video151.mp4'
     };
 
     const specialLoader = document.getElementById('special-loader');
@@ -71,8 +70,7 @@
     function renderPage(ev) {
 
     const bgVideoMap = {
-        '52': 'video52.mp4',
-        '30': 'assets/videos/art_30.mp4'
+        '52': 'video/video52.mp4'
     };
 
     const bgImageMap = {
@@ -340,6 +338,7 @@
         if (priceDisplay) priceDisplay.innerHTML = `<span class="line-through opacity-50">${finalMinDisplay} đ</span>`;
     } else {
         if (bookingBtn) {
+            // KIỂM TRA SỐ LƯỢNG LỊCH DIỄN
             if (timeArray.length === 1) {
                 bookingBtn.innerHTML = "Mua vé ngay";
                 bookingBtn.onclick = () => goToBooking(timeArray[0]);
@@ -423,8 +422,38 @@
         url += `&date=${encodeURIComponent(selectedDate)}`;
     }
     
-    // Chuyển trang
     window.location.href = url;
 }
 
-        window.onload = initEventDetail;
+    window.onload = initEventDetail;
+    document.addEventListener('DOMContentLoaded', function() {
+    const filters = document.querySelectorAll('.category-filter');
+    const cards = document.querySelectorAll('.suggestion-card');
+
+    filters.forEach(filter => {
+        filter.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            filters.forEach(f => {
+                f.classList.remove('text-pink-600', 'active');
+                f.classList.add('text-gray-500');
+            });
+            this.classList.add('text-pink-600', 'active');
+            this.classList.remove('text-gray-500');
+
+            const filterValue = this.getAttribute('data-filter');
+
+            cards.forEach(card => {
+                const cardCategory = card.getAttribute('data-category');
+                
+                if (filterValue === 'all' || cardCategory === filterValue) {
+                    card.style.display = 'block';
+                    card.classList.add('animate-in', 'fade-in', 'duration-500');
+                } else {
+                    card.style.display = 'none';
+                    card.classList.remove('animate-in', 'fade-in');
+                }
+            });
+        });
+    });
+});

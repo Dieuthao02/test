@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elysium - Nền tảng sự kiện hàng đầu Việt Nam</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>tailwind.config = { darkMode: 'class' }</script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <link rel="stylesheet" href="css/index.css">
@@ -144,7 +143,7 @@
         <!-- Nhóm 3: Chức năng cá nhân -->
         <div class="flex items-center space-x-4 flex-shrink-0 font-bold text-sm">
             <div id="guest-nav" class="flex items-center gap-3">
-                <a href="create.html" class="hidden lg:flex items-center text-blue-500 border-2 border-blue-100 bg-blue-50/30 px-4 py-1.5 rounded-full hover:bg-blue-100 transition text-xs">
+                <a href="create.html" data-create-event-link class="hidden lg:flex items-center text-blue-500 border-2 border-blue-100 bg-blue-50/30 px-4 py-1.5 rounded-full hover:bg-blue-100 transition text-xs">
                     <i class="fa-solid fa-plus-circle mr-2"></i> Tạo sự kiện
                 </a>
                 <div class="flex items-center bg-gray-100/80 rounded-full p-1 border border-gray-200">
@@ -153,7 +152,7 @@
                 </div>
             </div>
             <div id="user-nav" class="hidden items-center gap-3">
-         <a href="create.html" class="hidden lg:flex items-center text-blue-500 border-2 border-blue-100 bg-blue-50/30 px-4 py-1.5 rounded-full hover:bg-blue-100 transition text-xs">
+         <a href="create.html" data-create-event-link class="hidden lg:flex items-center text-blue-500 border-2 border-blue-100 bg-blue-50/30 px-4 py-1.5 rounded-full hover:bg-blue-100 transition text-xs">
                     <i class="fa-solid fa-plus-circle mr-2"></i> Tạo sự kiện
                 </a>
                 <div class="relative" id="header-avatar-wrap">
@@ -192,7 +191,7 @@
         </div>
     </div>
 
-    <!-- TẦNG 2: DANH MỤC SỰ KIỆN - thu nhỏ, hiện khi hover -->
+    <!-- TẦNG 2: DANH MỤC SỰ KIỆN-->
     <div id="cat-nav-wrapper" class="sticky top-[60px] z-40 overflow-hidden transition-all duration-300 ease-in-out" style="max-height:0;opacity:0;">
         <div class="bg-[#1a1a1a] text-white overflow-x-auto no-scrollbar">
             <div id="categoryMenu" class="max-w-[1400px] mx-auto px-6 py-2 flex space-x-8 text-[10px] font-bold whitespace-nowrap uppercase tracking-[0.12em] items-center">
@@ -208,7 +207,6 @@
             </div>
         </div>
     </div>
-    <!-- Trigger zone: hover vào header để hiện nav danh mục -->
     <script>
     (function(){
         const wrapper = document.getElementById('cat-nav-wrapper');
@@ -478,6 +476,37 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    const createEventLinks = document.querySelectorAll('a[href="create.html"], [data-create-event-link]');
+
+    function syncCreateEventLinks(isLoggedIn) {
+        createEventLinks.forEach((link) => {
+            if (!link.dataset.originalHref) {
+                link.dataset.originalHref = link.getAttribute('href') || 'create.html';
+            }
+
+            if (isLoggedIn) {
+                link.setAttribute('href', link.dataset.originalHref);
+                link.classList.remove('opacity-50', 'cursor-not-allowed');
+                link.removeAttribute('aria-disabled');
+                link.title = '';
+                return;
+            }
+
+            link.setAttribute('href', '#');
+            link.classList.add('opacity-50', 'cursor-not-allowed');
+            link.setAttribute('aria-disabled', 'true');
+            link.title = 'Vui lòng đăng nhập để tạo sự kiện';
+        });
+    }
+
+    createEventLinks.forEach((link) => {
+        link.addEventListener('click', (event) => {
+            if (link.getAttribute('aria-disabled') === 'true') {
+                event.preventDefault();
+                alert('Vui lòng đăng nhập để tạo sự kiện.');
+            }
+        });
+    });
 
     window.toggleHeaderMenu = () => {
         const menu = document.getElementById('header-user-menu');
@@ -496,6 +525,7 @@
     const userNav = document.getElementById('user-nav');
     
     if (user) {
+        syncCreateEventLinks(true);
         if (guestNav) guestNav.classList.add('hidden');
         if (userNav) {
             userNav.classList.remove('hidden');
@@ -533,6 +563,7 @@
             document.getElementById('menu-email').textContent = user.email;
 
     } else {
+        syncCreateEventLinks(false);
 
         if (guestNav) guestNav.classList.remove('hidden');
         if (userNav) userNav.classList.add('hidden');

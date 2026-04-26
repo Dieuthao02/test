@@ -1,4 +1,4 @@
-// --- 1. NHẬP LIỆU FIREBASE ---
+    // --- 1. NHẬP LIỆU FIREBASE ---
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { firebaseConfig } from './firebase-config.js';
@@ -12,7 +12,7 @@
     const authZone = document.getElementById('auth-zone');
     const dropdownMenu = document.getElementById('dropdown-menu');
 
-    // Hàm cập nhật thời gian thực (Ngày tháng)
+    // Hàm cập nhật thời gian 
     function updateRealTime() {
         const dateElement = document.getElementById('real-time-date');
         if (dateElement) {
@@ -24,15 +24,12 @@
         }
     }
 
-
     function updateTopBarUI() {
         const userLocal = JSON.parse(localStorage.getItem('userLogin'));
         if (userLocal) {
-            // Cập nhật tên chào mừng
             const welcomeName = document.getElementById('user-welcome-name');
             if (welcomeName) welcomeName.innerText = (userLocal.name || "Bạn") + " ✨";
 
-            // Cập nhật địa chỉ
             const locationElement = document.getElementById('user-location');
             if (locationElement) {
                 locationElement.innerText = userLocal.address || "Việt Nam";
@@ -40,7 +37,6 @@
         }
     }
 
-    // Hàm render avatar-btn dùng chung
     function renderAuthZone(userObj) {
         authZone.innerHTML = `
             <div id="avatar-btn" class="flex items-center gap-3 bg-white/50 backdrop-blur-sm p-1 pr-4 rounded-full border border-pink-100 shadow-sm cursor-pointer">
@@ -56,8 +52,7 @@
                 </button>
             </div>
         `;
-
-        // Gán avatar SAU khi render — tránh lỗi parse base64 dài trong template literal
+        
         const headerAvatarImg = document.getElementById('header-avatar-img');
         if (headerAvatarImg && userObj.avatar) {
             headerAvatarImg.src = userObj.avatar;
@@ -77,17 +72,14 @@
         };
     }
 
-    // Chạy cập nhật ngay khi load trang
     updateRealTime();
     updateTopBarUI();
 
-    // ✅ Hiện avatar NGAY từ localStorage — không chờ Firebase
     const cachedUser = JSON.parse(localStorage.getItem('userLogin'));
     if (cachedUser) {
         renderAuthZone(cachedUser);
     }
 
-    // Theo dõi trạng thái đăng nhập — cập nhật lại sau khi Firebase xác nhận
     onAuthStateChanged(auth, (user) => {
         if (user) {
             let existingData = JSON.parse(localStorage.getItem('userLogin')) || {};
@@ -107,7 +99,6 @@
     });;
 
     // --- 3. CÁC HÀM LOGIC  ---
-
     function updateBalanceUI(newAmount) {
         const walletBalance = document.getElementById('balance-wallet');
         if (!walletBalance) return;
@@ -117,15 +108,15 @@
         const duration = 1000; 
         let startTime = null;
 
-        function animation(currentTime) {
-            if (!startTime) startTime = currentTime;
-            const progress = Math.min((currentTime - startTime) / duration, 1);
-            const currentDisplay = Math.floor(progress * (end - start) + start);
-            const formatted = new Intl.NumberFormat('vi-VN').format(currentDisplay);
+    function animation(currentTime) {
+        if (!startTime) startTime = currentTime;
+        const progress = Math.min((currentTime - startTime) / duration, 1);
+        const currentDisplay = Math.floor(progress * (end - start) + start);
+        const formatted = new Intl.NumberFormat('vi-VN').format(currentDisplay);
             
-            walletBalance.innerText = `${formatted}đ`;
+        walletBalance.innerText = `${formatted}đ`;
             
-            if (progress < 1) requestAnimationFrame(animation);
+        if (progress < 1) requestAnimationFrame(animation);
             else currentBalance = end;
         }
         requestAnimationFrame(animation);
@@ -210,7 +201,6 @@
         window.dispatchEvent(new Event('storage_updated'));
     }
 
-    // Các hàm phụ trợ khác
     function openModal(id) { document.getElementById(id).classList.add('active'); }
     function closeModal(id) { document.getElementById(id).classList.remove('active'); }
     function backToStep1() {
@@ -220,11 +210,11 @@
 
     // --- 5. LOGIC CẬP NHẬT HỒ SƠ ---
 
-function handleAvatarChange(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
+    function handleAvatarChange(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
             const base64Image = e.target.result;
 
             const previewImg = document.getElementById('profile-avatar-preview');
@@ -237,52 +227,43 @@ function handleAvatarChange(event) {
 }
 
 
-function updateUserProfile() {
-    const newName = document.getElementById('edit-fullname').value;
-    const newPhone = document.getElementById('edit-phone').value;
-    const newAddress = document.getElementById('edit-address').value;
+    function updateUserProfile() {
+        const newName = document.getElementById('edit-fullname').value;
+        const newPhone = document.getElementById('edit-phone').value;
+        const newAddress = document.getElementById('edit-address').value;
+        if (!newName) return alert("Họ và tên không được để trống!");
+        let userLocal = JSON.parse(localStorage.getItem('userLogin')) || {};
+        userLocal.name = newName;
+        userLocal.phone = newPhone;
+        userLocal.address = newAddress;
+        if (window.tempAvatar) {
+            userLocal.avatar = window.tempAvatar;
+        }
 
-    if (!newName) return alert("Họ và tên không được để trống!");
+        localStorage.setItem('userLogin', JSON.stringify(userLocal));
+        window.tempAvatar = null; 
 
-    // Lấy dữ liệu hiện tại
-    let userLocal = JSON.parse(localStorage.getItem('userLogin')) || {};
-    
-    // Cập nhật thông tin mới
-    userLocal.name = newName;
-    userLocal.phone = newPhone;
-    userLocal.address = newAddress;
-    if (window.tempAvatar) {
-        userLocal.avatar = window.tempAvatar;
+        const welcomeName = document.getElementById('user-welcome-name');
+        if (welcomeName) welcomeName.innerText = newName + " ✨";
+
+        const locationEl = document.getElementById('user-location');
+        if (locationEl) locationEl.innerText = newAddress || "Việt Nam";
+
+        const headerName = document.querySelector('#avatar-btn .text-pink-600');
+        const headerImg  = document.querySelector('#avatar-btn img');
+        if (headerName) headerName.innerText = newName;
+        if (headerImg && userLocal.avatar) headerImg.src = userLocal.avatar;
+
+        const profileName = document.getElementById('profile-name-display');
+        if (profileName) profileName.innerText = newName;
+
+        const previewImg = document.getElementById('profile-avatar-preview');
+        if (previewImg && userLocal.avatar) previewImg.src = userLocal.avatar;
+
+        alert("Cập nhật hồ sơ thành công!");
     }
 
-    localStorage.setItem('userLogin', JSON.stringify(userLocal));
-    window.tempAvatar = null; // ✅ Reset sau khi lưu
-
-    // ✅ Fix: dùng id thay vì querySelector h2 span (dễ bắt nhầm)
-    const welcomeName = document.getElementById('user-welcome-name');
-    if (welcomeName) welcomeName.innerText = newName + " ✨";
-
-    // Địa chỉ dưới ngày tháng
-    const locationEl = document.getElementById('user-location');
-    if (locationEl) locationEl.innerText = newAddress || "Việt Nam";
-
-    // Tên + avatar trên nút header
-    const headerName = document.querySelector('#avatar-btn .text-pink-600');
-    const headerImg  = document.querySelector('#avatar-btn img');
-    if (headerName) headerName.innerText = newName;
-    if (headerImg && userLocal.avatar) headerImg.src = userLocal.avatar;
-
-    // Tên + avatar trên card profile (cột trái)
-    const profileName = document.getElementById('profile-name-display');
-    if (profileName) profileName.innerText = newName;
-
-    const previewImg = document.getElementById('profile-avatar-preview');
-    if (previewImg && userLocal.avatar) previewImg.src = userLocal.avatar;
-
-    alert("Cập nhật hồ sơ thành công!");
-}
-
-function changePassword() {
+    function changePassword() {
     const oldPass = document.getElementById('old-pass').value;
     const newPass = document.getElementById('new-pass').value;
 
@@ -297,40 +278,35 @@ function changePassword() {
     alert("Đổi mật khẩu thành công!");
     document.getElementById('old-pass').value = '';
     document.getElementById('new-pass').value = '';
-}
-
-// Hàm đổ dữ liệu từ LocalStorage vào các ô Input khi mở trang Profile
-function loadProfileToInputs() {
+    }
+  
+    function loadProfileToInputs() {
     const userLocal = JSON.parse(localStorage.getItem('userLogin'));
     if (!userLocal) return;
 
-    // Đổ vào form inputs
     if (document.getElementById('edit-fullname')) document.getElementById('edit-fullname').value = userLocal.name    || "";
     if (document.getElementById('edit-phone'))    document.getElementById('edit-phone').value    = userLocal.phone   || "";
     if (document.getElementById('edit-address'))  document.getElementById('edit-address').value  = userLocal.address || "";
     if (document.getElementById('edit-email'))    document.getElementById('edit-email').value    = userLocal.email   || "";
 
-    // Tên trên card avatar bên trái
     const profileName = document.getElementById('profile-name-display');
     if (profileName) profileName.innerText = userLocal.name || "Thành viên";
 
-    // Avatar đã lưu (base64 hoặc URL Google)
     const previewImg = document.getElementById('profile-avatar-preview');
     if (previewImg) {
         previewImg.src = userLocal.avatar
             || 'https://api.dicebear.com/7.x/adventurer/svg?seed=' + (userLocal.uid || 'default');
     }
 
-    // Mini info card (email, SĐT, địa chỉ) cột trái
     const emailDisplay   = document.getElementById('profile-email-display');
     const phoneDisplay   = document.getElementById('profile-phone-display');
     const addressDisplay = document.getElementById('profile-address-display');
     if (emailDisplay)   emailDisplay.innerText   = userLocal.email   || "—";
     if (phoneDisplay)   phoneDisplay.innerText   = userLocal.phone   || "—";
     if (addressDisplay) addressDisplay.innerText = userLocal.address || "—";
-}
+    }
 
-function renderMyTickets() {
+    function renderMyTickets() {
     const container = document.getElementById('my-tickets-container');
     if (!container) return;
 
@@ -345,7 +321,6 @@ function renderMyTickets() {
         return;
     }
 
-    // Đổ dữ liệu từ localStorage ra giao diện
     container.innerHTML = orders.reverse().map(order => {
         const totalQty = order.tickets.reduce((sum, t) => sum + (t.qty || 1), 0);
         const ticketNames = order.tickets.map(t => t.name).join(', ');
@@ -405,7 +380,7 @@ function viewOrderDetail(orderId) {
 }
 
 function updateTicketData(data) {
-    // 1. Đổ dữ liệu text vào các ID tương ứng
+  
     document.getElementById('ticket-event-name').innerText = data.eventName;
     document.getElementById('ticket-seat').innerText = `${data.seatType} • ${data.seatNumber}`;
     document.getElementById('ticket-owner').innerText = data.ownerName;
@@ -414,25 +389,21 @@ function updateTicketData(data) {
     document.getElementById('ticket-price').innerText = typeof data.price === 'number' ? data.price.toLocaleString('vi-VN') + 'đ' : (data.price || "0đ");
     document.getElementById('ticket-location').innerText = data.location;
 
-    // 2. Tạo nội dung cho QR Code 
     const qrContent = `
-SỰ KIỆN: ${data.eventName}
-VỊ TRÍ: ${data.seatType} - ${data.seatNumber}
-CHỦ VÉ: ${data.ownerName}
-MÃ VÉ: ${data.ticketId}
-THỜI GIAN: ${data.time}
-ĐỊA ĐIỂM: ${data.location}
+    SỰ KIỆN: ${data.eventName}
+    VỊ TRÍ: ${data.seatType} - ${data.seatNumber}
+    CHỦ VÉ: ${data.ownerName}
+    MÃ VÉ: ${data.ticketId}
+    THỜI GIAN: ${data.time}
+    ĐỊA ĐIỂM: ${data.location}
     `.trim();
 
-    // 3. Mã hóa chuỗi nội dung để đưa vào URL API
     const encodedContent = encodeURIComponent(qrContent);
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodedContent}`;
 
-    // 4. Cập nhật ảnh QR
     document.getElementById('ticket-qr').src = qrUrl;
 }
 
-// Ví dụ cách gọi hàm khi người dùng nhấn xem vé:
 const myTicket = {
     eventName: "GAI HOME CONCERT",
     seatType: "VIP A12",
@@ -447,33 +418,28 @@ const myTicket = {
 let selectedTicketId = '';
 let selectedPrice = 0;
 
-// 1. Hàm mở Modal hoàn tiền
 function openRefundModal(ticketId, price) {
     selectedTicketId = ticketId;
     selectedPrice = price;
 
     const refundAmount = price * 0.95;
     
-    // Cập nhật số tiền vào UI của Modal
     const amountDisplay = document.getElementById('refund-amount');
     if (amountDisplay) {
         amountDisplay.innerText = refundAmount.toLocaleString('vi-VN') + 'đ';
     }
 
-    // Hiển thị Modal
     const modal = document.getElementById('refund-modal');
     modal.classList.remove('hidden');
     modal.classList.add('flex'); 
 }
 
-// 2. Hàm đóng Modal
 function closeRefundModal() {
     const modal = document.getElementById('refund-modal');
     modal.classList.add('hidden');
     modal.classList.remove('flex');
 }
 
-// 3. Hàm xử lý khi chọn lý do "Khác..."
 function toggleOtherReason() {
     const select = document.getElementById('refund-reason-select');
     const container = document.getElementById('other-reason-container');
@@ -485,7 +451,6 @@ function toggleOtherReason() {
     }
 }
 
-// 4. Hàm xác nhận gửi yêu cầu về Admin
 function confirmRefundRequest() {
     const reasonSelect = document.getElementById('refund-reason-select');
     const reasonValue = reasonSelect.value;
@@ -500,8 +465,6 @@ function confirmRefundRequest() {
 
     const finalRefundAmount = selectedPrice * 0.95;
 
-    // --- ĐỒNG BỘ VỚI ADMIN ---
-    
     let allOrders = JSON.parse(localStorage.getItem('eventOrders')) || [];
     const orderIdx = allOrders.findIndex(o => o.id === selectedTicketId);
 
@@ -511,10 +474,8 @@ function confirmRefundRequest() {
         allOrders[orderIdx].refundStatus = 'pending'; 
         allOrders[orderIdx].amountToRefund = finalRefundAmount;
         
-        // Lưu lại vào LocalStorage
         localStorage.setItem('eventOrders', JSON.stringify(allOrders));
 
-        // Đóng modal nhập lý do và thông báo thành công
         closeRefundModal();
         
         const successModal = document.getElementById('refund-success-modal');
@@ -525,11 +486,9 @@ function confirmRefundRequest() {
             alert("Gửi yêu cầu thành công!");
         }
 
-        // Cập nhật lại giao diện Dashboard ngay lập tức
         renderRefundTickets();
         renderMyTickets();
 
-        // Kích hoạt để các tab khác (Admin) cập nhật theo
         window.dispatchEvent(new Event('storage_updated'));
     } else {
         alert("Không tìm thấy đơn hàng!");
@@ -541,10 +500,9 @@ function markOrderAsRefunding(orderId) {
     const index = orders.findIndex(o => o.id === orderId);
     
     if (index !== -1) {
-        orders[index].status = 'refunding'; // Chuyển trạng thái từ 'paid' sang 'refunding'
+        orders[index].status = 'refunding'; 
         localStorage.setItem('eventOrders', JSON.stringify(orders));
         
-        // Cập nhật lại UI trang hoàn tiền và trang kho vé
         renderRefundTickets();
         renderMyTickets();
     }
@@ -604,7 +562,6 @@ function renderRefundTickets() {
     }).join('');
 }
 
-// --- 6. CẬP NHẬT PHƠI HÀM RA WINDOW ---
 Object.assign(window, {
     setAmount: (val) => { document.getElementById('nap-tien-input').value = val; },
     selectMethod: (method) => {
@@ -628,21 +585,18 @@ Object.assign(window, {
         document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
         
-        // Nếu mở trang profile thì load dữ liệu vào input
         if (pageId === 'profile') {
             loadProfileToInputs();
         }
-        
-        // Khi chuyển sang trang Kho vé, cập nhật danh sách vé mới nhất
+
         if (pageId === 'tickets') {
             renderMyTickets();
         }
 
-        if (pageId === 'refund-page') { // ID phải khớp với ID thẻ div trang hoàn tiền của bạn
+        if (pageId === 'refund-page') { 
         renderRefundTickets();
         }
 
-        // Xử lý active menu sidebar
         if (element) {
             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
             element.classList.add('active');
@@ -654,15 +608,11 @@ Object.assign(window, {
     if (modal) {
         modal.classList.add('active');
 
-        // KIỂM TRA: Nếu mở modal chi tiết vé thì cập nhật dữ liệu luôn
         if (id === 'modal-ticket-detail') {
-            // Lấy thông tin user từ localStorage để đổ vào "Chủ vé"
             const userLocal = JSON.parse(localStorage.getItem('userLogin')) || {};
             
-            // Cập nhật lại tên chủ vé trong object myTicket
             myTicket.ownerName = userLocal.name || "Khách hàng";
             
-            // Chạy hàm đổ dữ liệu và tạo QR
             updateTicketData(myTicket);
         }
     }
@@ -684,5 +634,4 @@ document.addEventListener('change', (e) => {
 
 document.addEventListener('click', () => dropdownMenu.classList.remove('active'));
 
-// Khởi tạo mặc định
 renderMyTickets();

@@ -1,5 +1,4 @@
-// Cấu hình URL API của bạn
-const SHEET_URL = 'https://script.google.com/macros/s/AKfycbx3vQyakJkFfJxkP5XAQ8fQkjmt5lnls2n4N3zjrEUL4JxYIzMumbGmPIZwOTzbjgO-OA/exec';
+const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbx3vQyakJkFfJxkP5XAQ8fQkjmt5lnls2n4N3zjrEUL4JxYIzMumbGmPIZwOTzbjgO-OA/exec';
 let allEventsData = [];
 
 function parseEventDate(dateStr) {
@@ -60,7 +59,7 @@ function displayUpcomingEvents(events) {
 // --- LOGIC XỬ LÝ DỮ LIỆU ---
 async function loadEvents() {
     try {
-        const response = await fetch(SHEET_URL);
+        const response = await fetch(SHEET_API_URL);
         const data = await response.json();
         allEventsData = data;
         
