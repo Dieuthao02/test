@@ -1,4 +1,4 @@
- @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
 
 body { 
     font-family: 'Inter', sans-serif; 
@@ -95,4 +95,44 @@ span.flatpickr-weekday {
 
 #dateRangeInput {
     display: none;
+}
+
+#calendarContainer {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+#calendarContainer .flatpickr-calendar {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 auto;
+}
+
+.flatpickr-day.inRange {
+    background: #eff6ff !important;
+    box-shadow: -5px 0 0 #eff6ff, 5px 0 0 #eff6ff !important;
+    border-radius: 0 !important;
+}
+
+.flatpickr-day.startRange {
+    border-radius: 10px 0 0 10px !important;
+}
+
+.flatpickr-day.endRange {
+    border-radius: 0 10px 10px 0 !important;
+}
+
+.flatpickr-day.startRange.endRange {
+    border-radius: 10px !important;
+}
+
+.flatpickr-day.nextMonthDay.inRange,
+.flatpickr-day.prevMonthDay.inRange {
+    background: transparent !important;
+    box-shadow: none !important;
 }
