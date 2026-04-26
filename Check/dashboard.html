@@ -128,7 +128,6 @@
                         </div>
                     </div>
 
-                    <!-- TRẢ LẠI PHẦN TIN MỚI NHẤT -->
                     <div class="space-y-8">
                         <h3 class="text-2xl font-black italic uppercase">Tin mới nhất</h3>
                         <div class="bg-[#1a1a1a] text-white p-8 rounded-[3rem] shadow-2xl relative overflow-hidden group">
@@ -154,7 +153,6 @@
             <!-- 2. HỒ SƠ -->
             <div id="profile" class="page-content">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- CỘT TRÁI: Avatar Card -->
         <div class="lg:col-span-1 space-y-6">
             <div class="glass-card p-8 rounded-[3rem] text-center border-none">
                 <div class="relative inline-block group">
@@ -264,10 +262,15 @@
     </div>
 </div>
 
-            <div id="refund-page" class="page-content p-6">
-    <div class="flex items-center justify-between mb-8">
-        <h3 class="text-3xl font-black uppercase italic text-gray-800">Yêu cầu <span class="text-red-500">Hoàn tiền</span></h3>
-        <span class="bg-red-50 px-4 py-1 rounded-full text-[10px] font-bold text-red-500 border border-red-100 uppercase">Chính sách: 95% giá trị</span>
+    <div id="tickets" class="page-content">
+        <h3 class="text-3xl font-black mb-8 uppercase italic">Vé của bạn</h3>
+        <div id="my-tickets-container" class="space-y-6"></div>
+    </div>
+
+    <div id="refund-page" class="page-content p-6">
+        <div class="flex items-center justify-between mb-8">
+            <h3 class="text-3xl font-black uppercase italic text-gray-800">Yêu cầu <span class="text-red-500">Hoàn tiền</span></h3>
+            <span class="bg-red-50 px-4 py-1 rounded-full text-[10px] font-bold text-red-500 border border-red-100 uppercase">Chính sách: 95% giá trị</span>
     </div>
 
     <div id="ticket-list-refund" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
