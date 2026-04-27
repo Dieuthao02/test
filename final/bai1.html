@@ -12,6 +12,8 @@
         --accent-gold: #c5a059;
         --text-main: #1a1a1a;
         --input-border: #e0e0e0;
+        --error-red: #ff4757;
+        --success-green: #2ed573;
     }
 
     body {
@@ -31,7 +33,7 @@
         padding: 40px 30px;
         border-radius: 4px;
         box-shadow: 0 30px 60px rgba(0,0,0,0.1);
-        width: 300px;
+        width: 320px;
         border-top: 5px solid var(--accent-gold);
         animation: slideUp 0.6s ease;
     }
@@ -81,7 +83,7 @@
         transition: 0.3s;
     }
 
-    button:hover { background: var(--accent-gold); letter-spacing: 4px; }
+    button:hover { background: var(--accent-gold); letter-spacing: 2px; }
 
     .custom-file-btn {
         border: 1px solid #eee;
@@ -97,6 +99,7 @@
     }
 
     .match-status { font-size: 9px; position: absolute; right: 0; top: 0; }
+    .error-hint { color: var(--error-red); font-size: 8px; display: block; margin-top: 4px; }
 </style>
 </head>
 <body>
@@ -110,12 +113,13 @@
         
         <div class="form-group">
             <label>Username</label>
-            <input type="text" id="username" placeholder="User..." required>
+            <input type="text" id="username" placeholder="User..." required maxlength="15">
         </div>
 
         <div class="form-group">
             <label>Gmail</label>
             <input type="email" id="email" placeholder="mail@gmail.com" required>
+            <span id="emailHint" class="error-hint"></span>
         </div>
 
         <div class="form-group">
@@ -134,10 +138,11 @@
         <div class="form-group">
             <label style="cursor: pointer;">
                 <div class="custom-file-btn">
-                    <span id="fileName">Upload Avatar</span>
+                    <span id="fileName">Upload Avatar (PNG, JPG, JPEG)</span>
                 </div>
-                <input type="file" id="profilePic" accept="image/*" style="display:none" required>
+                <input type="file" id="profilePic" accept=".png, .jpg, .jpeg" style="display:none" required>
             </label>
+            <span id="fileError" class="error-hint"></span>
         </div>
 
         <button type="submit">Sign Up</button>
@@ -150,32 +155,32 @@
     const text = document.getElementById('strengthText');
     const confirmPass = document.getElementById('confirmPassword');
     const matchLabel = document.getElementById('matchLabel');
+    const profilePic = document.getElementById('profilePic');
+    const fileName = document.getElementById('fileName');
+    const fileError = document.getElementById('fileError');
+    const emailInput = document.getElementById('email');
+    const emailError = document.getElementById('emailError');
 
     pass.addEventListener('input', () => {
         const v = pass.value;
         let score = 0;
-
         if (v.length > 0) {
             const hasLetter = /[a-zA-Z]/.test(v);
             const hasNumber = /[0-9]/.test(v);
             const hasSpecial = /[^A-Za-z0-9]/.test(v);
-
-            if (v.length < 6) {
-                score = 1; 
-            } else {
+            if (v.length < 6) score = 1; 
+            else {
                 if (hasLetter && hasNumber && hasSpecial) score = 3; 
                 else if (hasLetter && hasNumber) score = 2; 
                 else score = 1; 
             }
         }
-
         const levels = [
             { w: '0%', c: '#eee', t: 'Security: Empty' },
             { w: '33%', c: '#ff4757', t: 'Security: Weak ❌' },
             { w: '66%', c: '#ffa502', t: 'Security: Medium ⚠️' },
             { w: '100%', c: '#2ed573', t: 'Security: Strong ✨' }
         ];
-
         const res = levels[score];
         bar.style.width = res.w;
         bar.style.backgroundColor = res.c;
@@ -193,8 +198,51 @@
         }
     });
 
-    document.getElementById('profilePic').addEventListener('change', function() {
-        if (this.files[0]) document.getElementById('fileName').innerText = "✔️ " + this.files[0].name;
+    emailInput.addEventListener('input', () => {
+        const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+        if (!gmailRegex.test(emailInput.value)) {
+            emailError.innerText = "Phải có đuôi @gmail.com";
+            emailInput.style.borderBottomColor = "#ff4757";
+        } else {
+            emailError.innerText = "";
+            emailInput.style.borderBottomColor = "#c5a059";
+        }
+    });
+
+    profilePic.addEventListener('change', function() {
+        fileError.innerText = "";
+        const file = this.files[0];
+        if (file) {
+            const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+            if (!allowedTypes.includes(file.type)) {
+                fileError.innerText = "Chỉ nhận PNG, JPG, JPEG!";
+                fileName.innerText = "Upload Avatar";
+                this.value = ""; 
+            } else {
+                fileName.innerText = "✔️ " + file.name;
+                fileName.style.color = "#2ed573";
+            }
+        }
+    });
+
+    document.getElementById('registrationForm').addEventListener('submit', function(e) {
+        const gmailRegex = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+
+        if (!gmailRegex.test(emailInput.value)) {
+            e.preventDefault();
+            alert("Email không hợp lệ! Vui lòng nhập đúng địa chỉ @gmail.com");
+            emailInput.focus();
+            return;
+        }
+
+        if (confirmPass.value !== pass.value) {
+            e.preventDefault();
+            alert("Mật khẩu xác nhận không khớp!");
+            confirmPass.focus();
+            return;
+        }
+
+        alert("Chúc mừng! Đăng ký thành công.");
     });
 </script>
 </body>
